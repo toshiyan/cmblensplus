@@ -1,0 +1,36 @@
+#////////////////////////////////////////////////////#
+# * Makefile
+#////////////////////////////////////////////////////#
+
+## libfile ##
+target = libutils.a
+
+# complier and options
+FC = ifort
+FLAG = -O3 -fpp -fPIC
+#DBAG = -check all -std -gen_interfaces -fpe0 -ftrapuv -traceback
+FLAGS = $(FLAG) $(DBAG)
+
+# directories
+flib = ../
+
+# compile links
+MODD = -I$(flib)/mod
+OPTION = $(MODD)
+
+#//// files to be compiled ////#
+# independent modules
+OBJ = constants.o funcs.o random.o io.o general.o pstool.o grid2d.o alkernel.o delensing.o alflat.o bbflat.o
+
+$(target): $(OBJ)
+	ar crs $@ $^
+
+%.o: %.f90
+	$(FC) $(FLAGS) $(OPTION) -c $*.f90
+
+install:
+	mv *.mod ${flib}/mod; mv $(target) ${flib}/lib/
+
+clean:
+	rm -f *.o* *.mod *.a
+

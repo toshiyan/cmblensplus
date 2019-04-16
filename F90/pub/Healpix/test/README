@@ -1,0 +1,99 @@
+
+test data for HEALPix 3.31
+
+used by 'make test'
+
+*.par: input parameter file of each code
+
+*.fits: input data and reference for comparison of output
+
+   --  cl.fits: input power spectrum of current release.
+       currently identical to wmap_lcdm_pl_model_yr1_v1.fits (see Note below)
+   --  cl_old.fits: input power spectrum of previous Healpix releases
+
+*.gif: GIF image of the reference maps
+
+
+
+test*.fits: output data of runs
+
+test*.gif: output figures of runs
+
+
+
+see Installation Document for details
+
+
+Notes: 
+     1) The file wmap_lcdm_pl_model_yr1_v1.fits currently (aka cl.fits, aka cl_wmap1.fits)
+  which was used for test simulations present in this directory.
+
+  It is WMAP 1yr best fit, Spergel et al, 2003; with B modes = 0
+  assuming a power low spectrum. It is identical to
+  http://lambda.gsfc.nasa.gov/data/map/powspec/wmap_lcdm_pl_model_yr1_v1.fits
+  except for cosmetic editions of the FITS header
+
+  It is defined up to l=3000.
+
+
+     2) The file wmap_lcdm_sz_lens_wmap5_cl_v3.fits (aka cl_wmap5.fits)
+ has been added in this directory for convenience, even though
+ it is currently *NOT* used in any of the simulations included here.
+
+ It is adapted from WMAP 5yr best fit model for l-CDM + SZ + lensing with B mode = 0
+ input file = wmap_lcdm_sz_lens_wmap5_cl_v3.dat;
+ For the list of parameters, see 
+ http://lambda.gsfc.nasa.gov/product/map/dr3/params/lcdm_sz_lens_wmap5.cfm
+
+ It is defined up to l=2000.
+
+
+     3) The file wmap_lcdm_sz_lens_wmap7_cl_v4.fits  (aka cl_wmap7.fits)
+ has been added in this directory for convenience, even though
+ it is currently *NOT* used in any of the simulations included here.
+
+ It is adapted from WMAP 7yr best fit model for l-CDM + SZ + lensing with 
+ lensed B mode > 0
+ For the list of parameters, see 
+ http://lambda.gsfc.nasa.gov/product/map/dr4/params/lcdm_sz_lens_wmap7.cfm
+ It was produced with CAMB (Feb2009; recfast 1.4.2) run with l_max_scalar=4000, 
+ which should improve the lensed BB spectrum compared to lower l runs.   
+
+ It is defined up to l=3726.
+
+
+     4) The file planck2013ext_lcdm_cl_v1.fits  (aka cl_planck1.fits)
+ has been added in this directory for convenience, even though
+ it is currently *NOT* used in any of the simulations included here.
+
+ It is the theoretical Lambda-CDM best fit to
+ Planck 2013 + WMAP9 Polarization (l<24) + ACT + SPT + SDSS DR7+WiggleZ+BOSS DR9+6dF
+ with lensed B modes > 0
+
+ See Planck 2013 results. XVI. Cosmological parameters                  
+  by Planck collaboration (http://arxiv.org/abs/1303.5076v1), and        
+  http://www.cosmos.esa.int/web/planck
+  for further details.                                                    
+
+ It is defined up to l=4500.
+ (Edited 2014-05-27 to add POLNORM and TEMPTYPE keywords)
+
+
+
+     5) The file planck2015_lcdm_cl_v2.fits  (aka cl_planck2.fits)
+ has been added in this directory for convenience, even though
+ it is currently *NOT* used in any of the simulations included here.
+
+ It is the theoretical Lambda-CDM best fit to
+ Planck 2015 baseline analysis (plikTT + lowTEB)
+
+  See                                                                    
+  * "Planck 2015 results. XIII. Cosmological parameters"                 
+    by Planck collaboration (http://arxiv.org/abs/1502.01589),           
+  * "Planck 2015 results. XI. CMB power spectra, likelihoods, and        
+    robustness of parameters"                                            
+    by Planck collaboration (http://arxiv.org/abs/1507.02704), and       
+  * http://www.cosmos.esa.int/web/planck                                 
+ for further details.                                                    
+
+ It is defined up to l=4900.

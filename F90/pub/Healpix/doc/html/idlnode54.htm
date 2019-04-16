@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>query_disc </TITLE>
+<META NAME="description" CONTENT="query_disc ">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode55.htm">
+<LINK REL="previous" HREF="idlnode53.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode55.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html879"
+  HREF="idlnode53.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html885"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html889"
+  HREF="idlnode55.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html887"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html880"
+  HREF="idlnode53.htm">planck_colors</A>
+
+<B>Up:</B> <A NAME="tex2html886"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html890"
+  HREF="idlnode55.htm">query_polygon</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000540000000000000000"></A>
+<A NAME="idl:query_disc"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">query_disc </FONT></font></b><hr>
+<H3>This IDL facility provides a means to find the index of all pixels within an
+angular distance <TT>Radius</TT> from a defined center.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/query_disc.pro"><b>src/idl/toolkit/query_disc.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+query_disc , 
+<A HREF="#idl:query_disc:nside">Nside</A>, 
+<A HREF="#idl:query_disc:vector0">Vector0</A>, 
+<A HREF="#idl:query_disc:radius">Radius</A>, 
+<A HREF="#idl:query_disc:listpix">Listpix</A>, 
+[<A HREF="#idl:query_disc:nlist">Nlist</A>, 
+<A HREF="#idl:query_disc:deg">/DEG</A>, 
+<A HREF="#idl:query_disc:nested">/NESTED</A>, 
+<A HREF="#idl:query_disc:inclusive">/INCLUSIVE</A>]
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Nside <A NAME="idl:query_disc:nside"></A></B>
+<DD><b>HEALPix</b> resolution parameter used to index the pixel list (scalar integer)
+    <DT>
+<B>Vector0 <A NAME="idl:query_disc:vector0"></A></B>
+<DD>position vector of the disc center (3 elements vector)
+          NB : the norm of Vector0 does not have to be one, what is
+          consider is the intersection of the sphere with the line of
+          direction Vector0.
+    <DT>
+<B>Radius <A NAME="idl:query_disc:radius"></A></B>
+<DD>radius of the disc (in radians, unless <A HREF="#idl:query_disc:deg">DEG</A> is set), (scalar
+    real)
+    <DT>
+<B>Listpix <A NAME="idl:query_disc:listpix"></A></B>
+<DD>on output: list of ordered index for the pixels found 
+    within a radius Radius of the position defined by vector0. The RING numbering
+    scheme is used unless the keyword <A HREF="#idl:query_disc:nested"><TT>NESTED</TT></A> is set.
+     (=-1 if the radius is too small and no pixel is found)
+    <DT>
+<B>Nlist <A NAME="idl:query_disc:nlist"></A></B>
+<DD>on output: number of pixels in Listpix (=0 if no pixel is found).
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>/DEG <A NAME="idl:query_disc:deg"></A></B>
+<DD>if set <A HREF="#idl:query_disc:radius"><TT>Radius</TT></A> is in degrees instead of radians
+    <DT>
+<B>/NESTED <A NAME="idl:query_disc:nested"></A></B>
+<DD>if set, the output list uses the NESTED numbering scheme
+    instead of the default RING
+    <DT>
+<B>/INCLUSIVE <A NAME="idl:query_disc:inclusive"></A></B>
+<DD>if set, all the pixels overlapping (even partially)
+                   with the disc are listed, otherwise only those whose
+                   center lies within the disc are listed
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+query_disc finds the pixels within the given disc in a selective way WITHOUT
+scanning all the sky pixels. The numbering scheme of the output list and the
+inclusiveness of the disc can be changed
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">query_disc </FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run query_disc .
+    <DT>
+<B>ang2pix, pix2ang</B>
+<DD>conversion between angles and pixel index
+    <DT>
+<B>vec2pix, pix2vec</B>
+<DD>conversion between vector and pixel index
+    <DT>
+<B><A HREF="#idl:query_disc">query_disc</A>, <A HREF="idlnode55.htm#idl:query_polygon">query_polygon</A>,</B>
+<DD><DT>
+<B><A HREF="idlnode56.htm#idl:query_strip">query_strip</A>, <A HREF="idlnode57.htm#idl:query_triangle">query_triangle</A></B>
+<DD>render the list of pixels enclosed
+  respectively in a given disc, polygon, latitude strip and triangle
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> query_disc , 256L, [.5,.5,0.], 10., listpix, nlist, /Deg, /Nest</SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+On return listpix contains the index of the (5982) pixels within 10 degrees from
+the point on the sphere having the direction [.5,.5,0.].
+The pixel indices correspond to the Nested scheme with resolution 256.
+</blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html879"
+  HREF="idlnode53.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html885"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html889"
+  HREF="idlnode55.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html887"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html880"
+  HREF="idlnode53.htm">planck_colors</A>
+
+<B>Up:</B> <A NAME="tex2html886"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html890"
+  HREF="idlnode55.htm">query_polygon</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

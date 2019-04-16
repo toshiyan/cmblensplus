@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>compute_statistics*</TITLE>
+<META NAME="description" CONTENT="compute_statistics*">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode19.htm">
+<LINK REL="previous" HREF="subroutinesnode17.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode19.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html495"
+  HREF="subroutinesnode17.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html501"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html505"
+  HREF="subroutinesnode19.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html503"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html496"
+  HREF="subroutinesnode17.htm">complex_fft</A>
+
+<B>Up:</B> <A NAME="tex2html502"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html506"
+  HREF="subroutinesnode19.htm">concatnl</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000180000000000000000"></A>
+<A NAME="sub:compute_statistics"></A>
+<BR>
+ 
+</H1>
+
+<P>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">compute_statistics*</FONT></font></b><hr>
+<H3>This routine computes the min, max, absolute deviation and first four order moment of a data set</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/statistics.f90"><b>src/f90/mod/statistics.f90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">compute_statistics*</FONT>(
+<A HREF="#sub:compute_statistics:data">data</A>,<A HREF="#sub:compute_statistics:stats">stats</A><i><font color="#224422">[,&nbsp;<A HREF="#sub:compute_statistics:badval">badval</A>]</font></i>
+)</h3></blockquote>
+Arguments appearing in <i><font color="#224422">italic</font></i> are
+optional.
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>
+data<A NAME="sub:compute_statistics:data"></A>(:)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>data set <SPAN CLASS="MATH">{x<SUB><I>i</I></SUB>}</SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>stats<A NAME="sub:compute_statistics:stats"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>tstats</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>structure containing the statistics of the
+                   data. The respective fields (stats%<EM>field</EM>) are:</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>ntot</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I8B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>total number of data points</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>nvalid</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I8B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>number <SPAN CLASS="MATH"><I>n</I></SPAN> of valid data points</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>mind, maxd</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>minimum and maximum valid data</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>average</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>average of valid points <!-- MATH
+ $m= \sum_i x_i / n$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="108" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg50.png"
+ ALT="$m= \sum_i x_i / n$"></SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>absdev</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>absolute deviation <!-- MATH
+ $a= \sum_i|x_i-m|/n$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="152" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg51.png"
+ ALT="$a= \sum_i\vert x_i-m\vert/n$"></SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>var</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>variance <!-- MATH
+ $\sigma^2 = \sum(x_i-m)^2/ (n-1)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="211" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg52.png"
+ ALT="$\sigma^2 = \sum(x_i-m)^2/ (n-1)$"></SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>rms</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>standard deviation <SPAN CLASS="MATH"><IMG
+ WIDTH="16" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="subroutinesimg53.png"
+ ALT="$\sigma$"></SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>skew</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>skewness factor <!-- MATH
+ $s = \sum(x_i-m)^3 / (n\sigma^3)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="187" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg54.png"
+ ALT="$s = \sum(x_i-m)^3 / (n\sigma^3)$"></SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>kurt</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>-</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>kurtosis factor <!-- MATH
+ $k = \sum(x_i-m)^4 / (n\sigma^4) - 3$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="221" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg55.png"
+ ALT="$k = \sum(x_i-m)^4 / (n\sigma^4) - 3$"></SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><i><font color="#224422">badval<A NAME="sub:compute_statistics:badval"></A></font></i> (OPTIONAL)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>sentinel value given to bad data points. Data points with this
+                   value will be ignored during calculation of the statistics. If
+                   not set, all points will be considered. <B>Do not set to 0!</B>.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>use statistics, only: compute_statistics, print_statistics, tstats 
+<BR>
+type(tstats) :: stats 
+<BR>... 
+<BR>
+compute_statistics(map, stats)  
+<BR>
+print*,stats%average, stats%rms
+<BR>
+print_statistics(stats) 
+<BR></tt>
+<blockquote>
+Computes the statistics of <TT>map</TT>, prints its average and <EM>rms</EM> and
+prints the whole list of statistical measures.
+</blockquote>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">compute_statistics*</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode51.htm#sub:median">median</A></B>
+<DD>routine to compute median of a data set
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html495"
+  HREF="subroutinesnode17.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html501"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html505"
+  HREF="subroutinesnode19.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html503"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html496"
+  HREF="subroutinesnode17.htm">complex_fft</A>
+
+<B>Up:</B> <A NAME="tex2html502"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html506"
+  HREF="subroutinesnode19.htm">concatnl</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

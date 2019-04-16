@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>healpixwindow</TITLE>
+<META NAME="description" CONTENT="healpixwindow">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode31.htm">
+<LINK REL="previous" HREF="idlnode29.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode31.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html591"
+  HREF="idlnode29.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html597"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html601"
+  HREF="idlnode31.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html599"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html592"
+  HREF="idlnode29.htm">healpix_doc: PDF and HTML</A>
+
+<B>Up:</B> <A NAME="tex2html598"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html602"
+  HREF="idlnode31.htm">hpx2dm</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000300000000000000000"></A>
+<A NAME="idl:healpixwindow"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">healpixwindow</FONT></font></b><hr>
+<H3>This IDL facility provides the window function in <SPAN CLASS="MATH"><I>l</I></SPAN> associated with the
+Healpix pixel of resolution Nside.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/misc/healpixwindow.pro"><b>src/idl/misc/healpixwindow.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+wpix=HEALPIXWINDOW(Nside [, <A HREF="#idl:healpixwindow:Dim">Dim</A>, Directory])
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Nside</B>
+<DD>resolution parameter
+    <DT>
+<B>Wpix</B>
+<DD>the pixel window function, computed for the multipoles <SPAN CLASS="MATH"><I>l</I></SPAN> in {0,...,4Nside}
+    <DT>
+<B>Dim<A NAME="idl:healpixwindow:Dim"></A></B>
+<DD>scalar integer, optional. 
+<BR>
+If absent or set to 0 or 1,
+          the output has size (4 Nside+1) and is the temperature
+    window function;
+<BR>
+if set to <SPAN CLASS="MATH"><IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg47.png"
+ ALT="$2 \le$"></SPAN> Dim <SPAN CLASS="MATH"><IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg48.png"
+ ALT="$\le 4$"></SPAN> ,
+          the output has size (4 Nside+1,Dim)
+          and contains in that order : 
+<BR>
+the TEMPERATURE window function,
+<BR>
+the GRAD/ELECTRIC polarization one
+<BR>
+the CURL/MAGNETIC polarization one
+<BR>
+the TEMPERATURE*GRAD one.
+   <DT>
+<B>Directory</B>
+<DD>directory in which the precomputed pixel window file is looked for.
+<BR>          <b>default:</b>$HEALPIX/data/ 
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+<FONT COLOR="#CC0000">healpixwindow</FONT> computes the <SPAN CLASS="MATH"><I>l</I></SPAN> space window function due to the finite size of the
+<b>HEALPix</b> pixels. The typical size of a pixel (square root of its uniform surface
+area) is <!-- MATH
+ $\sqrt{3/\pi}\ 3600/N_{\rm side}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="141" HEIGHT="51" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg55.png"
+ ALT="$ \sqrt{3/\pi}\ 3600/N_{\rm side}$"></SPAN> arcmin.
+If a unpixelated sky has a power spectrum <SPAN CLASS="MATH"><I>C</I>(<I>l</I>)</SPAN>, the same
+sky pixelated with a resolution parameter Nside 
+will have the power spectrum <!-- MATH
+ $C(l)_{\rm pix} = C(l)
+W(l)^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="168" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg56.png"
+ ALT="$C(l)_{\rm pix} = C(l)
+W(l)^2$"></SPAN> where <SPAN CLASS="MATH"><I>W</I>(<I>l</I>)</SPAN> is given by <FONT COLOR="#CC0000">healpixwindow</FONT>(Nside). The polarized
+pixel window function is also provided (when Dim <SPAN CLASS="MATH">&gt;</SPAN> 1).
+This routine reads some FITS files located in the subdirectory <TT>data/</TT> of the
+<b>HEALPix</b> distribution, unless the keyword <TT>Directory</TT> is set otherwise.
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">healpixwindow</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run healpixwindow<DT>
+<B><A HREF="idlnode24.htm#idl:gaussbeam">gaussbeam</A></B>
+<DD>computes the <SPAN CLASS="MATH"><I>l</I></SPAN> space window function associated with
+    a gaussian beam
+    <DT>
+<B>synfast</B>
+<DD>f90 code to generate CMB maps of given power spectrum at a
+    given resolution (=pixel size)
+    <DT>
+<B>anafast</B>
+<DD>f90 code to compute the power spectrum of a <b>HEALPix</b> sky map
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> wpix = <FONT COLOR="#CC0000">healpixwindow</FONT>(256)</SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+wpix contains the window function in {0,...,1024} of the <b>HEALPix</b> pixel with resolution
+parameter 256 (pixel size of 13.7 arcmin)</blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html591"
+  HREF="idlnode29.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html597"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html601"
+  HREF="idlnode31.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html599"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html592"
+  HREF="idlnode29.htm">healpix_doc: PDF and HTML</A>
+
+<B>Up:</B> <A NAME="tex2html598"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html602"
+  HREF="idlnode31.htm">hpx2dm</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

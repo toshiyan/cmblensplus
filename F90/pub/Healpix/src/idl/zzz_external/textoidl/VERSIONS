@@ -1,0 +1,22 @@
+VERSION:
+  You are using version $Name: Rel_2_1_2 $ of TeXtoIDL.
+
+REVISION HISTORY:
+   Version 1.0 --- Initial release.
+
+   Version 1.1 --- Added \circ, fixed vector \varphi.
+
+   Version 1.2 --- Added \vartheta.
+
+   Version 2.0 --- Renamed strtok to str_token to avoid name conflict 
+		   in IDL 5.3. Still works in older version of IDL.
+
+   Version 2.1 --- Replaced the obsolete function str_sep with the 
+                   function strsplit. Will not work with versions of 
+                   IDL prior to 5.3.
+
+   Version 2.11 -- Bug fix of v2.1. Fixes error in transition to strsplit . 
+   Version 2.12 -- Two changes:
+		     - Bug fix: call of strtrans in textoidl.pro; special 
+		       characters "^" and "_" need to be escaped.
+		     - All arrays are now in square bracket notation.

@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>gaussbeam</TITLE>
+<META NAME="description" CONTENT="gaussbeam">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode25.htm">
+<LINK REL="previous" HREF="idlnode23.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode25.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html519"
+  HREF="idlnode23.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html525"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html529"
+  HREF="idlnode25.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html527"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html520"
+  HREF="idlnode23.htm">fits2cl</A>
+
+<B>Up:</B> <A NAME="tex2html526"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html530"
+  HREF="idlnode25.htm">getdisc_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000240000000000000000"></A>
+<A NAME="idl:gaussbeam"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">gaussbeam</FONT></font></b><hr>
+<H3>This IDL facility provides the window function in <SPAN CLASS="MATH"><I>l</I></SPAN> space for a
+gaussian axisymmetric beam of given FWHM.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/misc/gaussbeam.pro"><b>src/idl/misc/gaussbeam.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+beam=GAUSSBEAM(<A HREF="#idl:gaussbeam:fwhm">Fwhm</A>, 
+	<A HREF="#idl:gaussbeam:lmax">Lmax</A>
+ [,&nbsp;<A HREF="#idl:gaussbeam:dim">Dim</A>,
+	<A HREF="#idl:gaussbeam:help">HELP=</A>])
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Fwhm<A NAME="idl:gaussbeam:fwhm"></A></B>
+<DD>Full Width Half Maximum of the gaussian beam, in arcmin (scalar real)
+    <DT>
+<B>Lmax<A NAME="idl:gaussbeam:lmax"></A></B>
+<DD>the window function is computed for the multipoles <SPAN CLASS="MATH"><I>l</I></SPAN> in {0,...,Lmax}
+    <DT>
+<B>Dim<A NAME="idl:gaussbeam:dim"></A></B>
+<DD>scalar integer, optional. 
+<BR>
+If absent or set to 0 or 1,
+          the output has size (Lmax+1) and is the temperature beam;
+<BR>
+if set to <SPAN CLASS="MATH"><IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg47.png"
+ ALT="$2 \le$"></SPAN> Dim <SPAN CLASS="MATH"><IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg48.png"
+ ALT="$\le 4$"></SPAN> ,
+          the output has size (Lmax+1,Dim)
+          and contains in that order : 
+<BR>
+the TEMPERATURE beam,
+<BR>
+the GRAD/ELECTRIC polarization beam
+<BR>
+the CURL/MAGNETIC polarization beam
+<BR>
+the TEMPERATURE*GRAD beam
+    <DT>
+<B>HELP=<A NAME="idl:gaussbeam:help"></A></B>
+<DD>if set, prints out the help header and exits
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+gaussbeam computes the <SPAN CLASS="MATH"><I>l</I></SPAN> space window function of a gaussian beam of FWHM
+Fwhm. For a sky of underlying power spectrum <SPAN CLASS="MATH"><I>C</I>(<I>l</I>)</SPAN> observed with beam of
+given FWHM, the measured power spectrum will be <!-- MATH
+ $C(l)_{\rm meas} = C(l)
+B(l)^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="174" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg49.png"
+ ALT="$C(l)_{\rm meas} = C(l)
+B(l)^2$"></SPAN> where <SPAN CLASS="MATH"><I>B</I>(<I>l</I>)</SPAN> is given by gaussbeam(Fwhm,Lmax). The
+polarization beam is also provided (when Dim <SPAN CLASS="MATH">&gt;</SPAN> 1) assuming a perfectly
+co-polarized beam (eg, Challinor et al 2000, 
+<A NAME="tex2html19"
+  HREF="http://arxiv.org/abs/astro-ph/0008228v2">astro-ph/0008228</A>)
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">gaussbeam</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run gaussbeam<DT>
+<B><A HREF="idlnode30.htm#idl:healpixwindow">healpixwindow</A></B>
+<DD>computes the tex2html_wrap_inline$l$ space window function associated with
+    a <b>HEALPix</b> pixel size
+    <DT>
+<B>synfast</B>
+<DD>f90 code to generate CMB maps of given power spectrum convolved with a gaussian beam
+    <DT>
+<B>smoothing</B>
+<DD>f90 code to smooth existing <b>HEALPix</b> maps with a gaussian beam
+    <DT>
+<B>anafast</B>
+<DD>f90 code to compute the power spectrum of a <b>HEALPix</b> sky map
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> beam = gaussbeam(5.,1200)</SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+beam contains the window function in {0,...,1200} of a gaussian beam of fwhm 5 arcmin</blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html519"
+  HREF="idlnode23.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html525"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html529"
+  HREF="idlnode25.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html527"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html520"
+  HREF="idlnode23.htm">fits2cl</A>
+
+<B>Up:</B> <A NAME="tex2html526"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html530"
+  HREF="idlnode25.htm">getdisc_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>healpix_types module</TITLE>
+<META NAME="description" CONTENT="healpix_types module">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode42.htm">
+<LINK REL="previous" HREF="subroutinesnode40.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode42.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html771"
+  HREF="subroutinesnode40.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html777"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html781"
+  HREF="subroutinesnode42.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html779"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html772"
+  HREF="subroutinesnode40.htm">healpix_modules module</A>
+
+<B>Up:</B> <A NAME="tex2html778"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html782"
+  HREF="subroutinesnode42.htm">in_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000410000000000000000"></A>
+<A NAME="sub:healpix_types"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">healpix_types</FONT></font></b><hr>
+<H3>This module defines a set of parameters used by most other
+<b>HEALPix</b> modules.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/healpix_types.F90"><b>src/f90/mod/healpix_types.F90</b></a>&nbsp;  
+
+<P>
+ 
+<P>
+The parameters defined in <FONT COLOR="#CC0000">healpix_types</FONT> include
+
+<P>
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+
+'kind' parameters, used when defining the type of a variable, 
+
+<P>
+ <TABLE CELLPADDING=3 BORDER="1" WIDTH="100%">
+<TR><TD ALIGN="LEFT">name</TD>
+<TD ALIGN="CENTER">type</TD>
+<TD ALIGN="CENTER">value<A NAME="tex2html17"
+  HREF="subroutinesfootnode.htm#foot6551"><SUP><SPAN CLASS="arabic">3</SPAN></SUP></A></TD>
+<TD ALIGN="LEFT">definition</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:i1b"></A>I1B</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">1</TD>
+<TD ALIGN="LEFT">number of bytes in the hardware-supported signed integers covering the range -99 to
+99 with the least margin</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:i2b"></A>I2B</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">2</TD>
+<TD ALIGN="LEFT">same as above for the range -9999 to 9999 (ie, 4 digits)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:i4b"></A>I4B</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="LEFT">same as above for 9 digits</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:i8b"></A>I8B</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">8</TD>
+<TD ALIGN="LEFT">same as above for 16 digits<A NAME="tex2html18"
+  HREF="subroutinesfootnode.htm#foot6552"><SUP><SPAN CLASS="arabic">4</SPAN></SUP></A></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:sp"></A>SP</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="LEFT">number of bytes in the hardware-supported floating-point
+numbers covering the range <SPAN CLASS="MATH">10<SUP>-30</SUP></SPAN> to <SPAN CLASS="MATH">10<SUP>30</SUP></SPAN> with the least margin
+(hereafter single precision)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:dp"></A>DP</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">8</TD>
+<TD ALIGN="LEFT">same as above for the range <SPAN CLASS="MATH">10<SUP>-200</SUP></SPAN> to <SPAN CLASS="MATH">10<SUP>200</SUP></SPAN>
+(double precision)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:spc"></A>SPC</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="LEFT">number of bytes in real (<EM>or</EM> imaginary) part of single precision complex numbers</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:dpc"></A>DPC</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">8</TD>
+<TD ALIGN="LEFT">same as above for double precision complex numbers</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:lgt"></A>LGT</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">4</TD>
+<TD ALIGN="LEFT">number of bytes in logical variables</TD>
+</TR>
+</TABLE>
+<P>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+
+largest accessible numbers, 
+
+<P>
+ <TABLE CELLPADDING=3 BORDER="1" WIDTH="100%">
+<TR><TD ALIGN="LEFT">name</TD>
+<TD ALIGN="CENTER">type or kind</TD>
+<TD ALIGN="CENTER">value<A NAME="tex2html19"
+  HREF="subroutinesfootnode.htm#foot6553"><SUP><SPAN CLASS="arabic">5</SPAN></SUP></A></TD>
+<TD ALIGN="LEFT">definition</TD>
+</TR>
+<TR><TD ALIGN="LEFT">MAX_I1B</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">127</TD>
+<TD ALIGN="LEFT">largest number accessible to integers of kind <TT>I1B</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT">MAX_I2B</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH">32767</SPAN></TD>
+<TD ALIGN="LEFT">same as above for <TT>I2B</TT> integers</TD>
+</TR>
+<TR><TD ALIGN="LEFT">MAX_I4B</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $2^{31}-1 \simeq 2.1\ 10^9$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="143" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg68.png"
+ ALT="$2^{31}-1 \simeq 2.1\ 10^9$"></SPAN></TD>
+<TD ALIGN="LEFT">same as above for <TT>I4B</TT> integers</TD>
+</TR>
+<TR><TD ALIGN="LEFT">MAX_I8B</TD>
+<TD ALIGN="CENTER">I8B</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $2^{63}-1 \simeq 9.2\ 10^{18}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="150" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg69.png"
+ ALT="$2^{63}-1 \simeq 9.2\ 10^{18}$"></SPAN></TD>
+<TD ALIGN="LEFT">same as above for <TT>I8B</TT> integers</TD>
+</TR>
+<TR><TD ALIGN="LEFT">MAX_SP</TD>
+<TD ALIGN="CENTER">SP</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $\simeq 3.40\ 10^{38}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="97" HEIGHT="22" ALIGN="BOTTOM" BORDER="0"
+ SRC="subroutinesimg70.png"
+ ALT="$\simeq 3.40\ 10^{38}$"></SPAN></TD>
+<TD ALIGN="LEFT">same as above for <TT>SP</TT> floating-point</TD>
+</TR>
+<TR><TD ALIGN="LEFT">MAX_DP</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $\simeq 1.80\ 10^{308}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="104" HEIGHT="22" ALIGN="BOTTOM" BORDER="0"
+ SRC="subroutinesimg71.png"
+ ALT="$\simeq 1.80\ 10^{308}$"></SPAN></TD>
+<TD ALIGN="LEFT">same as above for <TT>DP</TT> floating-point</TD>
+</TR>
+</TABLE>
+
+<P>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+
+mathematical definitions, 
+
+<P>
+ <TABLE CELLPADDING=3 BORDER="1" WIDTH="100%">
+<TR><TD ALIGN="LEFT">name</TD>
+<TD ALIGN="CENTER">kind</TD>
+<TD ALIGN="CENTER">value</TD>
+<TD ALIGN="LEFT">definition</TD>
+</TR>
+<TR><TD ALIGN="LEFT">QUARTPI</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="35" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg72.png"
+ ALT="$\pi/4$"></SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">HALFPI</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="35" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg73.png"
+ ALT="$\pi/2$"></SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">PI</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $\pi \simeq 3.14159\ldots$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="128" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="subroutinesimg74.png"
+ ALT="$\pi \simeq 3.14159\ldots$"></SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">TWOPI</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="25" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="subroutinesimg75.png"
+ ALT="$2\pi$"></SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">FOURPI</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="25" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="subroutinesimg76.png"
+ ALT="$4\pi$"></SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">SQRT2</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="30" HEIGHT="43" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg77.png"
+ ALT="$\sqrt{2}$"></SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">EULER</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $\gamma \simeq 0.577\ldots$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="109" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg78.png"
+ ALT="$\gamma \simeq 0.577\ldots$"></SPAN></TD>
+<TD ALIGN="LEFT">Euler constant</TD>
+</TR>
+<TR><TD ALIGN="LEFT">SQ4PI_INV</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="60" HEIGHT="43" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg79.png"
+ ALT="$1/\sqrt{4\pi}$"></SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">TWOTHIRD</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH">2/3</SPAN></TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">DEG2RAD</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="53" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg80.png"
+ ALT="$\pi/180$"></SPAN></TD>
+<TD ALIGN="LEFT">Degrees to Radians conversion factor</TD>
+</TR>
+<TR><TD ALIGN="LEFT">RAD2DEG</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><SPAN CLASS="MATH"><IMG
+ WIDTH="53" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg81.png"
+ ALT="$180/\pi$"></SPAN></TD>
+<TD ALIGN="LEFT">Radians to Degrees conversion factor</TD>
+</TR>
+</TABLE>
+
+<P>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+
+and <b>HEALPix</b> specific definitions, 
+
+<P>
+ <TABLE CELLPADDING=3 BORDER="1" WIDTH="100%">
+<TR><TD ALIGN="LEFT">name</TD>
+<TD ALIGN="CENTER">type or kind</TD>
+<TD ALIGN="CENTER">value</TD>
+<TD ALIGN="LEFT">definition</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:hpx_sbadval"></A>HPX_SBADVAL</TD>
+<TD ALIGN="CENTER">SP</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $-1.6375\ 10^{30}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="111" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg82.png"
+ ALT="$-1.6375\ 10^{30}$"></SPAN></TD>
+<TD ALIGN="LEFT">default sentinel value given to missing
+pixels in single precision data sets</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:hpx_dbadval"></A>HPX_DBADVAL</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="CENTER"><!-- MATH
+ $-1.6375\ 10^{30}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="111" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg82.png"
+ ALT="$-1.6375\ 10^{30}$"></SPAN></TD>
+<TD ALIGN="LEFT">same as above for double precision data
+sets</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><A NAME="sub:healpix_types:filenamelen"></A>FILENAMELEN</TD>
+<TD ALIGN="CENTER">integer</TD>
+<TD ALIGN="CENTER">1024</TD>
+<TD ALIGN="LEFT">default length in character of file names.</TD>
+</TR>
+<TR><TD ALIGN="LEFT">HEALPIX_VERSION</TD>
+<TD ALIGN="CENTER">character</TD>
+<TD ALIGN="CENTER">``3.31''</TD>
+<TD ALIGN="LEFT">current <b>HEALPix</b> package version.</TD>
+</TR>
+</TABLE>
+
+<P>
+</DL>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>use healpix_types 
+<BR>
+real(kind=DP) :: dx 
+<BR>
+print*,' pi = ',PI</tt>
+<blockquote>
+The value of <TT>PI</TT>, as well as all other <FONT COLOR="#CC0000">healpix_types</FONT> parameters are made known
+to the code
+</blockquote>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html771"
+  HREF="subroutinesnode40.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html777"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html781"
+  HREF="subroutinesnode42.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html779"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html772"
+  HREF="subroutinesnode40.htm">healpix_modules module</A>
+
+<B>Up:</B> <A NAME="tex2html778"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html782"
+  HREF="subroutinesnode42.htm">in_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

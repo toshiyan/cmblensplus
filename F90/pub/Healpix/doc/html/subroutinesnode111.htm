@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>write_plm</TITLE>
+<META NAME="description" CONTENT="write_plm">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode112.htm">
+<LINK REL="previous" HREF="subroutinesnode110.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode112.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html1611"
+  HREF="subroutinesnode110.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1617"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1621"
+  HREF="subroutinesnode112.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1619"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1612"
+  HREF="subroutinesnode110.htm">write_minimal_header</A>
+
+<B>Up:</B> <A NAME="tex2html1618"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1622"
+  HREF="subroutinesnode112.htm">xcc_v_convert</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001110000000000000000"></A>
+<A NAME="sub:write_plm"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">write_plm</FONT></font></b><hr>
+<H3>This routine creates a double precision binary FITS-file from a given array. The routine is used by the <b>HEALPix</b> facility plmgen to store precomputed <!-- MATH
+ $P_{lm}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN>.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/fitstools.F90"><b>src/f90/mod/fitstools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">write_plm</FONT>(
+<A HREF="#sub:write_plm:plm">plm</A>, <A HREF="#sub:write_plm:nplm">nplm</A>, <A HREF="#sub:write_plm:nhar">nhar</A>, <A HREF="#sub:write_plm:header">header</A>, <A HREF="#sub:write_plm:nlheader">nlheader</A>, <A HREF="#sub:write_plm:filename">filename</A>, <A HREF="#sub:write_plm:nsmax">nsmax</A>, <A HREF="#sub:write_plm:nlmax">nlmax</A>
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">name&amp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>
+plm<A NAME="sub:write_plm:plm"></A>(0:nplm-1,1:nhar)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the array with the precomputed <!-- MATH
+ $P_{lm}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN> values.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nplm<A NAME="sub:write_plm:nplm"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>Number of <SPAN CLASS="MATH"><I>P</I><SUB><I>lm</I></SUB></SPAN> values to store.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nhar<A NAME="sub:write_plm:nhar"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>1 for scalar <SPAN CLASS="MATH"><I>P</I><SUB><I>lm</I></SUB></SPAN> only and 3 for tensor harmonics.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>header<A NAME="sub:write_plm:header"></A>(LEN=80) (1:nlheader)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>The header for the FITS-file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nlheader<A NAME="sub:write_plm:nlheader"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>number of header lines to write to the file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>filename<A NAME="sub:write_plm:filename"></A>(LEN=<tt>filenamelen</tt>)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the precomputed <!-- MATH
+ $P_{lm}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN> values are written to this file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nsmax<A NAME="sub:write_plm:nsmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN CLASS="MATH"><I>N</I><SUB><I>side</I></SUB></SPAN> for the precomputed <SPAN CLASS="MATH"><IMG
+ WIDTH="31" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg120.png"
+ ALT="$P_{lm}\!\!$"></SPAN> s.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nlmax<A NAME="sub:write_plm:nlmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>maximum <SPAN CLASS="MATH"><I>l</I></SPAN> value for the precomputed <SPAN CLASS="MATH"><IMG
+ WIDTH="31" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg120.png"
+ ALT="$P_{lm}\!\!$"></SPAN> s.</TD>
+</TR>
+</TABLE>
+
+<HR><H1>EXAMPLE:</H1> 
+<tt>call write_plm (plm, 65*66*32, 1, header, 120, `plm_32.fits', 32, 64)  
+<BR></tt>
+<blockquote>
+Makes a double precision binary FITS-file called `plm_32.fits' from the precomputed <!-- MATH
+ $P_{lm}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN> in the array plm(0:65*66*32-1,1:1). The number 65*66*32 corresponds to the number of precomputed <SPAN CLASS="MATH"><IMG
+ WIDTH="31" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg120.png"
+ ALT="$P_{lm}\!\!$"></SPAN> s needed for a <SPAN CLASS="MATH"><I>N</I><SUB><I>side</I></SUB>=32</SPAN> <b>HEALPix</b> map synthesis/analysis. The header for the FITS-file is given in the string array header and the number of lines in the header is 120. 
+</blockquote>
+
+<P>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">write_plm</FONT>.</h3>
+  <DL COMPACT><DT>
+<B><SPAN  CLASS="textbf">fitstools</SPAN></B>
+<DD>module, containing:
+  <DT>
+<B>printerror</B>
+<DD>routine for printing FITS error messages.
+  <DT>
+<B><SPAN  CLASS="textbf">cfitsio</SPAN></B>
+<DD>library for FITS file handling.		
+  </DL>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">write_plm</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode85.htm#sub:read_dbintab">read_dbintab</A>, <A HREF="subroutinesnode83.htm#sub:read_bintab">read_bintab</A></B>
+<DD>routines which reads a file created by write_plm. 
+  <DT>
+<B><A HREF="subroutinesnode46.htm#sub:map2alm">map2alm</A>, <A HREF="subroutinesnode8.htm#sub:alm2map">alm2map</A></B>
+<DD>routines using precomputed <!-- MATH
+ $P_{lm}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN>.
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1611"
+  HREF="subroutinesnode110.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1617"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1621"
+  HREF="subroutinesnode112.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1619"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1612"
+  HREF="subroutinesnode110.htm">write_minimal_header</A>
+
+<B>Up:</B> <A NAME="tex2html1618"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1622"
+  HREF="subroutinesnode112.htm">xcc_v_convert</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>rand_uni</TITLE>
+<META NAME="description" CONTENT="rand_uni">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode82.htm">
+<LINK REL="previous" HREF="subroutinesnode80.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode82.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html1251"
+  HREF="subroutinesnode80.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1257"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1261"
+  HREF="subroutinesnode82.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1259"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1252"
+  HREF="subroutinesnode80.htm">rand_init</A>
+
+<B>Up:</B> <A NAME="tex2html1258"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1262"
+  HREF="subroutinesnode82.htm">read_asctab*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000810000000000000000"></A>
+<A NAME="sub:rand_uni"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">rand_uni</FONT></font></b><hr>
+<H3>This routine returns a number out of a pseudo-random uniform deviate (ie, its
+  probability distribution is uniform in the range ]0,1[).
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/rngmod.f90"><b>src/f90/mod/rngmod.f90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><h3>var=<FONT COLOR="#CC0000">rand_uni</FONT>(
+<A HREF="#sub:rand_uni:rng_handle">rng_handle</A>
+)</h3>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>
+rng_handle<A NAME="sub:rand_uni:rng_handle"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75>planck_rng</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>INOUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>structure of type <TT>planck_rng</TT>
+                   containing on all information necessary to continue same
+                   random sequence.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>var</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>number belonging to a pseudo-random uniform deviate.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>use healpix_types 
+<BR>
+use rngmod 
+<BR>
+type(planck_rng) :: rng_handle 
+<BR>
+real(dp) :: uni 
+<BR>
+<BR>
+call rand_init(rng_handle, 12345, 6789012)  
+<BR>
+uni = rand_uni(rng_handle)</tt>
+<blockquote>
+initiates a random sequence with the pair of seeds (12345, 6789012), and
+generates one number out of the uniform deviate.
+</blockquote>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">rand_uni</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode73.htm#sub:planck_rng">planck_rng</A></B>
+<DD>derived type describing RNG state
+  <DT>
+<B><A HREF="subroutinesnode79.htm#sub:rand_gauss">rand_gauss</A></B>
+<DD>function which returns a  random normal deviate.
+<DT>
+<B><A HREF="subroutinesnode80.htm#sub:rand_init">rand_init</A></B>
+<DD>subroutine to initiate a random number sequence. 
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1251"
+  HREF="subroutinesnode80.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1257"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1261"
+  HREF="subroutinesnode82.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1259"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1252"
+  HREF="subroutinesnode80.htm">rand_init</A>
+
+<B>Up:</B> <A NAME="tex2html1258"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1262"
+  HREF="subroutinesnode82.htm">read_asctab*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

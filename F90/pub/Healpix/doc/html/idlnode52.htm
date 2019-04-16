@@ -1,0 +1,387 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>pix2xxx, ang2xxx, vec2xxx, nest2ring, ring2nest</TITLE>
+<META NAME="description" CONTENT="pix2xxx, ang2xxx, vec2xxx, nest2ring, ring2nest">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode53.htm">
+<LINK REL="previous" HREF="idlnode51.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode53.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html855"
+  HREF="idlnode51.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html861"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html865"
+  HREF="idlnode53.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html863"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html856"
+  HREF="idlnode51.htm">orthview</A>
+
+<B>Up:</B> <A NAME="tex2html862"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html866"
+  HREF="idlnode53.htm">planck_colors</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000520000000000000000"></A>
+<A NAME="idl:pix_tools"></A>
+<BR>
+ 
+</H1><SMALL CLASS="FOOTNOTESIZE">
+
+ 
+</SMALL>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">pix2xxx,&nbsp;ang2xxx, vec2xxx,&nbsp;nest2ring,&nbsp;ring2nest</FONT></font></b><hr>
+<H3>These routines provide conversion between pixel number in the <b>HEALPix</b> map and <SPAN CLASS="MATH"><IMG
+ WIDTH="48" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg15.png"
+ ALT="$(\theta,\phi)$"></SPAN> or <SPAN CLASS="MATH">(<I>x</I>,<I>y</I>,<I>z</I>)</SPAN> coordinates on the sphere. Some of these routines are listed here.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/"><b>src/idl/toolkit/</b></a>&nbsp;  
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+
+</SMALL><TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE">  
+<SPAN  CLASS="textbf">name (dim.)</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">type</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">in/out</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">description</SPAN> </SMALL></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE">                           </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE">  
+nside<A NAME="idl:pix_tools:nside"></A> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> scalar integer </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> IN </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN> parameter for the <b>HEALPix</b> map. </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> 
+ipnest(n)<A NAME="idl:pix_tools:ipnest"></A> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> vector integer </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> -- </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> pixel identification number in NESTED scheme over the range {0,<SPAN CLASS="MATH"><IMG
+ WIDTH="71" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg85.png"
+ ALT="$N_{\rm pix}-1$"></SPAN>}. </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> 
+ipring(n)<A NAME="idl:pix_tools:ipring"></A> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> vector integer </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> -- </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> pixel identification number in RING scheme over the range {0,<SPAN CLASS="MATH"><IMG
+ WIDTH="71" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg85.png"
+ ALT="$N_{\rm pix}-1$"></SPAN>}. </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> 
+theta(n)<A NAME="idl:pix_tools:theta"></A>  </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> vector double </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> -- </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> colatitude in radians measured southward from
+                   north pole in {0,<SPAN CLASS="MATH"><IMG
+ WIDTH="16" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg12.png"
+ ALT="$\pi$"></SPAN>}</SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> 
+phi(n)<A NAME="idl:pix_tools:phi"></A> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> vector double </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> -- </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> longitude in radians, measured eastward in {0,<SPAN CLASS="MATH"><IMG
+ WIDTH="25" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg13.png"
+ ALT="$2\pi$"></SPAN>}. </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE">  
+vector(n,3)<A NAME="idl:pix_tools:vector"></A> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> array double </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> -- </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> three dimensional cartesian position vector
+                   <SPAN CLASS="MATH">(<I>x</I>,<I>y</I>,<I>z</I>)</SPAN>. The north pole is <SPAN CLASS="MATH">(0,0,1)</SPAN>. An output vector is
+                   normalised to unity. The coordinates are ordered as follows
+                   <!-- MATH
+ $x(0),\ldots,x(n-1),\ y(0),\ldots,y(n-1),\ z(0),\ldots,z(n-1)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="466" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg14.png"
+ ALT="$x(0),\ldots,x(n-1),\ y(0),\ldots,y(n-1),\ z(0),\ldots,z(n-1)$"></SPAN>
+                   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> 
+vertex(n,3,4)<A NAME="idl:pix_tools:vertex"></A> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=75><SMALL CLASS="FOOTNOTESIZE"> array double </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> optional OUT </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SMALL CLASS="FOOTNOTESIZE"> three dimensional cartesian position vector
+                   <SPAN CLASS="MATH">(<I>x</I>,<I>y</I>,<I>z</I>)</SPAN>. Contains the location of the four vertices
+                   (=corners) of a
+                   pixel in the order North, West, South, East. The coordinates
+                   are ordered as follows
+                   <!-- MATH
+ $x_N(0),\ldots,x_N(n-1),\ y_N(0),\ldots,y_N(n-1),\ z_N(0),\ldots,z_N(n-1)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="540" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg86.png"
+ ALT="$x_N(0),\ldots,x_N(n-1),\ y_N(0),\ldots,y_N(n-1),\ z_N(0),\ldots,z_N(n-1)$"></SPAN>,
+                   <!-- MATH
+ $x_W(0),\ldots,x_W(n-1),\ y_W(0),\ldots,y_W(n-1),\
+                   z_W(0),\ldots,z_W(n-1)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="556" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg87.png"
+ ALT="$x_W(0),\ldots,x_W(n-1),\ y_W(0),\ldots,y_W(n-1),\
+z_W(0),\ldots,z_W(n-1)$"></SPAN>,
+			and so on with South and East vertices
+</SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+<BIG CLASS="LARGE"><SPAN  CLASS="textbf">ROUTINES: </SPAN></BIG>
+<BR>
+
+<BR><TT>pix2ang_ring, nside, ipring, theta, phi</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders <A HREF="#idl:pix_tools:theta"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>theta</TT></A> and <A HREF="#idl:pix_tools:phi"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>phi</TT></A> coordinates of the nominal pixel center given the pixel number <A HREF="#idl:pix_tools:ipring"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipring</TT></A> and a map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>pix2vec_ring, nside, ipring, vector [,vertex]</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders cartesian vector coordinates of
+                        the nominal pixel center given the pixel number <A HREF="#idl:pix_tools:ipring"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipring</TT></A>
+                        and a map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>. Optionally returns 
+                        the location of the 4 vertices for the pixel(s) under
+                        consideration </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>ang2pix_ring, nside, theta, phi, ipring</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders the pixel number <A HREF="#idl:pix_tools:ipring"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipring</TT></A> for a pixel which, given the map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>, contains the point on the sphere at angular coordinates <A HREF="#idl:pix_tools:theta"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>theta</TT></A> and <A HREF="#idl:pix_tools:phi"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>phi</TT></A>. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>vec2pix_ring, nside, vector, ipring</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders the pixel number <A HREF="#idl:pix_tools:ipring"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipring</TT></A> for a pixel which, given the map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>, contains the point on the sphere at cartesian coordinates <A HREF="#idl:pix_tools:vector"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>vector</TT></A>. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>pix2ang_nest, nside, ipnest, theta, phi</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders <A HREF="#idl:pix_tools:theta"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>theta</TT></A> and <A HREF="#idl:pix_tools:phi"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>phi</TT></A> coordinates of the nominal pixel center given the pixel number <A HREF="#idl:pix_tools:ipnest"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipnest</TT></A> and a map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>pix2vec_nest, nside, ipnest, vector [,vertex]</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders cartesian vector coordinates of
+                        the nominal pixel center given the pixel number <A HREF="#idl:pix_tools:ipnest"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipnest</TT></A>
+                        and a map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>. Optionally returns
+                        the location of the 4 vertices for the pixel(s) under consideration</SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>ang2pix_nest, nside, theta, phi, ipnest</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders the pixel number <A HREF="#idl:pix_tools:ipnest"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipnest</TT></A> for a pixel which, given the map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>, contains the point on the sphere at angular coordinates <A HREF="#idl:pix_tools:theta"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>theta</TT></A> and <A HREF="#idl:pix_tools:phi"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>phi</TT></A>. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>vec2pix_nest, nside, vector, ipnest</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> renders the pixel number <A HREF="#idl:pix_tools:ipnest"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>ipnest</TT></A> for a pixel which, given the map resolution parameter <A HREF="#idl:pix_tools:nside"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>nside</TT></A>, contains the point on the sphere at cartesian coordinates <A HREF="#idl:pix_tools:vector"></SMALL><SMALL CLASS="FOOTNOTESIZE"><TT>vector</TT></A>. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>nest2ring, nside, ipnest, ipring</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> performs conversion from NESTED to RING pixel number. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR><TT>ring2nest, nside, ipring, ipnest</TT> 
+</SMALL>
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">
+                                         </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=375><SMALL CLASS="FOOTNOTESIZE"> performs conversion from RING to NESTED pixel number. </SMALL></TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR></SMALL>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">pix2xxx,&nbsp;ang2xxx, vec2xxx,&nbsp;nest2ring,&nbsp;ring2nest</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run pix2xxx, ang2xxx,... .	
+    <DT>
+<B><A HREF="idlnode47.htm#idl:npix2nside">npix2nside</A></B>
+<DD>computes <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN> (resolution) corresponding to Npix (total
+    pixel number)
+    <DT>
+<B><A HREF="idlnode48.htm#idl:nside2npix">nside2npix</A></B>
+<DD>computes <SPAN CLASS="MATH"><IMG
+ WIDTH="39" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg88.png"
+ ALT="$N_{\rm pix}$"></SPAN> corresponding to <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN>
+    <DT>
+<B><A HREF="idlnode9.htm#idl:ang2vec">ang2vec</A>, <A HREF="idlnode69.htm#idl:vec2ang">vec2ang</A></B>
+<DD>geometrical conversion between position angles and position vector
+    <DT>
+<B><A HREF="idlnode46.htm#idl:nest2uniq">nest2uniq</A>, <A HREF="idlnode68.htm#idl:uniq2nest">uniq2nest</A></B>
+<DD>conversion of standard pixel index to/from Unique ID number
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> pix2ang_ring, 256, [17,1000], theta, phi </SMALL></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> print,theta,phi</SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+</SMALL><TABLE  WIDTH="499">
+<TR><TD>
+returns  
+<BR>
+0.0095683558  0.070182078 
+<BR>
+2.8797933  5.4620872 
+<BR>
+position of the two pixels #17 and 1000 in the RING scheme with parameter <SPAN CLASS="MATH"><IMG
+ WIDTH="63" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg79.png"
+ ALT="$N_{\rm side}=$"></SPAN>256.
+</TD></TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE">
+</blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html855"
+  HREF="idlnode51.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html861"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html865"
+  HREF="idlnode53.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html863"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html856"
+  HREF="idlnode51.htm">orthview</A>
+
+<B>Up:</B> <A NAME="tex2html862"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html866"
+  HREF="idlnode53.htm">planck_colors</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

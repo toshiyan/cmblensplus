@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>mpi_initialize_alm_tools</TITLE>
+<META NAME="description" CONTENT="mpi_initialize_alm_tools">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode59.htm">
+<LINK REL="previous" HREF="subroutinesnode57.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode59.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html975"
+  HREF="subroutinesnode57.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html981"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html985"
+  HREF="subroutinesnode59.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html983"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html976"
+  HREF="subroutinesnode57.htm">mpi_cleanup_alm_tools</A>
+
+<B>Up:</B> <A NAME="tex2html982"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html986"
+  HREF="subroutinesnode59.htm">mpi_map2alm*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000580000000000000000"></A>
+<A NAME="sub:mpi_initialize_alm_tools"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">mpi_initialize_alm_tools</FONT></font></b><hr>
+<H3>This subroutine initializes the mpi_alm_tools module, and must be
+run prior to any of the advanced interface working routines by all
+processors in the MPI communicator. The root processor must supply all arguments, 
+while it is optional for the slaves. However, the information is disregarded 
+if they do.
+<BR>
+A major advantage of MPI parallelization is large quantities
+of memory, allowing for pre-computation of the Legendre 
+polynomials even with high <!-- MATH
+ $N_{\textrm{side}}$
+ -->
+<SPAN CLASS="MATH"><I>N</I><SUB>side</SUB></SPAN> and
+<!-- MATH
+ $l_{\textrm{max}}$
+ -->
+<SPAN CLASS="MATH"><I>l</I><SUB>max</SUB></SPAN>, since each processor only needs a fraction
+<!-- MATH
+ $(1/N_{\textrm{procs}})$
+ -->
+<SPAN CLASS="MATH">(1/<I>N</I><SUB>procs</SUB>)</SPAN> of the complete table. This feature is
+controlled by the ``precompute_plms'' parameter. In general, the CPU
+time can be expected to decrease by roughly 50% using pre-computed
+Legendre polynomials for temperature calculations, and by about 30%
+for polarization calculations.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/mpi_alm_tools.f90"><b>src/f90/mod/mpi_alm_tools.f90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">mpi_initialize_alm_tools</FONT>(
+<A HREF="#sub:mpi_initialize_alm_tools:comm">comm</A>, [<A HREF="#sub:mpi_initialize_alm_tools:nsmax">nsmax</A>], [<A HREF="#sub:mpi_initialize_alm_tools:nlmax">nlmax</A>], [<A HREF="#sub:mpi_initialize_alm_tools:nmmax">nmmax</A>], [<A HREF="#sub:mpi_initialize_alm_tools:zbounds">zbounds</A>], [<A HREF="#sub:mpi_initialize_alm_tools:polarization">polarization</A>], [<A HREF="#sub:mpi_initialize_alm_tools:precompute_plms">precompute_plms</A>], [<A HREF="#sub:mpi_initialize_alm_tools:w8ring">w8ring</A>]
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>
+comm<A NAME="sub:mpi_initialize_alm_tools:comm"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>MPI communicator.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nsmax<A NAME="sub:mpi_initialize_alm_tools:nsmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the <SPAN CLASS="MATH"><I>N</I><SUB><I>side</I></SUB></SPAN> value of the HEALPix map. (OPTIONAL)</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nlmax<A NAME="sub:mpi_initialize_alm_tools:nlmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the maximum <SPAN CLASS="MATH"><I>l</I></SPAN> value used for the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>. (OPTIONAL)</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nmmax<A NAME="sub:mpi_initialize_alm_tools:nmmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the maximum <SPAN CLASS="MATH"><I>m</I></SPAN> value used for the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>. (OPTIONAL)</TD>
+</TR>
+</TABLE>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>zbounds<A NAME="sub:mpi_initialize_alm_tools:zbounds"></A>(1:2)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>section of the map on which to perform the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>
+                   analysis, expressed in terms of <!-- MATH
+ $z=\sin({\rm latitude}) =
+                   \cos(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="214" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg92.png"
+ ALT="$z=\sin({\rm latitude}) =
+\cos(\theta)$"></SPAN>. If zbounds(1)<SPAN CLASS="MATH">&lt;</SPAN>zbounds(2), the analysis is
+                   performed <EM>on</EM> the strip zbounds(1)<SPAN CLASS="MATH">&lt;<I>z</I>&lt;</SPAN>zbounds(2); if not,
+                   it is performed <EM>outside</EM> of the strip
+                   zbounds(2)<SPAN CLASS="MATH">&lt;<I>z</I>&lt;</SPAN>zbounds(1). (OPTIONAL)</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>polarization<A NAME="sub:mpi_initialize_alm_tools:polarization"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>LGT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>if polarization is required, this should be
+set to true, else it should be set to false. (OPTIONAL)</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>precompute_plms<A NAME="sub:mpi_initialize_alm_tools:precompute_plms"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>0 = do not pre-compute any <SPAN CLASS="MATH"><I>P</I><SUB><I>l</I>
+<I>m</I></SUB></SPAN>'s; 1 = pre-compute <!-- MATH
+ $P_{lm}^\textrm{T}$
+ -->
+<SPAN CLASS="MATH"><I>P</I><SUB><I>lm</I></SUB><I>T</I></SPAN>; 2 = pre-compute
+<!-- MATH
+ $P_{lm}^\textrm{T}$
+ -->
+<SPAN CLASS="MATH"><I>P</I><SUB><I>lm</I></SUB><I>T</I></SPAN> and <!-- MATH
+ $P_{lm}^\textrm{P}$
+ -->
+<SPAN CLASS="MATH"><I>P</I><SUB><I>lm</I></SUB><I>P</I></SPAN>.  (OPTIONAL)</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>w8ring<A NAME="sub:mpi_initialize_alm_tools:w8ring"></A>_TQU(1:2*nsmax, 1:p)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>ring weights for quadrature corrections. If ring weights are not used, this array should be 1 everywhere. p is 1 for a temperature analysis and 3 for (T,Q,U). (OPTIONAL)</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>call mpi_comm_rank(comm, myid, ierr)
+<BR>
+if (myid == root) then
+<BR>
+call mpi_initialize_alm_tools(comm, nsmax, nlmax, nmmax, 
+<BR>
+zbounds,polarization, precompute_plms)
+<BR>
+call mpi_map2alm(map, alms)
+<BR>
+else 
+<BR>
+call mpi_initialize_alm_tools(comm)
+<BR>
+call mpi_map2alm_slave
+<BR>
+end
+<BR>
+call mpi_cleanup_alm_tools
+<BR></tt>
+<blockquote>
+This example 1) initializes the mpi_alm_tools module (i.e.,
+allocates internal arrays and defines required parameters), 2)
+executes a parallel map2alm operation, and 3) frees the previously
+allocated memory.
+</blockquote>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">mpi_initialize_alm_tools</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode57.htm#sub:mpi_cleanup_alm_tools">mpi_cleanup_alm_tools</A></B>
+<DD>Frees memory that is allocated by the current routine. 
+  <DT>
+<B><A HREF="subroutinesnode54.htm#sub:mpi_alm2map">mpi_alm2map</A></B>
+<DD>Routine for executing a parallel inverse spherical harmonics transform (root processor interface)
+  <DT>
+<B><A HREF="subroutinesnode56.htm#sub:mpi_alm2map_slave">mpi_alm2map_slave</A></B>
+<DD>Routine for executing a parallel inverse spherical harmonics transform (slave processor interface)
+  <DT>
+<B><A HREF="subroutinesnode59.htm#sub:mpi_map2alm">mpi_map2alm</A></B>
+<DD>Routine for executing a parallel spherical harmonics transform (root processor interface)
+  <DT>
+<B><A HREF="subroutinesnode61.htm#sub:mpi_map2alm_slave">mpi_map2alm_slave</A></B>
+<DD>Routine for executing a parallel spherical harmonics transform (slave processor interface)
+  <DT>
+<B><A HREF="subroutinesnode55.htm#sub:mpi_alm2map_simple">mpi_alm2map_simple</A></B>
+<DD>One-line interface to the parallel inverse spherical harmonics transform 
+  <DT>
+<B><A HREF="subroutinesnode60.htm#sub:mpi_map2alm_simple">mpi_map2alm_simple</A></B>
+<DD>One-line interface to the parallel spherical harmonics transform 
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html975"
+  HREF="subroutinesnode57.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html981"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html985"
+  HREF="subroutinesnode59.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html983"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html976"
+  HREF="subroutinesnode57.htm">mpi_cleanup_alm_tools</A>
+
+<B>Up:</B> <A NAME="tex2html982"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html986"
+  HREF="subroutinesnode59.htm">mpi_map2alm*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

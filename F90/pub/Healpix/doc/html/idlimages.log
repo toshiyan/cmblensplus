@@ -1,0 +1,5127 @@
+This is pdfeTeX, Version 3.141592-1.21a-2.2 (Web2C 7.5.4) (format=latex 2011.8.3)  26 AUG 2016 12:56
+entering extended mode
+**./idlimages.tex
+(./idlimages.tex
+LaTeX2e <2008/12/01>
+Babel <v3.8d> and hyphenation patterns for american, french, german, ngerman, b
+ahasa, basque, bulgarian, catalan, croatian, czech, danish, dutch, esperanto, e
+stonian, finnish, greek, icelandic, irish, italian, latin, magyar, norsk, polis
+h, portuges, romanian, russian, serbian, slovak, slovene, spanish, swedish, tur
+kish, ukrainian, nohyphenation, loaded.
+
+(/sw2/share/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2004/02/16 v1.4f Standard LaTeX document class
+(/sw2/share/texmf-dist/tex/latex/base/size12.clo
+File: size12.clo 2004/02/16 v1.4f Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (/sw2/share/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+) (/sw2/share/texmf-dist/tex/latex/hyperref/xr-hyper.sty
+Package: xr-hyper 2000/03/22 v6.00beta4 eXternal References (DPC)
+) (/tmp/Healpix_3.31/doc/TeX/healpix.sty
+Package: healpix 
+Package: healpix macros (A.J. Banday, M. Bartelmann)
+Document format
+(/sw2/share/texmf-dist/tex/latex/a4wide/a4wide.sty
+Package: a4wide 1994/08/30
+(/sw2/share/texmf-dist/tex/latex/ntgclass/a4.sty
+Package: a4 2004/04/15 v1.2g A4 based page layout
+)) (/sw2/share/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+(/sw2/share/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+) (/sw2/share/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+(/sw2/share/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+) (/sw2/share/texmf-dist/tex/latex/graphics/graphics.cfg
+File: graphics.cfg 2005/02/03 v1.3 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: dvips.def on input line 80.
+(/sw2/share/texmf-dist/tex/latex/graphics/dvips.def
+File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+) (/sw2/share/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+\fancy@headwidth=\skip43
+\f@ncyO@elh=\skip44
+\f@ncyO@erh=\skip45
+\f@ncyO@olh=\skip46
+\f@ncyO@orh=\skip47
+\f@ncyO@elf=\skip48
+\f@ncyO@erf=\skip49
+\f@ncyO@olf=\skip50
+\f@ncyO@orf=\skip51
+) (/tmp/Healpix_3.31/doc/TeX/hpxversion.tex) (/tmp/Healpix_3.31/doc/TeX/idlvers
+ion.tex) (/tmp/Healpix_3.31/doc/TeX/gdlversion.tex)
+\bigicon=\skip52
+\smallicon=\skip53
+\blocksize=\skip54
+\c@creq=\count87
+\c@savecreq=\count88
+) (/sw2/share/texmf-local/tex/latex/html/html.sty (/sw2/share/texmf-dist/tex/la
+tex/hyperref_bk/hyperref.sty
+Package: hyperref 2003/11/30 v6.74m Hypertext links for LaTeX
+\@linkdim=\dimen105
+\Hy@linkcounter=\count89
+\Hy@pagecounter=\count90
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/pd1enc.def
+File: pd1enc.def 2003/11/30 v6.74m Hyperref: PDFDocEncoding definition (HO)
+) (/sw2/share/texmf-dist/tex/latex/hyperref_bk/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive and teTeX
+)
+Package hyperref Info: Hyper figures OFF on input line 1880.
+Package hyperref Info: Link nesting OFF on input line 1885.
+Package hyperref Info: Hyper index ON on input line 1888.
+Package hyperref Info: Plain pages ON on input line 1893.
+Package hyperref Info: Backreferencing OFF on input line 1900.
+Implicit mode ON; LaTeX internals redefined
+Package hyperref Info: Bookmarks ON on input line 2004.
+(/sw2/share/texmf-local/tex/latex/html/url.sty
+Package: url 1999/03/02  ver 1.4  Verb mode for urls, email addresses, and file
+ names
+)
+LaTeX Info: Redefining \url on input line 2143.
+\Fld@menulength=\count91
+\Field@Width=\dimen106
+\Fld@charsize=\dimen107
+\Choice@toks=\toks15
+\Field@toks=\toks16
+Package hyperref Info: Hyper figures OFF on input line 2618.
+Package hyperref Info: Link nesting OFF on input line 2623.
+Package hyperref Info: Hyper index ON on input line 2626.
+Package hyperref Info: backreferencing OFF on input line 2633.
+Package hyperref Info: Link coloring OFF on input line 2638.
+\c@Item=\count92
+\c@Hfootnote=\count93
+)
+*hyperref using default driver hdvips*
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/hdvips.def
+File: hdvips.def 2003/11/30 v6.74m Hyperref driver for dvips
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/pdfmark.def
+File: pdfmark.def 2003/11/30 v6.74m Hyperref definitions for pdfmark specials
+\pdf@docset=\toks17
+\pdf@box=\box26
+\pdf@toks=\toks18
+\pdf@defaulttoks=\toks19
+\Fld@listcount=\count94
+\@outlinefile=\write3
+))
+Package: html 1999/07/19 v1.38 hypertext commands for latex2html (nd, hws, rrm)
+
+\c@lpart=\count95
+\c@lchapter=\count96
+\c@chapter=\count97
+\c@lsection=\count98
+\c@lsubsection=\count99
+\c@lsubsubsection=\count100
+\c@lparagraph=\count101
+\c@lsubparagraph=\count102
+\c@lsubsubparagraph=\count103
+\ptrfile=\write4
+) (/sw2/share/texmf-dist/tex/latex/base/makeidx.sty
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 22.
+Package xr Info: IMPORTING LABELS FROM intro.aux on input line 49.
+Package xr Info: IMPORTING LABELS FROM install.aux on input line 50.
+Package xr Info: IMPORTING LABELS FROM csub.aux on input line 51.
+Package xr Info: IMPORTING LABELS FROM ang2vec_c.aux on input line 51.
+Package xr Info: IMPORTING LABELS FROM get_fits_size_c.aux on input line 51.
+Package xr Info: IMPORTING LABELS FROM npix2nside_c.aux on input line 51.
+Package xr Info: IMPORTING LABELS FROM nside2npix_c.aux on input line 51.
+Package xr Info: IMPORTING LABELS FROM pix_tools_c.aux on input line 51.
+Package xr Info: IMPORTING LABELS FROM read_healpix_map_c.aux on input line 51.
+
+Package xr Info: IMPORTING LABELS FROM vec2ang_c.aux on input line 51.
+Package xr Info: IMPORTING LABELS FROM write_healpix_map_c.aux on input line 51
+.
+Package xr Info: IMPORTING LABELS FROM facilities.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM alteralm_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM anafast_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM hotspot_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM map2gif_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM median_filter_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM plmgen_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM process_mask_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM sky_ng_sim_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM smoothing_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM synfast_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM ud_grade_fac.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM fac_appendix.aux on input line 52.
+Package xr Info: IMPORTING LABELS FROM subroutines.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM add_card.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM add_dipole.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM alm2cl.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM alm2map.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM alm2map_der.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM alm2map_spin.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM alms2fits.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM alter_alm.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM ang2vec.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM angdist.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM assert.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM brag_openmp.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM complex_fft.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM compute_statistics.aux on input line 53.
+
+Package xr Info: IMPORTING LABELS FROM concatnl.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM convert_inplace.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM convert_nest2ring.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM convert_ring2nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM coordsys2euler_zyz.aux on input line 53.
+
+Package xr Info: IMPORTING LABELS FROM create_alm.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM del_card.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM dist2holes_nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM dump_alms.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM fill_holes_nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM fits2alms.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM fits2cl.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM gaussbeam.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM generate_beam.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM get_card.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM get_healpix_xxx_dir.aux on input line 53
+.
+Package xr Info: IMPORTING LABELS FROM getargument.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM getenvironment.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM getdisc_ring.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM getnumext_fits.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM getsize_fits.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM healpix_modules.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM healpix_types.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM in_ring.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM input_map.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM input_tod.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM long_intrinsic.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM map2alm.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM map2alm_iterative.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM map2alm_spin.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM maskborder_nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM medfiltmap.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM median.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM merge_headers.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM mpi_alm_tools.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM mpi_alm2map.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM mpi_alm2map_simple.aux on input line 53.
+
+Package xr Info: IMPORTING LABELS FROM mpi_alm2map_slave.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM mpi_cleanup_alm_tools.aux on input line 
+53.
+Package xr Info: IMPORTING LABELS FROM mpi_initialize_alm_tools.aux on input li
+ne 53.
+Package xr Info: IMPORTING LABELS FROM mpi_map2alm.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM mpi_map2alm_simple.aux on input line 53.
+
+Package xr Info: IMPORTING LABELS FROM mpi_map2alm_slave.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM narguments.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM neighbours_nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM nest2uniq.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM npix2nside.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM nside2npix.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM nside2ntemplates.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM number_of_alms.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM output_map.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM parse_xxx.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM pixel_window.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM pix_tools.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM planck_rng.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM plm_gen.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM query_disc.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM query_polygon.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM query_strip.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM query_triangle.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM rand_gauss.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM rand_init.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM rand_uni.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM read_asctab.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM read_bintab.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM read_conbintab.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM read_dbintab.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM read_fits_cut4.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM read_par.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM real_fft.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM remove_dipole.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM ring_analysis.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM ring_num.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM ring_synthesis.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM rotate_alm.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM same_shape_pixels_xxx.aux on input line 
+53.
+Package xr Info: IMPORTING LABELS FROM scan_directories.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM size_holes_nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM string.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM surface_triangle.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM template_pixel_xxx.aux on input line 53.
+
+Package xr Info: IMPORTING LABELS FROM udgrade_nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM udgrade_ring.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM uniq2nest.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM vec2ang.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM vect_prod.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM write_asctab.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM write_bintab.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM write_bintabh.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM write_dbintab.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM write_fits_cut4.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM write_minimal_header.aux on input line 5
+3.
+Package xr Info: IMPORTING LABELS FROM write_plm.aux on input line 53.
+Package xr Info: IMPORTING LABELS FROM xcc_v_convert.aux on input line 53.
+(/sw2/share/texmf-dist/tex/latex/graphics/color.sty
+Package: color 1999/02/16 v1.0i Standard LaTeX Color (DPC)
+(/sw2/share/texmf-dist/tex/latex/graphics/color.cfg
+File: color.cfg 2005/02/03 v1.3 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: dvips.def on input line 125.
+(/sw2/share/texmf-dist/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+)) (/sw2/share/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2004/02/05 v1.0d Input encoding file
+(/sw2/share/texmf-dist/tex/latex/base/latin1.def
+File: latin1.def 2004/02/05 v1.0d Input encoding file
+))
+\sizebox=\box27
+\lthtmlwrite=\write5
+(./idlimages.aux
+
+LaTeX Warning: Label `idl:other_idl_libs' multiply defined.
+
+(/tmp/Healpix_3.31/doc/TeX/alm_i2t_idl.aux) (/tmp/Healpix_3.31/doc/TeX/alm_t2i_
+idl.aux) (/tmp/Healpix_3.31/doc/TeX/alm2fits_idl.aux) (/tmp/Healpix_3.31/doc/Te
+X/ang2vec_idl.aux) (/tmp/Healpix_3.31/doc/TeX/angulardistance_idl.aux) (/tmp/He
+alpix_3.31/doc/TeX/azeqview_idl.aux) (/tmp/Healpix_3.31/doc/TeX/beam2bl_idl.aux
+) (/tmp/Healpix_3.31/doc/TeX/bin_llcl_idl.aux) (/tmp/Healpix_3.31/doc/TeX/bl2be
+am_idl.aux) (/tmp/Healpix_3.31/doc/TeX/bl2fits_idl.aux) (/tmp/Healpix_3.31/doc/
+TeX/cartcursor_idl.aux) (/tmp/Healpix_3.31/doc/TeX/cartview_idl.aux) (/tmp/Heal
+pix_3.31/doc/TeX/change_polcconv_idl.aux) (/tmp/Healpix_3.31/doc/TeX/cl2fits_id
+l.aux) (/tmp/Healpix_3.31/doc/TeX/convert_oldhpx2cmbfast_idl.aux) (/tmp/Healpix
+_3.31/doc/TeX/euler_matrix_new_idl.aux) (/tmp/Healpix_3.31/doc/TeX/fits2alm_idl
+.aux) (/tmp/Healpix_3.31/doc/TeX/fits2cl_idl.aux) (/tmp/Healpix_3.31/doc/TeX/ga
+ussbeam_idl.aux) (/tmp/Healpix_3.31/doc/TeX/getdisc_ring_idl.aux) (/tmp/Healpix
+_3.31/doc/TeX/getsize_fits_idl.aux) (/tmp/Healpix_3.31/doc/TeX/gnomcursor_idl.a
+ux) (/tmp/Healpix_3.31/doc/TeX/gnomview_idl.aux) (/tmp/Healpix_3.31/doc/TeX/hea
+lpix_doc_idl.aux) (/tmp/Healpix_3.31/doc/TeX/healpixwindow_idl.aux) (/tmp/Healp
+ix_3.31/doc/TeX/hpx2dm_idl.aux) (/tmp/Healpix_3.31/doc/TeX/hpx2gs_idl.aux) (/tm
+p/Healpix_3.31/doc/TeX/ialteralm_idl.aux
+
+LaTeX Warning: Label `eq:alteralm' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ianafast_idl.aux) (/tmp/Healpix_3.31/doc/TeX/index
+2lm_idl.aux) (/tmp/Healpix_3.31/doc/TeX/init_healpix_idl.aux) (/tmp/Healpix_3.3
+1/doc/TeX/iprocess_mask_idl.aux) (/tmp/Healpix_3.31/doc/TeX/ismoothing_idl.aux)
+(/tmp/Healpix_3.31/doc/TeX/isynfast_idl.aux) (/tmp/Healpix_3.31/doc/TeX/lm2inde
+x_idl.aux) (/tmp/Healpix_3.31/doc/TeX/median_filter_idl.aux) (/tmp/Healpix_3.31
+/doc/TeX/mollcursor_idl.aux) (/tmp/Healpix_3.31/doc/TeX/mollview_idl.aux) (/tmp
+/Healpix_3.31/doc/TeX/neighbours_nest_idl.aux) (/tmp/Healpix_3.31/doc/TeX/neigh
+bours_ring_idl.aux) (/tmp/Healpix_3.31/doc/TeX/nest2uniq_idl.aux) (/tmp/Healpix
+_3.31/doc/TeX/npix2nside_idl.aux) (/tmp/Healpix_3.31/doc/TeX/nside2npix_idl.aux
+) (/tmp/Healpix_3.31/doc/TeX/nside2ntemplates_idl.aux) (/tmp/Healpix_3.31/doc/T
+eX/orthcursor_idl.aux) (/tmp/Healpix_3.31/doc/TeX/orthview_idl.aux) (/tmp/Healp
+ix_3.31/doc/TeX/pix_tools_idl.aux) (/tmp/Healpix_3.31/doc/TeX/planck_colors_idl
+.aux) (/tmp/Healpix_3.31/doc/TeX/query_disc_idl.aux) (/tmp/Healpix_3.31/doc/TeX
+/query_polygon_idl.aux) (/tmp/Healpix_3.31/doc/TeX/query_strip_idl.aux) (/tmp/H
+ealpix_3.31/doc/TeX/query_triangle_idl.aux) (/tmp/Healpix_3.31/doc/TeX/read_fit
+s_cut4_idl.aux) (/tmp/Healpix_3.31/doc/TeX/read_fits_map_idl.aux) (/tmp/Healpix
+_3.31/doc/TeX/read_fits_s_idl.aux) (/tmp/Healpix_3.31/doc/TeX/read_tqu_idl.aux)
+(/tmp/Healpix_3.31/doc/TeX/remove_dipole_idl.aux) (/tmp/Healpix_3.31/doc/TeX/re
+order_idl.aux) (/tmp/Healpix_3.31/doc/TeX/rotate_coord_idl.aux) (/tmp/Healpix_3
+.31/doc/TeX/same_shape_pixels_xxx_idl.aux) (/tmp/Healpix_3.31/doc/TeX/template_
+pixel_xxx_idl.aux) (/tmp/Healpix_3.31/doc/TeX/ud_grade_idl.aux) (/tmp/Healpix_3
+.31/doc/TeX/uniq2nest_idl.aux) (/tmp/Healpix_3.31/doc/TeX/vec2ang_idl.aux) (/tm
+p/Healpix_3.31/doc/TeX/write_fits_cut4_idl.aux) (/tmp/Healpix_3.31/doc/TeX/writ
+e_fits_map_idl.aux) (/tmp/Healpix_3.31/doc/TeX/write_fits_sb_idl.aux) (/tmp/Hea
+lpix_3.31/doc/TeX/write_tqu_idl.aux))
+\openout1 = `idlimages.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 447.
+LaTeX Font Info:    ... okay on input line 447.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 447.
+LaTeX Font Info:    ... okay on input line 447.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 447.
+LaTeX Font Info:    ... okay on input line 447.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 447.
+LaTeX Font Info:    ... okay on input line 447.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 447.
+LaTeX Font Info:    ... okay on input line 447.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 447.
+LaTeX Font Info:    ... okay on input line 447.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 447.
+LaTeX Font Info:    ... okay on input line 447.
+Package hyperref Info: Link coloring ON on input line 447.
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/nameref.sty
+Package: nameref 2003/12/03 v2.21 Cross-referencing by name of section
+\c@section@level=\count104
+)
+LaTeX Info: Redefining \ref on input line 447.
+LaTeX Info: Redefining \pageref on input line 447.
+\openout3 = `idlimages.out'.
+
+(/tmp/Healpix_3.31/doc/TeX/idl.aux
+
+LaTeX Warning: Label `idl:idlxxx' multiply defined.
+
+
+LaTeX Warning: Label `idl:other_idl_libs' multiply defined.
+
+
+LaTeX Warning: Label `idl:other_idl_libs' multiply defined.
+
+(/tmp/Healpix_3.31/doc/TeX/alm_i2t_idl.aux
+
+LaTeX Warning: Label `idl:alm_i2t' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:alm_vec' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:complex' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:mmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:example' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/alm_t2i_idl.aux
+
+LaTeX Warning: Label `idl:alm_t2i' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:alm_table' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:alm_vec' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:mfirst' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/alm2fits_idl.aux
+
+LaTeX Warning: Label `idl:alm2fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:alm_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:xhdr' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ang2vec_idl.aux
+
+LaTeX Warning: Label `idl:ang2vec' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:Theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:Phi' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:Vector' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:ASTRO' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/angulardistance_idl.aux
+
+LaTeX Warning: Label `idl:angulardistance' multiply defined.
+
+
+LaTeX Warning: Label `idl:angulardistance:v' multiply defined.
+
+
+LaTeX Warning: Label `idl:angulardistance:w' multiply defined.
+
+
+LaTeX Warning: Label `idl:angulardistance:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/azeqview_idl.aux
+
+LaTeX Warning: Label `idl:azeqview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/beam2bl_idl.aux
+
+LaTeX Warning: Label `idl:beam2bl' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:beam' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:degrees' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:radians' multiply defined.
+
+
+LaTeX Warning: Label `eq:beam2bl_idl:b_lm' multiply defined.
+
+
+LaTeX Warning: Label `eq:beam2bl_idl:bl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/bin_llcl_idl.aux
+
+LaTeX Warning: Label `idl:bin_llcl' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Llcl_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Bin' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:L_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Llcl_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Dllcl' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:DELTAL' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:FLATTEN' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:UNIFORM' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/bl2beam_idl.aux
+
+LaTeX Warning: Label `idl:bl2beam' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:bl' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:degrees' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:radians' multiply defined.
+
+
+LaTeX Warning: Label `eq:bl2beam_idl:br' multiply defined.
+
+
+LaTeX Warning: Label `eq:bl2beam_idl:btheta' multiply defined.
+
+
+LaTeX Warning: Label `eq:bl2beam_idl:bl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/bl2fits_idl.aux
+
+LaTeX Warning: Label `idl:bl2fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:bl_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:XHDR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/cartcursor_idl.aux
+
+LaTeX Warning: Label `idl:cartcursor' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/cartview_idl.aux
+
+LaTeX Warning: Label `idl:cartview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/change_polcconv_idl.aux
+
+LaTeX Warning: Label `idl:change_polcconv' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:File_In' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:File_Out' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:I2C' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:C2I' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:C2C' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:I2I' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:FORCE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/cl2fits_idl.aux
+
+LaTeX Warning: Label `idl:cl2fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:cl_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:XHDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:CMBFAST' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:UNITS' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/convert_oldhpx2cmbfast_idl.aux
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast' multiply defined.
+
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast:file_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast:file_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast:NO_RENORM' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/euler_matrix_new_idl.aux
+
+LaTeX Warning: Label `idl:euler_matrix_new' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:matrix' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:a1' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:a2' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:a3' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:x' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:y' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:zyx' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/fits2alm_idl.aux
+
+LaTeX Warning: Label `idl:fits2alm' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:alm_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:signal' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:lmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:xhdr' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/fits2cl_idl.aux
+
+LaTeX Warning: Label `idl:fits2cl' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:cl_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:interactive' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:llfactor' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:multipoles' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:planck1' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:planck2' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:rshow' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:show' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:wmap1' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:wmap5' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:wmap7' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:xhdr' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/gaussbeam_idl.aux
+
+LaTeX Warning: Label `idl:gaussbeam' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:fwhm' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:dim' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/getdisc_ring_idl.aux
+
+LaTeX Warning: Label `idl:getdisc_ring' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/getsize_fits_idl.aux
+
+LaTeX Warning: Label `idl:getsize_fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:var' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Nmaps' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Mlpol' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Obs_Npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Type' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Header' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/gnomcursor_idl.aux
+
+LaTeX Warning: Label `idl:gnomcursor' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/gnomview_idl.aux
+
+LaTeX Warning: Label `idl:gnomview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/healpix_doc_idl.aux
+
+LaTeX Warning: Label `idl:healpix_doc' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:HTML' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:PDF' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:WHOLE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/healpixwindow_idl.aux
+
+LaTeX Warning: Label `idl:healpixwindow' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpixwindow:Dim' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/hpx2dm_idl.aux
+
+LaTeX Warning: Label `idl:hpx2dm' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:file' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:select' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:jpeg' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:png' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:preview' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:pxsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:other_keywords' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/hpx2gs_idl.aux
+
+LaTeX Warning: Label `idl:hpx2gs' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:file' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:select' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:coord_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:kml' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:png' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:reso_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:subtitle' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:titleplot' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:other_keywords' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ialteralm_idl.aux
+
+LaTeX Warning: Label `idl:ialteralm' multiply defined.
+
+
+LaTeX Warning: Label `eq:alteralm' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:alm_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:alm_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:beam_file_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:beam_file_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:coord_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:coord_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:epoch_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:epoch_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:fwhm_arcmin_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:fwhm_arcmin_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:lmax_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nlmax_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nside_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nsmax_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nside_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nsmax_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:windowfile_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:winfiledir_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:windowfile_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:winfiledir_out' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ianafast_idl.aux
+
+LaTeX Warning: Label `idl:ianafast' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:map1_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:cl_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:alm1_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:alm2_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:cxx' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:double' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:healpix_data' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:iter_order' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:map2_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:maskfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:nlmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:nmmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:plmfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:polarisation' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:regression' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:show_cl' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:simul_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:theta_cut_deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:weighted' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:won' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:w8file' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:w8dir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/index2lm_idl.aux
+
+LaTeX Warning: Label `idl:index2lm' multiply defined.
+
+
+LaTeX Warning: Label `idl:index2lm:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:index2lm:l' multiply defined.
+
+
+LaTeX Warning: Label `idl:index2lm:m' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/init_healpix_idl.aux
+
+LaTeX Warning: Label `idl:init_healpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:init_healpix:VERBOSE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/iprocess_mask_idl.aux
+
+LaTeX Warning: Label `idl:iprocess_mask' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:mask_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:distance_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:filled_mask' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:hole_arcmin2' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:hole_pixels' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:tmpdir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ismoothing_idl.aux
+
+LaTeX Warning: Label `idl:ismoothing' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:map1_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:map2_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:beam_file' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:double' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:fwhm_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:iter_order' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:plmfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:regression' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:simul_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:theta_cut_deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:won' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:w8file' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:w8dir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/isynfast_idl.aux
+
+LaTeX Warning: Label `idl:isynfast' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:cl_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:map_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:alm_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:alm_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:apply_windows' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:beam_file' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:double' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:fwhm_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:iseed' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:nlmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:nsmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:plmfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:simul_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:windowfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:winfiledir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/lm2index_idl.aux
+
+LaTeX Warning: Label `idl:lm2index' multiply defined.
+
+
+LaTeX Warning: Label `idl:lm2index:l' multiply defined.
+
+
+LaTeX Warning: Label `idl:lm2index:m' multiply defined.
+
+
+LaTeX Warning: Label `idl:lm2index:index' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/median_filter_idl.aux
+
+LaTeX Warning: Label `idl:median_filter' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:InputMap' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:Radius' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:MedianMap' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:ARCMIN' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:DEGREES' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:FILL_HOLES' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:RING' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/mollcursor_idl.aux
+
+LaTeX Warning: Label `idl:mollcursor' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollcursor:cursor_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollcursor:file_out' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/mollview_idl.aux
+
+LaTeX Warning: Label `idl:mollview' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:TOP' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:routines' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:file' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:select' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:asinh' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:bad_color' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:bg_color' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:charsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:charthick' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:colt' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:coord' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:crop' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:execute' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:factor' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:fg_color' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:flip' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:gal_cut' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:gif' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:glsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:graticule' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:half_sky' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:hbound' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:hist_equal' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:hxsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:iglsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:igraticule' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:jpeg' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:latex' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:log' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:map_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:max' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:min' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:no_dipole' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:no_monopole' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:nobar' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:nolabels' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:noposition' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:offset' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:outline' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pdf' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pfonts' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:png' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:polarization' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:preview' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:ps' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pxsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pysize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:reso_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:retain' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:rot' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:save' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:shaded' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:stagger' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:subtitle' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:titleplot' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:transparent' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:truecolors' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:units' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:window' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:xpos' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:ypos' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example1' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example2' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example3' multiply defined.
+
+
+LaTeX Warning: Label `page:example_hires_cutsky' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example4' multiply defined.
+
+
+LaTeX Warning: Label `page:plot_visu' multiply defined.
+
+
+LaTeX Warning: Label `fig:plot_visu' multiply defined.
+
+
+LaTeX Warning: Label `page:plot_example_execute' multiply defined.
+
+
+LaTeX Warning: Label `fig:plot_example_execute' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example5' multiply defined.
+
+
+LaTeX Warning: Label `page:merge_wmapKband' multiply defined.
+
+
+LaTeX Warning: Label `fig:merge_wmapKband' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example6' multiply defined.
+
+
+LaTeX Warning: Label `page:planck_colors_217' multiply defined.
+
+
+LaTeX Warning: Label `fig:planck_colors_217' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/neighbours_nest_idl.aux
+
+LaTeX Warning: Label `idl:neighbours_nest' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Ipix0' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Nneigh' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/neighbours_ring_idl.aux
+
+LaTeX Warning: Label `idl:neighbours_ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Ipix0' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Nneigh' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/nest2uniq_idl.aux
+
+LaTeX Warning: Label `idl:nest2uniq' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:pnest' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:puniq' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/npix2nside_idl.aux
+
+LaTeX Warning: Label `idl:npix2nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:npix2nside:Npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:npix2nside:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:npix2nside:ERROR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/nside2npix_idl.aux
+
+LaTeX Warning: Label `idl:nside2npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2npix:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2npix:Npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2npix:ERROR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/nside2ntemplates_idl.aux
+
+LaTeX Warning: Label `idl:nside2ntemplates' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2ntemplates:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2ntemplates:Ntemplates' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2ntemplates:ERROR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/orthcursor_idl.aux
+
+LaTeX Warning: Label `idl:orthcursor' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/orthview_idl.aux
+
+LaTeX Warning: Label `idl:orthview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/pix_tools_idl.aux
+
+LaTeX Warning: Label `idl:pix_tools' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:ipnest' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:ipring' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:phi' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:vector' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:vertex' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/planck_colors_idl.aux
+
+LaTeX Warning: Label `idl:planck_colors' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:option' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:get' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:show' multiply defined.
+
+
+LaTeX Warning: Label `page:planck_colors1' multiply defined.
+
+
+LaTeX Warning: Label `fig:planck_colors1' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_disc_idl.aux
+
+LaTeX Warning: Label `idl:query_disc' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:vector0' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:radius' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:inclusive' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_polygon_idl.aux
+
+LaTeX Warning: Label `idl:query_polygon' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Vlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:INCLUSIVE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_strip_idl.aux
+
+LaTeX Warning: Label `idl:query_strip' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Theta1' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Theta2' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:INCLUSIVE' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_triangle_idl.aux
+
+LaTeX Warning: Label `idl:query_triangle' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Vector1' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Vector2' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Vector3' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:INCLUSIVE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_fits_cut4_idl.aux
+
+LaTeX Warning: Label `idl:read_fits_cut4' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:Pixel' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:Signal' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:N_Obs' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:Serror' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:XHDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:NSIDE' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:COORDSYS' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_fits_map_idl.aux
+
+LaTeX Warning: Label `idl:read_fits_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:T_sky' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:Hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:Exthdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:PIXEL' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:NSIDE' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:COORDSYS' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:SILENT' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_fits_s_idl.aux
+
+LaTeX Warning: Label `idl:read_fits_s' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:Prim_stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:Xten_stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:COLUMNS' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:MERGE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_tqu_idl.aux
+
+LaTeX Warning: Label `idl:read_tqu' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:TQU' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Xhdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/remove_dipole_idl.aux
+
+LaTeX Warning: Label `idl:remove_dipole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:map' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:weight' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:bad_data' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:gal_cut' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:coord_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:coord_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:covariance_matrix' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:dipole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:monopole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:pixel' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:units' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:noremove' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:onlymonopole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:silent' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/reorder_idl.aux
+
+LaTeX Warning: Label `idl:reorder' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:result' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:input_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:in' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:out' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:n2r' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:r2n' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/rotate_coord_idl.aux
+
+LaTeX Warning: Label `idl:rotate_coord' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:invec' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:outvec' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:euler_matrix' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:inco' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:outco' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:stokes_parameters' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/same_shape_pixels_xxx_idl.aux
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:template' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:list_pixels_nest' multiply defi
+ned.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:list_pixels_ring' multiply defi
+ned.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:reflexion' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:nreplications' multiply defined
+.
+
+
+LaTeX Warning: Label `eq:same_shape_pixels_xxx_idl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/template_pixel_xxx_idl.aux
+
+LaTeX Warning: Label `idl:template_pixel_xxx' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:pixel_nest' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:pixel_ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:template' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:reflexion' multiply defined.
+
+
+LaTeX Warning: Label `eq:template_pixel_xxx_idl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ud_grade_idl.aux
+
+LaTeX Warning: Label `idl:ud_grade' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:map_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:map_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:bad_data' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:nside_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:order_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:order_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:pessimistic' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/uniq2nest_idl.aux
+
+LaTeX Warning: Label `idl:uniq2nest' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:puniq' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:pnest' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/vec2ang_idl.aux
+
+LaTeX Warning: Label `idl:vec2ang' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:Vector' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:Theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:Phi' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:ASTRO' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_fits_cut4_idl.aux
+
+LaTeX Warning: Label `idl:write_fits_cut4' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:Pixel' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:Signal' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:N_Obs' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:Serror' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:COORDSYS' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:NSIDE' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:POLARISATION' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:RING' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:UNITS' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:XHDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_fits_map_idl.aux
+
+LaTeX Warning: Label `idl:write_fits_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:T_sky' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Header' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Error' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Units' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Help' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Ring' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_fits_sb_idl.aux
+
+LaTeX Warning: Label `idl:write_fits_sb' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Prim_Stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Xten_stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Partial' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Nothealpix' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_tqu_idl.aux
+
+LaTeX Warning: Label `idl:write_tqu' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:TQU' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Error' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Units' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Xhdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Help' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Ring' multiply defined.
+
+)) (/tmp/Healpix_3.31/doc/TeX/alm_i2t_idl.aux
+
+LaTeX Warning: Label `idl:alm_i2t' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:alm_vec' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:complex' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:mmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_i2t:example' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/alm_t2i_idl.aux
+
+LaTeX Warning: Label `idl:alm_t2i' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:alm_table' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:alm_vec' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm_t2i:mfirst' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/alm2fits_idl.aux
+
+LaTeX Warning: Label `idl:alm2fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:alm_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:alm2fits:xhdr' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ang2vec_idl.aux
+
+LaTeX Warning: Label `idl:ang2vec' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:Theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:Phi' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:Vector' multiply defined.
+
+
+LaTeX Warning: Label `idl:ang2vec:ASTRO' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/angulardistance_idl.aux
+
+LaTeX Warning: Label `idl:angulardistance' multiply defined.
+
+
+LaTeX Warning: Label `idl:angulardistance:v' multiply defined.
+
+
+LaTeX Warning: Label `idl:angulardistance:w' multiply defined.
+
+
+LaTeX Warning: Label `idl:angulardistance:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/azeqview_idl.aux
+
+LaTeX Warning: Label `idl:azeqview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/beam2bl_idl.aux
+
+LaTeX Warning: Label `idl:beam2bl' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:beam' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:degrees' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:beam2bl:radians' multiply defined.
+
+
+LaTeX Warning: Label `eq:beam2bl_idl:b_lm' multiply defined.
+
+
+LaTeX Warning: Label `eq:beam2bl_idl:bl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/bin_llcl_idl.aux
+
+LaTeX Warning: Label `idl:bin_llcl' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Llcl_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Bin' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:L_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Llcl_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:Dllcl' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:DELTAL' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:FLATTEN' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:bin_llcl:UNIFORM' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/bl2beam_idl.aux
+
+LaTeX Warning: Label `idl:bl2beam' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:bl' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:degrees' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2beam:radians' multiply defined.
+
+
+LaTeX Warning: Label `eq:bl2beam_idl:br' multiply defined.
+
+
+LaTeX Warning: Label `eq:bl2beam_idl:btheta' multiply defined.
+
+
+LaTeX Warning: Label `eq:bl2beam_idl:bl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/bl2fits_idl.aux
+
+LaTeX Warning: Label `idl:bl2fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:bl_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:bl2fits:XHDR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/cartcursor_idl.aux
+
+LaTeX Warning: Label `idl:cartcursor' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/cartview_idl.aux
+
+LaTeX Warning: Label `idl:cartview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/change_polcconv_idl.aux
+
+LaTeX Warning: Label `idl:change_polcconv' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:File_In' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:File_Out' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:I2C' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:C2I' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:C2C' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:I2I' multiply defined.
+
+
+LaTeX Warning: Label `idl:change_polcconv:FORCE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/cl2fits_idl.aux
+
+LaTeX Warning: Label `idl:cl2fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:cl_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:XHDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:CMBFAST' multiply defined.
+
+
+LaTeX Warning: Label `idl:cl2fits:UNITS' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/convert_oldhpx2cmbfast_idl.aux
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast' multiply defined.
+
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast:file_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast:file_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:convert_oldhpx2cmbfast:NO_RENORM' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/euler_matrix_new_idl.aux
+
+LaTeX Warning: Label `idl:euler_matrix_new' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:matrix' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:a1' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:a2' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:a3' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:x' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:y' multiply defined.
+
+
+LaTeX Warning: Label `idl:euler_matrix_new:zyx' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/fits2alm_idl.aux
+
+LaTeX Warning: Label `idl:fits2alm' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:alm_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:signal' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:lmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2alm:xhdr' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/fits2cl_idl.aux
+
+LaTeX Warning: Label `idl:fits2cl' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:cl_array' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:fitsfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:interactive' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:llfactor' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:multipoles' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:planck1' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:planck2' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:rshow' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:show' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:wmap1' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:wmap5' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:wmap7' multiply defined.
+
+
+LaTeX Warning: Label `idl:fits2cl:xhdr' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/gaussbeam_idl.aux
+
+LaTeX Warning: Label `idl:gaussbeam' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:fwhm' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:dim' multiply defined.
+
+
+LaTeX Warning: Label `idl:gaussbeam:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/getdisc_ring_idl.aux
+
+LaTeX Warning: Label `idl:getdisc_ring' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/getsize_fits_idl.aux
+
+LaTeX Warning: Label `idl:getsize_fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:var' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Nmaps' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Mlpol' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Obs_Npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Type' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Header' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:getsize_fits:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/gnomcursor_idl.aux
+
+LaTeX Warning: Label `idl:gnomcursor' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/gnomview_idl.aux
+
+LaTeX Warning: Label `idl:gnomview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/healpix_doc_idl.aux
+
+LaTeX Warning: Label `idl:healpix_doc' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:HTML' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:PDF' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpix_doc:WHOLE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/healpixwindow_idl.aux
+
+LaTeX Warning: Label `idl:healpixwindow' multiply defined.
+
+
+LaTeX Warning: Label `idl:healpixwindow:Dim' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/hpx2dm_idl.aux
+
+LaTeX Warning: Label `idl:hpx2dm' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:file' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:select' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:jpeg' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:png' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:preview' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:pxsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2dm:other_keywords' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/hpx2gs_idl.aux
+
+LaTeX Warning: Label `idl:hpx2gs' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:file' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:select' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:coord_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:kml' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:png' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:reso_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:subtitle' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:titleplot' multiply defined.
+
+
+LaTeX Warning: Label `idl:hpx2gs:other_keywords' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ialteralm_idl.aux
+
+LaTeX Warning: Label `idl:ialteralm' multiply defined.
+
+
+LaTeX Warning: Label `eq:alteralm' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:alm_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:alm_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:beam_file_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:beam_file_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:coord_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:coord_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:epoch_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:epoch_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:fwhm_arcmin_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:fwhm_arcmin_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:lmax_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nlmax_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nside_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nsmax_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nside_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:nsmax_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:windowfile_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:winfiledir_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:windowfile_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ialteralm:winfiledir_out' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ianafast_idl.aux
+
+LaTeX Warning: Label `idl:ianafast' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:map1_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:cl_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:alm1_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:alm2_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:cxx' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:double' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:healpix_data' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:iter_order' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:map2_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:maskfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:nlmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:nmmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:plmfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:polarisation' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:regression' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:show_cl' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:simul_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:theta_cut_deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:weighted' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:won' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:w8file' multiply defined.
+
+
+LaTeX Warning: Label `idl:ianafast:w8dir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/index2lm_idl.aux
+
+LaTeX Warning: Label `idl:index2lm' multiply defined.
+
+
+LaTeX Warning: Label `idl:index2lm:index' multiply defined.
+
+
+LaTeX Warning: Label `idl:index2lm:l' multiply defined.
+
+
+LaTeX Warning: Label `idl:index2lm:m' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/init_healpix_idl.aux
+
+LaTeX Warning: Label `idl:init_healpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:init_healpix:VERBOSE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/iprocess_mask_idl.aux
+
+LaTeX Warning: Label `idl:iprocess_mask' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:mask_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:distance_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:filled_mask' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:hole_arcmin2' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:hole_pixels' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:iprocess_mask:tmpdir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ismoothing_idl.aux
+
+LaTeX Warning: Label `idl:ismoothing' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:map1_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:map2_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:beam_file' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:double' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:fwhm_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:iter_order' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:plmfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:regression' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:simul_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:theta_cut_deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:won' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:w8file' multiply defined.
+
+
+LaTeX Warning: Label `idl:ismoothing:w8dir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/isynfast_idl.aux
+
+LaTeX Warning: Label `idl:isynfast' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:cl_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:map_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:alm_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:alm_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:apply_windows' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:beam_file' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:binpath' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:double' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:fwhm_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:iseed' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:keep_tmp_files' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:lmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:nlmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:nsmax' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:plmfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:simul_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:tmpdir' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:windowfile' multiply defined.
+
+
+LaTeX Warning: Label `idl:isynfast:winfiledir' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/lm2index_idl.aux
+
+LaTeX Warning: Label `idl:lm2index' multiply defined.
+
+
+LaTeX Warning: Label `idl:lm2index:l' multiply defined.
+
+
+LaTeX Warning: Label `idl:lm2index:m' multiply defined.
+
+
+LaTeX Warning: Label `idl:lm2index:index' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/median_filter_idl.aux
+
+LaTeX Warning: Label `idl:median_filter' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:InputMap' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:Radius' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:MedianMap' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:ARCMIN' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:DEGREES' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:FILL_HOLES' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:median_filter:RING' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/mollcursor_idl.aux
+
+LaTeX Warning: Label `idl:mollcursor' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollcursor:cursor_type' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollcursor:file_out' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/mollview_idl.aux
+
+LaTeX Warning: Label `idl:mollview' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:TOP' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:routines' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:file' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:select' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:asinh' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:bad_color' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:bg_color' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:charsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:charthick' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:colt' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:coord' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:crop' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:execute' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:factor' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:fg_color' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:fits' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:flip' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:gal_cut' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:gif' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:glsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:graticule' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:half_sky' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:hbound' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:hist_equal' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:hxsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:iglsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:igraticule' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:jpeg' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:latex' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:log' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:map_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:max' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:min' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:no_dipole' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:no_monopole' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:nobar' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:nolabels' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:noposition' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:offset' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:outline' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pdf' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pfonts' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:png' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:polarization' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:preview' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:ps' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pxsize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:pysize' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:reso_arcmin' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:retain' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:rot' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:save' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:shaded' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:silent' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:stagger' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:subtitle' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:titleplot' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:transparent' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:truecolors' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:units' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:window' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:xpos' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:ypos' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example1' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example2' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example3' multiply defined.
+
+
+LaTeX Warning: Label `page:example_hires_cutsky' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example4' multiply defined.
+
+
+LaTeX Warning: Label `page:plot_visu' multiply defined.
+
+
+LaTeX Warning: Label `fig:plot_visu' multiply defined.
+
+
+LaTeX Warning: Label `page:plot_example_execute' multiply defined.
+
+
+LaTeX Warning: Label `fig:plot_example_execute' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example5' multiply defined.
+
+
+LaTeX Warning: Label `page:merge_wmapKband' multiply defined.
+
+
+LaTeX Warning: Label `fig:merge_wmapKband' multiply defined.
+
+
+LaTeX Warning: Label `idl:mollview:example6' multiply defined.
+
+
+LaTeX Warning: Label `page:planck_colors_217' multiply defined.
+
+
+LaTeX Warning: Label `fig:planck_colors_217' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/neighbours_nest_idl.aux
+
+LaTeX Warning: Label `idl:neighbours_nest' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Ipix0' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_nest:Nneigh' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/neighbours_ring_idl.aux
+
+LaTeX Warning: Label `idl:neighbours_ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Ipix0' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:neighbours_ring:Nneigh' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/nest2uniq_idl.aux
+
+LaTeX Warning: Label `idl:nest2uniq' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:pnest' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:puniq' multiply defined.
+
+
+LaTeX Warning: Label `idl:nest2uniq:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/npix2nside_idl.aux
+
+LaTeX Warning: Label `idl:npix2nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:npix2nside:Npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:npix2nside:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:npix2nside:ERROR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/nside2npix_idl.aux
+
+LaTeX Warning: Label `idl:nside2npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2npix:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2npix:Npix' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2npix:ERROR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/nside2ntemplates_idl.aux
+
+LaTeX Warning: Label `idl:nside2ntemplates' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2ntemplates:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2ntemplates:Ntemplates' multiply defined.
+
+
+LaTeX Warning: Label `idl:nside2ntemplates:ERROR' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/orthcursor_idl.aux
+
+LaTeX Warning: Label `idl:orthcursor' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/orthview_idl.aux
+
+LaTeX Warning: Label `idl:orthview' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/pix_tools_idl.aux
+
+LaTeX Warning: Label `idl:pix_tools' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:ipnest' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:ipring' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:phi' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:vector' multiply defined.
+
+
+LaTeX Warning: Label `idl:pix_tools:vertex' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/planck_colors_idl.aux
+
+LaTeX Warning: Label `idl:planck_colors' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:option' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:get' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:planck_colors:show' multiply defined.
+
+
+LaTeX Warning: Label `page:planck_colors1' multiply defined.
+
+
+LaTeX Warning: Label `fig:planck_colors1' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_disc_idl.aux
+
+LaTeX Warning: Label `idl:query_disc' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:vector0' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:radius' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:deg' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_disc:inclusive' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_polygon_idl.aux
+
+LaTeX Warning: Label `idl:query_polygon' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Vlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:Nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_polygon:INCLUSIVE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_strip_idl.aux
+
+LaTeX Warning: Label `idl:query_strip' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Theta1' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Theta2' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:Nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:INCLUSIVE' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_strip:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/query_triangle_idl.aux
+
+LaTeX Warning: Label `idl:query_triangle' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Vector1' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Vector2' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Vector3' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Listpix' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:Nlist' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:query_triangle:INCLUSIVE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_fits_cut4_idl.aux
+
+LaTeX Warning: Label `idl:read_fits_cut4' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:Pixel' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:Signal' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:N_Obs' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:Serror' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:XHDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:NSIDE' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:COORDSYS' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_cut4:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_fits_map_idl.aux
+
+LaTeX Warning: Label `idl:read_fits_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:T_sky' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:Hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:Exthdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:PIXEL' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:NSIDE' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:COORDSYS' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_map:SILENT' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_fits_s_idl.aux
+
+LaTeX Warning: Label `idl:read_fits_s' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:Prim_stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:Xten_stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:COLUMNS' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:HELP' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_fits_s:MERGE' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/read_tqu_idl.aux
+
+LaTeX Warning: Label `idl:read_tqu' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:TQU' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Xhdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:read_tqu:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/remove_dipole_idl.aux
+
+LaTeX Warning: Label `idl:remove_dipole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:map' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:weight' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:bad_data' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:gal_cut' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:coord_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:coord_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:covariance_matrix' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:dipole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:monopole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:pixel' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:units' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:noremove' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:onlymonopole' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:remove_dipole:silent' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/reorder_idl.aux
+
+LaTeX Warning: Label `idl:reorder' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:result' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:input_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:in' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:out' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:n2r' multiply defined.
+
+
+LaTeX Warning: Label `idl:reorder:r2n' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/rotate_coord_idl.aux
+
+LaTeX Warning: Label `idl:rotate_coord' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:invec' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:outvec' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:euler_matrix' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:inco' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:outco' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:stokes_parameters' multiply defined.
+
+
+LaTeX Warning: Label `idl:rotate_coord:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/same_shape_pixels_xxx_idl.aux
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:template' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:list_pixels_nest' multiply defi
+ned.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:list_pixels_ring' multiply defi
+ned.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:reflexion' multiply defined.
+
+
+LaTeX Warning: Label `idl:same_shape_pixels_xxx:nreplications' multiply defined
+.
+
+
+LaTeX Warning: Label `eq:same_shape_pixels_xxx_idl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/template_pixel_xxx_idl.aux
+
+LaTeX Warning: Label `idl:template_pixel_xxx' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:pixel_nest' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:pixel_ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:template' multiply defined.
+
+
+LaTeX Warning: Label `idl:template_pixel_xxx:reflexion' multiply defined.
+
+
+LaTeX Warning: Label `eq:template_pixel_xxx_idl' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/ud_grade_idl.aux
+
+LaTeX Warning: Label `idl:ud_grade' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:map_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:map_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:bad_data' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:help' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:nside_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:order_in' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:order_out' multiply defined.
+
+
+LaTeX Warning: Label `idl:ud_grade:pessimistic' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/uniq2nest_idl.aux
+
+LaTeX Warning: Label `idl:uniq2nest' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:puniq' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:pnest' multiply defined.
+
+
+LaTeX Warning: Label `idl:uniq2nest:help' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/vec2ang_idl.aux
+
+LaTeX Warning: Label `idl:vec2ang' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:Vector' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:Theta' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:Phi' multiply defined.
+
+
+LaTeX Warning: Label `idl:vec2ang:ASTRO' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_fits_cut4_idl.aux
+
+LaTeX Warning: Label `idl:write_fits_cut4' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:Pixel' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:Signal' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:N_Obs' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:Serror' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:COORDSYS' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:EXTENSION' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:HDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:NESTED' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:NSIDE' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:ORDERING' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:POLARISATION' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:RING' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:UNITS' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:XHDR' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_cut4:HELP' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_fits_map_idl.aux
+
+LaTeX Warning: Label `idl:write_fits_map' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:T_sky' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Header' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Error' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Units' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Help' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_map:Ring' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_fits_sb_idl.aux
+
+LaTeX Warning: Label `idl:write_fits_sb' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Prim_Stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Xten_stc' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Nside' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Ring' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Partial' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_fits_sb:Nothealpix' multiply defined.
+
+) (/tmp/Healpix_3.31/doc/TeX/write_tqu_idl.aux
+
+LaTeX Warning: Label `idl:write_tqu' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:File' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:TQU' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Coordsys' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Error' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Extension' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Hdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Ordering' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Units' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Xhdr' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Help' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Nested' multiply defined.
+
+
+LaTeX Warning: Label `idl:write_tqu:Ring' multiply defined.
+
+)
+
+latex2htmlLength hsize=349.0pt
+
+latex2htmlLength vsize=688.0pt
+
+latex2htmlLength hoffset=0.0pt
+
+latex2htmlLength voffset=0.0pt
+
+latex2htmlLength topmargin=0.0pt
+
+latex2htmlLength topskip=0.00003pt
+
+latex2htmlLength headheight=0.0pt
+
+latex2htmlLength headsep=0.0pt
+
+latex2htmlLength parskip=3.875pt plus 1.03331pt minus 0.5167pt
+
+latex2htmlLength oddsidemargin=0.0pt
+
+latex2htmlLength evensidemargin=0.0pt
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 480.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 480.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 480.
+l2hSize :tex2html_wrap_inline1168:9.5pt::9.5pt::25.0602pt.
+[1
+
+
+
+]
+l2hSize :tex2html_wrap_inline1188:7.75pt::0.0pt::14.37903pt.
+[2
+
+
+]
+l2hSize :tex2html_wrap_inline1192:8.7pt::8.7pt::24.71059pt.
+[3
+
+
+]
+l2hSize :tex2html_wrap_inline1198:9.51027pt::0.0pt::46.14282pt.
+[4
+
+
+]
+l2hSize :tex2html_wrap_inline1899:8.83331pt::8.83331pt::62.04582pt.
+[5
+
+
+]
+l2hSize :tex2html_wrap_inline1901:8.25pt::8.25pt::75.33731pt.
+[6
+
+
+]
+l2hSize :tex2html_wrap_inline1909:8.25pt::8.25pt::30.87898pt.
+[7
+
+
+]
+l2hSize :tex2html_wrap_inline2059:8.83331pt::8.83331pt::20.40717pt.
+[8
+
+
+]
+l2hSize :tex2html_wrap_inline2063:8.25pt::8.25pt::27.18486pt.
+[9
+
+
+]
+l2hSize :tex2html_wrap_inline2067:8.25pt::8.25pt::22.44188pt.
+[10
+
+
+]
+l2hSize :tex2html_wrap_inline2079:8.25pt::8.25pt::42.78886pt.
+[11
+
+
+]
+l2hSize :tex2html_wrap_inline2382:7.75pt::0.0pt::7.6833pt.
+[12
+
+
+]
+l2hSize :tex2html_wrap_inline2384:7.75pt::0.0pt::13.55824pt.
+[13
+
+
+]
+l2hSize :tex2html_wrap_inline2390:9.5pt::9.5pt::290.68881pt.
+[14
+
+
+]
+l2hSize :tex2html_wrap_inline2392:9.5pt::9.5pt::27.74623pt.
+[15
+
+
+]
+l2hSize :tex2html_wrap_inline2396:8.83331pt::8.83331pt::71.98393pt.
+[16
+
+
+]
+l2hSize :tex2html_wrap_inline2398:8.83331pt::8.83331pt::70.16101pt.
+[17
+
+
+]
+l2hSize :tex2html_wrap_inline2400:8.33331pt::0.0pt::45.91965pt.
+[18
+
+
+]
+l2hSize :tex2html_wrap_inline2598:10.01027pt::10.01027pt::64.5971pt.
+[19
+
+
+]
+l2hSize :tex2html_wrap_inline2600:10.4532pt::10.4532pt::111.65242pt.
+[20
+
+
+]
+l2hSize :tex2html_wrap_inline2602:8.23334pt::0.0pt::10.96947pt.
+[21
+
+
+]
+l2hSize :tex2html_wrap_inline2604:8.23334pt::0.0pt::14.71947pt.
+[22
+
+
+]
+l2hSize :tex2html_wrap_inline2614:9.5pt::9.5pt::86.83922pt.
+[23
+
+
+]
+l2hSize :tex2html_wrap_inline2616:9.5pt::9.5pt::87.01093pt.
+[24
+
+
+]
+l2hSize :tex2html_wrap_inline2622:9.5pt::9.5pt::90.21738pt.
+[25
+
+
+]
+l2hSize :tex2html_wrap_inline2624:8.7pt::8.7pt::46.39088pt.
+[26
+
+
+]
+l2hSize :tex2html_wrap_inline2626:11.33661pt::11.33661pt::113.93018pt.
+[27
+
+
+]
+l2hSize :tex2html_wrap_inline3314:9.5pt::9.5pt::20.5241pt.
+[28
+
+
+]
+l2hSize :tex2html_wrap_inline3318:8.33331pt::0.0pt::6.38954pt.
+[29
+
+
+]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.684 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Display math should end with $$.
+<to be read again> 
+                   \par 
+l.684 
+      
+The `$' that I just saw supposedly matches a previous `$$'.
+So I shall assume that you typed `$$' both times.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.685 	b_
+         {lm} = \int d{\bf {r}}\ b({\bf {r}})\ Y_{lm}^*({\bf {r}})
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.686 \end{displaymath}
+                       %
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+l2hSize :displaymath3220:32.875pt::3.0pt::349.0pt.
+[30
+
+
+]
+l2hSize :tex2html_wrap_indisplay37513:20.29762pt::20.29762pt::55.3511pt.
+[31
+
+
+]
+l2hSize :tex2html_wrap_indisplay37514:14.61122pt::14.61122pt::122.24892pt.
+[32
+
+
+]
+l2hSize :tex2html_wrap_inline3342:9.5pt::9.5pt::68.28137pt.
+[33
+
+
+]
+l2hSize :tex2html_wrap_inline3540:13.35004pt::13.35004pt::115.30356pt.
+[34
+
+
+]
+l2hSize :tex2html_wrap_inline3542:9.5pt::9.5pt::28.27751pt.
+[35
+
+
+]
+l2hSize :tex2html_wrap_inline3546:9.5pt::9.5pt::56.4467pt.
+[36
+
+
+]
+l2hSize :tex2html_wrap_inline3550:8.83331pt::8.83331pt::43.23996pt.
+[37
+
+
+]
+
+LaTeX Warning: Command \l invalid in math mode on input line 739.
+
+
+LaTeX Warning: Command \l invalid in math mode on input line 739.
+
+l2hSize :tex2html_wrap_inline3552:9.5pt::9.5pt::56.4467pt.
+[38
+
+
+]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.747 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Display math should end with $$.
+<to be read again> 
+                   \par 
+l.747 
+      
+The `$' that I just saw supposedly matches a previous `$$'.
+So I shall assume that you typed `$$' both times.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.748 	b({\bf {r}}) = \sum
+                          _{lm} b_{lm} Y_{lm}({\bf {r}}),
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.749 \end{displaymath}
+                       %
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+l2hSize :displaymath3673:32.875pt::3.0pt::349.0pt.
+[39
+
+
+]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.756 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Display math should end with $$.
+<to be read again> 
+                   \par 
+l.756 
+      
+The `$' that I just saw supposedly matches a previous `$$'.
+So I shall assume that you typed `$$' both times.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.757 	b(\theta
+               ) = \sum_l  b(l) P_l(\theta) \frac{2l+1}{4 \pi},
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.758 \end{displaymath}
+                       %
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+l2hSize :displaymath3681:32.875pt::4.13809pt::349.0pt.
+[40
+
+
+]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.765 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Display math should end with $$.
+<to be read again> 
+                   \par 
+l.765 
+      
+The `$' that I just saw supposedly matches a previous `$$'.
+So I shall assume that you typed `$$' both times.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.766 	b(l)=b_
+              {l0} \sqrt{\frac{4 \pi}{2l+1}}
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.767 \end{displaymath}
+                       %
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+l2hSize :displaymath3686:32.875pt::6.09567pt::349.0pt.
+[41
+
+
+]
+l2hSize :tex2html_wrap_inline3901:8.25pt::8.25pt::51.35106pt.
+[42
+
+
+]
+l2hSize :tex2html_wrap_inline4472:7.75pt::0.0pt::12.3374pt.
+[43
+
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 817--817
+
+ []
+
+l2hSize :tex2html_wrap_inline37636:111.95235pt::111.95235pt::349.58752pt.
+
+Overfull \hbox (3.9725pt too wide) in paragraph at lines 818--819
+[]|[] 
+ []
+
+[44
+
+
+]
+l2hSize :tex2html_wrap_inline5683:9.5pt::9.5pt::137.7746pt.
+[45
+
+
+]
+l2hSize :tex2html_wrap_inline5701:9.5pt::9.5pt::78.6176pt.
+[46
+
+
+]
+l2hSize :tex2html_wrap_inline5878:8.25pt::8.25pt::19.1291pt.
+[47
+
+
+]
+l2hSize :tex2html_wrap_inline5880:8.25pt::8.25pt::19.1291pt.
+[48
+
+
+]
+l2hSize :tex2html_wrap_inline5886:10.01027pt::10.01027pt::106.88342pt.
+[49
+
+
+]
+l2hSize :tex2html_wrap_inline6128:10.01027pt::10.01027pt::48.93254pt.
+[50
+
+
+]
+l2hSize :tex2html_wrap_inline6132:10.01027pt::10.01027pt::49.1271pt.
+[51
+
+
+]
+l2hSize :tex2html_wrap_inline37747:38.16666pt::38.16666pt::349.58752pt.
+
+Overfull \hbox (3.9725pt too wide) in paragraph at lines 891--892
+[]|[] 
+ []
+
+[52
+
+
+]
+l2hSize :tex2html_wrap_inline6752:8.25pt::8.25pt::9.92088pt.
+[53
+
+
+]
+l2hSize :tex2html_wrap_inline6754:8.25pt::8.25pt::7.6569pt.
+[54
+
+
+]
+l2hSize :tex2html_wrap_inline6965:13.35004pt::13.35004pt::86.19481pt.
+[55
+
+
+]
+l2hSize :tex2html_wrap_inline6969:10.01027pt::10.01027pt::103.18188pt.
+[56
+
+
+]
+l2hSize :displaymath7699:30.17087pt::0.0pt::349.0pt.
+[57
+
+
+]
+l2hSize :tex2html_wrap_inline8128:9.5pt::9.5pt::6.58754pt.
+[58
+
+
+]
+l2hSize :tex2html_wrap_inline8757:9.5pt::9.5pt::59.17053pt.
+[59
+
+
+]
+l2hSize :tex2html_wrap_inline13172:10.8222pt::10.8222pt::70.68358pt.
+[60
+
+
+]
+l2hSize :tex2html_wrap_inline13174:8.25pt::8.25pt::29.42413pt.
+[61
+
+
+]
+l2hSize :tex2html_wrap_inline13176:8.25pt::8.25pt::31.80609pt.
+[62
+
+
+]
+l2hSize :tex2html_wrap_inline13178:9.5pt::9.5pt::54.22943pt.
+[63
+
+
+]
+l2hSize :tex2html_wrap_inline13180:8.25pt::8.25pt::31.80609pt.
+[64
+
+
+]
+l2hSize :tex2html_wrap_inline13182:10.8222pt::10.8222pt::120.9886pt.
+[65
+
+
+]
+l2hSize :tex2html_wrap_inline13184:8.25pt::8.25pt::50.3128pt.
+[66
+
+
+]
+l2hSize :tex2html_wrap_inline13188:9.5pt::9.5pt::53.73985pt.
+[67
+
+
+]
+l2hSize :tex2html_wrap_inline13194:10.01027pt::10.01027pt::77.78148pt.
+[68
+
+
+]
+l2hSize :tex2html_wrap_inline13216:8.7pt::8.7pt::46.39088pt.
+[69
+
+
+]
+l2hSize :tex2html_wrap_inline13218:7.75pt::0.0pt::9.92088pt.
+[70
+
+
+]
+l2hSize :tex2html_wrap_inline13234:9.5pt::9.5pt::84.03415pt.
+[71
+
+
+]
+l2hSize :tex2html_wrap_inline13236:8.25pt::8.25pt::19.1291pt.
+[72
+
+
+]
+l2hSize :tex2html_wrap_inline13250:9.5pt::9.5pt::56.5315pt.
+[73
+
+
+]
+l2hSize :tex2html_wrap_inline13252:13.35004pt::13.35004pt::87.2489pt.
+[74
+
+
+]
+l2hSize :tex2html_wrap_inline13254:10.01027pt::10.01027pt::96.33066pt.
+[75
+
+
+]
+l2hSize :tex2html_wrap_inline13988:7.75pt::0.0pt::24.08728pt.
+[76
+
+
+]
+l2hSize :tex2html_wrap_inline14447:10.01027pt::10.01027pt::57.00201pt.
+[77
+
+
+]
+l2hSize :tex2html_wrap_inline14453:10.01027pt::10.01027pt::73.44753pt.
+[78
+
+
+]
+l2hSize :tex2html_wrap_inline14457:8.7pt::8.7pt::37.18266pt.
+[79
+
+
+]
+l2hSize :tex2html_wrap_inline14608:10.01027pt::10.01027pt::73.7444pt.
+[80
+
+
+]
+l2hSize :tex2html_wrap_inline14612:10.01027pt::10.01027pt::59.65668pt.
+[81
+
+
+]
+l2hSize :tex2html_wrap_inline14774:10.01027pt::10.01027pt::28.12923pt.
+[82
+
+
+]
+l2hSize :tex2html_wrap_inline14906:9.5pt::9.5pt::68.28137pt.
+[83
+
+
+]
+l2hSize :displaymath14908:26.3495pt::0.0pt::349.0pt.
+[84
+
+
+]
+l2hSize :tex2html_wrap_inline15900:8.7pt::8.7pt::42.60765pt.
+[85
+
+
+]
+l2hSize :tex2html_wrap_inline15916:9.5pt::9.5pt::337.35043pt.
+[86
+
+
+]
+l2hSize :tex2html_wrap_inline15918:9.5pt::9.5pt::346.95908pt.
+
+Overfull \hbox (1.34406pt too wide) in paragraph at lines 1220--1221
+[]|[] 
+ []
+
+[87
+
+
+]
+l2hSize :tex2html_wrap_inline15922:8.7pt::8.7pt::22.0661pt.
+[88
+
+
+]
+l2hSize :tex2html_wrap_inline16673:9.5pt::9.5pt::19.43318pt.
+[89
+
+
+]
+l2hSize :tex2html_wrap_inline16675:9.5pt::9.5pt::25.30812pt.
+[90
+
+
+]
+l2hSize :tex2html_wrap_inline17030:11.63661pt::11.63661pt::62.79906pt.
+[91
+
+
+]
+l2hSize :tex2html_wrap_inline17265:8.25pt::8.25pt::9.92088pt.
+[92
+
+
+]
+l2hSize :tex2html_wrap_inline17666:8.25pt::8.25pt::9.92088pt.
+[93
+
+
+]
+l2hSize :tex2html_wrap_inline17927:10.01027pt::10.01027pt::79.8927pt.
+[94
+
+
+]
+l2hSize :tex2html_wrap_indisplay38651:9.5pt::9.5pt::89.94707pt.
+[95
+
+
+]
+l2hSize :tex2html_wrap_indisplay38652:8.25pt::8.25pt::4.50415pt.
+[96
+
+
+]
+l2hSize :tex2html_wrap_indisplay38653:9.5pt::9.5pt::67.33133pt.
+[97
+
+
+]
+l2hSize :tex2html_wrap_indisplay38654:9.5pt::9.5pt::65.14941pt.
+[98
+
+
+]
+l2hSize :tex2html_wrap_indisplay38656:13.78476pt::13.78476pt::126.85109pt.
+[99
+
+
+]
+l2hSize :tex2html_wrap_inline18442:8.83331pt::8.83331pt::7.5416pt.
+[100
+
+
+]
+l2hSize :tex2html_wrap_inline18446:8.7pt::8.7pt::58.14076pt.
+[101
+
+
+]
+l2hSize :tex2html_wrap_indisplay38672:9.5pt::9.5pt::65.14941pt.
+[102
+
+
+]
+l2hSize :tex2html_wrap_indisplay38674:13.78476pt::13.78476pt::126.85109pt.
+[103
+
+
+]
+l2hSize :tex2html_wrap_inline38684:59.91666pt::59.91666pt::175.08752pt.
+[104
+
+
+]
+l2hSize :tex2html_wrap_inline19012:8.25pt::8.25pt::19.1291pt.
+[105
+
+
+]
+l2hSize :tex2html_wrap_inline19509:8.7pt::8.7pt::52.26582pt.
+[106
+
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 1450--1450
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1450--1450
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1450--1450
+
+ []
+
+l2hSize :tex2html_wrap_inline38767:146.74998pt::146.74998pt::349.58752pt.
+
+Overfull \hbox (3.9725pt too wide) in paragraph at lines 1451--1452
+[]|[] 
+ []
+
+[107
+
+
+]
+l2hSize :tex2html_wrap_inline20280:8.7pt::8.7pt::52.26582pt.
+[108
+
+
+] (./idlimages.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 5186 strings out of 94501
+ 95995 string characters out of 1175975
+ 204838 words of memory out of 1500000
+ 7724 multiletter control sequences out of 10000+50000
+ 7820 words of font info for 28 fonts, out of 1200000 for 2000
+ 580 hyphenation exceptions out of 8191
+ 32i,6n,45p,368b,632s stack positions out of 5000i,500n,6000p,200000b,5000s
+
+Output written on idlimages.dvi (108 pages, 77616 bytes).

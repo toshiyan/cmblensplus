@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+<META NAME="description" CONTENT="Introduction">
+<META NAME="keywords" CONTENT="intro">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="intro.css">
+
+<LINK REL="next" HREF="intronode3.htm">
+<LINK REL="previous" HREF="intronode1.htm">
+<LINK REL="up" HREF="intro.htm">
+<LINK REL="next" HREF="intronode3.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html91"
+  HREF="intronode1.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html97"
+  HREF="intro.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html101"
+  HREF="intronode3.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html99"
+  HREF="intronode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html92"
+  HREF="intronode1.htm">TABLE OF CONTENTS</A>
+
+<B>Up:</B> <A NAME="tex2html98"
+  HREF="intro.htm">Introduction to HEALPix</A>
+
+<B> Next:</B> <A NAME="tex2html102"
+  HREF="intronode3.htm">Discretisation of Functions on</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000">
+Introduction</A>
+</H1>
+
+<P>
+The analysis of functions on  domains with spherical topology occupies a
+central place in physical science and engineering disciplines. 
+This is particularly apparent in the fields of astronomy, cosmology, 
+geophysics,  atomic and nuclear physics. In many cases the geometry is either
+dictated by the object under study or approximate spherical symmetry can be
+exploited to yield powerful perturbation methods. Practical
+limits for the purely analytical study of these problems create
+an urgent necessity for efficient and accurate numerical tools.
+
+<P>
+The 
+simplicity of the spherical form belies the intricacy of global
+analysis on the sphere. There is no known
+point set which achieves the analogue of uniform sampling in Euclidean space and
+allows exact and invertible discrete spherical harmonic decompositions
+of arbitrary but band-limited functions. Any existing proposition of practical
+schemes for the  discrete treatment of such functions 
+on the sphere  introduces some (hopefully tiny) 
+systematic error dependent on the global properties of
+the point set. The goal is to minimise these errors and
+faithfully represent deterministic functions as well as realizations of
+random variates both
+in configuration and Fourier space while maintaining computational efficiency.
+
+<P>
+We illustrate these points using as an example the field which is particularly 
+close to the authors' hearts, Cosmic Microwave Background (CMB)
+anisotropies. Here we are in the happy situation of expecting an explosion
+of available data within the next decade.
+The  Microwave Anisotropy Probe (MAP) (NASA) and Planck Surveyor (ESA)
+missions are aiming
+to provide multi-frequency, high resolution, full sky measurements of the anisotropy in
+both temperature and polarization of the cosmic microwave
+background radiation.
+The ultimate data products of these missions --
+multiple microwave sky maps, each of which will have to comprise 
+more than <SPAN CLASS="MATH"><IMG
+ WIDTH="19" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="introimg1.png"
+ ALT="$\sim $"></SPAN> <SPAN CLASS="MATH">10<SUP>6</SUP></SPAN> pixels in order to render the angular 
+resolution of the instruments --
+will present serious challenges to those involved in the
+analysis and scientific exploitation of the results of both surveys.
+
+<P>
+As we have learned while working with the <I>COBE</I> mission products, 
+the digitised
+sky map is an essential intermediate 
+stage in information processing between 
+the entry point of data acquisition by the 
+instruments -- very large time ordered data streams,
+and the final stage of astrophysical analysis -- 
+typically producing a 
+'few'
+ numerical values
+of physical parameters of interest. 
+<I>COBE</I>-DMR sky maps (angular resolution of <SPAN CLASS="MATH"><IMG
+ WIDTH="21" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="introimg2.png"
+ ALT="$7^\circ$"></SPAN> (FWHM) in
+three frequency bands, two channels each, 6144 pixels per map)
+were considered large at the time of their release.
+
+<P>
+As for ongoing CMB maps, a whole sky CMB survey  
+at the angular resolution
+of <SPAN CLASS="MATH"><IMG
+ WIDTH="48" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="introimg3.png"
+ ALT="$\sim 10'$"></SPAN> (FWHM), discretised with 
+a few pixels per resolution element 
+(so that the discretisation effects on the signal are  
+sub-dominant with respect to the effects of instrument's angular response),
+require map sizes of at least 
+<!-- MATH
+ ${N_{\rm pix}}\sim  10^7$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="90" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="introimg4.png"
+ ALT="${N_{\rm pix}}\sim 10^7$"></SPAN> pixels.
+More pixels than that are needed to represent the Planck-HFI higher 
+resolution channels.
+This estimate, <SPAN CLASS="MATH"><IMG
+ WIDTH="39" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="introimg5.png"
+ ALT="${N_{\rm pix}}$"></SPAN>, should be multiplied by  the number of frequency bands 
+(or, indeed, by the number of individual
+observing channels -- 74 in the case of Planck -- for the analysis work 
+to be done before the
+final coadded maps are made for each frequency band) to render 
+an approximate expected
+size of the already very compressed form of survey data which is
+the input to the astrophysical analysis pipeline. 
+
+<P>
+It appears to us that very careful
+attention ought to be given to devising  high resolution CMB map
+structures which can maximally facilitate 
+the forthcoming analyses of large size data sets, for the following
+reasons:
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ It is clearly very easy to end up with an estimated size of many GBy 
+for the 
+data objects which would be directly involved in the science extraction
+part of the future CMB missions.
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Many essential scientific questions
+can only be answered by <EM>global</EM> studies of  future data sets.
+</DL>
+
+<P>
+This document is an introduction to the
+properties of our proposed approach for a high resolution numerical
+representation of  functions on the sphere
+ -- the Hierarchical
+Equal Area and iso-Latitude Pixelation  (<b>HEALPix</b>, see 
+<A NAME="tex2html2"
+  HREF="http://healpix.sourceforge.net"><TT>http://healpix.sourceforge.net</TT></A>), 
+and the associated multi-purpose computer 
+software package. 
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html91"
+  HREF="intronode1.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html97"
+  HREF="intro.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html101"
+  HREF="intronode3.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html99"
+  HREF="intronode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html92"
+  HREF="intronode1.htm">TABLE OF CONTENTS</A>
+
+<B>Up:</B> <A NAME="tex2html98"
+  HREF="intro.htm">Introduction to HEALPix</A>
+
+<B> Next:</B> <A NAME="tex2html102"
+  HREF="intronode3.htm">Discretisation of Functions on</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>alms2fits*</TITLE>
+<META NAME="description" CONTENT="alms2fits*">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode12.htm">
+<LINK REL="previous" HREF="subroutinesnode10.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode12.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html411"
+  HREF="subroutinesnode10.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html417"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html421"
+  HREF="subroutinesnode12.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html419"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html412"
+  HREF="subroutinesnode10.htm">alm2map_spin*</A>
+
+<B>Up:</B> <A NAME="tex2html418"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html422"
+  HREF="subroutinesnode12.htm">alter_alm*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000110000000000000000"></A>
+<A NAME="sub:alms2fits"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">alms2fits*</FONT></font></b><hr>
+<H3>This routine stores  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values in a binary FITS file. Each FITS file
+  extension created will contain one integer column with
+  <!-- MATH
+ $index=l^2+l+m+1$
+ -->
+<SPAN CLASS="MATH"><I>index</I>=<I>l</I><SUP>2</SUP>+<I>l</I>+<I>m</I>+1</SPAN>, and 2 or 4 single (or double) precision columns with real/imaginary  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values and real/imaginary   standard deviation. One can store temperature <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> or temperature and polarisation, <SPAN CLASS="MATH"><I>a</I><SUP><I>T</I></SUP><SUB><I>lm</I></SUB></SPAN>, <SPAN CLASS="MATH"><I>a</I><SUP><I>E</I></SUP><SUB><I>lm</I></SUB></SPAN> and <SPAN CLASS="MATH"><I>a</I><SUP><I>B</I></SUP><SUB><I>lm</I></SUB></SPAN>. If temperature is specified, a FITS file with one extension is created. If polarisation is specified, a FITS file with 3 extensions one for each set of <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>, <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>T</I></SUP></SPAN>, <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>E</I></SUP></SPAN> and <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>B</I></SUP></SPAN> is created.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/fitstools.F90"><b>src/f90/mod/fitstools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">alms2fits*</FONT>(
+<A HREF="#sub:alms2fits:filename">filename</A>, <A HREF="#sub:alms2fits:nalms">nalms</A>, <A HREF="#sub:alms2fits:alms">alms</A>, <A HREF="#sub:alms2fits:ncl">ncl</A>, <A HREF="#sub:alms2fits:header">header</A>, <A HREF="#sub:alms2fits:nlheader">nlheader</A>, <A HREF="#sub:alms2fits:next">next</A>
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>
+filename<A NAME="sub:alms2fits:filename"></A>(LEN=<tt>filenamelen</tt>)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>filename for the FITS file to store the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> in.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nalms<A NAME="sub:alms2fits:nalms"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>number of  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> to store.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>ncl<A NAME="sub:alms2fits:ncl"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>number of columns in the FITS file. If an standard deviation is given, this number is 5, otherwise it is 3.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>next<A NAME="sub:alms2fits:next"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the number of extensions. 1 for temperature only, 3
+                   for temperature and polarisation.</TD>
+</TR>
+</TABLE>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>
+alms<A NAME="sub:alms2fits:alms"></A>(1:nalms,1:ncl+1,1:next)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> to write to the
+                   file. alms(i,1,j) and alms(i,2,j) contain the <SPAN CLASS="MATH"><I>l</I></SPAN> and <SPAN CLASS="MATH"><I>m</I></SPAN>
+                   values for the ith  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> (j=1,2,3 for
+                   (T,E,B)). alms(i,3,j) and alms(i,4,j) contain the real and
+                   imaginary value of the ith  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>. Finally, the standard
+                   deviation for the ith  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> is contained in alms(i,5,j)
+                   (real) and alms(i,6,j) (imaginary).</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nlheader<A NAME="sub:alms2fits:nlheader"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>number of header lines to write to the file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>header<A NAME="sub:alms2fits:header"></A>(LEN=80) (1:nlheader, 1:next)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the header to the FITS file.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>call alms2fits ('alms.fits', 65*66/2, alms, 3, header, 80, 3)  
+<BR></tt>
+<blockquote>
+Creates a FITS file with the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>T</I></SUP></SPAN>, <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>E</I></SUP></SPAN> and <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>B</I></SUP></SPAN> values given in alms(1:65*66/2,1:4,1:3). The last index specifies (T,E,B). The second index gives l, m, real( <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> ), imaginary( <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> ) for each of the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>. The number 65*66/2 is the number of  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values up to an <SPAN CLASS="MATH"><I>l</I></SPAN> value of 64. 80 lines from header(1:80,1:3) is written to each extension.
+</blockquote>
+
+<P>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">alms2fits*</FONT>.</h3>
+  <DL COMPACT><DT>
+<B>write_alms</B>
+<DD>routine called by <FONT COLOR="#CC0000">alms2fits*</FONT> for each extension.
+  <DT>
+<B><SPAN  CLASS="textbf">fitstools</SPAN></B>
+<DD>module, containing:
+  <DT>
+<B>printerror</B>
+<DD>routine for printing FITS error messages.
+  <DT>
+<B><SPAN  CLASS="textbf">cfitsio</SPAN></B>
+<DD>library for FITS file handling.		
+  </DL>
+
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">alms2fits*</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode29.htm#sub:fits2alms">fits2alms</A>,
+  <A HREF="subroutinesnode84.htm#sub:read_conbintab">read_conbintab</A></B>
+<DD>routines to read <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> from
+  a FITS file 
+  <DT>
+<B><A HREF="subroutinesnode27.htm#sub:dump_alms">dump_alms</A></B>
+<DD>has the same function as <FONT COLOR="#CC0000">alms2fits*</FONT> but with parameters passed differently.
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html411"
+  HREF="subroutinesnode10.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html417"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html421"
+  HREF="subroutinesnode12.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html419"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html412"
+  HREF="subroutinesnode10.htm">alm2map_spin*</A>
+
+<B>Up:</B> <A NAME="tex2html418"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html422"
+  HREF="subroutinesnode12.htm">alter_alm*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

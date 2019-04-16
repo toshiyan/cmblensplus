@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>getsize_fits </TITLE>
+<META NAME="description" CONTENT="getsize_fits ">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode27.htm">
+<LINK REL="previous" HREF="idlnode25.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode27.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html543"
+  HREF="idlnode25.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html549"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html553"
+  HREF="idlnode27.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html551"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html544"
+  HREF="idlnode25.htm">getdisc_ring</A>
+
+<B>Up:</B> <A NAME="tex2html550"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html554"
+  HREF="idlnode27.htm">gnomcursor</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000260000000000000000"></A>
+<A NAME="idl:getsize_fits"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">getsize_fits </FONT></font></b><hr>
+<H3>This IDL function reads the number of maps and/or the pixel ordering of a FITS file containing a <b>HEALPix</b> map.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/fits/getsize_fits.pro"><b>src/idl/fits/getsize_fits.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+ <A HREF="#idl:getsize_fits:var">var</A> = GETSIZE_FITS (File, [<A HREF="#idl:getsize_fits:Nmaps">Nmaps=</A>, <A HREF="#idl:getsize_fits:Nside">Nside=</A>, <A HREF="#idl:getsize_fits:Mlpol">Mlpol=</A>, <A HREF="#idl:getsize_fits:Ordering">Ordering=</A>, <A HREF="#idl:getsize_fits:Obs_Npix">Obs_Npix=</A>, <A HREF="#idl:getsize_fits:Type">Type=</A>, <A HREF="#idl:getsize_fits:Header">Header=</A>, <A HREF="#idl:getsize_fits:Extension">Extension=</A>, /Help])
+
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>File</B>
+<DD><A NAME="idl:getsize_fits:File"></A>          name of a FITS file containing the <b>HEALPix</b> map(s).
+
+<P>
+<DT>
+<B>var</B>
+<DD><A NAME="idl:getsize_fits:var"></A>	 contains on output the number of pixels stored in a map FITS file.
+     Each pixel is counted only once 
+     (even if several information is stored on each of them, see nmaps).
+     Depending on the data storage format, result may be : 
+<BR>       - equal or smaller to the number Npix of Healpix pixels available 
+          over the sky for the given resolution (Npix =
+     12*nside*nside) 
+<BR>       - equal or larger to the number of non blank pixels 
+         (obs_npix)
+
+<P>
+<DT>
+<B>Nmaps=</B>
+<DD><A NAME="idl:getsize_fits:Nmaps"></A> contains on output the number of maps in the file
+
+<P>
+<DT>
+<B>Nside=</B>
+<DD><A NAME="idl:getsize_fits:Nside"></A> contains on output the <b>HEALPix</b> resolution parameter <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN>
+
+<P>
+<DT>
+<B>Mlpol=</B>
+<DD><A NAME="idl:getsize_fits:Mlpol"></A> contains on output the maximum multipole used to generate the map 
+
+<P>
+<DT>
+<B>Ordering=</B>
+<DD><A NAME="idl:getsize_fits:Ordering"></A> contains on output the pixel ordering
+	scheme: either 'RING' or 'NESTED'
+
+<P>
+<DT>
+<B>Obs_Npix=</B>
+<DD><A NAME="idl:getsize_fits:Obs_Npix"></A> contains on output the number of non blanck pixels. It is set to -1 if it can not be determined from header
+
+<P>
+<DT>
+<B>Type=</B>
+<DD><A NAME="idl:getsize_fits:Type"></A> Healpix/FITS file type
+<BR>             <SPAN CLASS="MATH">&lt;</SPAN>0 : file not found, or not valid
+<BR>
+0  : image only fits file, deprecated Healpix format
+                   (var <!-- MATH
+ $=12N_{\rm side}^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="82" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg50.png"
+ ALT="$=12N_{\rm side}^2$"></SPAN>) 
+<BR>
+1  : ascii table, generally used for C(l) storage 
+<BR>
+2  : binary table : with implicit pixel indexing (full sky)
+                   (var <!-- MATH
+ $=12N_{\rm side}^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="82" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg50.png"
+ ALT="$=12N_{\rm side}^2$"></SPAN>) 
+<BR>
+3  : binary table : with explicit pixel indexing (generally cut sky)
+                   (var <!-- MATH
+ $\le 12N_{\rm side}^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="82" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg51.png"
+ ALT="$\le 12N_{\rm side}^2$"></SPAN>) 
+<BR>
+999  : unable to determine the type 
+
+<P>
+<DT>
+<B>Header=</B>
+<DD><A NAME="idl:getsize_fits:Header"></A> contains on output the FITS extension header
+
+<P>
+<DT>
+<B>Extension=</B>
+<DD><A NAME="idl:getsize_fits:Extension"></A>	extension unit to be read from FITS file: 
+ either its 0-based ID number (ie, 0 for first extension <EM>after</EM> primary array) 
+ or the case-insensitive value of its EXTNAME keyword.
+
+<P>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>HELP=</B>
+<DD><A NAME="idl:getsize_fits:HELP"></A>  if set, an extensive help is displayed and no
+	file is read
+   </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+getsize_fits gets the number of pixels in a FITS file. If the file
+follows the <b>HEALPix</b> standard, the routine can also get the resolution
+parameter Nside, the ordering scheme, ..., and can determine the type
+of data set contained in the file.
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">getsize_fits </FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run getsize_fits <DT>
+<B><A HREF="idlnode59.htm#idl:read_fits_map">read_fits_map</A></B>
+<DD>This <b>HEALPix</b> IDL facility can be used to read in maps
+  written by getsize_fits .
+  <DT>
+<B>sxaddpar</B>
+<DD>This IDL routine (included in <b>HEALPix</b> package) can be used to update
+  or add FITS keywords to <TT>Header</TT>
+  <DT>
+<B><A HREF="idlnode63.htm#idl:reorder">reorder</A></B>
+<DD>This <b>HEALPix</b> IDL routine can be used to reorder a map from
+  NESTED scheme to RING scheme and vice-versa.
+  <DT>
+<B><A HREF="idlnode72.htm#idl:write_fits_sb">write_fits_sb</A></B>
+<DD>routine to write multi-column binary FITS table
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> npix = getsize_fits(!healpix.directory+'/test/map.fits', nside=nside, $ </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> <SPAN CLASS="MATH"><IMG
+ WIDTH="23" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg43.png"
+ ALT="$\quad$"></SPAN> mlpol=lmax, type=filetype)</SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE">  print, npix, nside, lmax, filetype</SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote><IMG
+ WIDTH="558" HEIGHT="128" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg52.png"
+ ALT="$\textstyle \parbox{\hsize}{ should produce something like \\
+{\em 196608 \ \ ...
+...s
+nside=128, the maximum multipole was 256, and this a full sky map
+(type 2).
+}$"></blockquote><SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html543"
+  HREF="idlnode25.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html549"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html553"
+  HREF="idlnode27.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html551"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html544"
+  HREF="idlnode25.htm">getdisc_ring</A>
+
+<B>Up:</B> <A NAME="tex2html550"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html554"
+  HREF="idlnode27.htm">gnomcursor</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

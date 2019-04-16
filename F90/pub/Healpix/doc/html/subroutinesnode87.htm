@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>read_par</TITLE>
+<META NAME="description" CONTENT="read_par">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode88.htm">
+<LINK REL="previous" HREF="subroutinesnode86.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode88.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html1323"
+  HREF="subroutinesnode86.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1329"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1333"
+  HREF="subroutinesnode88.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1331"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1324"
+  HREF="subroutinesnode86.htm">read_fits_cut4</A>
+
+<B>Up:</B> <A NAME="tex2html1330"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1334"
+  HREF="subroutinesnode88.htm">real_fft</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000870000000000000000"></A>
+<A NAME="sub:read_par"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">read_par</FONT></font></b><hr>
+<H3>This routine reads the `NSIDE', `TFIELDS' , `MAX-LPOL', and optionally `MAX-MPOL'
+  keywords from a FITS-file. These keywords desribe <SPAN CLASS="MATH"><I>N</I><SUB><I>side</I></SUB></SPAN>, number of
+  datasets (maps) and maximum multipole <SPAN CLASS="MATH"><I>l</I></SPAN> (order) and <SPAN CLASS="MATH"><I>m</I></SPAN> (degree) value
+  for the file. If a keyword is not found in the FITS file, a value of -1 is
+  returned instead. The file could eg. be a <b>HEALPix</b> map, or a set of <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> or precomputed <!-- MATH
+ $P_{lm}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN></H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/fitstools.F90"><b>src/f90/mod/fitstools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">read_par</FONT>(
+ <A HREF="#sub:read_par:filename">filename</A>, <A HREF="#sub:read_par:nside">nside</A>, <A HREF="#sub:read_par:lmax">lmax</A>, <A HREF="#sub:read_par:tfields">tfields</A><i><font color="#224422">[, <A HREF="#sub:read_par:mmax">mmax</A>]</font></i> 
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=225><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=225>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>
+filename<A NAME="sub:read_par:filename"></A>(LEN=<tt>filenamelen</tt>)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=225>filename of the FITS file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>nside<A NAME="sub:read_par:nside"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=225>`NSIDE' keyword value from the FITS header.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>lmax<A NAME="sub:read_par:lmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=225>`MAX-LPOL' keyword value from the FITS header.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>tfields<A NAME="sub:read_par:tfields"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=225>`TFIELDS' keyword value from the FITS header.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><i><font color="#224422">mmax<A NAME="sub:read_par:mmax"></A></font></i> (OPTIONAL)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=225>`MAX-MPOL' keyword value from the FITS header.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>call read_par('plm_128p.fits', nside, lmax, nhar)  
+<BR></tt>
+<blockquote>
+Checks the <SPAN CLASS="MATH"><I>N</I><SUB><I>side</I></SUB></SPAN> and maximum <SPAN CLASS="MATH"><I>l</I></SPAN> value used for the precomputed <!-- MATH
+ $P_{l
+  m}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN> that are stored in the file `plm_128p.fits'. If the file also contains tensor harmonics, nhar is returned with the value 3, otherwise it is 1.
+</blockquote>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">read_par</FONT>.</h3>
+  <DL COMPACT><DT>
+<B><SPAN  CLASS="textbf">fitstools</SPAN></B>
+<DD>module, containing:
+  <DT>
+<B>printerror</B>
+<DD>routine for printing FITS error messages.
+  <DT>
+<B><SPAN  CLASS="textbf">cfitsio</SPAN></B>
+<DD>library for FITS file handling.		
+  </DL>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">read_par</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B>synfast, plmgen</B>
+<DD>executables that produce FITS-files with keywords relevant to this routine.
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1323"
+  HREF="subroutinesnode86.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1329"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1333"
+  HREF="subroutinesnode88.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1331"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1324"
+  HREF="subroutinesnode86.htm">read_fits_cut4</A>
+
+<B>Up:</B> <A NAME="tex2html1330"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1334"
+  HREF="subroutinesnode88.htm">real_fft</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

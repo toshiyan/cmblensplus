@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>same_shape_pixels_nest &amp; same_shape_pixels_ring</TITLE>
+<META NAME="description" CONTENT="same_shape_pixels_nest &amp; same_shape_pixels_ring">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode66.htm">
+<LINK REL="previous" HREF="idlnode64.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode66.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html1011"
+  HREF="idlnode64.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1017"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1021"
+  HREF="idlnode66.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1019"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1012"
+  HREF="idlnode64.htm">rotate_coord</A>
+
+<B>Up:</B> <A NAME="tex2html1018"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1022"
+  HREF="idlnode66.htm">template_pixel_nest &amp; template_pixel_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000650000000000000000"></A>
+<A NAME="idl:same_shape_pixels_xxx"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">same_shape_pixels_nest &amp; same_shape_pixels_ring</FONT></font></b><hr>
+<H3>These IDL facilities provide the ordered list of all <b>HEALPix</b> pixels having the same shape
+  as a given template, for a resolution parameter <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN>.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/same_shape_pixels_nest.pro"><b>src/idl/toolkit/same_shape_pixels_nest.pro</b></a>&nbsp;  <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/same_shape_pixels_ring.pro"><b>src/idl/toolkit/same_shape_pixels_ring.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+same_shape_pixels_nest, 
+<A HREF="#idl:same_shape_pixels_xxx:nside">Nside</A>, 
+<A HREF="#idl:same_shape_pixels_xxx:template">Template</A>, 
+<A HREF="#idl:same_shape_pixels_xxx:list_pixels_nest">List_Pixels_Nest</A> [, 
+<A HREF="#idl:same_shape_pixels_xxx:reflexion">Reflexion</A>, 
+<A HREF="#idl:same_shape_pixels_xxx:nreplications">NREPLICATIONS</A>=]
+</h3><hr><h1>FORMAT </h1><h3>IDL>
+same_shape_pixels_ring, 
+<A HREF="#idl:same_shape_pixels_xxx:nside">Nside</A>, 
+<A HREF="#idl:same_shape_pixels_xxx:template">Template</A>, 
+<A HREF="#idl:same_shape_pixels_xxx:list_pixels_ring">List_Pixels_Ring</A> [, 
+<A HREF="#idl:same_shape_pixels_xxx:reflexion">Reflexion</A>, 
+<A HREF="#idl:same_shape_pixels_xxx:nreplications">NREPLICATIONS</A>=]
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B><A NAME="idl:same_shape_pixels_xxx:nside"></A>Nside</B>
+<DD>(IN, scalar) the <b>HEALPix</b> <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN> parameter. 
+<DT>
+<B><A NAME="idl:same_shape_pixels_xxx:template"></A>Template</B>
+<DD>(IN, scalar) identification number of the
+                   template (this number is independent of the numbering scheme considered).
+<DT>
+<B><A NAME="idl:same_shape_pixels_xxx:list_pixels_nest"></A>List_Pixels_Nest</B>
+<DD>(OUT, vector) ordered list of NESTED scheme identification numbers
+  for all pixels having the same shape as the template provided
+<DT>
+<B><A NAME="idl:same_shape_pixels_xxx:list_pixels_ring"></A>List_Pixels_Ring</B>
+<DD>(OUT, vector) ordered list of RING scheme identification numbers
+  for all pixels having the same shape as the template provided
+<DT>
+<B><A NAME="idl:same_shape_pixels_xxx:reflexion"></A>Reflexion</B>
+<DD>(OUT, OPTIONAL, vector) in {0, 3} encodes the transformation(s) to
+                   apply to each of the returned pixels to match exactly in
+                   shape and position the template provided. 0: rotation around the polar axis only,
+                   1: rotation + East-West swap (ie, reflexion around meridian),
+                   2: rotation + North-South swap (ie, reflexion around
+                   Equator), 3: rotation + East-West and North-South swaps
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+ </SMALL><DL COMPACT><DT>
+<B><A NAME="idl:same_shape_pixels_xxx:nreplications"></A>NREPLICATIONS</B>
+<DD>(OUT, OPTIONAL, scalar) number of pixels having the same shape as
+  the template. It is also the length of the vectors <TT>List_Pixel_Nest</TT>,
+  <TT>List_Pixel_Ring</TT> and <TT>Reflexion</TT>. It is either 8, 16, 4<SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN> or
+  8<SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN>.
+ </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+<FONT COLOR="#CC0000">same_shape_pixels_nest &amp; same_shape_pixels_ring</FONT> provide the ordered list of all <b>HEALPix</b> pixels having the same shape
+  as a given template, for a resolution parameter <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN>. Depending on the
+  template considered the number of such pixels is either 8, 16, 4<SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN> or
+  8<SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN>. The template pixels are all located in the Northern Hemisphere, or on the
+ Equator.
+They are chosen to have their center located at
+</SMALL>
+<BR>
+<DIV ALIGN="CENTER"><A NAME="eq:same_shape_pixels_xxx_idl"></A>
+<!-- MATH
+ \begin{eqnarray}
+z=\cos(\theta)\ge 2/3,  &\ &    0< \phi \leq \pi/2,   \nonumber\\%[Nside*(Nside+2)/4]
+     2/3 > z \geq 0,  &\ & \phi=0, \quad{\rm or}\quad  \phi=\frac{\pi}{4N_{\rm side}}. % \nonumber %[Nside]
+\end{eqnarray}
+ -->
+<TABLE CELLPADDING="0" ALIGN="CENTER" WIDTH="100%">
+<TR VALIGN="MIDDLE"><TD NOWRAP WIDTH="50%" ALIGN="RIGHT"><IMG
+ WIDTH="147" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg95.png"
+ ALT="$\displaystyle z=\cos(\theta)\ge 2/3,$"></TD>
+<TD ALIGN="CENTER" NOWRAP><IMG
+ WIDTH="11" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg96.png"
+ ALT="$\textstyle \ $"></TD>
+<TD ALIGN="LEFT" WIDTH="50%" NOWRAP><IMG
+ WIDTH="111" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg97.png"
+ ALT="$\displaystyle 0&lt; \phi \leq \pi/2,$"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+&nbsp;</TD></TR>
+<TR VALIGN="MIDDLE"><TD NOWRAP WIDTH="50%" ALIGN="RIGHT"><IMG
+ WIDTH="107" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg98.png"
+ ALT="$\displaystyle %[Nside*(Nside+2)/4]
+2/3 &gt; z \geq 0,$"></TD>
+<TD ALIGN="CENTER" NOWRAP><IMG
+ WIDTH="11" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg96.png"
+ ALT="$\textstyle \ $"></TD>
+<TD ALIGN="LEFT" WIDTH="50%" NOWRAP><IMG
+ WIDTH="206" HEIGHT="51" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg99.png"
+ ALT="$\displaystyle \phi=0, \quad{\rm or}\quad \phi=\frac{\pi}{4N_{\rm side}}. % \nonumber %[Nside]
+$"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">7</SPAN>)</TD></TR>
+</TABLE></DIV>
+<BR CLEAR="ALL"><P></P><SMALL CLASS="FOOTNOTESIZE">
+ They are numbered continuously from 0, starting at the North Pole, with the index
+ increasing in <SPAN CLASS="MATH"><IMG
+ WIDTH="16" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg100.png"
+ ALT="$\phi$"></SPAN>, and then increasing for decreasing <SPAN CLASS="MATH"><I>z</I></SPAN>.
+
+</blockquote>
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>same_shape_pixels_ring, 256, 1234, list_pixels, reflexion, nrep=np  
+<BR></tt>
+<blockquote>
+Returns in <TT>list_pixels</TT> the RING-scheme index of the all the pixels having
+the same shape as the template #1234 for <!-- MATH
+ $N_{\rm side}=256$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="96" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg101.png"
+ ALT="$N_{\rm side}=256$"></SPAN>. Upon return <TT>reflexion</TT> will
+contain the reflexions to apply to each pixel returned to match the template,
+and <TT>np</TT> will contain the number of pixels having that same shape (16 in that case).
+</blockquote><hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">same_shape_pixels_nest &amp; same_shape_pixels_ring</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B><A HREF="idlnode49.htm#idl:nside2ntemplates">nside2templates</A></B>
+<DD>returns the
+  number of template pixel shapes available for a given <SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg3.png"
+ ALT="$N_{\rm side}$"></SPAN>.
+  <DT>
+<B><A HREF="idlnode66.htm#idl:template_pixel_xxx">template_pixel_ring</A></B>
+<DD><DT>
+<B><A HREF="idlnode66.htm#idl:template_pixel_xxx">template_pixel_nest</A></B>
+<DD>return
+  the template shape matching the pixel provided
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1011"
+  HREF="idlnode64.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1017"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1021"
+  HREF="idlnode66.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1019"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1012"
+  HREF="idlnode64.htm">rotate_coord</A>
+
+<B>Up:</B> <A NAME="tex2html1018"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1022"
+  HREF="idlnode66.htm">template_pixel_nest &amp; template_pixel_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

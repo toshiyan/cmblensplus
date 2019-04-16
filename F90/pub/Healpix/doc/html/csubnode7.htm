@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>get_fits_size</TITLE>
+<META NAME="description" CONTENT="get_fits_size">
+<META NAME="keywords" CONTENT="csub">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="csub.css">
+
+<LINK REL="next" HREF="csubnode8.htm">
+<LINK REL="previous" HREF="csubnode6.htm">
+<LINK REL="up" HREF="csub.htm">
+<LINK REL="next" HREF="csubnode8.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html107"
+  HREF="csubnode6.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html113"
+  HREF="csub.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html117"
+  HREF="csubnode8.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html115"
+  HREF="csubnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html108"
+  HREF="csubnode6.htm">ang2vec</A>
+
+<B>Up:</B> <A NAME="tex2html114"
+  HREF="csub.htm">HEALPix/C subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html118"
+  HREF="csubnode8.htm">npix2nside</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00070000000000000000"></A>
+<A NAME="csub:get_fits_size"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">get_fits_size</FONT></font></b><hr>
+<H3>This routine reads the number of pixels, the resolution parameter and the pixel ordering of a FITS file containing a <b>HEALPix</b> map.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/C/subs/chealpix.c"><b>src/C/subs/chealpix.c</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><h3>
+long <FONT COLOR="#CC0000">get_fits_size</FONT>(char *filename, long *nside, char *ordering)
+</h3>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SPAN  CLASS="textbf">name&amp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>
+<FONT COLOR="#CC0000">get_fits_size</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>long</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>number of pixels the FITS file</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>filename</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>char</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>filename of the FITS-file containing the <b>HEALPix</b> map.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>ordering</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>char</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>pixel ordering, either 'RING' or 'NESTED'</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>nside</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>long</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>Healpix resolution parameter Nside</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>long npix, nside ; 
+<BR>
+char file[180]=''map.fits'' ;
+<BR>
+char order[10] ; 
+<BR>
+npix= get_fits_size(file, &amp;nside, order)  
+<BR></tt>
+<blockquote>
+Returns in npix the number of pixel in the file 'map.fits', and read in nside or
+order its resolution parameter or ordering scheme</blockquote>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">get_fits_size</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="csubnode11.htm#csub:read_healpix_map">read_healpix_map</A></B>
+<DD>subroutine to read <b>HEALPix</b> maps
+  <DT>
+<B><A HREF="csubnode13.htm#csub:write_healpix_map">write_healpix_map</A></B>
+<DD>subroutine to write <b>HEALPix</b> maps
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html107"
+  HREF="csubnode6.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html113"
+  HREF="csub.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html117"
+  HREF="csubnode8.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html115"
+  HREF="csubnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html108"
+  HREF="csubnode6.htm">ang2vec</A>
+
+<B>Up:</B> <A NAME="tex2html114"
+  HREF="csub.htm">HEALPix/C subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html118"
+  HREF="csubnode8.htm">npix2nside</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

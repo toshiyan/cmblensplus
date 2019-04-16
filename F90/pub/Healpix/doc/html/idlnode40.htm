@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>lm2index</TITLE>
+<META NAME="description" CONTENT="lm2index">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode41.htm">
+<LINK REL="previous" HREF="idlnode39.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode41.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html711"
+  HREF="idlnode39.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html717"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html721"
+  HREF="idlnode41.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html719"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html712"
+  HREF="idlnode39.htm">isynfast</A>
+
+<B>Up:</B> <A NAME="tex2html718"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html722"
+  HREF="idlnode41.htm">median_filter</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000400000000000000000"></A>
+<A NAME="idl:lm2index"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">lm2index</FONT></font></b><hr>
+<H3>This IDL routine provides a means to convert the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> degree and order
+<SPAN CLASS="MATH">(<I>l</I>, <I>m</I>)</SPAN> into the index <!-- MATH
+ $i=l^2 + l+ m + 1$
+ -->
+<SPAN CLASS="MATH"><I>i</I>=<I>l</I><SUP>2</SUP> + <I>l</I>+ <I>m</I> + 1</SPAN> (in order to be fed to
+alm2fits routine for instance)</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/misc/lm2index.pro</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">"><b>src/idl/misc/lm2index.pro</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+LM2INDEX, 
+<A HREF="#idl:lm2index:l">l</A>, 
+<A HREF="#idl:lm2index:m">m</A>, 
+<A HREF="#idl:lm2index:index">index</A>
+
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>l<A NAME="idl:lm2index:l"></A></B>
+<DD>Long array containing on INPUT the order <SPAN CLASS="MATH"><I>l</I></SPAN>. 
+    <DT>
+<B>m<A NAME="idl:lm2index:m"></A></B>
+<DD>Long array containing on INPUT the degree <SPAN CLASS="MATH"><I>m</I></SPAN>. 
+    <DT>
+<B>index<A NAME="idl:lm2index:index"></A></B>
+<DD>Long array containing on OUTPUT the index <BR>
+                 <SPAN CLASS="MATH"><I>i</I></SPAN> = <SPAN CLASS="MATH"><I>l</I><SUP>2</SUP></SPAN> + <SPAN CLASS="MATH"><I>l</I></SPAN> + <SPAN CLASS="MATH"><I>m</I></SPAN> + 1.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+<FONT COLOR="#CC0000">lm2index</FONT> converts <SPAN CLASS="MATH">(<I>l</I>, <I>m</I>)</SPAN> into <!-- MATH
+ $i=l^2 + l+ m + 1$
+ -->
+<SPAN CLASS="MATH"><I>i</I>=<I>l</I><SUP>2</SUP> + <I>l</I>+ <I>m</I> + 1</SPAN>. Note that by
+definition <!-- MATH
+ $0 \le |m|\le l$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="98" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg59.png"
+ ALT="$0 \le \vert m\vert\le l$"></SPAN> (the routine does not check for this).
+
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">lm2index</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run <FONT COLOR="#CC0000">lm2index</FONT>.
+    <DT>
+<B><A HREF="idlnode22.htm#idl:fits2alm">fits2alm</A></B>
+<DD>reads a FITS file containing
+    <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values.
+    <DT>
+<B><A HREF="idlnode8.htm#idl:alm2fits">alm2fits</A></B>
+<DD>writes <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values into a FITS file.
+    <DT>
+<B><A HREF="idlnode35.htm#idl:index2lm">index2lm</A></B>
+<DD>routine complementary to <FONT COLOR="#CC0000">lm2index</FONT>:
+    converts <SPAN CLASS="MATH"><I>i</I></SPAN> = <SPAN CLASS="MATH"><I>l</I><SUP>2</SUP></SPAN> +
+    <SPAN CLASS="MATH"><I>l</I></SPAN> + <SPAN CLASS="MATH"><I>m</I></SPAN> + 1 into <SPAN CLASS="MATH">(<I>l</I>, <I>m</I>)</SPAN>.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> <FONT COLOR="#CC0000">lm2index</FONT>, l, m, index </SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+will return in <TT>index</TT> in value <!-- MATH
+ $l^2 + l+ m + 1$
+ -->
+<SPAN CLASS="MATH"><I>l</I><SUP>2</SUP> + <I>l</I>+ <I>m</I> + 1</SPAN>
+</blockquote><SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html711"
+  HREF="idlnode39.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html717"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html721"
+  HREF="idlnode41.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html719"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html712"
+  HREF="idlnode39.htm">isynfast</A>
+
+<B>Up:</B> <A NAME="tex2html718"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html722"
+  HREF="idlnode41.htm">median_filter</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

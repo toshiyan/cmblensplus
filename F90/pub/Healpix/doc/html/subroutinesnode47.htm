@@ -1,0 +1,369 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>map2alm_iterative*</TITLE>
+<META NAME="description" CONTENT="map2alm_iterative*">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode48.htm">
+<LINK REL="previous" HREF="subroutinesnode46.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode48.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html843"
+  HREF="subroutinesnode46.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html849"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html853"
+  HREF="subroutinesnode48.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html851"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html844"
+  HREF="subroutinesnode46.htm">map2alm*</A>
+
+<B>Up:</B> <A NAME="tex2html850"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html854"
+  HREF="subroutinesnode48.htm">map2alm_spin*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000470000000000000000"></A>
+<A NAME="sub:map2alm_iterative"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">map2alm_iterative*</FONT></font></b><hr>
+<H3>This routine covers and extends the functionalities of <A HREF="subroutinesnode46.htm#sub:map2alm">map2alm</A>: it
+analyzes a (polarised) <b>HEALPix</b> <EM>RING ordered</EM> map and returns
+its <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients for temperature (and polarisation) up to a specified
+multipole, and use precomputed harmonics if those
+are provided, but it also can also perform an iterative (Jacobi) determination of the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>, and
+apply a pixel mask if one is provided.
+<BR>
+Denoting <SPAN CLASS="MATH"><B>A</B></SPAN> and <SPAN CLASS="MATH"><B>S</B></SPAN> the 
+analysis  (<A HREF="subroutinesnode46.htm#sub:map2alm">map2alm</A>) and
+synthesis (<A HREF="subroutinesnode8.htm#sub:alm2map">alm2map</A>)
+operators and  <!-- MATH
+ $\textbf{a}, \textbf{m}$
+ -->
+<SPAN CLASS="MATH"><B>a</B>, <B>m</B></SPAN> and <SPAN CLASS="MATH"><B>w</B></SPAN>, the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>, map and pixel mask vectors, the
+Jacobi iterative process reads 
+<BR>
+<DIV ALIGN="RIGHT" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+\textbf{a}^{(n)} = \textbf{a}^{(n-1)} + \textbf{A}. \left( \textbf{w}.\textbf{m}- \textbf{w}. \textbf{S}.\textbf{a}^{(n-1)} \right),
+\end{equation}
+ -->
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP><IMG
+ WIDTH="323" HEIGHT="38" BORDER="0"
+ SRC="subroutinesimg89.png"
+ ALT="\begin{displaymath}
+\textbf{a}^{(n)} = \textbf{a}^{(n-1)} + \textbf{A}. \left( ...
+...\textbf{m}- \textbf{w}. \textbf{S}.\textbf{a}^{(n-1)} \right),
+\end{displaymath}"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">10</SPAN>)</TD></TR>
+</TABLE>
+<BR CLEAR="ALL"></DIV><P></P>
+with
+<BR><P></P>
+<DIV ALIGN="CENTER" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+\textbf{a}^{(0)} = \textbf{A}.\textbf{w}.\textbf{m}.
+\end{equation}
+ -->
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP>
+<SPAN CLASS="MATH">
+	<B>a</B><SUP>(0)</SUP> = <B>A</B>.<B>w</B>.<B>m</B>.
+</SPAN>
+</TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">11</SPAN>)</TD></TR>
+</TABLE>
+</DIV>
+<BR CLEAR="ALL"><P></P>
+<br><br></H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/alm_tools.F90"><b>src/f90/mod/alm_tools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">map2alm_iterative*</FONT>(
+<A HREF="#sub:map2alm_iterative:nsmax">nsmax</A>, <A HREF="#sub:map2alm_iterative:nlmax">nlmax</A>, <A HREF="#sub:map2alm_iterative:nmmax">nmmax</A>, <A HREF="#sub:map2alm_iterative:iter_order">iter_order</A>, <A HREF="#sub:map2alm_iterative:map_TQU">map_TQU</A>, <A HREF="#sub:map2alm_iterative:alm_TGC">alm_TGC</A>[, <A HREF="#sub:map2alm_iterative:zbounds">zbounds</A>, <A HREF="#sub:map2alm_iterative:w8ring_TQU">w8ring_TQU</A>,
+<A HREF="#sub:map2alm_iterative:plm">plm</A>, <A HREF="#sub:map2alm_iterative:mask">mask</A>]
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=190><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=35><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>
+nsmax<A NAME="sub:map2alm_iterative:nsmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the <SPAN CLASS="MATH"><I>N</I><SUB><I>side</I></SUB></SPAN> value of the map to analyse.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>nlmax<A NAME="sub:map2alm_iterative:nlmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the maximum <SPAN CLASS="MATH"><I>l</I></SPAN> value for the analysis.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>nmmax<A NAME="sub:map2alm_iterative:nmmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the maximum <SPAN CLASS="MATH"><I>m</I></SPAN> value for the analysis.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>iter_order<A NAME="sub:map2alm_iterative:iter_order"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>the order of Jacobi iteration. Increasing that order
+improves the accuracy of the final <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> but increases the computation time <!-- MATH
+ $T_{\rm CPU} \propto 1 + 2 \times$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="127" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg90.png"
+ ALT="$
+T_{\rm CPU} \propto 1 + 2 \times $"></SPAN>iter_order. 
+iter_order  <SPAN CLASS="MATH">=0</SPAN> is a straight analysis, while iter_order <SPAN CLASS="MATH">=3</SPAN> is usually a
+good compromise.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>map_TQU<A NAME="sub:map2alm_iterative:map_TQU"></A>(0:12*nsmax**2-1, 1:p)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>INOUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>input map. <SPAN CLASS="MATH"><I>p</I></SPAN> is 1 or 3
+depending if temperature (T) only or temperature and polarisation (T, Q, U) are
+to be analysed. It will be altered on output if a mask is provided.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>alm_TGC<A NAME="sub:map2alm_iterative:alm_TGC"></A>(1:p, 0:nlmax, 0:nmmax)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SPC/ DPC</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>The <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values output
+from the analysis. 
+<SPAN CLASS="MATH"><I>p</I></SPAN> is 1 or 3 depending on whether polarisation is included or not. In the former
+case, the first index is (1,2,3) corresponding to (T,E,B).</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>zbounds<A NAME="sub:map2alm_iterative:zbounds"></A>(1:2), OPTIONAL</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>section of the map on which to perform the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>
+                   analysis, expressed in terms of <!-- MATH
+ $z=\sin({\rm latitude}) =
+                   \cos(\theta).$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="219" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg87.png"
+ ALT="$z=\sin({\rm latitude}) =
+\cos(\theta).$"></SPAN> If zbounds(1)<SPAN CLASS="MATH">&lt;</SPAN>zbounds(2), the analysis is
+                   performed <EM>on</EM> the strip zbounds(1)<SPAN CLASS="MATH">&lt;<I>z</I>&lt;</SPAN>zbounds(2); if not,
+                   it is performed <EM>outside</EM> of the strip
+                   zbounds(2)<SPAN CLASS="MATH">&lt;<I>z</I>&lt;</SPAN>zbounds(1). If absent, the whole map is
+analyzed</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>w8ring_TQU<A NAME="sub:map2alm_iterative:w8ring_TQU"></A>(1:2*nsmax,1:p), OPTIONAL</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>ring weights for
+quadrature corrections. p is 1 for a temperature analysis and 3 for (T,Q,U). If absent, the
+ring weights are all set to 1.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>plm<A NAME="sub:map2alm_iterative:plm"></A>(0:,1:p), OPTIONAL</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>If this
+optional matrix is passed, precomputed scalar (and tensor) <!-- MATH
+ $P_{lm}(\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg22.png"
+ ALT="$P_{lm}(\theta)$"></SPAN> are
+used instead of recursion.</TD>
+</TR>
+</TABLE>
+
+<P>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=190>mask<A NAME="sub:map2alm_iterative:mask"></A>(0:12*nsmax**2-1,1:q), OPTIONAL</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=35>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>pixel mask,
+assumed to have the same resolution (and RING ordering) as the map. The map <TT>map_TQU</TT> is
+multiplied by that mask before being analyzed, and will therefore be altered on
+output. 
+<SPAN CLASS="MATH"><I>q</I></SPAN> should be in <SPAN CLASS="MATH">{1,2,3}</SPAN>. If <SPAN CLASS="MATH"><I>p</I>=<I>q</I>=3</SPAN>, then each of
+the 3 masks is applied to the respective map. If <SPAN CLASS="MATH"><I>p</I>=3</SPAN> and <SPAN CLASS="MATH"><I>q</I>=2</SPAN>, the first mask
+is applied to the first map, and the second mask to the second (Q) and third (U)
+map. If <SPAN CLASS="MATH"><I>p</I>=3</SPAN> and <SPAN CLASS="MATH"><I>q</I>=1</SPAN>, the same mask is applied to the 3 maps. Note: the output
+<SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> are computed directly on the masked map, and are <EM>not</EM> corrected for the
+loss of power, correlation or leakage created by the mask.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>use healpix_types
+<BR>
+use alm_tools
+<BR>
+use pix_tools
+<BR>
+integer(i4b) :: nside, lmax, npix, iter 
+<BR>
+real(sp), allocatable, dimension(:,:) :: map 
+<BR>
+real(sp), allocatable, dimension(:) :: mask 
+<BR>
+complex(spc), allocatable, dimension(:,:,:) :: alm 
+<BR>
+<BR>
+nside = 256 
+<BR>
+lmax = 512 
+<BR>
+iter = 2
+<BR>
+npix = nside2npix(nside) 
+<BR>
+allocate(map(0:npix-1,1:3)) 
+<BR>
+allocate(mask(0:npix-1)) 
+<BR>
+mask(0:) = 0. ! set unvalid pixels to 0
+<BR>
+mask(0:10000-1) = 1. ! valid pixels 
+<BR>
+allocate(alm(1:3, 0:lmax, 0:lmax)
+<BR>
+call map2alm_iterative(nside, lmax, lmax, iter, map, alm, mask=mask)  
+<BR></tt>
+<blockquote>
+Analyses temperature and polarisation signals in the first 10000 pixels of <TT>map</TT> (as
+determined by <TT>mask</TT>). The map has
+an <SPAN CLASS="MATH"><I>N</I><SUB><I>side</I></SUB></SPAN> of 256, and the analysis is supposed to be performed up
+to 512 in <SPAN CLASS="MATH"><I>l</I></SPAN> and m. The resulting <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients for
+temperature and polarisation are returned in <TT>alm</TT>. Uniform weights are
+assumed. In order to improve the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> accuracy, 2 Jacobi iterations are performed.
+</blockquote>
+
+<P>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">map2alm_iterative*</FONT>.</h3>
+  <DL COMPACT><DT>
+<B>ring_analysis</B>
+<DD>Performs FFT for the ring analysis.
+  <DT>
+<B><A HREF="subroutinesnode46.htm#sub:map2alm">map2alm</A></B>
+<DD>Perform the alm analysis
+  <DT>
+<B><SPAN  CLASS="textbf">misc_util</SPAN></B>
+<DD>module, containing:
+  <DT>
+<B><A HREF="subroutinesnode15.htm#sub:assert">assert_alloc</A></B>
+<DD>routine to print error message when an array is not
+  properly allocated		
+  </DL>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">map2alm_iterative*</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B>anafast</B>
+<DD>executable using <FONT COLOR="#CC0000">map2alm_iterative*</FONT> to analyse maps.
+  <DT>
+<B><A HREF="subroutinesnode8.htm#sub:alm2map">alm2map</A></B>
+<DD>routine performing the inverse transform of <FONT COLOR="#CC0000">map2alm_iterative*</FONT>.
+  <DT>
+<B><A HREF="subroutinesnode10.htm#sub:alm2map_spin">alm2map_spin</A></B>
+<DD>synthesize spin weighted
+maps.
+  <DT>
+<B><A HREF="subroutinesnode27.htm#sub:dump_alms">dump_alms</A></B>
+<DD>write <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients
+computed by <FONT COLOR="#CC0000">map2alm_iterative*</FONT>into a FITS file
+  <DT>
+<B><A HREF="subroutinesnode48.htm#sub:map2alm_spin">map2alm_spin</A></B>
+<DD>analyze spin weighted maps.
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html843"
+  HREF="subroutinesnode46.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html849"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html853"
+  HREF="subroutinesnode48.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html851"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html844"
+  HREF="subroutinesnode46.htm">map2alm*</A>
+
+<B>Up:</B> <A NAME="tex2html850"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html854"
+  HREF="subroutinesnode48.htm">map2alm_spin*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>bl2beam</TITLE>
+<META NAME="description" CONTENT="bl2beam">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode15.htm">
+<LINK REL="previous" HREF="idlnode13.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode15.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html399"
+  HREF="idlnode13.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html405"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html409"
+  HREF="idlnode15.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html407"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html400"
+  HREF="idlnode13.htm">bin_llcl</A>
+
+<B>Up:</B> <A NAME="tex2html406"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html410"
+  HREF="idlnode15.htm">bl2fits</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000140000000000000000"></A>
+<A NAME="idl:bl2beam"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">bl2beam</FONT></font></b><hr>
+<H3>This IDL facility computes a circular beam profile <SPAN CLASS="MATH"><IMG
+ WIDTH="36" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg28.png"
+ ALT="$b(\theta)$"></SPAN> from its transfer (or window) function <SPAN CLASS="MATH"><I>b</I>(<I>l</I>)</SPAN>.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/misc/bl2beam.pro"><b>src/idl/misc/bl2beam.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+beam=<FONT COLOR="#CC0000">bl2beam</FONT>(
+<A HREF="#idl:bl2beam:bl">bl</A>, 
+<A HREF="#idl:bl2beam:theta">theta</A>, [<A HREF="#idl:bl2beam:arcmin">/ARCMIN</A> ,
+<A HREF="#idl:bl2beam:degrees">/DEGREES</A>, 
+<A HREF="#idl:bl2beam:help">/HELP</A>, 
+<A HREF="#idl:bl2beam:radians">/RADIANS</A>])
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>bl</B>
+<DD><A NAME="idl:bl2beam:bl"></A>input <SPAN CLASS="MATH"><I>b</I>(<I>l</I>)</SPAN> window function of beam (defined for all integer multipoles <SPAN CLASS="MATH"><I>l</I></SPAN> starting at 0)
+    <DT>
+<B>theta</B>
+<DD><A NAME="idl:bl2beam:theta"></A>angles <SPAN CLASS="MATH"><IMG
+ WIDTH="14" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg29.png"
+ ALT="$\theta$"></SPAN> (in arcmin, degrees or radians) 
+  at which the output beam <SPAN CLASS="MATH"><IMG
+ WIDTH="36" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg28.png"
+ ALT="$b(\theta)$"></SPAN> is to be computed.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>/ARCMIN</B>
+<DD><A NAME="idl:bl2beam:arcmin"></A>if set, <A HREF="#idl:bl2beam:theta"><SPAN CLASS="MATH"><IMG
+ WIDTH="14" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg29.png"
+ ALT="$\theta$"></SPAN></A> is in arcmin
+    <DT>
+<B>/DEGREES</B>
+<DD><A NAME="idl:bl2beam:degrees"></A>if set, <A HREF="#idl:bl2beam:theta"><SPAN CLASS="MATH"><IMG
+ WIDTH="14" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg29.png"
+ ALT="$\theta$"></SPAN></A> is in degrees
+    <DT>
+<B>/HELP</B>
+<DD><A NAME="idl:bl2beam:help"></A>if set, prints out the help header and exits
+    <DT>
+<B>/RADIANS</B>
+<DD><A NAME="idl:bl2beam:radians"></A>if set, <A HREF="#idl:bl2beam:theta"><SPAN CLASS="MATH"><IMG
+ WIDTH="14" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg29.png"
+ ALT="$\theta$"></SPAN></A> is in radians
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+Since an arbitrary beam is related to its SH Transform via
+</SMALL>
+<BR>
+<DIV ALIGN="RIGHT" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+b({\bf {r}}) = \sum_{lm} b_{lm} Y_{lm}({\bf {r}}),
+\end{equation}
+ -->
+<A NAME="eq:bl2beam_idl:br"></A>
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP><A NAME="eq:bl2beam_idl:br"></A><IMG
+ WIDTH="178" HEIGHT="64" BORDER="0"
+ SRC="idlimg39.png"
+ ALT="\begin{displaymath}
+b({\bf {r}}) = \sum_{lm} b_{lm} Y_{lm}({\bf {r}}),
+\end{displaymath}"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">3</SPAN>)</TD></TR>
+</TABLE>
+<BR CLEAR="ALL"></DIV><P></P><SMALL CLASS="FOOTNOTESIZE">
+a circular beam has a radial profile (as returned by <FONT COLOR="#CC0000">bl2beam</FONT>)
+</SMALL>
+<BR>
+<DIV ALIGN="RIGHT" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+b(\theta) = \sum_l  b(l) P_l(\theta) \frac{2l+1}{4 \pi},
+\end{equation}
+ -->
+<A NAME="eq:bl2beam_idl:btheta"></A>
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP><A NAME="eq:bl2beam_idl:btheta"></A><IMG
+ WIDTH="190" HEIGHT="66" BORDER="0"
+ SRC="idlimg40.png"
+ ALT="\begin{displaymath}
+b(\theta) = \sum_l b(l) P_l(\theta) \frac{2l+1}{4 \pi},
+\end{displaymath}"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">4</SPAN>)</TD></TR>
+</TABLE>
+<BR CLEAR="ALL"></DIV><P></P><SMALL CLASS="FOOTNOTESIZE">
+where <SPAN CLASS="MATH"><I>P</I><SUB><I>l</I></SUB></SPAN> is Legendre Polynomial and 
+</SMALL>
+<BR>
+<DIV ALIGN="RIGHT" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+b(l)=b_{l0} \sqrt{\frac{4 \pi}{2l+1}}
+\end{equation}
+ -->
+<A NAME="eq:bl2beam_idl:bl"></A>
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP><A NAME="eq:bl2beam_idl:bl"></A><IMG
+ WIDTH="115" HEIGHT="69" BORDER="0"
+ SRC="idlimg41.png"
+ ALT="\begin{displaymath}
+b(l)=b_{l0} \sqrt{\frac{4 \pi}{2l+1}}
+\end{displaymath}"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">5</SPAN>)</TD></TR>
+</TABLE>
+<BR CLEAR="ALL"></DIV><P></P><SMALL CLASS="FOOTNOTESIZE">
+is the beam window (or transfer)
+function, expected as input to <FONT COLOR="#CC0000">bl2beam</FONT>.
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">bl2beam</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run <FONT COLOR="#CC0000">bl2beam</FONT>.
+    <DT>
+<B><A HREF="idlnode12.htm#idl:beam2bl">beam2bl</A></B>
+<DD>facility to perform the inverse
+transform to <FONT COLOR="#CC0000">bl2beam</FONT>.
+    <DT>
+<B><A HREF="idlnode15.htm#idl:bl2fits">bl2fits</A></B>
+<DD>facility to write a <SPAN CLASS="MATH"><I>b</I>(<I>l</I>)</SPAN> window function into a FITS file.
+    <DT>
+<B><A HREF="idlnode23.htm#idl:fits2cl">fits2cl</A></B>
+<DD>facility to read a <SPAN CLASS="MATH"><I>b</I>(<I>l</I>)</SPAN> window
+function from a FITS file
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> bl = <A HREF="idlnode24.htm#idl:gaussbeam">gaussbeam</A>(15.d0, 4000, 1) </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> theta = dindgen(3000)/100. </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> beam = <FONT COLOR="#CC0000">bl2beam</FONT>(bl, theta, /arcmin)</SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> plot, theta, beam</SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+the example above generates a beam window function (defined for
+all <SPAN CLASS="MATH"><I>l</I></SPAN> in <!-- MATH
+ $\{0,\ldots,4000\}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="112" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg33.png"
+ ALT="$\{0,\ldots,4000\}$"></SPAN>) for a 15arcmin-FWHM gaussian beam, computes the
+beam profile for angles in <SPAN CLASS="MATH">[0,30]</SPAN> arcmin and then plots it.
+</blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html399"
+  HREF="idlnode13.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html405"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html409"
+  HREF="idlnode15.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html407"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html400"
+  HREF="idlnode13.htm">bin_llcl</A>
+
+<B>Up:</B> <A NAME="tex2html406"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html410"
+  HREF="idlnode15.htm">bl2fits</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>ud_grade</TITLE>
+<META NAME="description" CONTENT="ud_grade">
+<META NAME="keywords" CONTENT="facilities">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="facilities.css">
+
+<LINK REL="next" HREF="facilitiesnode16.htm">
+<LINK REL="previous" HREF="facilitiesnode14.htm">
+<LINK REL="up" HREF="facilities.htm">
+<LINK REL="next" HREF="facilitiesnode16.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html261"
+  HREF="facilitiesnode14.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html267"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html271"
+  HREF="facilitiesnode16.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html269"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html262"
+  HREF="facilitiesnode14.htm">synfast</A>
+
+<B>Up:</B> <A NAME="tex2html268"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html272"
+  HREF="facilitiesnode16.htm">Appendix</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000150000000000000000"></A>
+<A NAME="fac:ud_grade"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">ud_grade</FONT></font></b><hr>
+<H3>This program can upgrade or degrade the resolution of a <b>HEALPix</b> map.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/ud_grade/ud_grade.f90"><b>src/f90/ud_grade/ud_grade.f90</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>%
+ud_grade [options] [parameter_file]
+</h3></blockquote>
+<P>
+<hr><H1>COMMAND LINE OPTIONS</H1> 
+  </SMALL><DL COMPACT><DT>
+<B><TT>-d</TT></B>
+<DD><DT>
+<B><TT>--double</TT></B>
+<DD>double precision mode (see Notes on double/single precision modes on page&nbsp;<A HREF="facilitiesnode2.htm#page:ioprec"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]" SRC="crossref.png"></A>)
+    <DT>
+<B><TT>-s</TT></B>
+<DD><DT>
+<B><TT>--single</TT></B>
+<DD>single precision mode (default)
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>nside_out = </B>
+<DD><A NAME="fac:ud_grade:nside_out"></A>Defines the resolution parameter for the output map. 
+	(default= 64)
+<DT>
+<B>infile = </B>
+<DD><A NAME="fac:ud_grade:infile"></A>Defines the name of the file containing the map to be 
+up/degraded.
+(default='map.fits')
+<DT>
+<B>outfile = </B>
+<DD><A NAME="fac:ud_grade:outfile"></A>Defines the filename for the output up/degraded map.
+(default='outmap.fits')
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+
+This facility transforms the resolution of an input <b>HEALPix</b> map.
+At each step of map resolution upgrade the four output map pixels nested 
+in  one pixel of 
+the input map are given  the values of the input pixel. 
+At each step of map resolution degradation
+the four input map pixels nested in one output map pixel
+are averaged to produce the pixel
+value in the output map.
+<B>Caution</B> Beware that, at this stage, the parallel tranport of the polarization
+(Q and U Stokes vectors) that would be necessary to describe the change
+in local coordinates is <B>not</B> implemented.
+
+</blockquote>
+<P>
+<hr><H1>DATASETS</H1>
+<h3>The following datasets are involved in the <b><FONT COLOR="#CC0000">ud_grade</FONT></b>
+ processing.</h3>
+
+</SMALL><TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">  
+  <SPAN  CLASS="textbf">Dataset</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">Description</SPAN> </SMALL></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">                      </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">  
+None required </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE"> 
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">                      </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">   
+</SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"> 
+
+<P>
+<hr><H1>SUPPORT    </H1><H3>This section lists those routines and facilities (including those <i>external</i> to the <b>HEALPix</b> distribution) which can assist in the utilisation of <b><FONT COLOR="#CC0000">ud_grade</FONT></b>.</H3>
+  </SMALL><DL COMPACT><DT>
+<B><A HREF="./idlnode43.htm#idl:mollview">mollview</A></B>
+<DD>IDL routine to view an up/downgraded map.
+  <DT>
+<B><A HREF="facilitiesnode6.htm#fac:anafast">anafast</A></B>
+<DD>This <b>HEALPix</b> facility can analyse an up/downgraded map.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>EXAMPLE # 1:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> ud_grade  </SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+ud_grade runs in interactive mode, self-explanatory.
+</blockquote>
+<P>
+
+<P>
+<hr><H1>EXAMPLE # 2:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> ud_grade  filename </SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>When `filename' is present, ud_grade enters the non-interactive mode and parses
+its inputs from the file `filename'. This has the following
+structure: the first entry is a qualifier which announces to the parser
+which input immediately follows. If this input is omitted in the
+input file, the parser assumes the default value.
+If the equality sign is omitted, then the parser ignores the entry.
+In this way comments may also be included in the file.
+In this example, the file contains the following qualifiers:
+<BR>
+<tt><A HREF="#fac:ud_grade:nside_out">nside_out</A>= 64</tt><br>
+<tt><A HREF="#fac:ud_grade:infile">infile</A>= map.fits</tt><br>
+<tt><A HREF="#fac:ud_grade:outfile">outfile</A>= outmap.fits</tt><br>
+</blockquote>
+<P>
+<hr><H1>RELEASE NOTES</H1><blockquote>
+  </SMALL><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="blueball.png" ALT="*">
+ (Initial release <b>HEALPix</b> 0.90)
+    <DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="blueball.png" ALT="*">
+ Extension to multi-dimensional maps (<b>HEALPix</b> 1.20)
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+</blockquote>
+<P>
+<hr><H1>MESSAGES</H1><h3>This section describes error messages generated by <b><FONT COLOR="#CC0000">ud_grade</FONT></b>
+</h3>
+
+</SMALL><TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+  <SPAN  CLASS="textbf">Message</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">Severity</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">Text</SPAN> </SMALL></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+can not allocate memory for array xxx </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">  Fatal </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> You do not have
+                   sufficient system resources to run this
+                   facility at the map resolution you required. 
+  Try a lower map resolution.  </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">   
+</SMALL></TD>
+<TD></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"> 
+
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html261"
+  HREF="facilitiesnode14.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html267"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html271"
+  HREF="facilitiesnode16.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html269"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html262"
+  HREF="facilitiesnode14.htm">synfast</A>
+
+<B>Up:</B> <A NAME="tex2html268"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html272"
+  HREF="facilitiesnode16.htm">Appendix</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

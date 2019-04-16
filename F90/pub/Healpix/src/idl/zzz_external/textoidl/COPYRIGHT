@@ -1,0 +1,37 @@
+  Copyright (C) 1996 The Regents of the University of California, All
+  Rights Reserved.  Written by Matthew W. Craig.
+
+REDISTRIBUTION:
+  The original package may be distributed for free by anybody, anywhere, 
+  as long as the entire package is distributed, including the COPYRIGHT.
+
+  Permissions for distributing modifications of the official 
+  distribution are below.
+
+  If you want to distribute it commercially (e.g. as part of a CD or book), 
+  please contact the author. In almost all cases permission will be granted.
+
+  Of course, RSI could save us all of this trouble by simply including 
+  TeXtoIDL in its IDL distribution :). 
+
+MODIFICATIONS:
+  Feel free to modify the code as you see fit for local use.  
+
+  In the interst of avoiding a plethora of individual versions running 
+  around, I would prefer that you not distribute modify versions without 
+  first contacting me. However:
+	+ If you try to contact me at the email address in the README file 
+	  and don't get a response within two weeks, you have 
+	  permission to post it wherever you'd like, BUT
+	+ If you post a modified version, please make it clear (by 
+	  putting a line or two into the file called LOCAL_MODIFCATIONS) that 
+	  the version you are distributing has been modified and 
+	  what modifications you have made, AND
+	+ Please keep a copy of the original COPYRIGHT notice in the file.
+
+
+
+WARRANTY:
+  There is none.  I hope you find the code useful, though.  See the
+file DISCLAIMER for lots of details about exactly what no warranty
+means.

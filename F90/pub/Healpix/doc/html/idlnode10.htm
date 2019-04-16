@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>angulardistance</TITLE>
+<META NAME="description" CONTENT="angulardistance">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode11.htm">
+<LINK REL="previous" HREF="idlnode9.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode11.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html351"
+  HREF="idlnode9.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html357"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html361"
+  HREF="idlnode11.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html359"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html352"
+  HREF="idlnode9.htm">ang2vec</A>
+
+<B>Up:</B> <A NAME="tex2html358"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html362"
+  HREF="idlnode11.htm">azeqview</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000100000000000000000"></A>
+<A NAME="idl:angulardistance"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">angulardistance</FONT></font></b><hr>
+<H3>This IDL facility computes the angular distance (in RADIANS) between pairs of vectors.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/angulardistance.pro"><b>src/idl/toolkit/angulardistance.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+distance=<FONT COLOR="#CC0000">angulardistance</FONT>(<A HREF="#idl:angulardistance:v">V</A>, 
+<A HREF="#idl:angulardistance:w">W</A>,
+[<A HREF="#idl:angulardistance:help">/HELP</A>])
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>V</B>
+<DD><A NAME="idl:angulardistance:v"></A>3D-vector (of shape (3) or (1,3)) or list of n 3D-vectors (of shape (n,3))
+    <DT>
+<B>W</B>
+<DD><A NAME="idl:angulardistance:w"></A>3D-vector (of shape (3) or (1,3)) or list of n 3D-vectors (of shape
+(n,3))
+<BR>
+It is <B>not</B> necessary for <TT>V</TT> and <TT>W</TT> vectors to be normalised to 1
+        upon calling the function
+<BR>
+If <TT>V</TT> (and/or <TT>W</TT>) has the form (n,3,4) (like the pixel <EM>corners</EM> returned by
+ <A HREF="idlnode52.htm#idl:pix_tools">pix2vec_*</A>), it should be preprocessed with
+ <TT>V = reform( transpose(V, [0,2,1]), n_elements(V)/3, 3)</TT>
+  before being passed to <FONT COLOR="#CC0000">angulardistance</FONT>.  
+</DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>/HELP</B>
+<DD><A NAME="idl:angulardistance:help"></A>if set, prints out the help header and exits
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"> 
+ 
+</SMALL><hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+After renormalizing the vectors, <FONT COLOR="#CC0000">angulardistance</FONT> computes the angular distance using
+<!-- MATH
+ $\cos^{-1}(\ensuremath{\bf V}.\ensuremath{\bf W})$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="106" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg19.png"
+ ALT="$\cos^{-1}(\ensuremath{\bf V}.\ensuremath{\bf W})$"></SPAN> in general, or
+<!-- MATH
+ $2 \sin^{-1}\left(||\ensuremath{\bf V}-\ensuremath{\bf W}||\right)/2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="181" HEIGHT="42" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg20.png"
+ ALT="$2 \sin^{-1}\left(\vert\vert\ensuremath{\bf V}-\ensuremath{\bf W}\vert\vert\right)/2$"></SPAN> when
+ <!-- MATH
+ $\ensuremath{\bf V}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="21" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg21.png"
+ ALT="$\ensuremath{\bf V}$"></SPAN> and <!-- MATH
+ $\ensuremath{\bf W}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg22.png"
+ ALT="$\ensuremath{\bf W}$"></SPAN> are almost aligned.
+<BR>
+If <!-- MATH
+ $\ensuremath{\bf V}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="21" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg21.png"
+ ALT="$\ensuremath{\bf V}$"></SPAN> (resp. <!-- MATH
+ $\ensuremath{\bf W}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg22.png"
+ ALT="$\ensuremath{\bf W}$"></SPAN>) is a single vector, while <!-- MATH
+ $\ensuremath{\bf W}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg22.png"
+ ALT="$\ensuremath{\bf W}$"></SPAN> (resp. <!-- MATH
+ $\ensuremath{\bf W}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg22.png"
+ ALT="$\ensuremath{\bf W}$"></SPAN>) is a list of vectors,
+then the result is a list of distances
+ <!-- MATH
+ $d_i = {\rm dist}(\ensuremath{\bf V},{\ensuremath{\bf W}}_i)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="142" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg23.png"
+ ALT="$d_i = {\rm dist}(\ensuremath{\bf V},{\ensuremath{\bf W}}_i)$"></SPAN> 
+(resp. <!-- MATH
+ $d_i = {\rm dist}({\ensuremath{\bf V}}_i,{\ensuremath{\bf W}})$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="142" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg24.png"
+ ALT="$d_i = {\rm dist}({\ensuremath{\bf V}}_i,{\ensuremath{\bf W}})$"></SPAN>).
+<BR>
+If both <!-- MATH
+ $\ensuremath{\bf V}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="21" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg21.png"
+ ALT="$\ensuremath{\bf V}$"></SPAN> and <!-- MATH
+ $\ensuremath{\bf W}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg22.png"
+ ALT="$\ensuremath{\bf W}$"></SPAN> are lists of vector <EM>of the same length</EM>,
+then the result is a list of distances
+ <!-- MATH
+ $d_i = {\rm dist}({\ensuremath{\bf V}}_i,{\ensuremath{\bf W}}_i)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="147" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg25.png"
+ ALT="$d_i = {\rm dist}({\ensuremath{\bf V}}_i,{\ensuremath{\bf W}}_i)$"></SPAN>.
+<BR>
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">angulardistance</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run <FONT COLOR="#CC0000">angulardistance</FONT>.
+</DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE">   nside=8</SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE">       <A HREF="idlnode52.htm#idl:pix_tools">pix2vec_ring</A>, nside, lindgen(<A HREF="idlnode48.htm#idl:nside2npix">nside2npix</A>(nside)), vpix </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE">       <A HREF="idlnode43.htm#idl:mollview">mollview</A>, angulardistance( vpix, [1,1,1])</SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>will plot the angular distance between the Healpix pixels center for
+<!-- MATH
+ $N_{\rm side}=8$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="77" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg26.png"
+ ALT="$N_{\rm side}=8$"></SPAN> , and the vector <!-- MATH
+ $(x,y,z) = (1,1,1)/\sqrt{3}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="185" HEIGHT="43" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg27.png"
+ ALT="$(x,y,z) = (1,1,1)/\sqrt{3}$"></SPAN></blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html351"
+  HREF="idlnode9.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html357"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html361"
+  HREF="idlnode11.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html359"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html352"
+  HREF="idlnode9.htm">ang2vec</A>
+
+<B>Up:</B> <A NAME="tex2html358"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html362"
+  HREF="idlnode11.htm">azeqview</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

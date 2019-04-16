@@ -1,0 +1,76 @@
+/* CCS for Healpix HTML documentation */
+
+
+/* Century Schoolbook font is very similar to Computer Modern Math: cmmi */
+.BOLDMATH { font-family: "Century Schoolbook", serif; font-weight: bold }
+.MATH     { font-family: "Century Schoolbook", serif; }
+.MATH I   { font-family: "Century Schoolbook", serif; font-style: italic }
+
+/* implement both fixed-size and relative sizes */
+SMALL.XTINY		{ font-size : xx-small }
+SMALL.TINY		{ font-size : x-small  }
+SMALL.SCRIPTSIZE	{ font-size : smaller  }
+SMALL.FOOTNOTESIZE	{ font-size : small    }
+SMALL.SMALL		{  }
+BIG.LARGE		{  }
+BIG.XLARGE		{ font-size : large    }
+BIG.XXLARGE		{ font-size : x-large  }
+BIG.HUGE		{ font-size : larger   }
+BIG.XHUGE		{ font-size : xx-large }
+
+body { color: #000000;
+	background: #FFFFFA;
+	margin: 10px 10px 10px 10px;
+	font: small 'Lucida Grande', Geneva, Verdana, Arial, Helvetica, sans-serif;
+	line-height: normal;
+}
+
+
+p { 	padding: 0px 0px 0px 0px; 
+	margin: 1.12em 0; 
+	line-height: normal;
+  }
+
+blockquote { 
+	font-size: small;
+	line-height: normal;
+}
+
+tt		{ 
+	font: monospace;
+}
+
+/* heading styles */
+h1, h2, h3, h4, h5 {
+	font-family: 'Trebuchet MS', Tahoma, Arial, Sans-serif;
+	color: #555555;
+	padding: 5px 10px 5px 0px;
+}	
+
+address { font-size: smaller }
+
+/* mathematics styles */
+DIV.displaymath		{ }	/* math displays */
+TD.eqno			{ }	/* equation-number cells */
+
+
+
+/* document-specific styles come next */
+/* DIV.abstract { color: #FF0000; }  */
+DIV.centerline		{   }
+DIV.em		{   }
+DIV.navigation		{ 
+	text-align: center;  
+}
+DIV.quote		{   }
+DIV.small		{   }
+DIV.verse		{   }
+
+SPAN.Alph		{   }
+SPAN.arabic		{   }
+SPAN.bf		{   }
+SPAN.it		{   }
+SPAN.sc		{   }
+SPAN.textbf		{ font-weight: bold  }
+SPAN.tt		{   }
+

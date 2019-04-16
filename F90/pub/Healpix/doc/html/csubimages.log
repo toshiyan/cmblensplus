@@ -1,0 +1,281 @@
+This is pdfeTeX, Version 3.141592-1.21a-2.2 (Web2C 7.5.4) (format=latex 2011.8.3)  26 AUG 2016 12:56
+entering extended mode
+**./csubimages.tex
+(./csubimages.tex
+LaTeX2e <2008/12/01>
+Babel <v3.8d> and hyphenation patterns for american, french, german, ngerman, b
+ahasa, basque, bulgarian, catalan, croatian, czech, danish, dutch, esperanto, e
+stonian, finnish, greek, icelandic, irish, italian, latin, magyar, norsk, polis
+h, portuges, romanian, russian, serbian, slovak, slovene, spanish, swedish, tur
+kish, ukrainian, nohyphenation, loaded.
+
+(/sw2/share/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2004/02/16 v1.4f Standard LaTeX document class
+(/sw2/share/texmf-dist/tex/latex/base/size12.clo
+File: size12.clo 2004/02/16 v1.4f Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (/sw2/share/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+) (/tmp/Healpix_3.31/doc/TeX/healpix.sty
+Package: healpix 
+Package: healpix macros (A.J. Banday, M. Bartelmann)
+Document format
+(/sw2/share/texmf-dist/tex/latex/a4wide/a4wide.sty
+Package: a4wide 1994/08/30
+(/sw2/share/texmf-dist/tex/latex/ntgclass/a4.sty
+Package: a4 2004/04/15 v1.2g A4 based page layout
+)) (/sw2/share/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+(/sw2/share/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+) (/sw2/share/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+(/sw2/share/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+) (/sw2/share/texmf-dist/tex/latex/graphics/graphics.cfg
+File: graphics.cfg 2005/02/03 v1.3 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: dvips.def on input line 80.
+(/sw2/share/texmf-dist/tex/latex/graphics/dvips.def
+File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+) (/sw2/share/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+\fancy@headwidth=\skip43
+\f@ncyO@elh=\skip44
+\f@ncyO@erh=\skip45
+\f@ncyO@olh=\skip46
+\f@ncyO@orh=\skip47
+\f@ncyO@elf=\skip48
+\f@ncyO@erf=\skip49
+\f@ncyO@olf=\skip50
+\f@ncyO@orf=\skip51
+) (/tmp/Healpix_3.31/doc/TeX/hpxversion.tex) (/tmp/Healpix_3.31/doc/TeX/idlvers
+ion.tex) (/tmp/Healpix_3.31/doc/TeX/gdlversion.tex)
+\bigicon=\skip52
+\smallicon=\skip53
+\blocksize=\skip54
+\c@creq=\count87
+\c@savecreq=\count88
+) (/sw2/share/texmf-local/tex/latex/html/html.sty (/sw2/share/texmf-dist/tex/la
+tex/hyperref_bk/hyperref.sty
+Package: hyperref 2003/11/30 v6.74m Hypertext links for LaTeX
+\@linkdim=\dimen105
+\Hy@linkcounter=\count89
+\Hy@pagecounter=\count90
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/pd1enc.def
+File: pd1enc.def 2003/11/30 v6.74m Hyperref: PDFDocEncoding definition (HO)
+) (/sw2/share/texmf-dist/tex/latex/hyperref_bk/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive and teTeX
+)
+Package hyperref Info: Hyper figures OFF on input line 1880.
+Package hyperref Info: Link nesting OFF on input line 1885.
+Package hyperref Info: Hyper index ON on input line 1888.
+Package hyperref Info: Plain pages ON on input line 1893.
+Package hyperref Info: Backreferencing OFF on input line 1900.
+Implicit mode ON; LaTeX internals redefined
+Package hyperref Info: Bookmarks ON on input line 2004.
+(/sw2/share/texmf-local/tex/latex/html/url.sty
+Package: url 1999/03/02  ver 1.4  Verb mode for urls, email addresses, and file
+ names
+)
+LaTeX Info: Redefining \url on input line 2143.
+\Fld@menulength=\count91
+\Field@Width=\dimen106
+\Fld@charsize=\dimen107
+\Choice@toks=\toks15
+\Field@toks=\toks16
+Package hyperref Info: Hyper figures OFF on input line 2618.
+Package hyperref Info: Link nesting OFF on input line 2623.
+Package hyperref Info: Hyper index ON on input line 2626.
+Package hyperref Info: backreferencing OFF on input line 2633.
+Package hyperref Info: Link coloring OFF on input line 2638.
+\c@Item=\count92
+\c@Hfootnote=\count93
+)
+*hyperref using default driver hdvips*
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/hdvips.def
+File: hdvips.def 2003/11/30 v6.74m Hyperref driver for dvips
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/pdfmark.def
+File: pdfmark.def 2003/11/30 v6.74m Hyperref definitions for pdfmark specials
+\pdf@docset=\toks17
+\pdf@box=\box26
+\pdf@toks=\toks18
+\pdf@defaulttoks=\toks19
+\Fld@listcount=\count94
+\@outlinefile=\write3
+))
+Package: html 1999/07/19 v1.38 hypertext commands for latex2html (nd, hws, rrm)
+
+\c@lpart=\count95
+\c@lchapter=\count96
+\c@chapter=\count97
+\c@lsection=\count98
+\c@lsubsection=\count99
+\c@lsubsubsection=\count100
+\c@lparagraph=\count101
+\c@lsubparagraph=\count102
+\c@lsubsubparagraph=\count103
+\ptrfile=\write4
+) (/sw2/share/texmf-dist/tex/latex/base/makeidx.sty
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 24.
+(/sw2/share/texmf-dist/tex/latex/graphics/color.sty
+Package: color 1999/02/16 v1.0i Standard LaTeX Color (DPC)
+(/sw2/share/texmf-dist/tex/latex/graphics/color.cfg
+File: color.cfg 2005/02/03 v1.3 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: dvips.def on input line 125.
+(/sw2/share/texmf-dist/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+)) (/sw2/share/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2004/02/05 v1.0d Input encoding file
+(/sw2/share/texmf-dist/tex/latex/base/latin1.def
+File: latin1.def 2004/02/05 v1.0d Input encoding file
+))
+\sizebox=\box27
+\lthtmlwrite=\write5
+(./csubimages.aux (/tmp/Healpix_3.31/doc/TeX/ang2vec_c.aux) (/tmp/Healpix_3.31/
+doc/TeX/get_fits_size_c.aux) (/tmp/Healpix_3.31/doc/TeX/npix2nside_c.aux) (/tmp
+/Healpix_3.31/doc/TeX/nside2npix_c.aux) (/tmp/Healpix_3.31/doc/TeX/pix_tools_c.
+aux) (/tmp/Healpix_3.31/doc/TeX/read_healpix_map_c.aux) (/tmp/Healpix_3.31/doc/
+TeX/vec2ang_c.aux) (/tmp/Healpix_3.31/doc/TeX/write_healpix_map_c.aux))
+\openout1 = `csubimages.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+Package hyperref Info: Link coloring ON on input line 136.
+(/sw2/share/texmf-dist/tex/latex/hyperref_bk/nameref.sty
+Package: nameref 2003/12/03 v2.21 Cross-referencing by name of section
+\c@section@level=\count104
+)
+LaTeX Info: Redefining \ref on input line 136.
+LaTeX Info: Redefining \pageref on input line 136.
+\openout3 = `csubimages.out'.
+
+
+latex2htmlLength hsize=349.0pt
+
+latex2htmlLength vsize=688.0pt
+
+latex2htmlLength hoffset=0.0pt
+
+latex2htmlLength voffset=0.0pt
+
+latex2htmlLength topmargin=0.0pt
+
+latex2htmlLength topskip=0.00003pt
+
+latex2htmlLength headheight=0.0pt
+
+latex2htmlLength headsep=0.0pt
+
+latex2htmlLength parskip=3.875pt plus 1.03331pt minus 0.5167pt
+
+latex2htmlLength oddsidemargin=0.0pt
+
+latex2htmlLength evensidemargin=0.0pt
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 162.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 162.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 162.
+l2hSize :tex2html_wrap_inline93:8.33331pt::0.0pt::6.38954pt.
+[1
+
+
+
+]
+l2hSize :tex2html_wrap_inline95:7.75pt::0.0pt::7.6833pt.
+[2
+
+
+]
+l2hSize :tex2html_wrap_inline97:8.83331pt::8.83331pt::7.5416pt.
+[3
+
+
+]
+l2hSize :tex2html_wrap_inline99:9.5pt::9.5pt::52.84537pt.
+[4
+
+
+]
+l2hSize :tex2html_wrap_inline190:9.5pt::9.5pt::27.74623pt.
+[5
+
+
+]
+l2hSize :tex2html_wrap_inline194:8.83331pt::8.83331pt::71.98393pt.
+[6
+
+
+]
+l2hSize :tex2html_wrap_inline196:8.83331pt::8.83331pt::70.16101pt.
+[7
+
+
+]
+l2hSize :tex2html_wrap_inline198:8.33331pt::0.0pt::45.91965pt.
+[8
+
+
+]
+l2hSize :tex2html_wrap_inline202:7.75pt::0.0pt::13.55824pt.
+[9
+
+
+]
+l2hSize :tex2html_wrap_inline348:8.7pt::8.7pt::24.71059pt.
+[10
+
+
+]
+l2hSize :tex2html_wrap_inline350:8.7pt::8.7pt::22.0661pt.
+[11
+
+
+]
+l2hSize :tex2html_wrap_inline356:10.68889pt::10.68889pt::78.49446pt.
+[12
+
+
+] (./csubimages.aux) ) 
+Here is how much of TeX's memory you used:
+ 3067 strings out of 94501
+ 41950 string characters out of 1175975
+ 100018 words of memory out of 1500000
+ 6198 multiletter control sequences out of 10000+50000
+ 7304 words of font info for 26 fonts, out of 1200000 for 2000
+ 580 hyphenation exceptions out of 8191
+ 32i,6n,45p,231b,248s stack positions out of 5000i,500n,6000p,200000b,5000s
+
+Output written on csubimages.dvi (12 pages, 9472 bytes).

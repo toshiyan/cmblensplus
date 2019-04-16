@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>dump_alms*</TITLE>
+<META NAME="description" CONTENT="dump_alms*">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode28.htm">
+<LINK REL="previous" HREF="subroutinesnode26.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode28.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html603"
+  HREF="subroutinesnode26.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html609"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html613"
+  HREF="subroutinesnode28.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html611"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html604"
+  HREF="subroutinesnode26.htm">dist2holes_nest</A>
+
+<B>Up:</B> <A NAME="tex2html610"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html614"
+  HREF="subroutinesnode28.htm">fill_holes_nest</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000270000000000000000"></A>
+<A NAME="sub:dump_alms"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">dump_alms*</FONT></font></b><hr>
+<H3>This routine stores  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values in a binary FITS file. The FITS file created will contain one integer column with <!-- MATH
+ $index=l^2+l+m+1$
+ -->
+<SPAN CLASS="MATH"><I>index</I>=<I>l</I><SUP>2</SUP>+<I>l</I>+<I>m</I>+1</SPAN> and 2 single precision columns with real/imaginary  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values. One can store temperature <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> or polarisation, <SPAN CLASS="MATH"><I>a</I><SUP><I>E</I></SUP><SUB><I>lm</I></SUB></SPAN> or <SPAN CLASS="MATH"><I>a</I><SUP><I>B</I></SUP><SUB><I>lm</I></SUB></SPAN>. If temperature is specified, a FITS file is created. If polarisation is specified, an old FITS file is opened and extra extensions is created.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/fitstools.F90"><b>src/f90/mod/fitstools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">dump_alms*</FONT>(
+<A HREF="#sub:dump_alms:filename">filename</A>, <A HREF="#sub:dump_alms:alms">alms</A>, <A HREF="#sub:dump_alms:nlmax">nlmax</A>, <A HREF="#sub:dump_alms:header">header</A>, <A HREF="#sub:dump_alms:nlheader">nlheader</A>, <A HREF="#sub:dump_alms:extno">extno</A>
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>
+filename<A NAME="sub:dump_alms:filename"></A>(LEN=<tt>filenamelen</tt>)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>filename for the FITS-file to store the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> in.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nlmax<A NAME="sub:dump_alms:nlmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>maximum <SPAN CLASS="MATH"><I>l</I></SPAN> value to store.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>alms<A NAME="sub:dump_alms:alms"></A>(0:nlmax,0:nlmax)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SPC/ DPC</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>array with <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>, in the format used
+by eg. <A HREF="subroutinesnode46.htm#sub:map2alm">map2alm</A>, so <TT>alms(l,m)</TT> corresponds to  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>extno<A NAME="sub:dump_alms:extno"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>extension number. If 0 is specified, a FITS file is created and <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> is stored in the first FITS extension as temperature <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>. If 1 or 2 is specified, an already existing file is opened and a 2nd or 3rd extension is created, treating <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> as <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>E</I></SUP></SPAN> or <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB><SUP><I>B</I></SUP></SPAN>.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>nlheader<A NAME="sub:dump_alms:nlheader"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>number of header lines to write to the file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>header<A NAME="sub:dump_alms:header"></A>(LEN=80) (1:nlheader)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>the header to the FITS-file.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>call dump_alms ('alms.fits', alms, 64, header, 100, 1)  
+<BR></tt>
+<blockquote>
+Opens an already existing FITS file which contains temperature <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>. An extra extension is added to the file where the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> array are written in a three-column format as described above. 100 header lines are written to the file from the array header(1:80). 
+</blockquote>
+
+<P>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">dump_alms*</FONT>.</h3>
+  <DL COMPACT><DT>
+<B><SPAN  CLASS="textbf">fitstools</SPAN></B>
+<DD>module, containing:
+  <DT>
+<B>printerror</B>
+<DD>routine for printing FITS error messages.
+  <DT>
+<B><SPAN  CLASS="textbf">cfitsio</SPAN></B>
+<DD>library for FITS file handling.		
+  </DL>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">dump_alms*</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode29.htm#sub:fits2alms">fits2alms</A>, <A HREF="subroutinesnode84.htm#sub:read_conbintab">read_conbintab</A></B>
+<DD>routines to read <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> from a FITS-file 
+  <DT>
+<B><A HREF="subroutinesnode11.htm#sub:alms2fits">alms2fits</A></B>
+<DD>has the same function as <FONT COLOR="#CC0000">dump_alms*</FONT> but is more general.
+  </DL>
+
+<P>
+
+<P>
+
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html603"
+  HREF="subroutinesnode26.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html609"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html613"
+  HREF="subroutinesnode28.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html611"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html604"
+  HREF="subroutinesnode26.htm">dist2holes_nest</A>
+
+<B>Up:</B> <A NAME="tex2html610"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html614"
+  HREF="subroutinesnode28.htm">fill_holes_nest</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

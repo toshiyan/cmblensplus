@@ -1,0 +1,597 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>sky_ng_sim</TITLE>
+<META NAME="description" CONTENT="sky_ng_sim">
+<META NAME="keywords" CONTENT="facilities">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="facilities.css">
+
+<LINK REL="next" HREF="facilitiesnode13.htm">
+<LINK REL="previous" HREF="facilitiesnode11.htm">
+<LINK REL="up" HREF="facilities.htm">
+<LINK REL="next" HREF="facilitiesnode13.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html225"
+  HREF="facilitiesnode11.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html231"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html235"
+  HREF="facilitiesnode13.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html233"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html226"
+  HREF="facilitiesnode11.htm">process_mask</A>
+
+<B>Up:</B> <A NAME="tex2html232"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html236"
+  HREF="facilitiesnode13.htm">smoothing</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000120000000000000000"></A>
+<A NAME="fac:sky_ng_sim"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">sky_ng_sim</FONT></font></b><hr>
+<H3>This program can be used to create temperature <b>HEALPix</b> maps computed as realisations 
+of random <EM>Non-Gaussian</EM> fields on a sphere (either even power of a Gaussian
+distribution, or Simple Harmonics Oscillator PDF, see Description section for
+details). 
+<BR>
+It is directly adapted from the NGSIMS code described in 
+<A NAME="tex2html16"
+  HREF="http://cdsads.u-strasbg.fr/abs/2005MNRAS.357....1R">Rocha et al, MNRAS, 357, 1 (2005)</A>
+<BR>
+The operation count is dominated by a term scaling as
+ <!-- MATH
+ ${\cal {O}}(N_{\rm pix}^{1/2} l_{\rm max}^2)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="104" HEIGHT="47" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg34.png"
+ ALT="${\cal {O}}(N_{\rm pix}^{1/2} l_{\rm max}^2)$"></SPAN>. 
+The map angular power spectrum, resolution, Gaussian beam FWHM or arbitrary beam window  
+and random seed for the simulation can be selected by the user.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/ngsims_full_sky/sky_ng_sim.F90"><b>src/f90/ngsims_full_sky/sky_ng_sim.F90</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>%
+sky_ng_sim [parameter_file]
+</h3></blockquote>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>simul_type = </B>
+<DD><A NAME="fac:sky_ng_sim:simul_type"></A>Defines the simulation type, 1=temperature map only,
+       3=temperature and its first spatial derivatives,
+       4=temperature and its first and second spatial derivatives.
+(default= 1).
+    <DT>
+<B>infile = </B>
+<DD><A NAME="fac:sky_ng_sim:infile"></A>Defines the input power spectrum file,
+	(default= HEALPIX/test/cl.fits).
+<DT>
+<B>outfile_alms = </B>
+<DD><A NAME="fac:sky_ng_sim:outfile_alms"></A>Defines the FITS file in which to output <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> used
+      for the simulation (default= `')
+<DT>
+<B>outfile = </B>
+<DD><A NAME="fac:sky_ng_sim:outfile"></A>Defines the output map file, (default= test.fits).
+<DT>
+<B>nsmax = </B>
+<DD><A NAME="fac:sky_ng_sim:nsmax"></A>Defines the resolution of the map.
+(default= 32)
+<DT>
+<B>nlmax = </B>
+<DD><A NAME="fac:sky_ng_sim:nlmax"></A>Defines the maximum <SPAN CLASS="MATH"><I>l</I></SPAN> value 
+to be used in the simulation. WARNING: <SPAN CLASS="MATH"><I>l</I><SUB><I>max</I></SUB></SPAN> can not exceed
+the value <SPAN CLASS="MATH"><IMG
+ WIDTH="19" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="facilitiesimg35.png"
+ ALT="$4\cdot$"></SPAN> <TT>nsmax</TT>, because the coefficients of the  average Fourier 
+pixel window functions
+are precomputed and provided up to this limit.
+(default= 2*<TT>nsmax</TT>)
+<DT>
+<B>fwhm_arcmin = </B>
+<DD><A NAME="fac:sky_ng_sim:fwhm_arcmin"></A>Defines the FWHM size in arcminutes 
+of the simulated Gaussian beam.
+(default= 0.0)
+<DT>
+<B>beam_file = </B>
+<DD><A NAME="fac:sky_ng_sim:beam_file"></A>Defines the FITS file describing the
+    Legendre window
+    function of the circular beam to be used for the
+    simulation. If set to an existing file name, it will override the
+    <TT>fhwm_arcmin</TT> given above. (default=`')
+<DT>
+<B>windowfile = </B>
+<DD><A NAME="fac:sky_ng_sim:windowfile"></A>Defines the input filename  for the pixel
+    smoothing windows 
+(default= pixel_window_n????.fits, see Notes on default files and directories
+on page&nbsp;<A HREF="facilitiesnode2.htm#page:defdir"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]" SRC="crossref.png"></A>)
+<DT>
+<B>winfiledir = </B>
+<DD>Defines the directory in which windowfile
+    is located (default : see Notes on default files and directories on
+page&nbsp;<A HREF="facilitiesnode2.htm#page:defdir"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]" SRC="crossref.png"></A>).
+<DT>
+<B>iseed = </B>
+<DD><A NAME="fac:sky_ng_sim:iseed"></A>Defines the seed of the pseudo-random sequence to be used 
+for the generation of the non-gaussian white noise (default= 1)
+<DT>
+<B>plot = </B>
+<DD><A NAME="fac:sky_ng_sim:plot"></A>If <FONT COLOR="#CC0000">sky_ng_sim</FONT>was linked with the PGPLOT library during compilation, and
+if <TT>plot</TT> is set to (case unsensitive) <TT>.true.</TT>, <TT>t</TT>, <TT>yes</TT>, <TT>y</TT>  or
+1, then the histogram of the simulated non-gaussian is produced, overplotted
+with the theoretical PDF; the histogram of the final map pixel values,
+overplotted with a PDF of a gaussian of same mean and variance is subsequently
+produced.
+(default=.false.)
+<DT>
+<B>pdf_choice=1 </B>
+<DD><A NAME="fac:sky_ng_sim:pdf_choice"></A>Choice of non-Gaussian PDF to use: 1= Simple
+Harmonics oscillator (see Eq&nbsp;<A HREF="#eq:nongauss_sho">2</A> below)
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+<B>sigma0= </B>
+<A NAME="fac:sky_ng_sim:sigma0"></A>RMS of oscillator ground state
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+<B>na= </B>
+<A NAME="fac:sky_ng_sim:na"></A>Integer in {0, 20}. Number of <SPAN CLASS="MATH"><IMG
+ WIDTH="17" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="facilitiesimg36.png"
+ ALT="$\alpha$"></SPAN> coefficients to be
+given (default=3).
+Note: analytical calculation of the PDF moments
+can only be done for <TT>na</TT><SPAN CLASS="MATH"><IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg37.png"
+ ALT="$\le 3$"></SPAN>. 
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+<B>alpha_1=, alpha_2=, ... </B>
+<A NAME="fac:sky_ng_sim:alpha_1"></A><A NAME="fac:sky_ng_sim:alpha_2"></A><A NAME="fac:sky_ng_sim:alpha_3"></A>Real values of <SPAN CLASS="MATH"><IMG
+ WIDTH="22" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg38.png"
+ ALT="$\alpha_i$"></SPAN> coefficients for
+<SPAN CLASS="MATH"><I>i</I></SPAN> in <SPAN CLASS="MATH"><IMG
+ WIDTH="52" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg39.png"
+ ALT="$[1, {\tt na}]$"></SPAN></DL>
+<DT>
+<B>pdf_choice=2</B>
+<DD>Choice of non-Gaussian PDF to use: 2=Power of a
+Gaussian (see Eq&nbsp;<A HREF="#eq:nongauss_powgauss">3</A> below)
+      <DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+<B>npower = </B>
+<A NAME="fac:sky_ng_sim:npower"></A>Positive integer in {1,4} (default=1). The gaussian
+will be set to the power 2*<TT>npower</TT>.
+     </DL></DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+A random non-Gaussian white noise map is generated, using either
+</SMALL><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ a simple linear harmonic oscillator, where the PDF of the pixel
+temperature <SPAN CLASS="MATH"><I>t</I></SPAN> is
+	<BR>
+<DIV ALIGN="RIGHT" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+\rho_{\rm SHO}(t) = \left| \psi_n\right|^2 = e^{-t^2/2\sigma_0^2} \left|\sum_{i=0}^{n} \alpha_i
+C_i H_i \left(\frac{t}{\sqrt{2}\sigma_0}\right)\right|^2
+\end{equation}
+ -->
+<A NAME="eq:nongauss_sho"></A>
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP><A NAME="eq:nongauss_sho"></A><IMG
+ WIDTH="388" HEIGHT="59" BORDER="0"
+ SRC="facilitiesimg40.png"
+ ALT="\begin{displaymath}
+\rho_{\rm SHO}(t) = \left\vert \psi_n\right\vert^2 = e^{-t^...
+...C_i H_i \left(\frac{t}{\sqrt{2}\sigma_0}\right)\right\vert^2
+\end{displaymath}"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">2</SPAN>)</TD></TR>
+</TABLE>
+<BR CLEAR="ALL"></DIV><P></P>
+where <SPAN CLASS="MATH"><I>H</I><SUB><I>i</I></SUB></SPAN> are the Hermite polynomials, <SPAN CLASS="MATH"><I>C</I><SUB><I>i</I></SUB></SPAN> their normalization constants,
+<SPAN CLASS="MATH"><IMG
+ WIDTH="23" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg41.png"
+ ALT="$\sigma_0^2$"></SPAN> the variance of the (Gaussian) ground state <!-- MATH
+ $\left|\psi_0\right|^2,$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="51" HEIGHT="45" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg42.png"
+ ALT="$\left\vert\psi_0\right\vert^2,$"></SPAN>
+<SPAN CLASS="MATH"><IMG
+ WIDTH="22" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg38.png"
+ ALT="$\alpha_i$"></SPAN> for <SPAN CLASS="MATH"><IMG
+ WIDTH="46" HEIGHT="34" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg43.png"
+ ALT="$i\ge 1$"></SPAN> are free parameters, while <!-- MATH
+ $\alpha_0 =
+\left(1 - \sum_i^n |\alpha_i|^2\right)^{1/2}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="182" HEIGHT="48" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg44.png"
+ ALT="$\alpha_0 =
+\left(1 - \sum_i^n \vert\alpha_i\vert^2\right)^{1/2}$"></SPAN> is constrained;
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ or, an even power of a gaussian PDF, where the temperature of pixel <SPAN CLASS="MATH"><I>q</I></SPAN> is
+	<BR><P></P>
+<DIV ALIGN="CENTER" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+t_q = g_q^{2 P}
+\end{equation}
+ -->
+<A NAME="eq:nongauss_powgauss"></A>
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP>
+<SPAN CLASS="MATH">
+	<I>t</I><SUB><I>q</I></SUB> = <I>g</I><SUB><I>q</I></SUB><SUP>2 <I>P</I></SUP>	</SPAN>
+</TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+(<SPAN CLASS="arabic">3</SPAN>)</TD></TR>
+</TABLE>
+</DIV>
+<BR CLEAR="ALL"><P></P>
+where <SPAN CLASS="MATH"><I>g</I></SPAN> is a zero mean, unit variance Gaussian variable, and <SPAN CLASS="MATH"><I>P</I></SPAN> is
+a user-defined positive integer.
+</DL><SMALL CLASS="FOOTNOTESIZE">
+The resulting map is analyzed into its <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients, which are then
+multiplied by the beam, pixel and spectrum window
+</SMALL>
+<BR>
+<DIV ALIGN="RIGHT" CLASS="mathdisplay">
+
+<!-- MATH
+ \begin{equation}
+a_{lm} \longrightarrow a_{lm} \left[C(l)\right]^{1/2} B(l) w_{\rm pix}(l)
+\end{equation}
+ -->
+<TABLE WIDTH="100%" ALIGN="CENTER">
+<TR VALIGN="MIDDLE"><TD ALIGN="CENTER" NOWRAP><IMG
+ WIDTH="254" HEIGHT="34" BORDER="0"
+ SRC="facilitiesimg45.png"
+ ALT="\begin{displaymath}
+a_{lm} \longrightarrow a_{lm} \left[C(l)\right]^{1/2} B(l) w_{\rm pix}(l) \nonumber
+\end{displaymath}"></TD>
+<TD CLASS="eqno" WIDTH=10 ALIGN="RIGHT">
+&nbsp;</TD></TR>
+</TABLE>
+<BR CLEAR="ALL"></DIV><P></P><SMALL CLASS="FOOTNOTESIZE">
+The resulting <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients are turned back into a map, which is
+therefore non-gaussian, with an effective angular power spectrum <!-- MATH
+ $C(l) B(l)^2
+w_{\rm pix}(l)^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="144" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg46.png"
+ ALT="$C(l) B(l)^2
+w_{\rm pix}(l)^2$"></SPAN> (Rocha et al, 2005).
+
+<BR>
+Notes: the code has been modified from the original NGSIMS package in several
+respects:
+the seed parameter is named <TT>iseed</TT> instead of <TT>idum</TT>, to be consistent
+with other <b>HEALPix</b> simulation codes; and the SHO generator has been
+dramatically sped up, without loss of accuracy. Moreover, just like in <A HREF="facilitiesnode14.htm#fac:synfast"><TT>synfast</TT></A> facility,
+it is now possible to output the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients being used (<TT>outfile_alms</TT> option), and the spatial derivatives of the final map can also be
+output (<TT>simul_type</TT> option).
+
+</blockquote>
+<P>
+<hr><H1>DATASETS</H1>
+<h3>The following datasets are involved in the <b><FONT COLOR="#CC0000">sky_ng_sim</FONT></b>
+ processing.</h3>
+
+</SMALL><TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">  
+  <SPAN  CLASS="textbf">Dataset</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">Description</SPAN> </SMALL></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">                      </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">  
+/data/pixel_window_nxxxx.fits </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> Files containing pixel windows for
+                   various nsmax.</SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">                      </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SMALL CLASS="FOOTNOTESIZE">   
+</SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"> 
+
+<P>
+<hr><H1>SUPPORT    </H1><H3>This section lists those routines and facilities (including those <i>external</i> to the <b>HEALPix</b> distribution) which can assist in the utilisation of <b><FONT COLOR="#CC0000">sky_ng_sim</FONT></b>.</H3>
+  </SMALL><DL COMPACT><DT>
+<B><A HREF="./subroutinesnode32.htm#sub:generate_beam">generate_beam</A></B>
+<DD>This <b>HEALPix</b> Fortran
+subroutine generates or reads the <SPAN CLASS="MATH"><I>B</I>(<I>l</I>)</SPAN> window function used in <FONT COLOR="#CC0000">sky_ng_sim</FONT>
+  <DT>
+<B><A HREF="facilitiesnode8.htm#fac:map2gif">map2gif</A></B>
+<DD>This <b>HEALPix</b> Fortran facility can be used to visualise the
+  output map.
+  <DT>
+<B><A HREF="./idlnode43.htm#idl:mollview">mollview</A></B>
+<DD>This <b>HEALPix</b> IDL facility can be used to visualise the
+  output map.
+  <DT>
+<B><A HREF="facilitiesnode6.htm#fac:anafast">anafast</A></B>
+<DD>This <b>HEALPix</b> Fortran facility can analyse a <b>HEALPix</b> map and 
+     	       save the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> and <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB></SPAN>s to be read by sky_ng_sim.
+
+<P>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>EXAMPLE # 1:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> sky_ng_sim  </SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+sky_ng_sim runs in interactive mode, self-explanatory.
+</blockquote>
+<P>
+<hr><H1>EXAMPLE # 2:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> sky_ng_sim  filename </SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>When 'filename' is present, <TT>sky_ng_sim</TT> enters the non-interactive mode and parses
+its inputs from the file 'filename'. This has the following
+structure: the first entry is a qualifier which announces to the parser
+which input immediately follows. If this input is omitted in the
+input file, the parser assumes the default value.
+If the equality sign is omitted, then the parser ignores the entry.
+In this way comments may also be included in the file.
+In this example, the file contains the following qualifiers:
+<BR>
+<tt><A HREF="#fac:sky_ng_sim:simul_type">simul_type</A>= 1</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:nsmax">nsmax</A>= 128</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:nlmax">nlmax</A>= 256</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:fwhm_arcmin">fwhm_arcmin</A>= 30.0</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:infile">infile</A>= cl.fits</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:pdf_choice">pdf_choice</A>= 1</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:iseed">iseed</A>=  1</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:na">na</A>= 3</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:sigma0">sigma0</A>= 1.0</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:alpha_1">alpha_1</A>= 0.0</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:alpha_2">alpha_2</A>= 0.0</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:alpha_3">alpha_3</A>= 0.2</tt><br>
+<tt><A HREF="#fac:sky_ng_sim:outfile">outfile</A>= !test_ngfs.fits</tt><br>
+<TT>sky_ng_sim</TT> reads in the <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB></SPAN> power spectrum in 'cl.fits' up to <SPAN CLASS="MATH"><I>l</I>=256</SPAN>, and produces the map
+'map.fits' which has <!-- MATH
+ $N_{\rm side}=128$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="96" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg47.png"
+ ALT="$N_{\rm side}=128$"></SPAN>. The non-gaussian white noise was generated
+assuming a SHO PDF (see Eq&nbsp;<A HREF="#eq:nongauss_sho">2</A> above) with <SPAN CLASS="MATH"><IMG
+ WIDTH="57" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg48.png"
+ ALT="$\sigma_0=1$"></SPAN> and
+<!-- MATH
+ $\alpha_i = (0, 0, 0.2)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="121" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg49.png"
+ ALT="$\alpha_i = (0, 0, 0.2)$"></SPAN>.
+The map is convolved with a beam of FWHM 30.0 arcminutes. The <!-- MATH
+ $\hyperref{iseed}{}{}{fac:sky_ng_sim:iseed}=1$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="39" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="facilitiesimg50.png"
+ ALT="$\hyperref{iseed}{}{}{fac:sky_ng_sim:iseed}=1$"></SPAN> sets
+the random seed for the realisation. A different <!-- MATH
+ $\hyperref{iseed}{}{}{fac:sky_ng_sim:iseed}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="5" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="facilitiesimg51.png"
+ ALT="$\hyperref{iseed}{}{}{fac:sky_ng_sim:iseed}$"></SPAN> would have given a different 
+realisation from the same power spectrum. And finally, since <TT><A HREF="#fac:sky_ng_sim:simul_type">simul_type</A>=
+1</TT> only the map (and not its spatial derivatives) will be output.
+</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">Since <BR>
+<tt><A HREF="#fac:sky_ng_sim:beam_file">beam_file</A></tt><br>
+<tt><A HREF="#fac:sky_ng_sim:windowfile">windowfile</A></tt><br>
+<tt><A HREF="#fac:sky_ng_sim:outfile_alms">outfile_alms</A></tt><br>
+were omitted, they take their default values (empty strings). 
+This means respectively that no beam were read, that <TT>sky_ng_sim</TT> attempts to find the pixel
+window files in the default directories (see page&nbsp;<A HREF="facilitiesnode2.htm#page:defdir"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]" SRC="crossref.png"></A>), and
+that the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> generated and used to produce the map were not output.
+</blockquote>
+<P>
+<hr><H1>RELEASE NOTES</H1><blockquote>
+  </SMALL><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="blueball.png" ALT="*">
+ Initial release (<b>HEALPix</b> 2.10)
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+</blockquote>
+<P>
+<hr><H1>MESSAGES</H1><h3>This section describes error messages generated by <b><FONT COLOR="#CC0000">sky_ng_sim</FONT></b>
+</h3>
+
+</SMALL><TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+  <SPAN  CLASS="textbf">Message</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">Severity</SPAN> </SMALL></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> <SPAN  CLASS="textbf">Text</SPAN> </SMALL></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+can not allocate memory for array xxx </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">  Fatal </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> You do not have
+                   sufficient system resources to run this
+                   facility at the map resolution you required. 
+  Try a lower map resolution.  </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">  
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">   
+</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">this is not a binary table </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> the fitsfile you have specified is not 
+of the proper format </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE"> 
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">   
+there are undefined values in the table! </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> the fitsfile you have specified is not 
+of the proper format </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE"> 
+                  </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">   
+the header in xxx is too long </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> the fitsfile you have specified is not 
+of the proper format </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE"> 
+                  </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">   
+XXX-keyword not found </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> the fitsfile you have specified is not 
+of the proper format </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE"> 
+                  </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">   
+found xxx in the file, expected:yyyy </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE"> </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE"> the specified fitsfile does not
+contain the proper amount of data. </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE"> 
+                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SMALL CLASS="FOOTNOTESIZE">                   </SMALL></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SMALL CLASS="FOOTNOTESIZE">   </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=125><SMALL CLASS="FOOTNOTESIZE">   
+</SMALL>
+<P>
+</TD>
+<TD></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"> 
+
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html225"
+  HREF="facilitiesnode11.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html231"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html235"
+  HREF="facilitiesnode13.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html233"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html226"
+  HREF="facilitiesnode11.htm">process_mask</A>
+
+<B>Up:</B> <A NAME="tex2html232"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html236"
+  HREF="facilitiesnode13.htm">smoothing</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

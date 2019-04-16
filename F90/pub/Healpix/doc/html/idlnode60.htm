@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>read_fits_s </TITLE>
+<META NAME="description" CONTENT="read_fits_s ">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode61.htm">
+<LINK REL="previous" HREF="idlnode59.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode61.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html951"
+  HREF="idlnode59.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html957"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html961"
+  HREF="idlnode61.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html959"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html952"
+  HREF="idlnode59.htm">read_fits_map</A>
+
+<B>Up:</B> <A NAME="tex2html958"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html962"
+  HREF="idlnode61.htm">read_tqu</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000600000000000000000"></A>
+<A NAME="idl:read_fits_s"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">read_fits_s </FONT></font></b><hr>
+<H3>This IDL facility reads a FITS file into an IDL structure.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/fits/read_fits_s.pro"><b>src/idl/fits/read_fits_s.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+READ_FITS_S , <A HREF="#idl:read_fits_s:File">File</A>, <A HREF="#idl:read_fits_s:Prim_stc">Prim_stc</A>, [<A HREF="#idl:read_fits_s:Xten_stc">Xten_stc</A>, <A HREF="#idl:read_fits_s:COLUMNS">COLUMNS=</A>, <A HREF="#idl:read_fits_s:EXTENSION">EXTENSION=</A>, <A HREF="#idl:read_fits_s:HELP">/HELP</A>, <A HREF="#idl:read_fits_s:MERGE">/MERGE</A>]
+
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>File</B>
+<DD><A NAME="idl:read_fits_s:File"></A>          name of a FITS file containing 
+               the healpix map(s) in an extension or in the image field 
+
+<P>
+<DT>
+<B>Prim_stc</B>
+<DD><A NAME="idl:read_fits_s:Prim_stc"></A>	variable containing on output an IDL structure with the following fields: 
+<BR>		- primary header (tag : 0, tag name : HDR) 
+<BR>		- primary image (if any, tag : 1, tag name : IMG)
+
+<P>
+<DT>
+<B>Xten_stc</B>
+<DD><A NAME="idl:read_fits_s:Xten_stc"></A>		  (optional), 
+<BR>
+variable containing on output an IDL structure with the following fields: 
+<BR>		- extension header (tag : 0, tag name : HDR) 
+<BR>		- data column 1 (if any, tag : 1, tag name given by TTYPE1 (with all
+                    spaces removed and only letters, digits and underscore) 
+<BR>		- data column 2 (if any, tag : 2, tag name given by TTYPE2)  
+<BR>		...
+
+<P>
+<DT>
+<B>COLUMNS=</B>
+<DD><A NAME="idl:read_fits_s:COLUMNS"></A>		(optional), 
+<BR>
+list of columns to be read from a binary table 
+        can be a list of integer (1 based) indexing the columns positions
+        or a list of names matching the TTYPE* of the columns
+        by default, all columns are read
+
+<P>
+<DT>
+<B>EXTENSION=</B>
+<DD><A NAME="idl:read_fits_s:EXTENSION"></A>		(optional), 
+<BR>
+extension unit to be read from FITS file: 
+ either its 0-based ID number (ie, 0 for first extension <EM>after</EM> primary array) 
+ or the case-insensitive value of its EXTNAME keyword.
+	<b>default:</b>0
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>/HELP</B>
+<DD><A NAME="idl:read_fits_s:HELP"></A> if set, an extensive help is displayed and no
+	file is read
+	<DT>
+<B>/MERGE</B>
+<DD><A NAME="idl:read_fits_s:MERGE"></A>	if set <TT>Prim_stc</TT> contains : 
+<BR>		- the concatenated primary and extension header (tag name : HDR) 
+<BR>		- primary image (if any, tag name : IMG) 
+<BR>		- data column 1 ... 
+<BR>
+and <TT>Exten_stc</TT> is set to 0 
+<BR>	<b>default:</b>: not set (or set to 0)
+   </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+<FONT COLOR="#CC0000">read_fits_s </FONT> reads in any type of FITS file (Image, Binary table or Ascii table) 
+and outputs the data in IDL structures
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">read_fits_s </FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run <FONT COLOR="#CC0000">read_fits_s </FONT>
+  <DT>
+<B>synfast</B>
+<DD>This <b>HEALPix</b> facility will generate the FITS format 
+            sky map that can be read by <FONT COLOR="#CC0000">read_fits_s </FONT>.
+  <DT>
+<B><A HREF="idlnode58.htm#idl:read_fits_cut4">read_fits_cut4</A>,
+<A HREF="idlnode59.htm#idl:read_fits_map">read_fits_map</A></B>
+<DD><DT>
+<B><A HREF="idlnode61.htm#idl:read_tqu">read_tqu</A>,
+<A HREF="#idl:read_fits_s">read_fits_s</A></B>
+<DD><b>HEALPix</b> IDL routines to read cut-sky maps, full-sky maps, polarized full-sky maps and
+arbitrary data sets from FITS files
+  <DT>
+<B><A HREF="idlnode72.htm#idl:write_fits_sb">write_fits_sb</A></B>
+<DD>This <b>HEALPix</b> IDL facility can be used to generate FITS format 
+            sky maps readable by <FONT COLOR="#CC0000">read_fits_s </FONT>.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> <FONT COLOR="#CC0000">read_fits_s </FONT>,  'dmr_skymap_90a_4yr.fits', pdata, xdata </SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote><FONT COLOR="#CC0000">read_fits_s </FONT> reads in the file 'dmr_skymap_90a_4yr.fits'. On output, pdata
+contains the primary header and xdata is a structure whose first field is the
+extension header, and the other fields are vectors with respective tag names 
+PIXEL, SIGNAL, N_OBS, SERROR, ... (see <TT>help,/struc,xdata</TT>)</blockquote>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html951"
+  HREF="idlnode59.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html957"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html961"
+  HREF="idlnode61.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html959"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html952"
+  HREF="idlnode59.htm">read_fits_map</A>
+
+<B>Up:</B> <A NAME="tex2html958"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html962"
+  HREF="idlnode61.htm">read_tqu</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

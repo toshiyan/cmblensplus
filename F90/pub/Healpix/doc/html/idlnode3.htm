@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>What is available?</TITLE>
+<META NAME="description" CONTENT="What is available?">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode4.htm">
+<LINK REL="previous" HREF="idlnode2.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode4.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html258"
+  HREF="idlnode2.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html264"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html268"
+  HREF="idlnode4.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html266"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html259"
+  HREF="idlnode2.htm">Using the HEALPix IDL</A>
+
+<B>Up:</B> <A NAME="tex2html265"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html269"
+  HREF="idlnode4.htm">Changes between releases 3.30</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html270"
+  HREF="idlnode3.htm#SECTION00031000000000000000">Maps related tools</A>
+<LI><A NAME="tex2html271"
+  HREF="idlnode3.htm#SECTION00032000000000000000">Pixels related tools</A>
+<LI><A NAME="tex2html272"
+  HREF="idlnode3.htm#SECTION00033000000000000000">Power spectrum, alm, beam and pixel window functions</A>
+<LI><A NAME="tex2html273"
+  HREF="idlnode3.htm#SECTION00034000000000000000">Other tools</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00030000000000000000">
+What is available?</A>
+</H1>
+
+<P>
+The <b>HEALPix</b>-IDL tools are mostly designed to 
+generate, visualize, filter and analyze sky maps;
+identify, query and process <b>HEALPix</b> pixels; 
+and deal with angular spectral objects (such as power spectra or Spherical
+Harmonics coefficients), 
+as detailed below.
+The full documentation is available online in IDL via <A HREF="idlnode29.htm#idl:healpix_doc"><TT>healpix_doc</TT></A>
+
+<H2><A NAME="SECTION00031000000000000000">
+<b>HEALPix</b> maps related tools</A>
+</H2>
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Visualization: gnomic, Mollweide, Cartesian,
+orthographic and azimuthal equatorial projections
+<A HREF="idlnode43.htm#idl:mollview"><TT>mollview</TT></A>, 
+<A HREF="idlnode28.htm#idl:gnomview"><TT>gnomview</TT></A>, 
+<A HREF="idlnode17.htm#idl:cartview"><TT>cartview</TT></A>, 
+<A HREF="idlnode51.htm#idl:orthview"><TT>orthview</TT></A>, 
+<A HREF="idlnode11.htm#idl:azeqview"><TT>azeqview</TT></A>
+(with interactive cursor:
+<A HREF="idlnode16.htm#idl:cartcursor"><TT>cartcursor</TT></A>,
+<A HREF="idlnode42.htm#idl:mollcursor"><TT>mollcursor</TT></A>,
+<A HREF="idlnode27.htm#idl:gnomcursor"><TT>gnomcursor</TT></A>,
+<A HREF="idlnode50.htm#idl:orthcursor"><TT>orthcursor</TT></A>)
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Color table creation <A HREF="idlnode53.htm#idl:planck_colors"><TT>planck_colors</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Production of <b>HEALPix</b> maps in Google Sky and Dome Master format:
+<A HREF="idlnode32.htm#idl:hpx2gs"><TT>hpx2gs</TT></A>,
+<A HREF="idlnode31.htm#idl:hpx2dm"><TT>hpx2dm</TT></A>.
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Spherical Harmonics analysis and synthesis:
+<A HREF="idlnode34.htm#idl:ianafast"><TT>ianafast</TT></A>,
+<A HREF="idlnode39.htm#idl:isynfast"><TT>isynfast</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Smoothing and filtering:
+<A HREF="idlnode38.htm#idl:ismoothing"><TT>ismoothing</TT></A>,
+<A HREF="idlnode41.htm#idl:median_filter"><TT>median_filter</TT></A>,
+<A HREF="idlnode62.htm#idl:remove_dipole"><TT>remove_dipole</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Pixel pro/down-grading and NESTED/RING pixel reordering:
+<A HREF="idlnode67.htm#idl:ud_grade"><TT>ud_grade</TT></A>,
+<A HREF="idlnode63.htm#idl:reorder"><TT>reorder</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Mask processing:
+<A HREF="idlnode37.htm#idl:iprocess_mask"><TT>iprocess_mask</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Maps I/O:
+<A HREF="idlnode58.htm#idl:read_fits_cut4"><TT>read_fits_cut4</TT></A>,
+<A HREF="idlnode59.htm#idl:read_fits_map"><TT>read_fits_map</TT></A>,
+<A HREF="idlnode60.htm#idl:read_fits_s"><TT>read_fits_s</TT></A>,
+<A HREF="idlnode61.htm#idl:read_tqu"><TT>read_tqu</TT></A>.
+<BR><A HREF="idlnode70.htm#idl:write_fits_cut4"><TT>write_fits_cut4</TT></A>,
+<A HREF="idlnode71.htm#idl:write_fits_map"><TT>write_fits_map</TT></A>, 
+<A HREF="idlnode72.htm#idl:write_fits_sb"><TT>write_fits_sb</TT></A>,
+<A HREF="idlnode73.htm#idl:write_tqu"><TT>write_tqu</TT></A>. 
+<BR><A HREF="idlnode26.htm#idl:getsize_fits"><TT>getsize_fits</TT></A>,
+<A HREF="idlnode18.htm#idl:change_polcconv"><TT>change_polcconv</TT></A>
+</DL>
+<H2><A NAME="SECTION00032000000000000000">
+<b>HEALPix</b> pixels related tools</A>
+</H2>
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Coordinate tools:
+<A HREF="idlnode9.htm#idl:ang2vec"><TT>ang2vec</TT></A>,
+<A HREF="idlnode10.htm#idl:angulardistance"><TT>angulardistance</TT></A>,
+<A HREF="idlnode21.htm#idl:euler_matrix_new"><TT>euler_matrix_new</TT></A>,
+<A HREF="idlnode64.htm#idl:rotate_coord"><TT>rotate_coord</TT></A>,
+<A HREF="idlnode69.htm#idl:vec2ang"><TT>vec2ang</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Coordinates to pixel transforms, and back:
+<A HREF="idlnode48.htm#idl:nside2npix"><TT>nside2npix</TT></A>, <A HREF="idlnode47.htm#idl:npix2nside"><TT>npix2nside</TT></A>,
+<A HREF="idlnode52.htm#idl:pix_tools"><TT>ang2pix_*, pix2ang_*</TT></A>,
+<A HREF="idlnode52.htm#idl:pix_tools"><TT>pix2vec_*, vec2pix_*</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ RING/NESTED transforms:
+<A HREF="idlnode52.htm#idl:pix_tools"><TT>nest2ring, ring2nest</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Unique Identifier to NESTED index, and back:
+<A HREF="idlnode68.htm#idl:uniq2nest"><TT>uniq2nest</TT></A>,
+<A HREF="idlnode46.htm#idl:nest2uniq"><TT>nest2uniq</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Neighbouring pixels:
+<A HREF="idlnode44.htm#idl:neighbours_nest"><TT>neighbours_nest</TT></A>, <A HREF="idlnode45.htm#idl:neighbours_ring"><TT>neighbours_ring</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Pixel query within a disc, polygon, strip or triangle:
+<A HREF="idlnode54.htm#idl:query_disc"><TT>query_disc</TT></A>, 
+<A HREF="idlnode55.htm#idl:query_polygon"><TT>query_polygon</TT></A>, 
+<A HREF="idlnode56.htm#idl:query_strip"><TT>query_strip</TT></A>,
+<A HREF="idlnode57.htm#idl:query_triangle"><TT>query_triangle</TT></A>.
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Template pixels:
+<A HREF="idlnode49.htm#idl:nside2ntemplates"><TT>nside2ntemplates</TT></A>,
+<A HREF="idlnode65.htm#idl:same_shape_pixels_xxx"><TT>same_shape_pixels_ring</TT></A>, 
+<A HREF="idlnode65.htm#idl:same_shape_pixels_xxx"><TT>same_shape_pixels_nest</TT></A>,
+<A HREF="idlnode66.htm#idl:template_pixel_xxx"><TT>template_pixel_ring</TT></A>, 
+<A HREF="idlnode66.htm#idl:template_pixel_xxx"><TT>template_pixel_nest</TT></A>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00033000000000000000">
+Power spectrum, <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN>, beam and pixel window functions</A>
+</H2>
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <SPAN CLASS="MATH"><I>B</I>(<I>l</I>)</SPAN>, <SPAN CLASS="MATH"><IMG
+ WIDTH="44" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg1.png"
+ ALT="$B(\theta)$"></SPAN> and pixel WF generation:
+<A HREF="idlnode24.htm#idl:gaussbeam"><TT>gaussbeam</TT></A>,
+<A HREF="idlnode12.htm#idl:beam2bl"><TT>beam2bl</TT></A>,
+<A HREF="idlnode14.htm#idl:bl2beam"><TT>bl2beam</TT></A>,
+<A HREF="idlnode30.htm#idl:healpixwindow"><TT>healpixwindow</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <SPAN CLASS="MATH"><I>C</I>(<I>l</I>)</SPAN> binning:
+<A HREF="idlnode13.htm#idl:bin_llcl"><TT>bin_llcl</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> handling tools:
+<A HREF="idlnode6.htm#idl:alm_i2t"><TT>alm_i2t</TT></A>,
+<A HREF="idlnode7.htm#idl:alm_t2i"><TT>alm_t2i</TT></A>,
+<A HREF="idlnode35.htm#idl:index2lm"><TT>index2lm</TT></A>,
+<A HREF="idlnode40.htm#idl:lm2index"><TT>lm2index</TT></A>,
+<A HREF="idlnode33.htm#idl:ialteralm"><TT>ialteralm</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <SPAN CLASS="MATH"><I>C</I>(<I>l</I>)</SPAN>, <SPAN CLASS="MATH"><I>B</I>(<I>l</I>)</SPAN> and <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> I/O:
+<A HREF="idlnode23.htm#idl:fits2cl"><TT>fits2cl</TT></A>/<A HREF="idlnode19.htm#idl:cl2fits"><TT>cl2fits</TT></A>,
+<A HREF="idlnode15.htm#idl:bl2fits"><TT>bl2fits</TT></A>,
+<A HREF="idlnode22.htm#idl:fits2alm"><TT>fits2alm</TT></A>/<A HREF="idlnode8.htm#idl:alm2fits"><TT>alm2fits</TT></A>,
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00034000000000000000">
+Other tools</A>
+</H2>
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <b>HEALPix</b> variables and paths initialization: 
+<A HREF="idlnode36.htm#idl:init_healpix"><TT>init_healpix</TT></A>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ online documentation: <A HREF="idlnode29.htm#idl:healpix_doc"><TT>healpix_doc</TT></A>
+</DL>
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html258"
+  HREF="idlnode2.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html264"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html268"
+  HREF="idlnode4.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html266"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html259"
+  HREF="idlnode2.htm">Using the HEALPix IDL</A>
+
+<B>Up:</B> <A NAME="tex2html265"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html269"
+  HREF="idlnode4.htm">Changes between releases 3.30</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

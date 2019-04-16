@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>fits2cl*</TITLE>
+<META NAME="description" CONTENT="fits2cl*">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode31.htm">
+<LINK REL="previous" HREF="subroutinesnode29.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode31.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html639"
+  HREF="subroutinesnode29.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html645"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html649"
+  HREF="subroutinesnode31.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html647"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html640"
+  HREF="subroutinesnode29.htm">fits2alms*</A>
+
+<B>Up:</B> <A NAME="tex2html646"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html650"
+  HREF="subroutinesnode31.htm">gaussbeam</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000300000000000000000"></A>
+<A NAME="sub:fits2cl"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">fits2cl*</FONT></font></b><hr>
+<H3>This routine reads a power spectrum or beam window function from a FITS ASCII
+or binary table. 
+The routine can read temperature coefficients <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>TT</I></SUP></SPAN> or both temperature and 
+polarisation coefficients <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>TT</I></SUP></SPAN>, <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>EE</I></SUP></SPAN>, <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>BB</I></SUP></SPAN>, <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>TE</I></SUP></SPAN> (and  
+<SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>TB</I></SUP></SPAN>, 
+<SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>EB</I></SUP></SPAN>, 
+<SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>ET</I></SUP></SPAN>, 
+<SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>BT</I></SUP></SPAN>, 
+<SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB><SUP><I>BE</I></SUP></SPAN> when applicable). If the 
+keyword PDMTYPE is found in the header, fits2cl assumes the table to be in the 
+special format used by <EM>Planck</EM> and will ignore the first data column. 
+If the input FITS file contains several
+extensions or HDUs, the one to be read can be specified thanks to the CFITSIO 
+<A NAME="tex2html15"
+  HREF="http://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node81.html">Extended File Name Syntax</A>, using its number (eg, <TT>file.fits[2]</TT> or <TT>file.fits+2</TT>) or its
+<TT>EXTNAME</TT> value (eg. <TT>file.fits[beam_100x100]</TT>). By default, only the first valid
+extension will be read.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/fitstools.F90"><b>src/f90/mod/fitstools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">fits2cl*</FONT>(
+<A HREF="#sub:fits2cl:filename">filename</A>, <A HREF="#sub:fits2cl:clin">clin</A>, <A HREF="#sub:fits2cl:lmax">lmax</A>, <A HREF="#sub:fits2cl:ncl">ncl</A>, <A HREF="#sub:fits2cl:header">header</A>, [<A HREF="#sub:fits2cl:units">units</A>]
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>
+filename<A NAME="sub:fits2cl:filename"></A>(LEN=<tt>filenamelen</tt>)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>the FITS file containing the power spectrum.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>lmax<A NAME="sub:fits2cl:lmax"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>Maximum <SPAN CLASS="MATH"><I>l</I></SPAN> value to be read.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>ncl<A NAME="sub:fits2cl:ncl"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>1 for temperature coeffecients only, 4 for polarisation.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>clin<A NAME="sub:fits2cl:clin"></A>(0:lmax,1:ncl)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>the power spectrum read from the file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>header<A NAME="sub:fits2cl:header"></A>(LEN=80) (1:)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>the header read from the FITS-file.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>units<A NAME="sub:fits2cl:units"></A>(LEN=80) (1:)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>the column units read from the FITS-file.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>use <A HREF="subroutinesnode40.htm#sub:healpix_modules">healpix_modules</A>
+<BR>
+real(<A HREF="subroutinesnode41.htm#sub:healpix_types:sp">SP</A>), allocatable, dimension(:,:) :: cl 
+<BR>
+character(len=80), dimension(1:300) :: header 
+<BR>
+character(len=80), dimension(1:100) :: units 
+<BR>
+integer(<A HREF="subroutinesnode41.htm#sub:healpix_types:i4b">I4B</A>) :: lmax, ncl, np 
+<BR>
+character(len=<A HREF="subroutinesnode41.htm#sub:healpix_types:filenamelen">filenamelen</A>) :: fitsfile='cl.fits' 
+<BR>
+np = <A HREF="subroutinesnode39.htm#sub:getsize_fits">getsize_fits</A>(fitsfile, nmaps=ncl, mlpol=lmax) 
+<BR>
+allocate(cl(0:lmax, 1:ncl)) 
+<BR>
+call fits2cl(fitsfile, cl, lmax, ncl, header, units)  
+<BR></tt>
+<blockquote>
+Reads a power spectrum from the FITS file <TT>`cl.fits'</TT> and stores the result in 
+<TT><A HREF="#sub:fits2cl:clin">cl</A>(0:lmax,1:ncl)</TT> 
+which are the <A HREF="#sub:fits2cl:ncl"><TT>ncl</TT></A> <SPAN CLASS="MATH"><I>C</I><SUB><I>l</I></SUB></SPAN> coefficients up to 
+<SPAN CLASS="MATH"><I>l</I>=</SPAN><A HREF="#sub:fits2cl:lmax"><TT>lmax</TT></A>. 
+The FITS header is returned in <A HREF="#sub:fits2cl:header"><TT>header</TT></A>, 
+the column units in <A HREF="#sub:fits2cl:units"><TT>units</TT></A>.
+</blockquote>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">fits2cl*</FONT>.</h3>
+  <DL COMPACT><DT>
+<B><SPAN  CLASS="textbf">fitstools</SPAN></B>
+<DD>module, containing:
+  <DT>
+<B>printerror</B>
+<DD>routine for printing FITS error messages.
+  <DT>
+<B><SPAN  CLASS="textbf">cfitsio</SPAN></B>
+<DD>library for FITS file handling.		
+  </DL>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">fits2cl*</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode24.htm#sub:create_alm">create_alm</A></B>
+<DD>Routine to create <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> values
+  from an input power spectrum.
+  <DT>
+<B><A HREF="subroutinesnode105.htm#sub:write_asctab">write_asctab</A></B>
+<DD>Routine to create an ascii
+  FITS file containing a power spectrum.
+  <DT>
+<B><A HREF="subroutinesnode39.htm#sub:getsize_fits">getsize_fits</A></B>
+<DD>Routine to parse FITS file header, and determine the data storage features.
+<DT>
+<B><A HREF="subroutinesnode38.htm#sub:getnumext_fits">getnumext_fits</A></B>
+<DD>Routine to determine number of extensions of a FITS file.
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html639"
+  HREF="subroutinesnode29.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html645"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html649"
+  HREF="subroutinesnode31.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html647"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html640"
+  HREF="subroutinesnode29.htm">fits2alms*</A>
+
+<B>Up:</B> <A NAME="tex2html646"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html650"
+  HREF="subroutinesnode31.htm">gaussbeam</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

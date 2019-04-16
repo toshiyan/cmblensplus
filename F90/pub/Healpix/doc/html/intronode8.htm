@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>A Comment on the Random Number Generator</TITLE>
+<META NAME="description" CONTENT="A Comment on the Random Number Generator">
+<META NAME="keywords" CONTENT="intro">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="intro.css">
+
+<LINK REL="next" HREF="intronode9.htm">
+<LINK REL="previous" HREF="intronode7.htm">
+<LINK REL="up" HREF="intro.htm">
+<LINK REL="next" HREF="intronode9.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html174"
+  HREF="intronode7.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html180"
+  HREF="intro.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html184"
+  HREF="intronode9.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html182"
+  HREF="intronode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html175"
+  HREF="intronode7.htm">Pixel window functions</A>
+
+<B>Up:</B> <A NAME="tex2html181"
+  HREF="intro.htm">Introduction to HEALPix</A>
+
+<B> Next:</B> <A NAME="tex2html185"
+  HREF="intronode9.htm">Bibliography</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00080000000000000000">
+A Comment on the Random Number Generator</A>
+</H1>
+
+<P>
+We provide a new random number generator (RNG) with this package, available both
+in Fortran90 and C++. 
+It resides in <TT>src/f90/mod/rngmod.f90</TT> and <TT>  src/cxx/cxxsupport/planck_rng.h</TT> and supersedes the previous RNG (which
+is still available at <TT>src/f90/mod/ran_tools_dist.f90</TT>). 
+
+<P>
+It produces double precision real numbers <SPAN CLASS="MATH"><I>x</I></SPAN> with <SPAN CLASS="MATH"><IMG
+ WIDTH="71" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="introimg183.png"
+ ALT="$x\in]0,1[$"></SPAN> and is based 
+on a xorshift method described by Marsaglia in 
+Journal of Statistical Software 2003, vol 8
+(cf. <A NAME="tex2html17"
+  HREF="http://www.cs.hku.hk/"><TT>http://www.cs.hku.hk/</TT></A>).
+It accepts up to four different seeds simultaneously, allowing each sequence to
+have a
+theoretical period of <!-- MATH
+ $2^{128}-1 \approx 3.4 10^{38}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="150" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="introimg184.png"
+ ALT="$2^{128}-1 \approx 3.4 10^{38}$"></SPAN>. A Gaussian deviate RNG is
+also provided. See the respective routines documentation for details on their usage.
+Please note that we have not extensively tested this generator 
+-- it did not represent the main drive of this project.
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html174"
+  HREF="intronode7.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html180"
+  HREF="intro.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html184"
+  HREF="intronode9.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html182"
+  HREF="intronode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html175"
+  HREF="intronode7.htm">Pixel window functions</A>
+
+<B>Up:</B> <A NAME="tex2html181"
+  HREF="intro.htm">Introduction to HEALPix</A>
+
+<B> Next:</B> <A NAME="tex2html185"
+  HREF="intronode9.htm">Bibliography</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

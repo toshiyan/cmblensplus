@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>convert_inplace*</TITLE>
+<META NAME="description" CONTENT="convert_inplace*">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode21.htm">
+<LINK REL="previous" HREF="subroutinesnode19.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode21.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html519"
+  HREF="subroutinesnode19.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html525"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html529"
+  HREF="subroutinesnode21.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html527"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html520"
+  HREF="subroutinesnode19.htm">concatnl</A>
+
+<B>Up:</B> <A NAME="tex2html526"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html530"
+  HREF="subroutinesnode21.htm">convert_nest2ring*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000200000000000000000"></A>
+<A NAME="sub:convert_inplace"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">convert_inplace*</FONT></font></b><hr>
+<H3>Routine to convert a <b>HEALPix</b> map from NESTED to RING scheme or vice
+  versa. The conversion is done in place, meaning that it doesn't require memory
+  for a temporary map, like the
+  <!-- MATH
+ $\htmlref{convert\_nest2ring}{sub:convert_nest2ring}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="146" HEIGHT="34" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg57.png"
+ ALT="$\htmlref{convert\_nest2ring}{sub:convert_nest2ring}$"></SPAN> or
+  <!-- MATH
+ $\htmlref{convert\_ring2nest}{sub:convert_ring2nest}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="146" HEIGHT="34" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg58.png"
+ ALT="$\htmlref{convert\_ring2nest}{sub:convert_ring2nest}$"></SPAN>
+  routines. But for that reason, this routine is slower and not parallelized. The routine is a
+  wrapper for 6 different routines and can threfore process
+  integer, single precision and double precision maps as well as mono or bi
+  dimensional arrays.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/pix_tools.F90"><b>src/f90/mod/pix_tools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">convert_inplace*</FONT>(
+<A HREF="#sub:convert_inplace:subcall">subcall</A>, <A HREF="#sub:convert_inplace:map">map</A>
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=200><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=175><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>
+subcall<A NAME="sub:convert_inplace:subcall"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>--</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>routine to be called by convert_inplace_real. Set this to <A HREF="subroutinesnode72.htm#sub:pix_tools">ring2nest</A> or <A HREF="subroutinesnode72.htm#sub:pix_tools">nest2ring</A> dependent on wether the conversion is RING to NESTED or vice versa.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>map<A NAME="sub:convert_inplace:map"></A>(0:npix-1)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B/ SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>INOUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>mono-dimensional full sky map to be converted, the routine finds the size itself.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=200>map(0:npix-1,1:nd)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B/ SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>INOUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=175>bi-dimensional (nd<SPAN CLASS="MATH">&gt;0</SPAN>) full sky map to be
+                   converted, the routine finds both dimensions
+                   itself. Processing a bidimensional map with nd<SPAN CLASS="MATH">&gt;1</SPAN> should be
+                   faster than each of the nd 1D-maps consecutively.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>call convert_inplace(<A HREF="subroutinesnode72.htm#sub:pix_tools">ring2nest</A>,map)  
+<BR></tt>
+<blockquote>
+Converts an map from RING to NESTED scheme.
+</blockquote>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">convert_inplace*</FONT>.</h3>
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode72.htm#sub:pix_tools">nest2ring</A></B>
+<DD>routine to convert a NESTED pixel index to RING pixel number.
+ <DT>
+<B><A HREF="subroutinesnode72.htm#sub:pix_tools">ring2nest</A></B>
+<DD>routine to convert a RING pixel index to NESTED pixel number.	
+  </DL>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">convert_inplace*</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode21.htm#sub:convert_nest2ring">convert_nest2ring</A></B>
+<DD>convert from NESTED to RING scheme using a temporary array. Requires more space then convert_inplace, but is faster.
+  <DT>
+<B><A HREF="subroutinesnode22.htm#sub:convert_ring2nest">convert_ring2nest</A></B>
+<DD>convert from RING to NESTED scheme using a temporary array. Requires more space then convert_inplace, but is faster.
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html519"
+  HREF="subroutinesnode19.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html525"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html529"
+  HREF="subroutinesnode21.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html527"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html520"
+  HREF="subroutinesnode19.htm">concatnl</A>
+
+<B>Up:</B> <A NAME="tex2html526"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html530"
+  HREF="subroutinesnode21.htm">convert_nest2ring*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Older Changes</TITLE>
+<META NAME="description" CONTENT="Older Changes">
+<META NAME="keywords" CONTENT="facilities">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="facilities.css">
+
+<LINK REL="next" HREF="facilitiesnode5.htm">
+<LINK REL="previous" HREF="facilitiesnode3.htm">
+<LINK REL="up" HREF="facilities.htm">
+<LINK REL="next" HREF="facilitiesnode5.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html120"
+  HREF="facilitiesnode3.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html126"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html130"
+  HREF="facilitiesnode5.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html128"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html121"
+  HREF="facilitiesnode3.htm">Changes between releases 3.20</A>
+
+<B>Up:</B> <A NAME="tex2html127"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html131"
+  HREF="facilitiesnode5.htm">alteralm</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html132"
+  HREF="facilitiesnode4.htm#SECTION00041000000000000000">Changes between releases 3.00 and 3.20</A>
+<UL>
+<LI><A NAME="tex2html133"
+  HREF="facilitiesnode4.htm#SECTION00041100000000000000">Version 3.20</A>
+<LI><A NAME="tex2html134"
+  HREF="facilitiesnode4.htm#SECTION00041200000000000000">Version 3.11</A>
+<LI><A NAME="tex2html135"
+  HREF="facilitiesnode4.htm#SECTION00041300000000000000">Version 3.10</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html136"
+  HREF="facilitiesnode4.htm#SECTION00042000000000000000">Changes between releases 2.20 and 3.00</A>
+<LI><A NAME="tex2html137"
+  HREF="facilitiesnode4.htm#SECTION00043000000000000000">Changes between releases 2.14 and 2.20</A>
+<LI><A NAME="tex2html138"
+  HREF="facilitiesnode4.htm#SECTION00044000000000000000">Changes between releases 2.13 and 2.14</A>
+<LI><A NAME="tex2html139"
+  HREF="facilitiesnode4.htm#SECTION00045000000000000000">Changes between releases 2.0 and 2.1</A>
+<LI><A NAME="tex2html140"
+  HREF="facilitiesnode4.htm#SECTION00046000000000000000">Changes between releases 1.2 and 2.0</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00040000000000000000">
+Older Changes</A>
+</H1>
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Changes between releases 3.00 and 3.20</A>
+</H2>
+<P>
+
+<H3><A NAME="SECTION00041100000000000000">
+Version 3.20</A>
+</H3><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <b>HEALPix</b>-F90 routines and facilities can now also be compiled with
+the free Fortran95 compiler <SPAN  CLASS="textbf">g95</SPAN> (<A NAME="tex2html2"
+  HREF="http://www.g95.org/">www.g95.org</A>)
+ 	<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ a separate <TT>build</TT> directory is used to store the objects,
+modules, ... produced during the compilation of the source codes
+	<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ improved handling of long FITS keywords, now producing FITS files
+fully compatible with the
+<A NAME="tex2html3"
+  HREF="http://www.stsci.edu/institute/software_hardware/pyfits"><TT>PyFITS</TT></A>
+and 
+<TT>Astropy</TT> (<A NAME="tex2html4"
+  HREF="http://www.astropy.org/">www.astropy.org</A>)
+<TT>Python</TT> libraries
+	<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ improved FITS file parsing in 
+<A HREF="./subroutinesnode32.htm#sub:generate_beam"><TT>generate_beam</TT></A>,
+affecting the external <SPAN CLASS="MATH"><I>B</I>(<I>l</I>)</SPAN> reading in the F90 facilities 
+<A HREF="facilitiesnode5.htm#fac:alteralm"><TT>alteralm</TT></A>, 
+<A HREF="facilitiesnode14.htm#fac:synfast"><TT>synfast</TT></A>, 
+<A HREF="facilitiesnode12.htm#fac:sky_ng_sim"><TT>sky_ng_sim</TT></A>, 
+<A HREF="facilitiesnode13.htm#fac:smoothing"><TT>smoothing</TT></A>.
+</DL>
+<P>
+
+<H3><A NAME="SECTION00041200000000000000">
+Version 3.11</A>
+</H3><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <TT>libsharp</TT> C routines used for Spherical Harmonics Transforms 
+and introduced in <b>HEALPix</b>  3.10
+can now be compiled with any <TT>gcc</TT> version.
+</DL>
+<P>
+
+<H3><A NAME="SECTION00041300000000000000">
+Version 3.10</A>
+</H3><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ all Fortran facilities now support most of <TT>cfitsio</TT>'s ``<A NAME="tex2html7"
+  HREF="http://heasarc.gsfc.nasa.gov/docs/software/fitsio/filters.html">Extended File
+Name Syntax</A>'' features,
+allowing the reading and processing of an arbitrary HDU and table column out of
+remote, compressed FITS files. For example, setting 
+<BR><TT>infile = ftp://</TT><I>url/file.fits</I><TT>.gz[</TT><I>extn</I><TT>][col </TT><I>colname</I><TT>]</TT>  
+<BR>
+in <A HREF="facilitiesnode6.htm#fac:anafast"><TT>anafast</TT></A>
+will download the FITS file <I>file.fits.gz</I> from <I>url</I>, 
+uncompress it, open the HDU (extension) featuring keyword <TT>EXTNAME=</TT><I>extn</I>, or the one with 1-based rank number <I>extn</I>, read the table column
+with <TT>TTYPE*=</TT><I>colname</I> out of it and will analyze it.
+<BR>
+It is also possible to perform a remote <A HREF="facilitiesnode6.htm#fac:anafast"><TT>anafast</TT></A> analysis of a 
+<A NAME="tex2html8"
+  HREF="http://www.sciops.esa.int/index.php?project=planck&amp;page=Planck_Legacy_Archive">Planck Legacy Archive (PLA)</A>
+sky map named <I>map.fits</I> via the PLA <A NAME="tex2html9"
+  HREF="http://pla.esac.esa.int/pla/aio/">AIO
+Subsystem</A>
+by simply setting
+<TT>infile=http://pla.esac.esa.int/pla/aio/product-action?MAP.MAP_ID=</TT><I>map.fits</I>
+as input map file.
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ yet faster 
+<A HREF="facilitiesnode14.htm#fac:synfast"><TT>synfast</TT></A>,
+<A HREF="facilitiesnode6.htm#fac:anafast"><TT>anafast</TT></A>,
+<A HREF="facilitiesnode13.htm#fac:smoothing"><TT>smoothing</TT></A> thanks to <A NAME="tex2html10"
+  HREF="http://sourceforge.net/projects/libsharp"><TT>libsharp</TT></A>
+routines<A NAME="tex2html5"
+  HREF="facilitiesfootnode.htm#foot334"><SUP><SPAN CLASS="arabic">1</SPAN></SUP></A>. 
+<BR><EM>Note that 
+some <A NAME="tex2html6"
+  HREF="http://gcc.gnu.org/releases.html"><TT>gcc</TT> versions</A>
+(4.4.1 to 4.4.6) crash with an internal compiler error during compilation of <TT>libsharp</TT></EM>. 
+The problem has been fixed in <TT>gcc</TT> 4.4.7, 4.5.*, 4.6.*, 4.7.* and
+newer versions and was not present in versions 4.2.* and 4.3.*.
+</DL>
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Changes between releases 2.20 and 3.00</A>
+</H2><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ all <EM>input</EM> FITS files can now be compressed (with a 
+<TT>.gz</TT>, <TT>.Z</TT>, <TT>.z</TT>, or <TT>.zip</TT> 
+extension) and/or remotely located (with a <TT>ftp://</TT> or <TT>http://</TT> prefix).
+<EM>Version 3.14 (March 2009) or newer of CFITSIO is required for <b>HEALPix</b> 3.0.</EM>
+	<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ introduction of <A HREF="facilitiesnode11.htm#fac:process_mask"><TT>process_mask</TT></A> 
+facility to compute the angular distance of valid
+pixels to the closest invalid pixels for a input binary mask,
+	<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <A HREF="facilitiesnode12.htm#fac:sky_ng_sim"><TT>sky_ng_sim</TT></A> now allows the computation
+of the spatial derivatives of the non Gaussian map being produced, and the
+output of the <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients of that map,
+	<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ <A HREF="facilitiesnode6.htm#fac:anafast"><TT>anafast</TT></A> now allows the
+pro/down-grading of the input mask to match the resolution of the map(s) being
+analyzed.
+</DL>
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Changes between releases 2.14 and
+2.20</A>
+</H2><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ faster 
+<A HREF="facilitiesnode14.htm#fac:synfast"><TT>synfast</TT></A>,
+<A HREF="facilitiesnode6.htm#fac:anafast"><TT>anafast</TT></A>,
+<A HREF="facilitiesnode13.htm#fac:smoothing"><TT>smoothing</TT></A> thanks to 
+<A NAME="tex2html11"
+  HREF="http://libpsht.sourceforge.net/"><TT>libpsht</TT></A>
+routines. 
+	<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ most facilities can handle maps with <!-- MATH
+ ${N_{\rm side}}> 8192$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="106" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg1.png"
+ ALT="${N_{\rm side}}&gt; 8192$"></SPAN>, ie more than
+805,306,368 pixels.
+</DL><SMALL CLASS="FOOTNOTESIZE">
+See
+<A NAME="tex2html12"
+  HREF="subroutines.htm">``F90 Subroutines Overview''</A>
+for details.
+</SMALL>
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Changes between releases 2.13 and
+2.14</A>
+</H2><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ In <A HREF="facilitiesnode14.htm#fac:synfast"><TT>synfast</TT></A> facility, a numerical bug affecting the accuracy of the Stokes parameter derivatives 
+<!-- MATH
+ $\partial X/\partial\theta$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="60" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg2.png"
+ ALT="$\partial X/\partial\theta$"></SPAN>, 
+<!-- MATH
+ $\partial^2 X/(\partial\theta\partial\phi\sin\theta)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="143" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg3.png"
+ ALT="$\partial^2 X/(\partial\theta\partial\phi\sin\theta)$"></SPAN>, 
+<!-- MATH
+ $\partial^2 X/\partial \theta^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="76" HEIGHT="39" ALIGN="MIDDLE" BORDER="0"
+ SRC="facilitiesimg4.png"
+ ALT="$\partial^2 X/\partial \theta^2$"></SPAN>, 
+for <SPAN CLASS="MATH"><I>X</I>=<I>Q</I>,<I>U</I></SPAN> has been corrected. See <A HREF="facilitiesnode16.htm#fac:sec:bug_synder">this appendix</A> for details.
+</DL>
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Changes between releases 2.0 and
+2.1</A>
+</H2><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ The <A HREF="facilitiesnode6.htm#fac:anafast"><TT>anafast</TT></A> facility can now compute the cross-correlations of two different
+maps. 
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ The <A HREF="facilitiesnode12.htm#fac:sky_ng_sim"><TT>sky_ng_sim</TT></A> facility (Rocha et al, 2005), to produce non-Gaussian CMB temperature maps,
+has been added.
+</DL>
+<P>
+
+<H2><A NAME="SECTION00046000000000000000">
+Changes between releases 1.2 and 2.0</A>
+</H2><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ faster implementation of <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> related facilities, generalization of
+  OpenMP parallelization, and availability of MPI parallelized routines (see
+  mpi_* routines in <B>Fortran90 Subroutines Overview</B> document).
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ introduction of <A HREF="facilitiesnode5.htm#fac:alteralm"><TT>alteralm</TT></A> facility to modify and/or rotate the spherical
+  harmonics coefficients <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> and greater flexibility for constraining
+  <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> in <TT>synfast</TT>
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ single and double precision implementation of most facilities (see <B>Input and Output Precision</B>
+  page&nbsp;<A HREF="facilitiesnode2.htm#page:ioprec"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]" SRC="crossref.png"></A>)
+</DL><SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html120"
+  HREF="facilitiesnode3.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html126"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html130"
+  HREF="facilitiesnode5.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html128"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html121"
+  HREF="facilitiesnode3.htm">Changes between releases 3.20</A>
+
+<B>Up:</B> <A NAME="tex2html127"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html131"
+  HREF="facilitiesnode5.htm">alteralm</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Using the HEALPix Fortran 90 facilities</TITLE>
+<META NAME="description" CONTENT="Using the HEALPix Fortran 90 facilities">
+<META NAME="keywords" CONTENT="facilities">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="facilities.css">
+
+<LINK REL="next" HREF="facilitiesnode3.htm">
+<LINK REL="previous" HREF="facilitiesnode1.htm">
+<LINK REL="up" HREF="facilities.htm">
+<LINK REL="next" HREF="facilitiesnode3.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html94"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html100"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html104"
+  HREF="facilitiesnode3.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html102"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html95"
+  HREF="facilitiesnode1.htm">TABLE OF CONTENTS</A>
+
+<B>Up:</B> <A NAME="tex2html101"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html105"
+  HREF="facilitiesnode3.htm">Changes between releases 3.20</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000"></A>
+<A NAME="section:defdir"></A>
+<BR>
+Using the <b>HEALPix</b> Fortran 90 facilities
+</H1>
+<B>Default File Names and Directories</B>: for some applications, the <b>HEALPix</b> facilities
+require some precalculated input files describing the pixel window
+function and quadrature ring weight (shipped as <TT>Healpix/data/pixel_window_n????.fits</TT> and <TT>Healpix/data/weight_ring_n?????.fits</TT> respectively). <A NAME="page:defdir"></A>
+<P>
+By default, files with the very same name will be looked for into: the current directory (.), the parent directory (..),
+./data, ../data, $HEALPIX and $HEALPIX/data where $HEALPIX is
+a system variable defined as the full path to the <b>HEALPix</b> package
+(see the installation documentation).
+The user has the possibility to change both the name of those files
+and their location.
+
+<P>
+<B>Double/Single Precision mode</B>: several facilities offer the option of switching at run time 
+the precision of the internal variables and arrays and of the I/O data from single to double precision
+floating point reals. The following points should be noted: <A NAME="page:ioprec"></A><DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Facilities running in double precision mode can read indifferently single and double
+  precision data files (and the same is true for single precision facilities). On
+  the other hand, a double (resp. single) precision facility will only output double
+  (single) precision  files.
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ Since the internal calculations sensitive to numerical round-off error
+  (like the spherical harmonics recurrence) are
+  <EM>always</EM> performed in double precision, switching to double precision mode
+<DL COMPACT><DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+   will have a limited impact on the output accuracy if the input file contains only
+  single precision data,
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ is recommended if the input file contains double precision data, and the precision of the output is critical
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ will not alter the execution speed, but
+  it will almost double the memory consumption of the facility,
+<DT><DD><IMG WIDTH="14" HEIGHT="14" SRC="greenball.png" ALT="*">
+ will obviously double the size of the output file(s).
+</DL></DL>
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html94"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html100"
+  HREF="facilities.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html104"
+  HREF="facilitiesnode3.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html102"
+  HREF="facilitiesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html95"
+  HREF="facilitiesnode1.htm">TABLE OF CONTENTS</A>
+
+<B>Up:</B> <A NAME="tex2html101"
+  HREF="facilities.htm">HEALPix/F90 facilities</A>
+
+<B> Next:</B> <A NAME="tex2html105"
+  HREF="facilitiesnode3.htm">Changes between releases 3.20</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

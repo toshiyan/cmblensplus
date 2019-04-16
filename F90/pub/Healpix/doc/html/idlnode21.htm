@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>euler_matrix_new</TITLE>
+<META NAME="description" CONTENT="euler_matrix_new">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode22.htm">
+<LINK REL="previous" HREF="idlnode20.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode22.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html483"
+  HREF="idlnode20.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html489"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html493"
+  HREF="idlnode22.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html491"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html484"
+  HREF="idlnode20.htm">convert_oldhpx2cmbfast</A>
+
+<B>Up:</B> <A NAME="tex2html490"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html494"
+  HREF="idlnode22.htm">fits2alm</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000210000000000000000"></A>
+<A NAME="idl:euler_matrix_new"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">euler_matrix_new</FONT></font></b><hr>
+<H3>This IDL facility provides a means to generate a 3D rotation Euler
+matrix parametrized by three angles and three axes of rotation.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/misc/euler_matrix_new.pro"><b>src/idl/misc/euler_matrix_new.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+<A HREF="#idl:euler_matrix_new:matrix">matrix</A> = EULER_MATRIX_NEW(<A HREF="#idl:euler_matrix_new:a1">a1</A>, <A HREF="#idl:euler_matrix_new:a2">a2</A>, <A HREF="#idl:euler_matrix_new:a3">a3</A> [,<A HREF="#idl:euler_matrix_new:deg">DEG=</A>, <A HREF="#idl:euler_matrix_new:help">HELP=</A>, <A HREF="#idl:euler_matrix_new:x">X=</A>, <A HREF="#idl:euler_matrix_new:y">Y=</A>, <A HREF="#idl:euler_matrix_new:zyx">ZYX=</A>]) 
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>matrix</B>
+<DD><A NAME="idl:euler_matrix_new:matrix"></A> 
+      a 3x3 array containing the Euler matrix
+    <DT>
+<B>a1</B>
+<DD><A NAME="idl:euler_matrix_new:a1"></A> 
+      input, float scalar, 
+    angle of the first rotation, expressed in radians,
+    unless DEG (see below) is set
+    <DT>
+<B>a2</B>
+<DD><A NAME="idl:euler_matrix_new:a2"></A> 
+      angle of the second rotation, same units as a1
+    <DT>
+<B>a3</B>
+<DD><A NAME="idl:euler_matrix_new:a3"></A> 
+      angle of the third rotation, same units as a1
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>DEG=</B>
+<DD><A NAME="idl:euler_matrix_new:deg"></A> 
+      if set, the angles are in degrees instead of radians
+
+<P>
+<DT>
+<B>HELP=</B>
+<DD><A NAME="idl:euler_matrix_new:help"></A> 
+      if set, the routine prints its documentation header and exits
+
+<P>
+<DT>
+<B>X=</B>
+<DD><A NAME="idl:euler_matrix_new:x"></A> 
+      if set, uses the classical mechanics convention (ZXZ):
+<BR>
+rotation a1 around original Z axis, 
+<BR>
+rotation a2 around intermediate X axis, 
+<BR>
+rotation a3 around final Z axis 
+<BR>        (see Goldstein for more details). 
+<BR>	<b>default:</b>this convention is used
+
+<P>
+<DT>
+<B>Y=</B>
+<DD><A NAME="idl:euler_matrix_new:y"></A> 
+      if set, uses the quantum mechanics convention (ZYZ):
+<BR>
+rotation a1 around original Z axis, 
+<BR>
+rotation a2 around intermediate Y axis, 
+<BR>
+rotation a3 around final Z axis.
+
+<P>
+<DT>
+<B>ZYX=</B>
+<DD><A NAME="idl:euler_matrix_new:zyx"></A> 
+      if set, uses the aeronautics convention (ZYX):
+<BR>
+rotation a1 around original Z axis, 
+<BR>
+rotation a2 around intermediate Y axis, 
+<BR>
+rotation a3 around final X axis.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+<IMG
+ WIDTH="559" HEIGHT="363" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg44.png"
+ ALT="$\textstyle \parbox{\hsize}{\facname \ ~\ allows the generation of a rotation Eu...
+...,/Y)) \\ [.2cm]
+euler\_matrix\_new(a,b,c,/Z) = euler\_matrix($-$a, b,$-$c,/Z)
+}$">
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">euler_matrix_new</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run <FONT COLOR="#CC0000">euler_matrix_new</FONT>.
+    <DT>
+<B><A HREF="idlnode64.htm#idl:rotate_coord">rotate_coord</A></B>
+<DD>apply a rotation to a set of position vectors and
+    polarization Stokes parameters.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html483"
+  HREF="idlnode20.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html489"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html493"
+  HREF="idlnode22.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html491"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html484"
+  HREF="idlnode20.htm">convert_oldhpx2cmbfast</A>
+
+<B>Up:</B> <A NAME="tex2html490"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html494"
+  HREF="idlnode22.htm">fits2alm</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,25 @@
+No implementation found for style `xr-hyper'
+No implementation found for style `graphicx'
+
+redefining command \contentsname 
+
+redefining command \u 
+
+*** wrap_cmd_myequal not defined, cannot wrap \myequal 
+
+? brace missing for \
+
+Substitution of arg to newlabelxx delayed.
+
+redefining command \ 
+
+? brace missing for \oldcontentsline
+
+? brace missing for \oldnewlabel
+Could not find the external label file: /tmp/installlabels.pl
+Could not find the external label file: /tmp/csublabels.pl
+Could not find the external label file: /tmp/idllabels.pl
+Could not find the external label file: /tmp/facilitieslabels.pl
+Could not find the external label file: /tmp/subroutineslabels.pl
+
+\bibitem label format not supported, using \bibcite information!

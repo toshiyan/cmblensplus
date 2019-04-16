@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>write_healpix_map</TITLE>
+<META NAME="description" CONTENT="write_healpix_map">
+<META NAME="keywords" CONTENT="csub">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="csub.css">
+
+<LINK REL="next" HREF="csubnode14.htm">
+<LINK REL="previous" HREF="csubnode12.htm">
+<LINK REL="up" HREF="csub.htm">
+<LINK REL="next" HREF="csubnode14.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html179"
+  HREF="csubnode12.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html185"
+  HREF="csub.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html189"
+  HREF="csubnode14.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html187"
+  HREF="csubnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html180"
+  HREF="csubnode12.htm">vec2ang</A>
+
+<B>Up:</B> <A NAME="tex2html186"
+  HREF="csub.htm">HEALPix/C subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html190"
+  HREF="csubnode14.htm">About this document ...</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000130000000000000000"></A>
+<A NAME="csub:write_healpix_map"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">write_healpix_map</FONT></font></b><hr>
+<H3>This routine writes a full sky <b>HEALPix</b> map into a FITS file</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/C/subs/chealpix.c"><b>src/C/subs/chealpix.c</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><h3>
+int write_healpix_map( float *signal, long nside, char *filename, char nest, char *coordsys)
+</h3>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SPAN  CLASS="textbf">name&amp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>
+<FONT COLOR="#CC0000">write_healpix_map</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>int</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>returns a non zero value in case of error</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>signal</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>float</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>full sky map to be written</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>nside</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>long</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250><b>HEALPix</b> resolution parameter of the map (the map should
+                   have 12 * nside * nside pixels).</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>filename</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>char</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>FITS file in which to write the full sky map</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>nest</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>char</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>flag specifing the <b>HEALPix</b> pixel ordering of the
+                   map. 0: 'RING' and 1: 'NESTED'</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>coordsys</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>char</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>astronomical coordinate system of map
+	(must be either 'C', 'E' or 'G' standing respectively for Celestial=equatorial,
+		  Ecliptic or Galactic)</TD>
+</TR>
+</TABLE>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">write_healpix_map</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B>anafast</B>
+<DD>executable that reads a <b>HEALPix</b> map and analyses it. 
+  <DT>
+<B>synfast</B>
+<DD>executable that generate full sky <b>HEALPix</b> maps
+  <DT>
+<B><A HREF="csubnode11.htm#csub:read_healpix_map">read_healpix_map</A></B>
+<DD>subroutine to read <b>HEALPix</b> maps
+<DT>
+<B><A HREF="csubnode7.htm#csub:get_fits_size">get_fits_size</A></B>
+<DD>subroutine to determine the size of a map
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html179"
+  HREF="csubnode12.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html185"
+  HREF="csub.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html189"
+  HREF="csubnode14.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html187"
+  HREF="csubnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html180"
+  HREF="csubnode12.htm">vec2ang</A>
+
+<B>Up:</B> <A NAME="tex2html186"
+  HREF="csub.htm">HEALPix/C subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html190"
+  HREF="csubnode14.htm">About this document ...</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

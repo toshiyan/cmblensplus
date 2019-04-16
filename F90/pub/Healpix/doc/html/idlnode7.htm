@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>alm_t2i</TITLE>
+<META NAME="description" CONTENT="alm_t2i">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode8.htm">
+<LINK REL="previous" HREF="idlnode6.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode8.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html315"
+  HREF="idlnode6.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html321"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html325"
+  HREF="idlnode8.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html323"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html316"
+  HREF="idlnode6.htm">alm_i2t</A>
+
+<B>Up:</B> <A NAME="tex2html322"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html326"
+  HREF="idlnode8.htm">alm2fits</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00070000000000000000"></A>
+<A NAME="idl:alm_t2i"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">alm_t2i</FONT></font></b><hr>
+<H3>This IDL facility turns a tabular (real or complex) a(l,m) array into an
+indexed list of alm that can be written into a FITS file with <A HREF="idlnode8.htm#idl:alm2fits">alm2fits</A></H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/misc/alm_t2i.pro"><b>src/idl/misc/alm_t2i.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+<FONT COLOR="#CC0000">alm_t2i</FONT>, <A HREF="#idl:alm_t2i:alm_table">Alm_table</A>,
+<A HREF="#idl:alm_t2i:index">Index</A>, 
+<A HREF="#idl:alm_t2i:alm_vec">Alm_vec</A>,
+[<A HREF="#idl:alm_t2i:help">/HELP</A>,
+<A HREF="#idl:alm_t2i:mfirst">/MFIRST</A>])
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Alm_table</B>
+<DD><A NAME="idl:alm_t2i:alm_table"></A>Input real or complex array, containing all the <SPAN CLASS="MATH"><I>a</I><SUP><I>s</I></SUP><SUB><I>lm</I></SUB></SPAN> for <SPAN CLASS="MATH"><I>l</I></SPAN>
+         in [0,<SPAN CLASS="MATH"><IMG
+ WIDTH="36" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg8.png"
+ ALT="$l_{\rm max}$"></SPAN>] and <SPAN CLASS="MATH"><I>m</I></SPAN> in [0,<SPAN CLASS="MATH"><IMG
+ WIDTH="47" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg9.png"
+ ALT="$m_{\rm max}$"></SPAN>] 
+(and <SPAN CLASS="MATH"><I>s</I></SPAN> in [0,<SPAN CLASS="MATH"><IMG
+ WIDTH="39" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg10.png"
+ ALT="$s_{\rm max}$"></SPAN>] if applicable)
+<BR>
+if REAL    it has 3 (or 4) dimensions,
+<BR>
+if COMPLEX is has 2 (or 3) dimensions
+
+<P>
+<DT>
+<B>Index</B>
+<DD><A NAME="idl:alm_t2i:index"></A>Output integer vector of size ni containing the index <SPAN CLASS="MATH"><I>i</I></SPAN> of the 
+            of <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients, related to <SPAN CLASS="MATH">{l,<I>m</I>}</SPAN> by 
+             <!-- MATH
+ $i = l^2 + l + m + 1$
+ -->
+<SPAN CLASS="MATH"><I>i</I> = <I>l</I><SUP>2</SUP> + <I>l</I> + <I>m</I> + 1</SPAN>
+    <DT>
+<B>Alm_vec</B>
+<DD><A NAME="idl:alm_t2i:alm_vec"></A>Output array of <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> coefficients, with dimension (ni, 2 [,<SPAN CLASS="MATH"><IMG
+ WIDTH="72" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg11.png"
+ ALT="$s_{\rm max}+1$"></SPAN>])
+     where
+<BR>
+ni   = number of <SPAN CLASS="MATH"><I>i</I></SPAN> indices
+<BR>
+2 for real and imaginary parts of alm coefficients
+<BR>           <SPAN CLASS="MATH"><IMG
+ WIDTH="72" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg11.png"
+ ALT="$s_{\rm max}+1$"></SPAN> = number of signals (usually 1 for any of T E B
+                  or 3 for T,E,B together)
+</DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>/HELP</B>
+<DD><A NAME="idl:alm_t2i:help"></A>if set, prints out the help header and exits
+    <DT>
+<B>/MFIRST</B>
+<DD><A NAME="idl:alm_t2i:mfirst"></A>if set, the input array is a(m,l) instead of a(l,m)
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+<FONT COLOR="#CC0000">alm_t2i</FONT> turns a real or complex tabular array of a(l,m) (or a(m,l) is <A HREF="#idl:alm_t2i:mfirst"><TT>MFIRST</TT></A> is
+set) into a real list of <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> (with the real and imaginary parts separated)
+and its index <SPAN CLASS="MATH"><I>i</I>=<I>l</I><SUP>2</SUP>+<I>l</I>+<I>m</I>+1</SPAN>. The unphysical <SPAN CLASS="MATH"><I>m</I>&gt;<I>l</I></SPAN> elements of the input
+table are dropped from the output list.
+
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">alm_t2i</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run <FONT COLOR="#CC0000">alm_t2i</FONT>.
+    <DT>
+<B><A HREF="idlnode6.htm#idl:alm_i2t">alm_i2t</A></B>
+<DD>this function is complementary to
+<FONT COLOR="#CC0000">alm_t2i</FONT> and
+turns an indexed list of alm (as generated by
+<A HREF="idlnode22.htm#idl:fits2alm">fits2alm</A>) into a tabular (real or complex) a(l,m) array
+for easier manipulation
+  <DT>
+<B><A HREF="idlnode8.htm#idl:alm2fits">alm2fits</A>, <A HREF="idlnode22.htm#idl:fits2alm">fits2alm</A></B>
+<DD>routines to read and write <SPAN CLASS="MATH"><I>a</I><SUB><I>lm</I></SUB></SPAN> indexed lists from and to FITS files.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></tt>
+<blockquote>See <A HREF="idlnode6.htm#idl:alm_i2t:example">alm_i2t example</A>
+</blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE"></SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html315"
+  HREF="idlnode6.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html321"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html325"
+  HREF="idlnode8.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html323"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html316"
+  HREF="idlnode6.htm">alm_i2t</A>
+
+<B>Up:</B> <A NAME="tex2html322"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html326"
+  HREF="idlnode8.htm">alm2fits</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

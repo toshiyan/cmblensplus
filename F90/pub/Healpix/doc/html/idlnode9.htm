@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>ang2vec</TITLE>
+<META NAME="description" CONTENT="ang2vec">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode10.htm">
+<LINK REL="previous" HREF="idlnode8.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode10.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html339"
+  HREF="idlnode8.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html345"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html349"
+  HREF="idlnode10.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html347"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html340"
+  HREF="idlnode8.htm">alm2fits</A>
+
+<B>Up:</B> <A NAME="tex2html346"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html350"
+  HREF="idlnode10.htm">angulardistance</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00090000000000000000"></A>
+<A NAME="idl:ang2vec"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">ang2vec</FONT></font></b><hr>
+<H3>This IDL facility convert the position angles of points on the sphere 
+into their 3D position vectors.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/ang2vec.pro"><b>src/idl/toolkit/ang2vec.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+ANG2VEC, <A HREF="#idl:ang2vec:Theta">Theta</A>, <A HREF="#idl:ang2vec:Phi">Phi</A>, <A HREF="#idl:ang2vec:Vector">Vector</A>[, <A HREF="#idl:ang2vec:ASTRO">ASTRO=</A>]
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Theta<A NAME="idl:ang2vec:Theta"></A></B>
+<DD>input: scalar or vector, 
+<BR>
+colatitude in radians measured southward from north pole (in
+    [0,<SPAN CLASS="MATH"><IMG
+ WIDTH="16" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg12.png"
+ ALT="$\pi$"></SPAN>]).
+<BR>
+If ASTRO is set, Theta is the latitude in degrees measured 
+       northward from the equator (in [-90, 90]).
+    <DT>
+<B>Phi<A NAME="idl:ang2vec:Phi"></A></B>
+<DD>input: scalar or vector of same size as Theta, 
+<BR>
+longitude in radians measured eastward (in [0, <SPAN CLASS="MATH"><IMG
+ WIDTH="25" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg13.png"
+ ALT="$2\pi$"></SPAN>]).
+<BR>
+If ASTRO is set, it is the longitude in degree measured eastward (in
+    [0,360]).
+    <DT>
+<B>Vector<A NAME="idl:ang2vec:Vector"></A></B>
+<DD>output : array, 
+<BR>
+three dimensional cartesian position vector
+                   <SPAN CLASS="MATH">(<I>x</I>,<I>y</I>,<I>z</I>)</SPAN> normalised to unity. The north pole is <SPAN CLASS="MATH">(0,0,1)</SPAN>. 
+	The coordinates are ordered as follows
+                   <!-- MATH
+ $x(0),\ldots,x(n-1),\ y(0),\ldots,y(n-1),\ z(0),\ldots,z(n-1)$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="466" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg14.png"
+ ALT="$x(0),\ldots,x(n-1),\ y(0),\ldots,y(n-1),\ z(0),\ldots,z(n-1)$"></SPAN></DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>ASTRO<A NAME="idl:ang2vec:ASTRO"></A>=</B>
+<DD>if set Theta and Phi are the latitude and longitude in
+    degrees instead of the colatitude and longitude in radians.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+ang2vec performs the geometrical transform from the position angles of points 
+<SPAN CLASS="MATH"><IMG
+ WIDTH="48" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg15.png"
+ ALT="$(\theta,\phi)$"></SPAN>
+into their position vectors <SPAN CLASS="MATH">(<I>x</I>,<I>y</I>,<I>z</I>)</SPAN>:
+<!-- MATH
+ $x = \sin\theta\cos\phi$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="118" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg16.png"
+ ALT="$x = \sin\theta\cos\phi$"></SPAN>, <!-- MATH
+ $y=\sin\theta\sin\phi$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="115" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg17.png"
+ ALT="$y=\sin\theta\sin\phi$"></SPAN>, <SPAN CLASS="MATH"><IMG
+ WIDTH="77" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg18.png"
+ ALT="$z=\cos\theta$"></SPAN>
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">ang2vec</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run ang2vec.	
+    <DT>
+<B><A HREF="idlnode52.htm#idl:pix_tools">pix2xxx</A>, ... </B>
+<DD>conversion between vector or angles and pixel index
+    <DT>
+<B><A HREF="idlnode69.htm#idl:vec2ang">vec2ang</A></B>
+<DD>conversion from position vectors to angles
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> lat = -45 ; latitude in degrees </SMALL></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> long = 120 ; longitude in degrees </SMALL></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> ang2vec, lat, lon, /astro, vec</SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>will return in <TT>vec</TT> the 3D cartesian position vector of the point of latitude -45 deg and longitude 120 deg
+</blockquote><SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html339"
+  HREF="idlnode8.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html345"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html349"
+  HREF="idlnode10.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html347"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html340"
+  HREF="idlnode8.htm">alm2fits</A>
+
+<B>Up:</B> <A NAME="tex2html346"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html350"
+  HREF="idlnode10.htm">angulardistance</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

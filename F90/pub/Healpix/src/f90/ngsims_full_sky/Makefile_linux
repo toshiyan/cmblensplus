@@ -1,0 +1,38 @@
+# HEALPIX = /mraosd/data/sjm84/Healpix_1.20
+# FC      = f90
+# FFLAGS  = -fast -M$(HEALPIX)/include
+# LIBFITS = cfitsio
+# LIBDIR  = /mraosd/data/sjm84/Healpix_1.20/lib
+# LDFLAGS = -L$(HEALPIX)/lib -L$(FITSDIR) -lhealpix -lgif -l$(LIBFITS) -lm -lnsl -lsocket
+# PGFLAGS = -lpgplot -lcpgplot -lsunmath -lX11 -lM77 -lF77
+# FITSDIR = /usr/local/lib
+###HEALPIX = 
+FC      = ifort9
+FFLAGS  = -O -I$(HEALPIX)/include -openmp
+LIBFITS = cfitsio
+LIBDIR  = $(HEALPIX)/lib
+LDFLAGS = -L$(HEALPIX)/lib -L$(FITSDIR) -lhealpix -lgif -l$(LIBFITS)
+PGFLAGS = #  -lpgplot -lcpgplot -lsunmath -lX11 -lM77 -lF77
+FITSDIR = /usr/local/lib64
+
+%.o: %.f90
+	$(FC) $(FFLAGS) -c $< -o $@
+
+%.o: %.f
+	$(FC) -c $< -o $@
+
+sky_ng_sim : sky_ng_sim.o sub_ngpdf_sho.o sub_ngpdf_powergauss.o sky_sub.o $(LIBDIR)/libhealpix.a
+	$(FC) sky_ng_sim.o sub_ngpdf_sho.o sub_ngpdf_powergauss.o sky_sub.o $(FFLAGS) $(PGFLAGS) $(LDFLAGS) -o $@
+
+sky_ng_sim_bin: sky_ng_sim_bin.o sub_ngpdf_sho.o sub_ngpdf_powergauss.o sky_sub.o $(LIBDIR)/libhealpix.a
+	$(FC) sky_ng_sim_bin.o sub_ngpdf_sho.o sub_ngpdf_powergauss.o sky_sub.o $(FFLAGS) $(PGFLAGS) $(LDFLAGS) -o $@
+
+
+sub_ngpdf_sho.o : sub_ngpdf_sho.f90 sky_sub.o
+sky_ng_sim.o : sky_ng_sim.f90 sub_ngpdf_sho.o sub_ngpdf_powergauss.o sky_sub.o
+sky_ng_sim_bin.o : sky_ng_sim_bin.f90 sub_ngpdf_sho.o sub_ngpdf_powergauss.o sky_sub.o
+sub_ngpdf_powergauss.o : sub_ngpdf_powergauss.f90 sky_sub.o
+sky_sub.o : sky_sub.f90
+
+clean:
+	rm *.o *.mod

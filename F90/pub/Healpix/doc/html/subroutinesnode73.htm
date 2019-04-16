@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>planck_rng derived type</TITLE>
+<META NAME="description" CONTENT="planck_rng derived type">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode74.htm">
+<LINK REL="previous" HREF="subroutinesnode72.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode74.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html1155"
+  HREF="subroutinesnode72.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1161"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1165"
+  HREF="subroutinesnode74.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1163"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1156"
+  HREF="subroutinesnode72.htm">pix2xxx,ang2xxx,vec2xxx, nest2ring,ring2nest</A>
+
+<B>Up:</B> <A NAME="tex2html1162"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1166"
+  HREF="subroutinesnode74.htm">plm_gen</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000730000000000000000"></A>
+<A NAME="sub:planck_rng"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">planck_rng</FONT></font></b><hr>
+<H3>The derived type <FONT COLOR="#CC0000">planck_rng</FONT> is used by the Random Number Generation routines 
+<A HREF="subroutinesnode80.htm#sub:rand_init">rand_init</A>,
+<A HREF="subroutinesnode81.htm#sub:rand_uni">rand_uni</A>, 
+<A HREF="subroutinesnode79.htm#sub:rand_gauss">rand_gauss</A> to describe fully the current RNG
+sequence.
+<BR>
+Most users do not need to know about the <FONT COLOR="#CC0000">planck_rng</FONT> definition. It may be
+useful for those wanting to take a snapshot of the RNG sequence they are using (by eg,
+dumping the latest values of <FONT COLOR="#CC0000">planck_rng</FONT> structure on disk) so that the same sequence can be resumed
+later on from that same point.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/rngmod.f90"><b>src/f90/mod/rngmod.f90</b></a>&nbsp;  
+
+<P>
+The type <FONT COLOR="#CC0000">planck_rng</FONT> is a structure defined as
+
+<P>
+ <TABLE CELLPADDING=3 BORDER="1" WIDTH="100%">
+<TR><TD ALIGN="LEFT">name</TD>
+<TD ALIGN="CENTER">type</TD>
+<TD ALIGN="LEFT">definition</TD>
+</TR>
+<TR><TD ALIGN="LEFT">x, y, z, w</TD>
+<TD ALIGN="CENTER">I4B</TD>
+<TD ALIGN="LEFT">internal variables of uniform RNG</TD>
+</TR>
+<TR><TD ALIGN="LEFT">gset</TD>
+<TD ALIGN="CENTER">DP</TD>
+<TD ALIGN="LEFT">internal variable for Gaussian RNG</TD>
+</TR>
+<TR><TD ALIGN="LEFT">empty</TD>
+<TD ALIGN="CENTER">LGT</TD>
+<TD ALIGN="LEFT">flag used by Gaussian RNG</TD>
+</TR>
+</TABLE>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">planck_rng</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode79.htm#sub:rand_gauss">rand_gauss</A></B>
+<DD>function which returns a  random normal deviate.
+  <DT>
+<B><A HREF="subroutinesnode81.htm#sub:rand_uni">rand_uni</A></B>
+<DD>function which returns a random uniform deviate.
+   <DT>
+<B><A HREF="subroutinesnode80.htm#sub:rand_init">rand_init</A></B>
+<DD>subroutine to initiate a random number sequence. 
+  </DL>
+
+<P>
+
+<P>
+
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1155"
+  HREF="subroutinesnode72.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1161"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1165"
+  HREF="subroutinesnode74.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1163"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1156"
+  HREF="subroutinesnode72.htm">pix2xxx,ang2xxx,vec2xxx, nest2ring,ring2nest</A>
+
+<B>Up:</B> <A NAME="tex2html1162"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1166"
+  HREF="subroutinesnode74.htm">plm_gen</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

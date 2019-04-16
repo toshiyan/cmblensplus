@@ -1,0 +1,198 @@
+
+ This sub-directory contains IDL procedures from external libraries 
+ which are required for use by the HEALPix IDL facilities.
+
+ These procedures are included in the HEALPix package unchanged and 
+ solely for the purpose of making it self contained. In this way,
+ we remove the 'burden' of installation of additional libraries from 
+ the end user.
+
+ The respective copyrights, restrictions and disclaimers of the original 
+ libraries apply for these procedures.
+
+ o  ./astron/ : required routines from  THE IDL ASTRONOMY USER'S LIBRARY 
+    (http://idlastro.gsfc.nasa.gov/homepage.html)
+    including their supporting D. Fanning's COYOTE routines 
+    (http://www.idlcoyote.com/documents/programs.php)
+
+ o  ./cgis/ : required routines from the COBE cgis library
+    (http://space.gsfc.nasa.gov/astro/cobe/cgis.html)
+
+ o ./obsolete_astron/ : routines from the Astron library which are now considered
+   obsolete, but may still be needed by Healpix (or by user-developped applications).
+
+ o ./epstopdf/ : Perl script to turn (encapsulated) PostScript file into PDF
+     and its documentation
+     see ./epstopdf/README  for details
+   (added 2015-03)
+
+ o ./textoidl/ : IDL routines to emulate a subset of TeX commands in IDL
+     see ./textoidl/README  for details
+   (added 2015-05)
+
+
+ 2000-03-03
+ updated 2007-05-15
+ updated 2013-02-08
+ AJB, KMG, EH
+
+----------------
+ NB : the routines in the ./astron directory have been updated to 
+ match the May 2002 version of the astron library.
+
+ 2002-08-19
+ EH, AJB, KMG
+
+----------------
+
+NB : the routines in the ./astron directory have been updated to 
+ match the Dec 17, 2004 version of the astron library, 
+ except for MRDFITS, which was updated Feb 7, 2005
+
+ 2005-02-10
+ EH
+----------------
+
+NB : the routines in the ./astron directory have been updated to 
+ match the April 14, 2007 (*) version of the astron library,
+ except for FITS_READ, READFITS, WRITEFITS and FXADDPAR which have been updated
+ on May 16, 2007, and CHECK_FITS which was updated on May 25.
+ It now should be possible to read/write FITS files larger than 2GB on 64bit architectures.
+
+ (*) This version of astron requires IDL v5.5 or newer.
+
+ 2005-05-15
+ EH
+----------------
+
+NB : the routines in the ./astron directory have been updated to 
+ match the March 7, 2008 (*) version of the astron library.
+ It now should be possible to read/write FITS files larger than 2GB on 64bit architectures.
+
+ (*) This version of astron requires IDL v5.6 or newer.
+
+ 2008-03-18
+ EH
+----------------
+
+NB : the routines in the ./astron directory have been updated to 
+ match the Nov 25, 2009 (*) version of the astron library.
+ NUMLINES is now obsolete (see obsolete_astron),
+ IDL_VALIDNAME is now part of IDL,
+ and many other routines have been updated.
+
+ (*) This version of astron requires IDL v6.1 or newer.
+
+ 2009-11-27
+ EH
+----------------
+
+NB : the routines MAKE_ASTR, PUTAST (and WCS_GETPOLE) and SXADDHIST have been added,
+ as well as their subsidiaries, while all routines have been updated to 
+ match the May 24, 2010 version of the astron library.
+ The routines AD2XY, BSORT, EXTAST, GCIRC, MINMAX, 
+ WCS_ROTATE, WCSSPH2XY, WCSXY2SPH, XY2AD required by Ximview have been added.
+
+ 2010-05-26
+ EH
+----------------
+
+NB: the routines
+ASTROLIB, CHECK_FITS, FITS_INFO, FITS_OPEN, FITS_READ, FITS_TEST_CHECKSUM, FXBREADM, FXHMODIFY, FXMOVE, FXPOSIT, GETTOK, HEADFITS, MRD_HREAD, MRD_STRUCT, MRDFITS, READCOL, READFITS, REPSTR, STORE_ARRAY, SXADDPAR, SXPAR, SYMCAT, TAG_EXIST, TEXTOPEN, WRITEFITS and ZPARCHECK
+have been updated to match the Feb 01, 2012 version of the ASTRON library, 
+and the routines
+GET_PIPE_FILESIZE, SETDEFAULTVALUE, CREATE_STRUCT,
+MAKE_ASTR, PUTAST, SXADDHIST, GET_COORDS, GET_EQUINOX, GETOPT
+have been added to satisfy new dependencies.
+
+ 2012-04-03
+ EH
+----------------
+
+FITS_INFO has been updated with 21-Sep-2012 version to parse files with many extensions
+
+ 2012-11-13
+ EH
+
+----------------
+
+updated routines:
+CHECKSUM32 DAYCNV FITS_INFO FITS_OPEN FITS_READ FXBREADM FXBWRITM FXMOVE FXPAR FXPOSIT GET_COORDS HOST_TO_IEEE IEEE_TO_HOST MATCH MKHDR MRD_SKIP MRD_STRUCT MRDFITS PUTAST READCOL READFITS STRNUMBER SXADDHIST SXPAR WRITEFITS XDISPSTR
+
+replaced:
+SYMCAT -> CGSYMCAT (used in mollview and outline_coord2uv)
+
+added routines:
+ADD_DISTORT, CGCENTTLB, CGCOLOR, CGCOLOR24, CGPICKCOLORNAME, CGROOTNAME, CGSNAPSHOT, DECOMPOSEDCOLOR, ERROR_MESSAGE, GETDECOMPOSEDSTATE, GETPRIMARYSCREENSIZE
+
+ 2013-02-08
+
+----------------
+
+31 updated routines in astron(*) and/or coyote:
+CGCENTERTLB, CGCOLOR, CGPICKCOLORNAME, CGROOTNAME, CGSNAPSHOT, CGSYMCAT, 
+CREATE_STRUCT, FITS_ADD_CHECKSUM, FITS_ASCII_ENCODE, FITS_INFO, FITS_READ, FITS_TEST_CHECKSUM, FXBADDCOL, FXBREADM, FXBWRITE, FXBWRITM, FXPOSIT, HOST_TO_IEEE, IEEE_TO_HOST, MAKE_ASTR, MRD_STRUCT, MRDFITS, PUTAST, READCOL, READFITS, SXADDPAR, SXDELPAR, SXPAR, WRITEFITS, XDISPSTR, ZPARCHECK
+
+7 added routines:
+CGERRORMSG, CGGETCOLORSTATE, 
+DATE_CONV, WCS_CHECK_CTYPE, WCS_GETPOLE, WCS_ROTATE, WCSSPH2XY
+
+3 moved to obsolete_astron:
+DECOMPOSEDCOLOR, ERROR_MESSAGE, GETDECOMPOSEDSTATE 
+
+ (*) This version of astron requires IDL v6.4 or newer.
+
+ 2014-01-06
+
+----------------
+
+16 routines updated in astron(*):
+ADD_DISTORT, BLKSHIFT, DAYCNV, FITS_OPEN, FITS_READ, FXBREADM, FXBWRITE, FXPAR, FXWRITE, MRDFITS, PUTAST, STRN, SXPAR, TBGET, TBINFO, WCS_CHECK_CTYPE
+
+2 routines updated in coyote:
+CGSNAPSHOT, SETDEFAULTVALUE
+
+ (*) This version of astron requires IDL v6.4 or newer.
+
+ 2014-12-02
+
+----------------
+
+7 routines added in coyote:
+  CGPS2RASTER CGHASIMAGEMAGICK CGPICKFILE CGPSDIMS CGWINDOW_GETDEFS CGSOURCEDIR UNDEFINE
+ 2015-05-13
+
+----------------
+
+9 routines updated in astron(*) and/or coyote
+CGCOLOR CGPICKCOLORNAME CGPSDIMS CGSYMCAT FITS_INFO FXHMODIFY HEADFITS REPSTR SXPAR
+
+ (*) This version of astron requires IDL v6.4 or newer.
+
+  2015-07-01
+
+----------------
+
+5 routines updated in astron(**)
+FXADDPAR FXPAR MAKE_ASTR REPSTR SXPAR
+
+9 routines added from coyote and astron
+CGDEFCHARSIZE CGFIXPS  CGPS_CLOSE CGPS_CONFIG CGPS_OPEN CGPSWINDOW CGWINDOW_SETDEFS JULDATE YDN2MD
+
+ (**) This version of astron requires IDL v6.4 or newer.
+      Done with version 2015-09-23
+
+  2015-09-30
+
+----------------
+
+15 routines updated in astron(***)
+BLKSHIFT CHECKSUM32 FXADDPAR FXBFINDLUN FXBREAD FXBWRITE GET_COORDS MKHDR MRDFITS READCOL REPCHR SXADDPAR SXPAR WCSSPH2XY WRITEFITS
+
+4 routines added from coyote
+ASPECT CGQUERY STR_SIZE WINDOWAVAILABLE
+
+ (***) This version of astron requires IDL v6.4 or newer.
+      Done with version 2016-08-19
+
+  2016-08-22

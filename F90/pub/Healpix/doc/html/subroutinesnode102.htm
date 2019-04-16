@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>uniq2nest</TITLE>
+<META NAME="description" CONTENT="uniq2nest">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode103.htm">
+<LINK REL="previous" HREF="subroutinesnode101.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode103.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html1503"
+  HREF="subroutinesnode101.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1509"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1513"
+  HREF="subroutinesnode103.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1511"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1504"
+  HREF="subroutinesnode101.htm">udgrade_ring*</A>
+
+<B>Up:</B> <A NAME="tex2html1510"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1514"
+  HREF="subroutinesnode103.htm">vec2ang</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001020000000000000000"></A>
+<A NAME="sub:uniq2nest"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">uniq2nest</FONT></font></b><hr>
+<H3>This F90 facility turns the Unique Identifier <!-- MATH
+ $u = p + 4 {N_{\rm side}}^2$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="128" HEIGHT="41" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg93.png"
+ ALT="$u = p + 4 {N_{\rm side}}^2$"></SPAN>, into the parameter <!-- MATH
+ ${N_{\rm side}}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg13.png"
+ ALT="${N_{\rm side}}$"></SPAN> (a power of 2) and the pixel index <SPAN CLASS="MATH"><I>p</I></SPAN>. See <A HREF="./intronode4.htm#intro:unique">''The Unique Identifier scheme''</A> section in 
+<A NAME="tex2html23"
+  HREF="intro.htm">''<b>HEALPix</b> Introduction Document''</A>
+for more details.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/pix_tools.F90"><b>src/f90/mod/pix_tools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">uniq2nest</FONT>(
+<A HREF="#sub:uniq2nest:puniq">puniq</A>, 
+<A HREF="#sub:uniq2nest:nside">nside</A>, 
+<A HREF="#sub:uniq2nest:pnest">pnest</A>
+)</h3></blockquote>
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SPAN  CLASS="textbf">name</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=50><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=300><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=300>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>
+puniq <A NAME="sub:uniq2nest:puniq"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>I4B/I8B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=300>The <b>HEALPix</b> Unique pixel identifier. Must be <SPAN CLASS="MATH"><IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg140.png"
+ ALT="$\ge 4$"></SPAN>.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>nside <A NAME="sub:uniq2nest:nside"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=300>The <b>HEALPix</b> <!-- MATH
+ ${N_{\rm side}}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="43" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg13.png"
+ ALT="${N_{\rm side}}$"></SPAN> parameter.</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>pnest <A NAME="sub:uniq2nest:pnest"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>I4B/I8B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=50>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=300>(NESTED scheme) pixel identification number over the range {0,<!-- MATH
+ $12{N_{\rm side}}^2-1$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="102" HEIGHT="41" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg94.png"
+ ALT="$12{N_{\rm side}}^2-1$"></SPAN>}.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>use <A HREF="subroutinesnode40.htm#sub:healpix_modules">healpix_modules</A>
+<BR>
+integer(I4B) :: nside, pnest 
+<BR>
+call uniq2nest(4, nside, pnest)
+<BR>
+print*,nside,pnest</tt>
+<blockquote>
+<TABLE  WIDTH="499">
+<TR><TD>
+returns  
+<BR>
+1 0 
+<BR>
+since the pixel with Unique ID number 4 is the first pixel (<SPAN CLASS="MATH"><I>p</I>=0</SPAN>) at <!-- MATH
+ ${N_{\rm side}}=$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="63" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg95.png"
+ ALT="${N_{\rm side}}=$"></SPAN> 1.
+</TD></TR>
+</TABLE>
+</blockquote>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">uniq2nest</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B><A HREF="subroutinesnode64.htm#sub:nest2uniq">nest2uniq</A></B>
+<DD>Transforms Nside and Nested pixel number into Unique <b>HEALPix</b> pixel ID number
+  <DT>
+<B><A HREF="subroutinesnode72.htm#sub:pix_tools">pix2xxx, ...</A></B>
+<DD>to turn NESTED pixel index into sky coordinates and back
+  </DL>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1503"
+  HREF="subroutinesnode101.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1509"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1513"
+  HREF="subroutinesnode103.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1511"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html1504"
+  HREF="subroutinesnode101.htm">udgrade_ring*</A>
+
+<B>Up:</B> <A NAME="tex2html1510"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html1514"
+  HREF="subroutinesnode103.htm">vec2ang</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

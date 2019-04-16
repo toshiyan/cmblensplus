@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>get_healpix_data_dir, get_healpix_main_dir, get_healpix_test_dir</TITLE>
+<META NAME="description" CONTENT="get_healpix_data_dir, get_healpix_main_dir, get_healpix_test_dir">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode35.htm">
+<LINK REL="previous" HREF="subroutinesnode33.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode35.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html687"
+  HREF="subroutinesnode33.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html693"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html697"
+  HREF="subroutinesnode35.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html695"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html688"
+  HREF="subroutinesnode33.htm">get_card</A>
+
+<B>Up:</B> <A NAME="tex2html694"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html698"
+  HREF="subroutinesnode35.htm">getArgument</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000340000000000000000"></A>
+<A NAME="sub:get_healpix_xxx_dir"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">get_healpix_main_dir,&nbsp;<SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="subroutinesimg6.png"
+ ALT="$\ldots$"></SPAN></FONT></font></b><hr>
+<H3>A few functions are available to return the full path to <b>HEALPix</b> main directory
+and its <TT>data</TT> and <TT>test</TT> subdirectories. This allow those paths to be
+controlled by preprocessing macros or environment variables in case of
+non-standard installation of the <b>HEALPix</b> directory structure.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/paramfile_io.F90"><b>src/f90/mod/paramfile_io.F90</b></a>&nbsp;  
+
+<P>
+
+<BIG CLASS="LARGE"><SPAN  CLASS="textbf">FUNCTIONS: </SPAN></BIG>
+<BR>
+<TT>hmd = get_healpix_main_dir()</TT> 
+
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=350>returns the full path to the main
+			<b>HEALPix</b> directory. It will be determined, in this
+			order, from the value of the
+			preprocessing macros <TT>HEALPIX</TT> and <TT>HEALPIXDIR</TT>
+			if they are defined or the
+			environment variable <TT>$HEALPIX</TT> otherwise</TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<P>
+<TT>hdd = get_healpix_data_dir()</TT> 
+
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=350>returns the full path to
+			<b>HEALPix</b> <TT>data</TT> subdirectory. It will be determined
+			from the preprocessing macro <TT>HEALPIXDATA</TT> or the environment variable <TT>$HEALPIXDATA</TT>. If both fail, it will return the list of directories {<TT>. ../data ./data .. $HEALPIX $HEALPIX/data $HEALPIX/../data
+			$HEALPIX<SPAN CLASS="MATH"><IMG
+ WIDTH="14" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg14.png"
+ ALT="$\backslash$"></SPAN>data</TT>} separated by LineFeed.</TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<P>
+<TT>htd = get_healpix_test_dir()</TT> 
+
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT">&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=350>returns the full path to
+			<b>HEALPix</b> <TT>test</TT> subdirectory. It will be determined,
+			in this order, from the preprocessing macro <TT>HEALPIXTEST</TT>, the environment
+			variable <TT>$HEALPIXTEST</TT> or <TT>$HEALPIX/test</TT>.</TD>
+<TD ALIGN="LEFT">&nbsp;</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<P>
+<P>
+
+<P>
+
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html687"
+  HREF="subroutinesnode33.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html693"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html697"
+  HREF="subroutinesnode35.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html695"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html688"
+  HREF="subroutinesnode33.htm">get_card</A>
+
+<B>Up:</B> <A NAME="tex2html694"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html698"
+  HREF="subroutinesnode35.htm">getArgument</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

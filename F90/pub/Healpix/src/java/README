@@ -1,0 +1,46 @@
+Installation of Healpix Java
+----------------------------
+requires a Java Development Kit and Apache Ant
+(see below Notes on installing Java, and on junit)
+% ant 
+
+for information on the build targets available:
+% ant -p
+
+Documentation
+-------------
+preinstalled in <HEALPIX>/doc/html/java/index.html
+
+% ant docs
+will generate
+<HEALPIX>/src/java/doc/index.html
+from the source files
+
+-----------------------------------------------------------------
+
+
+Installing Java
+===============
+
+Java Development Kit (JDK aka SDK): required to compile any Java code
+---------------------------------
+http://www.oracle.com/technetwork/java/index.html
+
+Java based build tool: Ant
+--------------------------
+http://ant.apache.org/bindownload.cgi
+It is also available thru fink for MacOS
+
+
+About Junit
+===========
+junit.jar is required for Java Healpix library installation.
+It is shipped with Healpix and available in 
+<HEALPIX>/src/java/lib/
+Just make sure that this path (or a path to any other junit.jar)
+is included in your CLASSPATH environment variable.
+Alternatively you can use ant's "-lib" option:
+  ant -lib lib/junit*.jar test
+
+Please contact healpix-support AT lists.sourceforge.net for any questions on the
+code or its installation.

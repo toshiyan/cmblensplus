@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>query_triangle </TITLE>
+<META NAME="description" CONTENT="query_triangle ">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode58.htm">
+<LINK REL="previous" HREF="idlnode56.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode58.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html915"
+  HREF="idlnode56.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html921"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html925"
+  HREF="idlnode58.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html923"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html916"
+  HREF="idlnode56.htm">query_strip</A>
+
+<B>Up:</B> <A NAME="tex2html922"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html926"
+  HREF="idlnode58.htm">read_fits_cut4</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000570000000000000000"></A>
+<A NAME="idl:query_triangle"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">query_triangle </FONT></font></b><hr>
+<H3>This IDL facility provides a means to find the index of all pixels belonging to
+a sperical triangle defined by its vertices
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/query_triangle.pro"><b>src/idl/toolkit/query_triangle.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+query_triangle , <A HREF="#idl:query_triangle:Nside">Nside</A>, <A HREF="#idl:query_triangle:Vector1">Vector1</A>, <A HREF="#idl:query_triangle:Vector2">Vector2</A>, <A HREF="#idl:query_triangle:Vector3">Vector3</A>, <A HREF="#idl:query_triangle:Listpix">Listpix</A>, [<A HREF="#idl:query_triangle:Nlist">Nlist</A>, <A HREF="#idl:query_triangle:NESTED">NESTED=</A>, <A HREF="#idl:query_triangle:INCLUSIVE">INCLUSIVE=</A>]
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Nside<A NAME="idl:query_triangle:Nside"></A></B>
+<DD><b>HEALPix</b> resolution parameter used to index the pixel list (scalar integer)
+    <DT>
+<B>Vector1<A NAME="idl:query_triangle:Vector1"></A></B>
+<DD>3D cartesian position vector of the triangle first  vertex
+    <DT>
+<B>Vector2<A NAME="idl:query_triangle:Vector2"></A></B>
+<DD>3D cartesian position vector of the triangle second vertex
+    <DT>
+<B>Vector3<A NAME="idl:query_triangle:Vector3"></A></B>
+<DD>3D cartesian position vector of the triangle third  vertex
+          NB : the norm of Vector* does not have to be one, what is
+          considered is the intersection of the sphere with the line of
+          direction Vector*.
+    <DT>
+<B>Listpix<A NAME="idl:query_triangle:Listpix"></A></B>
+<DD>on output: list of ordered index for the pixels found 
+    in the triangle. The RING numbering scheme is used unless the keyword <TT>NESTED</TT> is set.
+     (=-1 if the triangle is too small and no pixel is found)
+    <DT>
+<B>Nlist<A NAME="idl:query_triangle:Nlist"></A></B>
+<DD>on output: number of pixels in Listpix (=0 if no pixel is found).
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>NESTED<A NAME="idl:query_triangle:NESTED"></A>=</B>
+<DD>if set, the output list uses the NESTED numbering scheme
+    instead of the default RING
+    <DT>
+<B>INCLUSIVE<A NAME="idl:query_triangle:INCLUSIVE"></A>= </B>
+<DD>if set, all the pixels overlapping (even partially)
+                   with the triangle are listed, otherwise only those whose
+                   center lies within the triangle are listed
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+query_triangle finds the pixels within the given triangle in a selective way WITHOUT
+scanning all the sky pixels. The numbering scheme of the output list and the
+inclusiveness of the triangle can be changed
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">query_triangle </FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run query_triangle .
+    <DT>
+<B>ang2pix, pix2ang</B>
+<DD>conversion between angles and pixel index
+    <DT>
+<B>vec2pix, pix2vec</B>
+<DD>conversion between vector and pixel index
+    <DT>
+<B><A HREF="idlnode54.htm#idl:query_disc">query_disc</A>, <A HREF="idlnode55.htm#idl:query_polygon">query_polygon</A>,</B>
+<DD><DT>
+<B><A HREF="idlnode56.htm#idl:query_strip">query_strip</A>, <A HREF="#idl:query_triangle">query_triangle</A></B>
+<DD>render the list of pixels enclosed
+  respectively in a given disc, polygon, latitude strip and triangle
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> query_triangle , 256L, [1,0,0],[0,1,0],[0,0,1], listpix, nlist</SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+On return listpix contains the index of the (98560) pixels lying in the octant
+<SPAN CLASS="MATH">(<I>x</I>&gt;0,<I>y</I>&gt;0,<I>y</I>&gt;0)</SPAN>.
+The pixel indices correspond to the RING scheme with resolution 256.
+</blockquote>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html915"
+  HREF="idlnode56.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html921"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html925"
+  HREF="idlnode58.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html923"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html916"
+  HREF="idlnode56.htm">query_strip</A>
+
+<B>Up:</B> <A NAME="tex2html922"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html926"
+  HREF="idlnode58.htm">read_fits_cut4</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>input_map*</TITLE>
+<META NAME="description" CONTENT="input_map*">
+<META NAME="keywords" CONTENT="subroutines">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="subroutines.css">
+
+<LINK REL="next" HREF="subroutinesnode44.htm">
+<LINK REL="previous" HREF="subroutinesnode42.htm">
+<LINK REL="up" HREF="subroutines.htm">
+<LINK REL="next" HREF="subroutinesnode44.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html795"
+  HREF="subroutinesnode42.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html801"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html805"
+  HREF="subroutinesnode44.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html803"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html796"
+  HREF="subroutinesnode42.htm">in_ring</A>
+
+<B>Up:</B> <A NAME="tex2html802"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html806"
+  HREF="subroutinesnode44.htm">input_tod*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000430000000000000000"></A>
+<A NAME="sub:input_map"></A>
+<BR>
+ 
+</H1>
+
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">input_map*</FONT></font></b><hr>
+<H3>This routine reads a <b>HEALPix</b> map from a FITS file. This can deal with full sky
+as well as cut sky maps</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/f90/mod/fitstools.F90"><b>src/f90/mod/fitstools.F90</b></a>&nbsp;  
+
+<P>
+<hr><h1>FORMAT </h1><blockquote><h3>call <FONT COLOR="#CC0000">input_map*</FONT>(
+<A HREF="#sub:input_map:filename">filename</A>, <A HREF="#sub:input_map:map">map</A>, <A HREF="#sub:input_map:npixtot">npixtot</A>, <A HREF="#sub:input_map:nmaps">nmaps</A><i><font color="#224422">[, <A HREF="#sub:input_map:fmissval">fmissval</A>, <A HREF="#sub:input_map:header">header</A>, <A HREF="#sub:input_map:units">units</A>, <A HREF="#sub:input_map:extno">extno</A>]</font></i>
+)</h3></blockquote>
+Arguments appearing in <i><font color="#224422">italic</font></i> are
+optional.
+
+<P>
+<hr><H1>ARGUMENTS</H1>
+
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TH ALIGN="LEFT" VALIGN="TOP" WIDTH=150><SPAN  CLASS="textbf">name&nbsp;&amp;&nbsp;dimensionality</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">kind</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=25><SPAN  CLASS="textbf">in/out</SPAN></TH>
+<TH ALIGN="LEFT" VALIGN="TOP" WIDTH=250><SPAN  CLASS="textbf">description</SPAN></TH>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>
+filename<A NAME="sub:input_map:filename"></A>(len=<tt>filenamelen</tt>)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>FITS file to be read from,
+                   containing a full sky or cut sky map</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>map<A NAME="sub:input_map:map"></A>(0:npixtot-1,1:nmaps)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>full sky map(s) constructed
+                   from the data present in the file, missing pixels are filled
+                   with fmissval</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>npixtot<A NAME="sub:input_map:npixtot"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B/ I8B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>number of pixels in the full sky map</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>nmaps<A NAME="sub:input_map:nmaps"></A></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>number of maps in the file</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>&nbsp;</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150>
+<i><font color="#224422">fmissval<A NAME="sub:input_map:fmissval"></A></font></i></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>SP/ DP</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>value to be given to missing pixels,
+<b>default:</b>0</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><i><font color="#224422">header<A NAME="sub:input_map:header"></A></font></i>(LEN=80)(1:)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>FITS extension header</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><i><font color="#224422">units<A NAME="sub:input_map:units"></A></font></i>(LEN=20)(1:nmaps)</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>CHR</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>OUT</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>maps units</TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=150><i><font color="#224422">extno<A NAME="sub:input_map:extno"></A></font></i></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>I4B</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=25>IN</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=250>extension number to read the data from
+                   (0 based).<b>default:</b>0 (the first extension is read)</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt>use pix_tools, only: nside2npix 
+<BR>
+use fitstools, only: getsize_fits, input_map 
+<BR>...
+<BR>
+npixtot = getsize_fits('map.fits',nmaps=nmaps, nside=nside) 
+<BR>
+npix = nside2npix(nside) 
+<BR>
+allocate(map(0:npix-1,1:nmaps)) 
+<BR>
+call input_map('map.fits', map, npix, nmaps, fmissval=0.)  
+<BR></tt>
+<blockquote>
+Reads into <TT>map</TT> the content of the FITS file 'map.fits'.
+If there are
+missing pixels in the input file (ie, having value <TT>NaN</TT> (Not of Number),
+<SPAN CLASS="MATH"><IMG
+ WIDTH="19" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="subroutinesimg86.png"
+ ALT="$\pm$"></SPAN> <TT>Infinity</TT> or matching the FITS keyword <TT>BAD_DATA</TT>) they will
+take on output the value provided in optional <TT>fmissval</TT> (here 0, which also
+is its default value).
+</blockquote>
+<hr><H1>MODULES & ROUTINES</H1><H3>This section lists the modules and routines used by <FONT COLOR="#CC0000">input_map*</FONT>.</h3>
+  <DL COMPACT><DT>
+<B><SPAN  CLASS="textbf">fitstools</SPAN></B>
+<DD>module, containing:
+  <DT>
+<B>printerror</B>
+<DD>routine for printing FITS error messages.
+  <DT>
+<B><A HREF="subroutinesnode83.htm#sub:read_bintab">read_bintab</A></B>
+<DD>routine to read a binary table
+  from a FITS file
+  <DT>
+<B><A HREF="subroutinesnode86.htm#sub:read_fits_cut4">read_fits_cut4</A></B>
+<DD>routine to read cut sky
+  map from a FITS file
+  <DT>
+<B><SPAN  CLASS="textbf">cfitsio</SPAN></B>
+<DD>library for FITS file handling.
+  </DL>
+
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">input_map*</FONT></b></h3>
+ 
+  <DL COMPACT><DT>
+<B>anafast</B>
+<DD>executable that reads a <b>HEALPix</b> map and analyses it. 
+  <DT>
+<B>synfast</B>
+<DD>executable that generate full sky <b>HEALPix</b> maps
+  <DT>
+<B><A HREF="subroutinesnode39.htm#sub:getsize_fits">getsize_fits</A></B>
+<DD>subroutine to know the size of a FITS file.
+  <DT>
+<B><A HREF="subroutinesnode69.htm#sub:output_map">output_map</A></B>
+<DD>subroutine to write a FITS file
+  from a <b>HEALPix</b> map
+  <DT>
+<B><A HREF="subroutinesnode107.htm#sub:write_bintabh">write_bintabh</A></B>
+<DD>subroutine to write a large
+  array into a FITS file piece by piece
+  <DT>
+<B><A HREF="subroutinesnode44.htm#sub:input_tod">input_tod*</A></B>
+<DD>subroutine to read an arbitrary subsection of
+  a large binary table
+  </DL>
+
+<P>
+
+<P>
+
+
+<P>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html795"
+  HREF="subroutinesnode42.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html801"
+  HREF="subroutines.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html805"
+  HREF="subroutinesnode44.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html803"
+  HREF="subroutinesnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html796"
+  HREF="subroutinesnode42.htm">in_ring</A>
+
+<B>Up:</B> <A NAME="tex2html802"
+  HREF="subroutines.htm">HEALPix/F90 subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html806"
+  HREF="subroutinesnode44.htm">input_tod*</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

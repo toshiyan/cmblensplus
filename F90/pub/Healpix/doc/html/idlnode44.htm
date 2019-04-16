@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>neighbours_nest</TITLE>
+<META NAME="description" CONTENT="neighbours_nest">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode45.htm">
+<LINK REL="previous" HREF="idlnode43.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode45.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html759"
+  HREF="idlnode43.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html765"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html769"
+  HREF="idlnode45.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html767"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html760"
+  HREF="idlnode43.htm">mollview</A>
+
+<B>Up:</B> <A NAME="tex2html766"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html770"
+  HREF="idlnode45.htm">neighbours_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000440000000000000000"></A>
+<A NAME="idl:neighbours_nest"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">neighbours_nest</FONT></font></b><hr>
+<H3>This IDL facility returns the number and indices of the topological immediate neighbours 
+of a central pixel. The pixels
+are ordered in a clockwise sense (when watching the sphere from the outside) 
+about the central pixel with the
+southernmost pixel in first element. For the four pixels in the southern 
+corners of the
+equatorial faces which have two equally southern neighbours the
+routine returns the southwestern pixel first and proceeds clockwise.</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/toolkit/neighbours_nest.pro"><b>src/idl/toolkit/neighbours_nest.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+neighbours_nest (<A HREF="#idl:neighbours_nest:Nside">Nside</A>, <A HREF="#idl:neighbours_nest:Ipix0">Ipix0</A>, <A HREF="#idl:neighbours_nest:Listpix">Listpix</A>[,<A HREF="#idl:neighbours_nest:Nneigh">Nneigh</A>])
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Nside</B>
+<DD><A NAME="idl:neighbours_nest:Nside"></A>  <b>HEALPix</b> resolution parameter (scalar integer),
+         should be a valid Nside (power of 2)
+    <DT>
+<B>Ipix0</B>
+<DD><A NAME="idl:neighbours_nest:Ipix0"></A>NESTED-scheme index of central pixel in [0,12*Nside<SPAN CLASS="MATH"><SUP>2</SUP></SPAN>-1]
+    <DT>
+<B>Listpix</B>
+<DD><A NAME="idl:neighbours_nest:Listpix"></A>output: list of neighbouring pixel (NESTED scheme index) of
+size <TT>Nneigh</TT>
+    <DT>
+<B>Nneigh</B>
+<DD><A NAME="idl:neighbours_nest:Nneigh"></A>optional output: number of neighbours of pixel <TT>#Ipix0</TT>. 
+   Usually 8, sometimes 7 (for 8 particular pixels) or 6 (if Nside=1)
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+neighbours_nest calls <TT>pix2xy_nest</TT> to find location of central pixel within the pixelation
+base-face, and then <TT>xy2pix_nest</TT> to find neighbouring pixels within the same
+face, or one of the bit manipulation routines if the neighbouring pixel
+is on a different base-face.
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">neighbours_nest</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run neighbours_nest .
+    <DT>
+<B><A HREF="idlnode45.htm#idl:neighbours_ring">neighbours_ring</A></B>
+<DD>returns topological immediate
+neighbouring pixels of a given central pixel, using RING indexing.
+    <DT>
+<B><A HREF="idlnode54.htm#idl:query_disc">query_disc</A>, 
+          <A HREF="idlnode55.htm#idl:query_polygon">query_polygon</A>,</B>
+<DD><DT>
+<B><A HREF="idlnode56.htm#idl:query_strip">query_strip</A>, <A HREF="idlnode57.htm#idl:query_triangle">query_triangle</A></B>
+<DD>render the list of pixels enclosed
+  respectively in a given disc, polygon, latitude strip and triangle
+    <DT>
+<B><A HREF="idlnode52.htm#idl:pix_tools">nest2ring</A>, <A HREF="idlnode52.htm#idl:pix_tools">ring2nest</A></B>
+<DD>conversion between NESTED and RING indices
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> neighbours_nest , 4, 1, list, nneigh </SMALL></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> print,nneigh,list</SMALL></TD>
+<TD></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+will return:8 90 0  2  3  6  4 94 91,
+listing the NESTED-indexed 8 neighbors of pixel #1 for Nside=4
+</blockquote><SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html759"
+  HREF="idlnode43.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html765"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html769"
+  HREF="idlnode45.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html767"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html760"
+  HREF="idlnode43.htm">mollview</A>
+
+<B>Up:</B> <A NAME="tex2html766"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html770"
+  HREF="idlnode45.htm">neighbours_ring</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>

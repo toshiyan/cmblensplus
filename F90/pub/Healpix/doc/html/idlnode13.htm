@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>bin_llcl</TITLE>
+<META NAME="description" CONTENT="bin_llcl">
+<META NAME="keywords" CONTENT="idl">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="idl.css">
+
+<LINK REL="next" HREF="idlnode14.htm">
+<LINK REL="previous" HREF="idlnode12.htm">
+<LINK REL="up" HREF="idl.htm">
+<LINK REL="next" HREF="idlnode14.htm">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><body text="#000000" bgcolor="#FFFFFA">
+<!--Navigation Panel-->
+<A NAME="tex2html387"
+  HREF="idlnode12.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html393"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html397"
+  HREF="idlnode14.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html395"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html388"
+  HREF="idlnode12.htm">beam2bl</A>
+
+<B>Up:</B> <A NAME="tex2html394"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html398"
+  HREF="idlnode14.htm">bl2beam</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000130000000000000000"></A>
+<A NAME="idl:bin_llcl"></A>
+<BR>
+ 
+</H1>
+<P>
+<b><font size=+6><FONT COLOR="#CC0000">bin_llcl</FONT></font></b><hr>
+<H3>This IDL facility provides a means to bin an angular power spectrum into
+arbitrary bins.
+</H3>
+Location in HEALPix directory tree: <a href="http://sourceforge.net/p/healpix/code/845/tree/trunk/src/idl/misc/bin_llcl.pro"><b>src/idl/misc/bin_llcl.pro</b></a>&nbsp;  
+<P>
+<hr><h1>FORMAT </h1><h3>IDL>
+BIN_LLCL, <A HREF="#idl:bin_llcl:Llcl_in">Llcl_in</A>, <A HREF="#idl:bin_llcl:Bin">Bin</A>, <A HREF="#idl:bin_llcl:L_out">L_out</A>, <A HREF="#idl:bin_llcl:Llcl_out">Llcl_out</A>, [<A HREF="#idl:bin_llcl:Dllcl">Dllcl</A>, <A HREF="#idl:bin_llcl:DELTAL">DELTAL=</A>, <A HREF="#idl:bin_llcl:FLATTEN">/FLATTEN</A>, <A HREF="#idl:bin_llcl:HELP">/HELP</A>, <A HREF="#idl:bin_llcl:UNIFORM">/UNIFORM</A>]
+
+</h3>
+<P>
+<hr>
+<H1>QUALIFIERS</H1>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>Llcl_in<A NAME="idl:bin_llcl:Llcl_in"></A></B>
+<DD>1D vector: <B>input</B> power spectrum (given for each <SPAN CLASS="MATH"><I>l</I></SPAN> starting at 0).
+    <DT>
+<B>Bin<A NAME="idl:bin_llcl:Bin"></A></B>
+<DD><B>input</B>: binning in <SPAN CLASS="MATH"><I>l</I></SPAN> to be applied, 
+<BR>-either a scalar interpreted as the step size of a regular binning, the first
+bins are then {0, <TT>bin</TT> - 1},{<TT>bin</TT>, 2<TT>bin</TT>-1}, <SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg2.png"
+ ALT="$\ldots$"></SPAN>
+
+<BR>-or a 1D vector, interpreted as the lower bound of 
+each bin, ie the first bins are {bin[0],bin[1]-1}, {bin[1], bin[2]-1}, <SPAN CLASS="MATH"><IMG
+ WIDTH="27" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="idlimg2.png"
+ ALT="$\ldots$"></SPAN>
+<BR>	<DT>
+<B>L_out<A NAME="idl:bin_llcl:L_out"></A></B>
+<DD>contains on <B>output</B> the center of each bin <SPAN CLASS="MATH"><I>l</I><SUB><I>b</I></SUB></SPAN>.
+	<DT>
+<B>Llcl_out<A NAME="idl:bin_llcl:Llcl_out"></A></B>
+<DD>contains on <B>output</B> the binned power spectrum
+<SPAN CLASS="MATH"><I>C</I>(<I>b</I>)</SPAN>, ie the (weighted) average of the input <SPAN CLASS="MATH"><I>C</I>(<I>l</I>)</SPAN> over each bin.
+	<DT>
+<B>Dllcl<A NAME="idl:bin_llcl:Dllcl"></A></B>
+<DD><B>optional</B>, contains on <B>output</B> a rough estimate of the rms of the binned C(l) for a full
+sky observation <!-- MATH
+ $C(b) \sqrt{ 2 / ((2l_b+1) \Delta l_b)}$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="187" HEIGHT="51" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg34.png"
+ ALT="$C(b) \sqrt{ 2 / ((2l_b+1) \Delta l_b)}$"></SPAN>
+	<DT>
+<B>DELTAL<A NAME="idl:bin_llcl:DELTAL"></A>=</B>
+<DD><B>optional</B>, contains on <B>output</B> the size of each bin <SPAN CLASS="MATH"><IMG
+ WIDTH="49" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg35.png"
+ ALT="$\Delta l(b)$"></SPAN></DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<hr><H1>KEYWORDS</H1>
+
+  </SMALL><DL COMPACT><DT>
+<B>/FLATTEN<A NAME="idl:bin_llcl:FLATTEN"></A></B>
+<DD>if set, the <SPAN CLASS="MATH"><I>C</I>(<I>l</I>)</SPAN> is internally multiplied by
+<SPAN CLASS="MATH"><IMG
+ WIDTH="93" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg36.png"
+ ALT="$l(l+1)/2\pi$"></SPAN> before being binned. 
+<BR>
+By default, the input <TT>Llcl_in</TT> is binned as is.
+	<DT>
+<B>/HELP<A NAME="idl:bin_llcl:HELP"></A></B>
+<DD>if set, an extended help is printed and the code exits.
+    <DT>
+<B>/UNIFORM<A NAME="idl:bin_llcl:UNIFORM"></A></B>
+<DD>if set, the <SPAN CLASS="MATH"><I>C</I>(<I>l</I>)</SPAN> in each bin is given the same weight.
+<BR>
+By default a weight <SPAN CLASS="MATH"><IMG
+ WIDTH="72" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg37.png"
+ ALT="$\propto 2l+1$"></SPAN> is used (inverse cosmic variance
+weighting). Note that this weighting affects 
+<A HREF="#idl:bin_llcl:Llcl_out"><TT>Llcl_out</TT></A> but not 
+<A HREF="#idl:bin_llcl:L_out"><TT>L_out</TT></A>.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+<SMALL CLASS="FOOTNOTESIZE">  
+</SMALL>
+<P>
+<hr> 
+<H1>DESCRIPTION</H1> 
+<blockquote>
+bin_llcl bins the input power spectrum (as is, or after flattening by a
+<!-- MATH
+ $\l (\l +1)/2\pi$
+ -->
+<SPAN CLASS="MATH"><IMG
+ WIDTH="93" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="idlimg38.png"
+ ALT="$\l (\l +1)/2\pi$"></SPAN> factor) according to an arbitrary binning scheme defined by the
+user. Different weighting scheme (uniform or inverse variance) can be applied inside the bins.
+</blockquote>
+<P>
+<hr><H1>RELATED ROUTINES</H1><h3>This section lists the routines related to <b><FONT COLOR="#CC0000">bin_llcl</FONT></b></h3>
+ 
+  </SMALL><DL COMPACT><DT>
+<B>idl</B>
+<DD>version 6.4 or more is necessary to run <FONT COLOR="#CC0000">bin_llcl</FONT>.
+    <DT>
+<B><A HREF="idlnode23.htm#idl:fits2cl">fits2cl</A></B>
+<DD>facility to read a power spectrum from
+a FITS file.
+  </DL><SMALL CLASS="FOOTNOTESIZE">
+
+<P>
+<HR><H1>EXAMPLE:</H1> 
+<tt></SMALL><TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> <A HREF="idlnode36.htm#idl:init_healpix">init_healpix</A></SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> <A HREF="idlnode23.htm#idl:fits2cl">fits2cl</A>, cl, <A HREF="idlnode36.htm#idl:init_healpix">!healpix.directory</A>+'/test/cl.fits', multipoles=l </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> fl =  l*(l+1) / (2. * !pi) </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> <FONT COLOR="#CC0000">bin_llcl</FONT>, fl*cl[*,0], 10, lb, bbcb, /uniform </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> plot, l, fl*cl[*,0] </SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><SMALL CLASS="FOOTNOTESIZE"> oplot, lb, bbcb, psym = 4 </SMALL></TD>
+</TR>
+</TABLE><SMALL CLASS="FOOTNOTESIZE"></tt>
+<blockquote>
+Read a power spectrum, bin it with a binsize of 10 and a uniform weighting, and overplot the input
+spectrum and its binned version.
+ </blockquote><SMALL CLASS="FOOTNOTESIZE">
+</SMALL>
+<P>
+
+<P>
+<SMALL CLASS="FOOTNOTESIZE">
+ </SMALL>
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html387"
+  HREF="idlnode12.htm">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html393"
+  HREF="idl.htm">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html397"
+  HREF="idlnode14.htm">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html395"
+  HREF="idlnode1.htm">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Previous:</B> <A NAME="tex2html388"
+  HREF="idlnode12.htm">beam2bl</A>
+
+<B>Up:</B> <A NAME="tex2html394"
+  HREF="idl.htm">HEALPix/IDL subroutines</A>
+
+<B> Next:</B> <A NAME="tex2html398"
+  HREF="idlnode14.htm">bl2beam</A>
+<B> Top:</B> <a href="main.htm">Main Page</a></DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Version 3.31, 2016-08-26
+</ADDRESS>
+</BODY>
+</HTML>
