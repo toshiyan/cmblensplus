@@ -328,7 +328,7 @@ subroutine qeb(nx,ny,D,OE,OB,EE,rL,eL,Ag,Ac)
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(nx,ny) :: EE, OE, OB
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
-! [internal]
+  !internal
   integer :: i, j, nn(2)
   double precision, dimension(nx,ny) :: lx, ly, lmask, Agg, Acc
   double complex, dimension(nx,ny) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, ei2p

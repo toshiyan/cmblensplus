@@ -1,14 +1,14 @@
 # Flatsky lensing reconstruction normalization
 # - This code compute normalization of estiamtors
 import numpy as np
-import flatskypy as flatsky
-import basicpy as basic
+import flatsky
+import basic
 
 Tcmb = 2.726e6    # CMB temperature
 lmax = 3000       # maximum multipole of output normalization
-rL   = [500,3000] # reconstruction multipole range
+rL   = [100,3000] # reconstruction multipole range
 nx, ny  = 512, 512
-D    = np.array([nx,ny])/120.*np.pi/180.
+D    = np.array([nx,ny])/60.*np.pi/180.
 bn   = 50
 
 oL   = [2,lmax]

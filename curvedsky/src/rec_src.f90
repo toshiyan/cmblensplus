@@ -15,22 +15,20 @@ module rec_src
 
 contains 
 
-!Tlm,Elm,Blm: inverse-variance filtered alms (Cov^-1 (Tlm,Elm,Blm)^t)
 
 subroutine qtt_sym(lmax,rlmin,rlmax,Tlm,slm,nside)
 !*  Reconstructing point sources from the temperature quadratic estimator, assuming Tlm1=Tlm2
 !*
 !*  Args:
-!*    - lmax (int)        : maximum multipole of output point-source alms
-!*    - rlmin (int)       : minimum multipole of CMB for reconstruction
-!*    - rlmax (int)       : maximum multipole of CMB for reconstruction
-!*    - Tlm[l,m] (dcmplx) : inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
+!*    :lmax (int)         : Maximum multipole of output point-source alms
+!*    :rlmin/rlmax (int)   : Minimum/Maximum multipole of CMB for reconstruction
+!*    :Tlm [l,m] (dcmplx) : Inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    - nside (int)       : Nside for the convolution calculation, default to lmax
+!*    :nside (int)       : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
-!*    - slm[l,m] (dcmplx) : point-source alm, with bounds (0:lmax,0:lmax)
+!*    :slm [l,m] (dcmplx) : Point-source alm, with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
@@ -47,10 +45,10 @@ subroutine qtt_sym(lmax,rlmin,rlmax,Tlm,slm,nside)
   ns = lmax
   if (present(nside)) ns = nside
 
-  write(*,*) 'calc qtt src estimator, nside =', ns
+  write(*,*) 'calc qTT src estimator, nside =', ns
   npix = 12*ns**2
 
-  !* alm to map 
+  ! alm to map 
   allocate(alm(1,0:rlmax,0:rlmax)); alm = 0d0
   do l = rlmin, rlmax
     alm(1,l,0:l) = Tlm(l,0:l)
@@ -59,7 +57,7 @@ subroutine qtt_sym(lmax,rlmin,rlmax,Tlm,slm,nside)
   call alm2map(nside,rlmax,rlmax,alm(1:1,:,:),map)
   deallocate(alm)
 
-  !* map to alm
+  ! map to alm
   allocate(alm(1,0:lmax,0:lmax))
   call map2alm(nside,lmax,lmax,map**2,alm)
   slm = 0d0
@@ -75,17 +73,16 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside)
 !*  Reconstructing point sources from the temperature quadratic estimator
 !*
 !*  Args:
-!*    - lmax (int)        : maximum multipole of output point-source alms
-!*    - rlmin (int)       : minimum multipole of CMB for reconstruction
-!*    - rlmax (int)       : maximum multipole of CMB for reconstruction
-!*    - Tlm1[l,m] (dcmplx): 1st inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
-!*    - Tlm2[l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
+!*    :lmax (int)         : Maximum multipole of output point-source alms
+!*    :rlmin/rlmax (int)   : Minimum/Maximum multipole of CMB for reconstruction
+!*    :Tlm1 [l,m] (dcmplx): 1st inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
+!*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    - nside (int)       : Nside for the convolution calculation, default to lmax
+!*    :nside (int)       : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
-!*    - slm[l,m] (dcmplx) : point-source alm, with bounds (0:lmax,0:lmax)
+!*    :slm [l,m] (dcmplx) : Point-source alm, with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
@@ -102,10 +99,10 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside)
   ns = lmax
   if (present(nside)) ns = nside
 
-  write(*,*) 'calc qtt src estimator, nside = ', ns
+  write(*,*) 'calc qTT src estimator, nside = ', ns
   npix = 12*ns**2
 
-  !* alm to map 
+  ! alm to map 
   allocate(alm(2,0:rlmax,0:rlmax)); alm = 0d0
   do l = rlmin, rlmax
     alm(1,l,0:l) = Tlm1(l,0:l)
@@ -116,7 +113,7 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside)
   call alm2map(nside,rlmax,rlmax,alm(2:2,:,:),map(2,:))
   deallocate(alm)
 
-  !* map to alm
+  ! map to alm
   allocate(alm(1,0:lmax,0:lmax))
   call map2alm(nside,lmax,lmax,map(1,:)*map(2,:),alm)
   slm = 0d0

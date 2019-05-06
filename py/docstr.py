@@ -83,7 +83,8 @@ for mod in modname:
       func = func.replace(','+p,'')
 
     # original function
-    gunc = libname.replace('lib','')+'.'+mod+'.'+func
+    gunc = libname+'.'+mod+'.'+func
+    hunc = libname.replace('lib','')+'.'+mod+'.'+func
 
     # set value for optional args
     # set 0 at the function as sometimes the default value depends on input
@@ -92,7 +93,7 @@ for mod in modname:
       subf = []
       for f in func.replace(')','').split(','):
         if p[0] in f and len(p[0])==len(f): #replace to p=0, only for exact match
-          subf.append(p[0]+'=0')
+          subf.append(p[0]+'=None')
         else: #store default args
           subf.append(f)
       func = ','.join(subf)+')'
@@ -103,15 +104,31 @@ for mod in modname:
     f = open(pyname,'a+')
     f.write('def '+func+':\n')
     f.write('  """\n')
+
     # extract comments
     for line in slines:
       if '!*' in line:
+        # to italic
+        line = line.replace('(int)','(*int*)')
+        line = line.replace('(double)','(*double*)')
+        line = line.replace('(dcmplx)','(*dcmplx*)')
+        line = line.replace('(str)','(*str*)')
+        line = line.replace('(bool)','(*bool*)')
+        line = line.replace('[','[*')
+        line = line.replace(']','*]')
+        # remove space between ) and :
+        if '*)' in line:
+          line = '   '+" ".join(line.split())
+          line = line.replace(') :','):')+'\n'
+        # write to file
         f.write(line.replace('!*',''))
+
+    # add example
     f.write('  Usage:\n')
-    f.write('    - e.g., '+','.join(pout)+' = '+gunc+'\n')
+    f.write('    :'+','.join(pout)+' = '+hunc+':\n')
     f.write('  """\n')
     for p in popt:
-      f.write('  if '+p[0]+'==0: '+p[0]+'='+p[1]+'\n')
+      f.write('  if '+p[0]+' is None: '+p[0]+'='+p[1]+'\n')
     f.write('  return '+gunc+'\n')
     f.write('\n')
     f.close()

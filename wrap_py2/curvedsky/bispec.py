@@ -1,4 +1,4 @@
-import curvedsky
+import libcurvedsky
 
 def make_quad_gauss(lmax,alm):
   """
@@ -9,150 +9,150 @@ def make_quad_gauss(lmax,alm):
   where delta^L(n) is a gaussian field obtained from the input alm.
 
   Args:
-    - lmax (int)        : maximum multipole of alm
-    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+    :lmax (*int*): Maximum multipole of alm
+    :alm [*l,m*] (*dcmplx*): Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 
   Returns:
-    - qlm[l,m] (dcmplx) : output harmonic coefficients of the non-Gaussian fields, with bounds (0:lmax,0:lmax).
+    :qlm [*l,m*] (*dcmplx*): Output harmonic coefficients of the non-Gaussian fields, with bounds (0:lmax,0:lmax).
 
   Usage:
-    - e.g., qlm = curvedsky.bispec.make_quad_gauss(lmax,alm)
+    :qlm = curvedsky.bispec.make_quad_gauss(lmax,alm):
   """
-  return curvedsky.bispec.make_quad_gauss(lmax,alm)
+  return libcurvedsky.bispec.make_quad_gauss(lmax,alm)
 
-def bispec_norm(bn,bp,bstype=0,bst=0,sL=0):
+def bispec_norm(bn,bp,bstype=None,bst=None,sL=None):
   """
   Return normalization of the binned reduced bispectrum for a given multipole bin
 
   Args:
-    - bn (int)          : number of multipole bins
-    - bp[edge] (double) : bin edges, with bounds (bn+1)
+    :bn (*int*): Number of multipole bins
+    :bp [*edge*] (*double*): Bin edges, with bounds (bn+1)
 
   Args(optional):
-    - bstype (str) : configuration of the bispectrum, default to equilateral
-    - bst (int)    : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-    - sL[2] (int)  : the fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
+    :bstype (*str*): Configuration of the bispectrum, default to equilateral
+    :bst (*int*): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+    :sL[*2*] (*int*): The fixed bin for the squeezed configuration, b[*sL,eL,eL*], default to the lowest multipole bin
 
   Returns:
-    - norm[bin] (double) : normalization of the binned reduced bispectrum at each bin, with bounds (bn)
+    :norm [*bin*] (*double*): Normalization of the binned reduced bispectrum at each bin, with bounds (bn)
 
   Usage:
-    - e.g., norm = curvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL)
+    :norm = curvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL):
   """
-  if bstype==0: bstype= 'equi'
-  if bst==0: bst= 2
-  if sL==0: sL= 0
-  return curvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL)
+  if bstype is None: bstype= 'equi'
+  if bst is None: bst= 2
+  if sL is None: sL= [int(bp[0]),int(bp[1])]
+  return libcurvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL)
 
-def bispec_bin(bn,bp,lmax,alm,bstype=0,bst=0,sL=0):
+def bispec_bin(bn,bp,lmax,alm,bstype=None,bst=None,sL=None):
   """
   Return the unnormalized binned reduced bispectrum for a given multipole bin
 
   Args:
-    - bn (int)          : number of multipole bins
-    - bp[edge] (double) : bin edges, with bounds (bn+1)
-    - lmax (int)        : maximum multipole of the input alm
-    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax)
+    :bn (*int*): Number of multipole bins
+    :bp [*edge*] (*double*): Bin edges, with bounds (bn+1)
+    :lmax (*int*): Maximum multipole of the input alm
+    :alm [*l,m*] (*dcmplx*): Input harmonic coefficients, with bounds (0:lmax,0:lmax)
 
   Args(optional):
-    - bstype (str) : configuration of the bispectrum, default to equilateral
-    - bst (int) : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-    - sL[2] (int)  : the fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
+    :bstype (*str*): Configuration of the bispectrum, default to equilateral
+    :bst (*int*): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+    :sL[*2*] (*int*): The fixed bin for the squeezed configuration, b[*sL,eL,eL*], default to the lowest multipole bin
 
   Returns:
-    - bis[bin] (double) : the unnormalized binned reduced bispectrum at each bin, with bounds (bn)
+    :bis [*bin*] (*double*): The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
 
   Usage:
-    - e.g., bis = curvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
+    :bis = curvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL):
   """
-  if bstype==0: bstype= 'equi'
-  if bst==0: bst= 'equi'
-  if sL==0: sL= 0
-  return curvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
+  if bstype is None: bstype= 'equi'
+  if bst is None: bst= 'equi'
+  if sL is None: sL= [int(bp[0]),int(bp[1])]
+  return libcurvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
 
-def equi(lmin,lmax,alm,bst=0):
+def equi(lmin,lmax,alm,bst=None):
   """
-  Compute equilateral shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l,l]
+  Compute equilateral shape of the unnormalized binned reduced bispectrum for a given alm, b[*l,l,l*]
 
   Args:
-    - lmin (int)        : minimum multipole of the bin
-    - lmax (int)        : maximum multipole of the bin
-    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+    :lmin (*int*): Minimum multipole of the bin
+    :lmax (*int*): Maximum multipole of the bin
+    :alm [*l,m*] (*dcmplx*): Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 
   Args(optional):
-    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+    :bst (*int*): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 
   Returns:
-    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+    :bispec (*double*): Unnormalized binned reduced bispectrum at the bin, [*lmin,lmax*]
 
   Usage:
-    - e.g., bispec = curvedsky.bispec.equi(lmin,lmax,alm,bst)
+    :bispec = curvedsky.bispec.equi(lmin,lmax,alm,bst):
   """
-  if bst==0: bst= 2
-  return curvedsky.bispec.equi(lmin,lmax,alm,bst)
+  if bst is None: bst= 2
+  return libcurvedsky.bispec.equi(lmin,lmax,alm,bst)
 
-def fold(lmin,lmax,alm,bst=0):
+def fold(lmin,lmax,alm,bst=None):
   """
-  Compute folded shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l/2,l/2]
+  Compute folded shape of the unnormalized binned reduced bispectrum for a given alm, b[*l,l/2,l/2*]
 
   Args:
-    - lmin (int)        : minimum multipole of the bin
-    - lmax (int)        : maximum multipole of the bin
-    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+    :lmin (*int*): Minimum multipole of the bin
+    :lmax (*int*): Maximum multipole of the bin
+    :alm [*l,m*] (*dcmplx*): Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 
   Args(optional):
-    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+    :bst (*int*): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 
   Returns:
-    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+    :bispec (*double*): Unnormalized binned reduced bispectrum at the bin, [*lmin,lmax*]
 
   Usage:
-    - e.g., bispec = curvedsky.bispec.fold(lmin,lmax,alm,bst)
+    :bispec = curvedsky.bispec.fold(lmin,lmax,alm,bst):
   """
-  if bst==0: bst= 2
-  return curvedsky.bispec.fold(lmin,lmax,alm,bst)
+  if bst is None: bst= 2
+  return libcurvedsky.bispec.fold(lmin,lmax,alm,bst)
 
-def sque(eL,sL,l1,alm,bst=0):
+def sque(eL,sL,l1,alm,bst=None):
   """
-  Compute squeezed shape of the unnormalized binned reduced bispectrum for a given alm, b[sL,eL,eL]
+  Compute squeezed shape of the unnormalized binned reduced bispectrum for a given alm, b[*sL,eL,eL*]
 
   Args:
-    - eL[] (int)        : minimum and maximum multipoles of the bin, with bounds (2)
-    - sL[] (int)        : minimum and maximum multipoles of the fixed bin, with bounds (2)
-    - l1 (int)          : maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
-    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+    :eL[*2*] (*int*): Minimum and maximum multipoles of the bin, with bounds (2)
+    :sL[*2*] (*int*): Minimum and maximum multipoles of the fixed bin, with bounds (2)
+    :l1 (*int*): Maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
+    :alm [*l,m*] (*dcmplx*): Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 
   Args(optional):
-    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+    :bst (*int*): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 
   Returns:
-    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+    :bispec (*double*): Unnormalized binned reduced bispectrum at the bin, [*lmin,lmax*]
 
   Usage:
-    - e.g., bispec = curvedsky.bispec.sque(eL,sL,l1,alm,bst)
+    :bispec = curvedsky.bispec.sque(eL,sL,l1,alm,bst):
   """
-  if bst==0: bst= 2
-  return curvedsky.bispec.sque(eL,sL,l1,alm,bst)
+  if bst is None: bst= 2
+  return libcurvedsky.bispec.sque(eL,sL,l1,alm,bst)
 
-def isos(eL,aL,l1,alm,bst=0):
+def isos(eL,aL,l1,alm,bst=None):
   """
-  Compute isosceles shape of the unnormalized binned reduced bispectrum for a given alm, b[eL,aL,aL]
+  Compute isosceles shape of the unnormalized binned reduced bispectrum for a given alm, b[*eL,aL,aL*]
 
   Args:
-    - eL[] (int)        : minimum and maximum multipoles of the bin, with bounds (2)
-    - aL[] (int)        : minimum and maximum multipoles of the fixed bin, with bounds (2)
-    - l1 (int)          : maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
-    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+    :eL[*2*] (*int*): Minimum and maximum multipoles of the bin, with bounds (2)
+    :aL[*2*] (*int*): Minimum and maximum multipoles of the fixed bin, with bounds (2)
+    :l1 (*int*): Maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
+    :alm [*l,m*] (*dcmplx*): Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 
   Args(optional):
-    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+    :bst (*int*): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 
   Returns:
-    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+    :bispec (*double*): Unnormalized binned reduced bispectrum at the bin, [*lmin,lmax*]
 
   Usage:
-    - e.g., bispec = curvedsky.bispec.isos(eL,aL,l1,alm,bst)
+    :bispec = curvedsky.bispec.isos(eL,aL,l1,alm,bst):
   """
-  if bst==0: bst= 2
-  return curvedsky.bispec.isos(eL,aL,l1,alm,bst)
+  if bst is None: bst= 2
+  return libcurvedsky.bispec.isos(eL,aL,l1,alm,bst)
 

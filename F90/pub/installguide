@@ -1,0 +1,8 @@
+[FFTW]
+go to FFTW/api and "./configure", "make all"
+
+
+[Lenspix] -- depends on Healpix and cfitsio
+
+go to lenspix/src and type "make"
+

@@ -16,23 +16,20 @@ module rec_tau
 contains 
 
 
-! Tlm,Elm,Blm: inverse-variance filtered alms (Cov^-1 (Tlm,Elm,Blm)^t)
-
 subroutine qtt_sym(lmax,rlmin,rlmax,fC,Tlm,xlm,nside)
 !*  Reconstructing inhomogeneous tau from the temperature quadratic estimator, assuming Tlm1=Tlm2
 !*
 !*  Args:
-!*    - lmax (int)        : maximum multipole of output tau alms
-!*    - rlmin (int)       : minimum multipole of CMB for reconstruction
-!*    - rlmax (int)       : maximum multipole of CMB for reconstruction
-!*    - fC[l] (double)    : temperature angular power spectrum, with bounds (1:rlmax)
-!*    - Tlm[l,m] (dcmplx) : inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
+!*    :lmax (int)         : Maximum multipole of output tau alms
+!*    :rlmin/rlmax (int)   : Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)    : Temperature angular power spectrum, with bounds (1:rlmax)
+!*    :Tlm [l,m] (dcmplx) : Inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    - nside (int)       : Nside for the convolution calculation, default to lmax
+!*    :nside (int)       : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
-!*    - xlm[l,m] (dcmplx) : inhomogeneous tau alm, with bounds (0:lmax,0:lmax)
+!*    :xlm [l,m] (dcmplx) : Inhomogeneous tau alm, with bounds (0:lmax,0:lmax)
 !*
 
   implicit none
@@ -51,7 +48,7 @@ subroutine qtt_sym(lmax,rlmin,rlmax,fC,Tlm,xlm,nside)
   ns = lmax
   if (present(nside)) ns = nside
 
-  write(*,*) 'calc qtt tau estimator, nside = ', ns
+  write(*,*) 'calc qTT tau estimator, nside = ', ns
   npix = 12*ns**2
 
   ! alm to map 
@@ -81,18 +78,17 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,xlm,nside)
 !*  Reconstructing inhomogeneous tau from the temperature quadratic estimator
 !*
 !*  Args:
-!*    - lmax (int)        : maximum multipole of output tau alms
-!*    - rlmin (int)       : minimum multipole of CMB for reconstruction
-!*    - rlmax (int)       : maximum multipole of CMB for reconstruction
-!*    - fC[l] (double)    : temperature angular power spectrum, with bounds (1:rlmax)
-!*    - Tlm1[l,m] (dcmplx): 1st inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
-!*    - Tlm2[l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
+!*    :lmax (int)         : Maximum multipole of output tau alms
+!*    :rlmin/rlmax (int)   : Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)    : Temperature angular power spectrum, with bounds (1:rlmax)
+!*    :Tlm1 [l,m] (dcmplx): 1st inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
+!*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    - nside (int)       : Nside for the convolution calculation, default to lmax
+!*    :nside (int)       : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
-!*    - xlm[l,m] (dcmplx) : inhomogeneous tau alm, with bounds (0:lmax,0:lmax)
+!*    :xlm [l,m] (dcmplx) : Inhomogeneous tau alm, with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
@@ -110,7 +106,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,xlm,nside)
   ns = lmax
   if (present(nside)) ns = nside
 
-  write(*,*) 'calc qtt tau estimator'
+  write(*,*) 'calc qTT tau estimator'
   npix = 12*ns**2
 
   ! alm to map 

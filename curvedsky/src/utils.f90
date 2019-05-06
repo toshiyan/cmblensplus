@@ -29,15 +29,14 @@ contains
 
 
 subroutine gauss1alm(lmax,cl,alm)
-!*  Generating alm as a random Gaussian field whose power spectrum is cl.
-!*  The output alm is given by a 2D array.
+!*  Generating alm as a random Gaussian field whose power spectrum is cl. The output alm is given by a 2D array.
 !*
 !*  Args:
-!*    - lmax (int)        : maximum multipole of the output alm
-!*    - Cl[l] (double)    : angular power spectrum, with bounds (1:lmax)
+!*    :lmax (int)         : Maximum multipole of the output alm
+!*    :Cl [l] (double)    : Angular power spectrum, with bounds (0:lmax)
 !*
 !*  Returns:
-!*    - alm[l,m] (dcmplx) : random Gaussian alm, with bounds (0:lmax,0:lmax)
+!*    :alm [l,m] (dcmplx) : Random Gaussian alm, with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
@@ -63,13 +62,13 @@ subroutine gauss2alm(lmax,cl1,cl2,xl,alm)
 !*  Generating two alms as random Gaussian fields whose power spectra are cl1, cl2 and the cross spectrum is xl.
 !*
 !*  Args:
-!*    - lmax (int)      : maximum multipole of the output alm
-!*    - cl1[l] (double) : angular power spectrum of the 1st alm, with bounds (1:lmax)
-!*    - cl2[l] (double) : angular power spectrum of the 2nd alm, with bounds (1:lmax)
-!*    - xl[l] (double)  : cross-power spectrum between alm1 and alm2, with bounds (1:lmax)
+!*    :lmax (int)       : Maximum multipole of the output alm
+!*    :cl1 [l] (double) : Angular power spectrum of the 1st alm, with bounds (0:lmax)
+!*    :cl2 [l] (double) : Angular power spectrum of the 2nd alm, with bounds (0:lmax)
+!*    :xl [l] (double)  : Cross-power spectrum between alm1 and alm2, with bounds (0:lmax)
 !*
 !*  Returns:
-!*    - alm[2,l,m] (dcmplx): random Gaussian alms, with bounds (2,0:lmax,0:lmax)
+!*    :alm [2,l,m] (dcmplx): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
 !*
   implicit none
   !I/O
@@ -103,14 +102,14 @@ subroutine gaussTEB(lmax,TT,EE,BB,TE,alm)
 !*  Generating T/E/B alms as random Gaussian fields whose power spectra are TT, EE, BB and the cross spectrum is TE.
 !*
 !*  Args:
-!*    - lmax (int)     : maximum multipole of the output alms
-!*    - TT[l] (double) : angular power spectrum of temperature, with bounds (1:lmax)
-!*    - EE[l] (double) : angular power spectrum of E mode, with bounds (1:lmax)
-!*    - BB[l] (double) : angular power spectrum of B mode, with bounds (1:lmax)
-!*    - TE[l] (double) : TE cross-power spectrum, with bounds (1:lmax)
+!*    :lmax (int)      : Maximum multipole of the output alms
+!*    :TT [l] (double) : Angular power spectrum of temperature, with bounds (0:lmax)
+!*    :EE [l] (double) : Angular power spectrum of E mode, with bounds (0:lmax)
+!*    :BB [l] (double) : Angular power spectrum of B mode, with bounds (0:lmax)
+!*    :TE [l] (double) : TE cross-power spectrum, with bounds (0:lmax)
 !*
 !*  Returns:
-!*    - alm[3,l,m] (dcmplx): random Gaussian T/E/B alms, with bounds (3,0:lmax,0:lmax)
+!*    :alm [3,l,m] (dcmplx): Random Gaussian T/E/B alms, with bounds (3,0:lmax,0:lmax)
 !*
   implicit none
   !I/O
@@ -128,15 +127,15 @@ subroutine gauss3alm(lmax,cl,alm)
 !*  Generating three alms as random Gaussian fields whose covariance is given by cl[i,j].
 !*
 !*  Args:
-!*    - lmax (int)         : maximum multipole of the output alm
-!*    - cl[i,j,l] (double) : covariance between the gaussian fields, with bounds (3,3,1:lmax)
+!*    :lmax (int)          : Maximum multipole of the output alm
+!*    :cl [i,j,l] (double) : Covariance between the gaussian fields, with bounds (3,3,0:lmax)
 !*
 !*  Returns:
-!*    - alm[3,l,m] (dcmplx): random Gaussian alms, with bounds (3,0:lmax,0:lmax)
+!*    :alm [3,l,m] (dcmplx): Random Gaussian alms, with bounds (3,0:lmax,0:lmax)
 !*
   !I/O
   integer, intent(in) :: lmax
-  double precision, intent(in), dimension(3,3,lmax) :: cl
+  double precision, intent(in), dimension(3,3,0:lmax) :: cl
   double complex, intent(out), dimension(3,0:lmax,0:lmax) :: alm
   !integer
   integer :: l, m
@@ -187,15 +186,15 @@ subroutine gauss4alm(lmax,cl,alm)
 !*  Generating four alms as random Gaussian fields whose covariance is given by cl[i,j].
 !*
 !*  Args:
-!*    - lmax (int)         : maximum multipole of the output alm
-!*    - cl[i,j,l] (double) : covariance between the gaussian fields, with bounds (4,4,1:lmax)
+!*    :lmax (int)          : Maximum multipole of the output alm
+!*    :cl [i,j,l] (double) : Covariance between the gaussian fields, with bounds (4,4,0:lmax)
 !*
 !*  Returns:
-!*    - alm[4,l,m] (dcmplx): random Gaussian alms, with bounds (4,0:lmax,0:lmax)
+!*    :alm [4,l,m] (dcmplx): Random Gaussian alms, with bounds (4,0:lmax,0:lmax)
 !*
   !I/O
   integer, intent(in) :: lmax
-  double precision, intent(in), dimension(4,4,lmax) :: cl
+  double precision, intent(in), dimension(4,4,0:lmax) :: cl
   double complex, intent(out), dimension(4,0:lmax,0:lmax) :: alm
   !integer
   integer :: l, m
@@ -257,12 +256,12 @@ subroutine get_baseline(npix,nside_subpatch,QU,blmap)
 !*  Written by Ryo Nagata.
 !*
 !*  Args:
-!*    - npix (int)           : pixel number of the full map
-!*    - nside_subpatch (int) : Nside of sub patch
-!*    - QU[pix,2] (double)   : Q/U maps, with bounds (0:npix-1,2)
+!*    :npix (int)            : pixel number of the full map
+!*    :nside_subpatch (int)  : Nside of sub patch
+!*    :QU [pix,2] (double)   : Q/U maps, with bounds (0:npix-1,2)
 !*
 !*  Returns:
-!*    - blmap[pix,2] (double): baseline maps, with bounds (0:npix-1,2)
+!*    :blmap [pix,2] (double): baseline maps, with bounds (0:npix-1,2)
 !*
   implicit none
   !I/O
@@ -312,13 +311,13 @@ subroutine get_winmap(nside_large,nside_small,ipix_pix,apod,win_out)
 !*  Written by Ryo Nagata.
 !*
 !*  Args:
-!*    - nside_large (int) : Nside of sub patch
-!*    - nside_small (int) : full Nside
-!*    - ipix_pix (int)    : pixel index of full map
-!*    - apod (double)     : apodization length
+!*    :nside_large (int) : Nside of sub patch
+!*    :nside_small (int) : full Nside
+!*    :ipix_pix (int)    : pixel index of full map
+!*    :apod (double)     : apodization length
 !*
 !*  Returns:
-!*    - wind_out (double) : aporization window at ipix_pix 
+!*    :wind_out (double) : aporization window at ipix_pix 
 !*
   implicit none
   !I/O
@@ -345,11 +344,11 @@ subroutine get_apod_window(s,a,w)
 !*  A sine apodization window
 !*
 !*  Args:
-!*    - s (double) : distance from the center of the window
-!*    - a (double) : apodization length, nothing (a=1) to all (a=0)
+!*    :s (double) : Distance from the center of the window
+!*    :a (double) : Apodization length, nothing (a=1) to all (a=0)
 !*
 !*  Returns:
-!*    - w (double) : aporization window
+!*    :w (double) : Aporization window
 !*
   implicit none
   !I/O
@@ -371,135 +370,117 @@ subroutine get_apod_window(s,a,w)
 end subroutine get_apod_window
 
 
-subroutine cosin_healpix(npix,lmax,cosin) 
-!*  cos(theta) as a function of the Healpix pixel index
+subroutine eb_separate(npix,lmax,W,Q,U,Elm,Blm)
+!*  E/B mode seperation based on the chi-field estimator. See e.g. Sec.III.2 of arXiv:1305.7441 for numerical implimentation.
 !*
 !*  Args:
-!*    - npix (int) : pixel number of the desired map
-!*    - lmax (int) : maximum multipole
+!*    :npix (int)        : Pixel number of the desired map
+!*    :lmax (int)        : Maximum multipole used for the harmonic transform internally
+!*    :W[pix] (double)   : Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1)
+!*    :Q/U[pix] (double) : Input Q/U map, with bounds (0:npix-1)
 !*
 !*  Returns:
-!*    - cosin[pix] (double) : cos(theta), with bounds (0:npix-1)
-!*
-  !I/O
-  implicit none
-  integer, intent(in) :: npix, lmax
-  double precision, intent(out), dimension(0:npix-1) :: cosin
-  !internal
-  integer :: nside
-  double complex :: alm(1,0:lmax,0:lmax)
-
-  nside = int(sqrt(npix/12d0))
-  alm = 0d0
-  alm(1,1,0) = 1d0
-  cosin = 0d0
-  call alm2map(nside,lmax,lmax,alm,cosin)
-  cosin = cosin*dsqrt(pi/0.75d0)
-
-end subroutine cosin_healpix
-
-
-subroutine eb_separate(npix,lmax,W,QUin,QUou)
-!*  E/B mode seperation based on the chi-field estimator.
-!*
-!*  Args:
-!*    - npix (int)           : pixel number of the desired map
-!*    - lmax (int)           : maximum multipole used for the harmonic transform internally
-!*    - W[pix,2] (double)    : window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1,2)
-!*    - QUin[pix,2] (double) : input QU map, with bounds (0:npix-1,2)
-!*
-!*  Returns:
-!*    - QUou[pix,2] (double) : E/B separated QU map, with bounds (0:npix-1,2)
+!*    :Elm/Blm[l,m]  (dcmplx) : Seperated E/B modes, with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
   integer, intent(in) :: npix, lmax
-  double precision, intent(in), dimension(0:npix-1,2) :: W, QUin
-  double precision, intent(out), dimension(0:npix-1,2) :: QUou
+  double precision, intent(in), dimension(0:npix-1) :: W, Q, U
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: Elm, Blm
   !internal
   integer :: i, l, nside
-  double precision :: al, n1, n2, pd
-  double precision, allocatable, dimension(:,:) :: W1,W2,P1,P0
-  double complex, allocatable, dimension(:,:,:) :: alm1, alm2, wlm, tlm
+  double precision :: al, n1(lmax), n2(lmax)
+  double precision, allocatable, dimension(:,:) :: W1, W2, P2, P1, P0
+  double complex, allocatable, dimension(:,:,:) :: alm0, alm1, alm2, wlm, tlm
 
   nside = int(sqrt(npix/12d0))
 
-  !derivatives of window functions in harmonic space
-  allocate(wlm(2,0:lmax,0:lmax))
-  call map2alm_spin(nside,lmax,lmax,0,W,wlm)
-  wlm = -wlm
+  !N1 and N2 defined as Ns = sqrt((l+s)!/(l-s)!)
+  do l = 1, lmax
+    al = dble(l)
+    n1(l) = dsqrt((al+1d0)*al)
+    n2(l) = dsqrt((al+2d0)*(al**2-1d0)*al)
+  end do
+
+  !//// derivatives of window functions in harmonic space ////!
+  allocate(wlm(1,0:lmax,0:lmax))
+  call map2alm(nside,lmax,lmax,W,wlm)
+
+  !compute del^1 W
   allocate(W1(0:npix-1,2),W2(0:npix-1,2),tlm(2,0:lmax,0:lmax))
   tlm = 0d0
   do l = 2, lmax
-    al = dble(l)
-    pd = dsqrt((al+1d0)*al)
-    tlm(1,l,:) = - wlm(1,l,:)*pd
-    tlm(2,l,:) = 0d0
+    tlm(1,l,:) = wlm(1,l,:)*n1(l)
   end do
   call alm2map_spin(nside,lmax,lmax,1,tlm,W1)
+
+  !compute del^2 W
+  tlm = 0d0
   do l = 2, lmax
-    al = dble(l)
-    pd = dsqrt((al+2d0)*(al**2-1d0)*al)
-    tlm(1,l,:) = - wlm(1,l,:)*pd
-    tlm(2,l,:) = 0d0
+    tlm(1,l,:) = wlm(1,l,:)*n2(l)
   end do
   call alm2map_spin(nside,lmax,lmax,2,tlm,W2)
+
   deallocate(tlm,wlm)
 
-  !compute P1=conjg(W1)*(Q+/-iU), P0=conjg(W2)*(Q+/-iU)
-  allocate(P1(0:npix-1,2),P0(0:npix-1,2))
-  P1(:,1) = W1(:,1)*QUin(:,1)+W1(:,2)*QUin(:,2)
-  P1(:,2) = W1(:,1)*QUin(:,2)-W1(:,2)*QUin(:,1)
-  P0(:,1) = W2(:,1)*QUin(:,1)+W2(:,2)*QUin(:,2)
-  P0(:,2) = W2(:,1)*QUin(:,2)-W2(:,2)*QUin(:,1)
+  !//// compute P1=conjg(W1)*(Q+iU), P0=conjg(W2)*(Q+iU) ////!
+  allocate(P2(0:npix-1,2),P1(0:npix-1,2),P0(0:npix-1,2))
+  P2(:,1) = W*Q
+  P2(:,2) = W*U
+  P1(:,1) = W1(:,1)*Q + W1(:,2)*U
+  P1(:,2) = W1(:,1)*U - W1(:,2)*Q
+  P0(:,1) = W2(:,1)*Q + W2(:,2)*U
+  P0(:,2) = W2(:,1)*U - W2(:,2)*Q
   deallocate(W1,W2)
 
-  allocate(alm1(2,0:lmax,0:lmax),alm2(2,0:lmax,0:lmax))
-  alm1 = 0d0
+  ! P1^+ +/- iP^- = \sum_lm Y_lm^s alm^E +/- i alm^B
+  allocate(alm0(2,0:lmax,0:lmax),alm1(2,0:lmax,0:lmax),alm2(2,0:lmax,0:lmax))
+  call map2alm_spin(nside,lmax,lmax,2,P2,alm2)
   call map2alm_spin(nside,lmax,lmax,1,P1,alm1)
-  call map2alm_spin(nside,lmax,lmax,0,P0,alm2)
-  deallocate(P1,P0)
+  call map2alm_spin(nside,lmax,lmax,0,P0,alm0)
+  deallocate(P2,P1,P0)
 
+  !compute purified E/B modes
+  Elm = 0d0
+  Blm = 0d0
   do l = 2, lmax
-    al = dble(l)
-    n1 = 2d0/dsqrt((al+2d0)*(al-1d0))
-    n2 = 1d0/dsqrt((al+2d0)*(al**2-1d0)*al)
-    alm1(:,l,:) = n1*alm1(:,l,:) + n2*alm2(:,l,:)
+    Elm(l,:) = alm2(1,l,:) + (2*n1(l)/n2(l))*alm1(1,l,:) + (1d0/n2(l))*alm0(1,l,:)
+    Blm(l,:) = alm2(2,l,:) + (2*n1(l)/n2(l))*alm1(2,l,:) + (1d0/n2(l))*alm0(2,l,:)
   end do
-  deallocate(alm2)
+  deallocate(alm0,alm1,alm2)
 
-  allocate(P1(0:npix-1,2))
-  call alm2map_spin(nside,lmax,lmax,2,alm1,P1)
-  deallocate(alm1)
-
-  ! P2 = conjg(W)*(Q+/-iU)
-  QUou(:,1) = QUin(:,1)*W(:,1)
-  QUou(:,2) = QUin(:,2)*W(:,1)
-
-  ! total
-  QUou = QUou + P1
 
 end subroutine eb_separate
 
 
-! From alm to angular power spectrum
-subroutine alm2cl(lmax,cl,alm1,alm2,norm)
+subroutine alm2cl(lmax,cl,alm1,alm2)
+!*  From alm to angular power spectrum
+!*
+!*  Args:
+!*    :lmax (int)           : Maximum multipole of the input alm
+!*    :alm1 [l,m] (dcmplx)  : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Args(optional):
+!*    :alm2 [l,m] (dcmplx)  : 2nd harmonic coefficient, with bounds (0:lmax,0:lmax), default to alm1
+!*
+!*  Returns:
+!*    :cl [l] (double) : Auto or cross angular power spectrum, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
   double precision, intent(out), dimension(0:lmax) :: cl
   !optional
-  double complex, intent(in), dimension(0:lmax,0:lmax), optional :: alm2
-  double precision, intent(in), optional :: norm
+  double complex, intent(in), optional, dimension(0:lmax,0:lmax) :: alm2
   !f2py double complex :: alm2 = 0
-  !f2py double precision :: norm = 1
   !docstr :: alm2 = alm1
+
   !intenral
   integer :: l
 
   cl = 0d0
-  if (present(alm2).and..not.sum(abs(alm2))/=0) then
+  if (present(alm2).and.sum(abs(alm2))/=0) then
     do l = 1, lmax
       cl(l) = ( dble(alm1(l,0)*alm2(l,0)) + 2.*sum(alm1(l,1:l)*conjg(alm2(l,1:l))))/(2.*l+1.)
     end do
@@ -509,55 +490,74 @@ subroutine alm2cl(lmax,cl,alm1,alm2,norm)
     end do
   end if
 
-  if (present(norm))  cl = cl*norm
-
 end subroutine alm2cl
 
 
-subroutine alm2bcl(bn,lmax,cb,alm1,alm2,oL,norm)
+subroutine alm2bcl(bn,lmax,cb,alm1,alm2,spc)
+!*  From alm to angular power spectrum with multipole binning
+!*
+!*  Args:
+!*    :bn (int)             : Number of multipole bins
+!*    :lmax (int)           : maximum multipole of the input alm
+!*    :alm1 [l,m] (dcmplx)  : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Args(optional):
+!*    :alm2 [l,m] (dcmplx)  : 2nd harmonic coefficient, with bounds (0:lmax,0:lmax), default to alm1
+!*    :spc (str) : Specify bin spacing, '' = linear (default), 'log' = log spacing, 'log10' = log10 spacing, 'p2' = power of 2 spacing, 'p3' = power of 3 spacing
+!*
+!*  Returns:
+!*    :cb [bin] (double) : Auto or cross angular power spectrum with multipole binning, with bounds (0:bn-1)
+!*
   implicit none
   integer, intent(in) :: bn, lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
   double precision, intent(out), dimension(bn) :: cb
   !optional
-  integer, intent(in), optional, dimension(2) :: oL
-  double precision, intent(in), optional :: norm
-  double complex, intent(in), dimension(0:lmax,0:lmax), optional :: alm2
-  !f2py integer :: oL = 0
-  !f2py double precision norm = 1
+  character(4), intent(in), optional :: spc
+  double complex, intent(in), optional, dimension(0:lmax,0:lmax) :: alm2
+  !f2py character(4) :: spc = ''
   !f2py double complex :: alm2 = 0
   !docstr :: alm2 = alm1
   !internal
   integer :: npix, eL(2)
-  double precision :: n
   double precision, allocatable :: Cl(:), bp(:), bc0(:)
+  character(4) :: sp
+
+  sp = ''
+  if (present(spc)) sp = spc
 
   eL = (/1,lmax/)
-  if (present(oL)) eL=oL
 
-  n = 1d0
-  if (present(norm)) n = norm
-
-  allocate(Cl(lmax))
-  if (present(alm2).and..not.sum(abs(alm2))/=0) then
-    call alm2cl(lmax,cl,alm1,alm2,norm=n)
+  allocate(cl(0:lmax))
+  if (present(alm2).and.sum(abs(alm2))/=0) then
+    call alm2cl(lmax,cl,alm1,alm2)
   else
-    call alm2cl(lmax,cl,alm1,norm=n)
+    call alm2cl(lmax,cl,alm1)
   end if
 
   allocate(bp(bn+1))
-  call binned_ells(eL,bp)
-  call power_binning(bp,eL,Cl,Cb)
+  call binned_ells(eL,bp,spc=sp)
+  call power_binning(bp,eL,cl(1:lmax),Cb)
   deallocate(bp,Cl)
 
 end subroutine alm2bcl
 
 
 subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
-! partially use Healpix's process_mask code
-!   ascale [deg] --- apodization length from the closest masked pixel
-!   order        --- 1 for RING, otherwize NESTED
-!   holeminsize [arcmin] --- minimum hole size (i.e., holes within this size in filled)
+!*  Compute apodized window function. Partially use Healpix's process_mask code.
+!*
+!*  Args:
+!*   :npix (int)         : Number of pixel
+!*   :rmask[pix] (double): Input window function, with bounds (0:pix-1)
+!*   :ascale (double)    : Apodization length [deg] from the closest masked pixel
+!*
+!*  Args(optional):
+!*   :order           : Pixel order, 1 for RING (default), otherwize NESTED
+!*   :holeminsize     : Minimum hole size [arcmin] (i.e., holes within this size in filled), default to 0
+!*
+!*  Returns:
+!*   :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
+!*
   implicit none
   integer, intent(in) :: npix
   double precision, intent(in) :: ascale
@@ -568,6 +568,7 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
   double precision, intent(in), optional :: holeminsize
   !f2py integer :: order = 1
   !f2py double precision :: holeminsize = 0
+
   !internal
   integer :: n, nside, hsize
   integer, allocatable :: mask(:)
@@ -616,6 +617,17 @@ end subroutine apodize
 
 
 subroutine hp_map2alm(nside,lmax,mmax,map,alm)
+!*  Ylm transform of the map to alm with the healpix (l,m) order
+!*
+!*  Args:
+!*    :nside (int)         : Nside of the input map
+!*    :lmax (int)          : Maximum multipole of the input alm
+!*    :mmax (int)          : Maximum m of the input alm
+!*    :map [pix] (double)  : Input map, with bounds (0:npix-1)
+!*
+!*  Returns:
+!*    :alm1 [l,m] (dcmplx): Harmonic coefficient obtained from the input map, with bounds (0:lmax,0:mmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nside, lmax, mmax
@@ -637,6 +649,20 @@ end subroutine hp_map2alm
 
 
 subroutine hp_map2alm_spin(nside,lmax,mmax,spin,map0,map1,alm)
+!*  Spin Ylm transform of the map ( = map0 + i map1 ) to alm with the healpix (l,m) order. For example, if map0=Q, map1=U and spin=2, 
+!*  the alm contains E-mode and B-mode. 
+!*
+!*  Args:
+!*    :nside (int)         : Nside of the input map
+!*    :lmax (int)          : Maximum multipole of the input alm
+!*    :mmax (int)          : Maximum m of the input alm
+!*    :spin (int)          : Spin of the transform
+!*    :map0 [pix] (double) : Real part of the input map, with bounds (0:npix-1)
+!*    :map1 [pix] (double) : Imaginary part of the input map, with bounds (0:npix-1)
+!*
+!*  Returns:
+!*    :alm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the input map, with bounds (2,0:lmax,0:mmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nside, lmax, mmax, spin
@@ -656,6 +682,132 @@ subroutine hp_map2alm_spin(nside,lmax,mmax,spin,map0,map1,alm)
   call map2alm_spin(nside,lmax,lmax,spin,S,alm)
 
 end subroutine hp_map2alm_spin
+
+
+subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
+!*  Transform healpy alm to healpix alm 
+!*
+!*  Args:
+!*    :lmpy (int)           : Length of healpy alm
+!*    :lmax (int)           : Maximum multipole
+!*    :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
+!*
+!*  Returns:
+!*    :almpix [l,m] (dcmplx): Healpix alm, with bounds (0:lmax,0:lmax)
+!*
+  implicit none
+  integer, intent(in) :: lmpy, lmax
+  double complex, intent(in), dimension(0:lmpy-1) :: almpy
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: almpix
+  integer :: l, m, i
+
+  !i = m*(lmax+1) - m(m-1)/2 + (l-m)
+  almpix = 0d0
+  if (2*lmpy/=(lmax+1)*(lmax+2)) stop 'size of almpy is inconsistent with that of almpix'
+  do m = 0, lmax
+    do l = m, lmax
+      i = m*lmax - int(m*(m-1d0)/2d0) + l
+      almpix(l,m) = almpy(i)
+    end do
+  end do
+
+end subroutine lm_healpy2healpix
+
+
+subroutine cosin_healpix(npix,lmax,cosin) 
+!*  Return cos(theta) as a function of the Healpix pixel index
+!*
+!*  Args:
+!*    :npix (int) : Pixel number of the desired map
+!*    :lmax (int) : Maximum multipole
+!*
+!*  Returns:
+!*    :cosin [pix] (double) : cos(theta), with bounds (0:npix-1)
+!*
+  !I/O
+  implicit none
+  integer, intent(in) :: npix, lmax
+  double precision, intent(out), dimension(0:npix-1) :: cosin
+  !internal
+  integer :: nside
+  double complex :: alm(1,0:lmax,0:lmax)
+
+  nside = int(sqrt(npix/12d0))
+  alm = 0d0
+  alm(1,1,0) = 1d0
+  cosin = 0d0
+  call alm2map(nside,lmax,lmax,alm,cosin)
+  cosin = cosin*dsqrt(pi/0.75d0)
+
+end subroutine cosin_healpix
+
+
+subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
+!*  Compute 2D Minkowski functionals
+!*
+!*  Args:
+!*    :bn (int)            : Number of nu bins
+!*    :nu [bin] (double)   : Nu bins, with bounds (bn)
+!*    :lmax (int)          : Maximum multipole of the input walm
+!*    :walm [l,m] (dcmplx) : Alm with filtering, possibly divided by the map variance, with bounds (0:lmax,0:lmax)
+!*
+!*  Args(optional): 
+!*    :nside (int): Nside of the intermediate map, default to lmax
+!*
+!*  Returns:
+!*    :V [bin,type] (double): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
+!*
+  implicit none 
+  !I/O
+  integer, intent(in) :: lmax, bn
+  double precision, intent(in), dimension(bn) :: nu
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: walm
+  double precision, intent(out), dimension(bn,0:2) :: V
+  !optional
+  integer, intent(in), optional :: nside
+  !f2py integer :: nside = lmax
+  !internal
+  integer :: n, i, l, npix
+  double precision :: dnu, dtt, dtp, dpp, atant, mcV(0:2)
+  double precision, allocatable :: cost(:), der0(:), der1(:,:), der2(:,:)
+  double complex, allocatable :: alm(:,:,:)
+
+  npix = 12*nside**2
+  dnu  = nu(2)-nu(1)
+
+  ! compute derivatives 
+  allocate(alm(1,0:lmax,0:lmax),der0(0:npix-1),der1(0:npix-1,2),der2(0:npix-1,3))
+  alm(1,:,:) = walm
+  call alm2map_der(nside,lmax,lmax,alm,der0,der1,der2)
+  deallocate(alm)
+
+  ! cosine
+  allocate(cost(0:npix-1))
+  call cosin_healpix(npix,lmax,cost) 
+
+  !loop for nu
+  do i = 1, bn
+    mcV = 0d0
+    do n = 0, npix-1
+      !V0
+      if (der0(n)>=nu(i))  mcV(0) = mcV(0) + 1d0
+      if (abs(der0(n)-nu(i))<=dnu/2) then 
+        !V1
+        mcV(1) = mcV(1) + (0.25/dnu)*dsqrt(der1(n,1)**2+der1(n,2)**2)
+        !V2
+        atant  = cost(n)/dsqrt(1d0-cost(n)**2)
+        dtt    = der2(n,1)
+        dtp    = der2(n,2) - atant*der1(n,2)
+        dpp    = der2(n,3) + atant*der1(n,1)
+        mcV(2) = mcV(2) + (0.5/pi)*(1d0/dnu) * (2d0*der1(n,1)*der1(n,2)*dtt - der1(n,1)**2*dpp-der1(n,2)**2*dtt)/(der1(n,1)**2+der1(n,2)**2)
+      end if
+    end do
+    V(i,0:2) = mcV(0:2)/dble(npix)
+  end do
+
+  deallocate(cost,der0,der1,der2)
+
+end subroutine calc_mfs
 
 
 end module utils

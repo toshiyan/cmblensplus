@@ -13,7 +13,7 @@ link="-lutils"
 option="${modd} ${libd} ${link}"
 
 # files to be compiled
-scan="aps.f90"
+scan="aps.f90 flat.f90 delens.f90"
 
 source ../../sh/compile.sh ${1}
 

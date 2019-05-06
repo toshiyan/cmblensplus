@@ -22,37 +22,52 @@ contains
 !//////////////////////////////////////////////////////////////////////////////!
 
 subroutine binned_ells(eL,bp,bc,spc)
-! * return binned multipole edges and centers
+! return binned multipole edges and centers
   implicit none
   !I/O
   character(*), intent(in), optional :: spc
   integer, intent(in) :: eL(:)
   double precision, intent(out), optional :: bp(:), bc(:)
   !internal
-  character(8) :: spcs=''
+  character(8) :: sp=''
   integer :: i, n
-  double precision :: d
+  double precision :: d, edge(2)
   double precision, allocatable :: p(:)
 
-  if (present(bc))  n = size(bc)
-  if (present(bp))  n = size(bp) - 1
-  if (present(spc)) spcs = spc
+  if (eL(1)<=0.and.sp/='') stop 'ell minimum should be > 0 for spacing'
 
-  allocate(p(n+1))
-  p(1) = eL(1)
+  if (present(bc))   n = size(bc)
+  if (present(bp))   n = size(bp) - 1
+  if (present(spc))  sp = spc
 
-  select case(spcs)
+  edge = dble(eL)
+
+  allocate(p(0:n))
+  p(0) = eL(1)
+
+  select case(sp)
   case('log')
-    d     = dlog(dble(eL(2))/dble(eL(1)))/dble(n)
-    p(2:) = [((eL(1)*exp(d*(i-1))),i=2,n+1)]
+    d     = dlog(edge(2)/edge(1))/dble(n)
+    p(1:) = [ ( ( edge(1)*dexp(d*i) ), i=1,n ) ]
+  case('log10')
+    d     = dlog10(edge(2)/edge(1))/dble(n)
+    p(1:) = [ ( ( edge(1)*10**(d*i) ), i=1,n ) ]
+  case('p2')
+    d     = (dsqrt(edge(2))-dsqrt(edge(1)))/dble(n)
+    p(1:) = [ ( ( (dsqrt(edge(1))+d*i)**2) ,i=1,n ) ]
+  case('p3')
+    d     = (edge(2)**(1d0/3d0)-edge(1)**(1d0/3d0))/dble(n)
+    p(1:) = [ ( ( (edge(1)**3+d*i)**3 ), i=1,n ) ]
   case default
-    d     = dble(eL(2)-eL(1))/dble(n)
-    p(2:) = [((d*(i-1)+p(1)),i=2,n+1)]
+    d     = (edge(2)-edge(1))/dble(n)
+    p(1:) = [ ( ( edge(1)+d*i ), i=1,n ) ]
   end select
-  if (present(bc)) bc = [(((p(i+1)+p(i))*0.5d0),i=1,n)]
+
+  if (present(bc)) bc = [(((p(i)+p(i-1))*0.5d0),i=1,n)]
   if (present(bp)) bp = p
  
   deallocate(p)
+
 
 end subroutine binned_ells
 
@@ -169,22 +184,6 @@ subroutine cl_interp_spline(bls,bCl,tL,Cl,islog)
   deallocate(tbCl,tbls)
 
 end subroutine cl_interp_spline
-
-
-subroutine cl2cb(bc,cl,cb)
-  implicit none
-  !I/O
-  double precision, intent(in) :: cl(:), bc(:)
-  double precision, intent(out) :: cb(:)
-  !internal
-  integer :: i
-
-  cb = 0d0
-  do i = 1, size(bc)
-    cb(i) = cl(int(bc(i)))
-  end do
-
-end subroutine cl2cb
 
 
 !//////////////////////////////////////////////////////////////////////////////!

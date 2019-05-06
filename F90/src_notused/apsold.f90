@@ -12,8 +12,6 @@ module pstool
 
 contains
 
-#ifdef all 
-
 subroutine angle_average(nn,alm,Al,nmax,label,el)
   implicit none
   !subroutine for computing power spectrum from Fourier grids
@@ -107,7 +105,22 @@ subroutine calccl_2d(D,alm1,alm2,Cl)
 
 end subroutine calccl_flat_alm2d
 
-#endif all
+subroutine cl2cb(bc,cl,cb)
+  implicit none
+  !I/O
+  double precision, intent(in) :: cl(:), bc(:)
+  double precision, intent(out) :: cb(:)
+  !internal
+  integer :: i
+
+  cb = 0d0
+  do i = 1, size(bc)
+    cb(i) = cl(int(bc(i)))
+  end do
+
+end subroutine cl2cb
+
+
 
 end module pstool
 

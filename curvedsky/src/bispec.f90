@@ -20,11 +20,11 @@ subroutine make_quad_gauss(lmax,alm,qlm)
 !*  where delta^L(n) is a gaussian field obtained from the input alm.
 !*
 !*  Args:
-!*    - lmax (int)        : maximum multipole of alm
-!*    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+!*    :lmax (int)         : Maximum multipole of alm
+!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 !*
 !*  Returns:
-!*    - qlm[l,m] (dcmplx) : output harmonic coefficients of the non-Gaussian fields, with bounds (0:lmax,0:lmax).
+!*    :qlm [l,m] (dcmplx) : Output harmonic coefficients of the non-Gaussian fields, with bounds (0:lmax,0:lmax).
 !*
   implicit none
   !I/O
@@ -52,16 +52,16 @@ subroutine bispec_norm(bn,bp,norm,bstype,bst,sL)
 !*  Return normalization of the binned reduced bispectrum for a given multipole bin
 !*
 !*  Args:
-!*    - bn (int)          : number of multipole bins
-!*    - bp[edge] (double) : bin edges, with bounds (bn+1)
+!*    :bn (int)           : Number of multipole bins
+!*    :bp [edge] (double) : Bin edges, with bounds (bn+1)
 !*
 !*  Args(optional):
-!*    - bstype (str) : configuration of the bispectrum, default to equilateral
-!*    - bst (int)    : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-!*    - sL[2] (int)  : the fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
+!*    :bstype (str)  : Configuration of the bispectrum, default to equilateral
+!*    :bst (int)     : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :sL[2] (int)   : The fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
 !*
 !*  Returns:
-!*    - norm[bin] (double) : normalization of the binned reduced bispectrum at each bin, with bounds (bn)
+!*    :norm [bin] (double) : Normalization of the binned reduced bispectrum at each bin, with bounds (bn)
 !*
   implicit none
   !I/O
@@ -72,11 +72,10 @@ subroutine bispec_norm(bn,bp,norm,bstype,bst,sL)
   character(4), intent(in), optional :: bstype
   integer, intent(in), optional :: bst
   integer, intent(in), optional, dimension(2) :: sL
-  !double complex, intent(in), optional, dimension(:,:) :: alm
   !f2py character(4) :: bstype = 'equi'
   !f2py integer :: bst = 2
   !f2py integer :: sL = 0
-  !f2py double complex :: alm = 0
+  !docstr :: sL = [int(bp[0]),int(bp[1])]
   !internal
   character(4) :: btype
   integer :: l1, l, lmax, b, bst0, aL(2), sL0(2), eL(2)
@@ -138,18 +137,18 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
 !*  Return the unnormalized binned reduced bispectrum for a given multipole bin
 !*
 !*  Args:
-!*    - bn (int)          : number of multipole bins
-!*    - bp[edge] (double) : bin edges, with bounds (bn+1)
-!*    - lmax (int)        : maximum multipole of the input alm
-!*    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax)
+!*    :bn (int)           : Number of multipole bins
+!*    :bp [edge] (double) : Bin edges, with bounds (bn+1)
+!*    :lmax (int)         : Maximum multipole of the input alm
+!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax)
 !*
 !*  Args(optional):
-!*    - bstype (str) : configuration of the bispectrum, default to equilateral
-!*    - bst (int) : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-!*    - sL[2] (int)  : the fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
+!*    :bstype (str)  : Configuration of the bispectrum, default to equilateral
+!*    :bst (int)     : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :sL[2] (int)   : The fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
 !*
 !*  Returns:
-!*    - bis[bin] (double) : the unnormalized binned reduced bispectrum at each bin, with bounds (bn)
+!*    :bis [bin] (double) : The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
 !*
   implicit none
   !I/O
@@ -164,6 +163,7 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
   !f2py integer :: bst = 2
   !f2py character :: bstype = 'equi'
   !f2py integer :: sL = 0
+  !docstr :: sL = [int(bp[0]),int(bp[1])]
   !internal
   integer :: aL(2), b, eL(2), bst0, sL0(2), l1
 
@@ -199,15 +199,15 @@ subroutine equi(lmin,lmax,alm,bispec,bst)
 !*  Compute equilateral shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l,l]
 !*
 !*  Args:
-!*    - lmin (int)        : minimum multipole of the bin
-!*    - lmax (int)        : maximum multipole of the bin
-!*    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+!*    :lmin (int)        : Minimum multipole of the bin
+!*    :lmax (int)        : Maximum multipole of the bin
+!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 !*
 !*  Args(optional):
-!*    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 !*
 !*  Returns:
-!*    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
 !*
   implicit none
   !I/O
@@ -243,15 +243,15 @@ subroutine fold(lmin,lmax,alm,bispec,bst)
 !*  Compute folded shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l/2,l/2]
 !*
 !*  Args:
-!*    - lmin (int)        : minimum multipole of the bin
-!*    - lmax (int)        : maximum multipole of the bin
-!*    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+!*    :lmin (int)        : Minimum multipole of the bin
+!*    :lmax (int)        : Maximum multipole of the bin
+!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 !*
 !*  Args(optional):
-!*    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 !*
 !*  Returns:
-!*    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
 !*
   implicit none
   !I/O
@@ -291,16 +291,16 @@ subroutine sque(eL,sL,l1,alm,bispec,bst)
 !*  Compute squeezed shape of the unnormalized binned reduced bispectrum for a given alm, b[sL,eL,eL]
 !*
 !*  Args:
-!*    - eL[] (int)        : minimum and maximum multipoles of the bin, with bounds (2)
-!*    - sL[] (int)        : minimum and maximum multipoles of the fixed bin, with bounds (2)
-!*    - l1 (int)          : maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
-!*    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+!*    :eL[2] (int)        : Minimum and maximum multipoles of the bin, with bounds (2)
+!*    :sL[2] (int)        : Minimum and maximum multipoles of the fixed bin, with bounds (2)
+!*    :l1 (int)           : Maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
+!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 !*
 !*  Args(optional):
-!*    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 !*
 !*  Returns:
-!*    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
 !*
   implicit none
   !I/O
@@ -343,16 +343,16 @@ subroutine isos(eL,aL,l1,alm,bispec,bst)
 !*  Compute isosceles shape of the unnormalized binned reduced bispectrum for a given alm, b[eL,aL,aL]
 !*
 !*  Args:
-!*    - eL[] (int)        : minimum and maximum multipoles of the bin, with bounds (2)
-!*    - aL[] (int)        : minimum and maximum multipoles of the fixed bin, with bounds (2)
-!*    - l1 (int)          : maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
-!*    - alm[l,m] (dcmplx) : input harmonic coefficients, with bounds (0:lmax,0:lmax).
+!*    :eL[2] (int)        : Minimum and maximum multipoles of the bin, with bounds (2)
+!*    :aL[2] (int)        : Minimum and maximum multipoles of the fixed bin, with bounds (2)
+!*    :l1 (int)           : Maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
+!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
 !*
 !*  Args(optional):
-!*    - bst (int)         : a parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
 !*
 !*  Returns:
-!*    - bispec (double)   : unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
 !*
   implicit none
   !I/O

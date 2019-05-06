@@ -3,10 +3,8 @@
 
 # load modules
 import numpy as np
-import devbasicpy as basic
-#import curvedsky
-import devanalyticpy as analytic
-import devcurvedskypy as curvedsky
+import basic
+import curvedsky
 
 # define parameters
 Tcmb = 2.726e6    # CMB temperature
@@ -15,17 +13,17 @@ rlmin = 100
 rlmax = 3000      # reconstruction multipole range
 
 # load unlensed and lensed Cls
-ucl  = basic.aps.read_cambcls('../data/unlensedcls.dat',2,lmax,5)/Tcmb**2
+#ucl  = basic.aps.read_cambcls('../data/unlensedcls.dat',2,lmax,5)/Tcmb**2
 lcl  = basic.aps.read_cambcls('../data/lensedcls.dat',2,lmax,4,bb=True)/Tcmb**2
 
 # calculate normalization (gradient and curl modes)
 Ag = {}
 Ac = {}
-Ag['TT'], Ac['TT'] = analytic.rec_lens.qtt(lmax,rlmin,rlmax,lcl[0,:],lcl[0,:])
-Ag['TE'], Ac['TE'] = analytic.rec_lens.qte(lmax,rlmin,rlmax,lcl[3,:],lcl[0,:],lcl[1,:])
-Ag['TB'], Ac['TB'] = analytic.rec_lens.qtb(lmax,rlmin,rlmax,lcl[3,:],lcl[0,:],lcl[2,:])
-Ag['EE'], Ac['EE'] = analytic.rec_lens.qee(lmax,rlmin,rlmax,lcl[1,:],lcl[1,:])
-Ag['EB'], Ac['EB'] = analytic.rec_lens.qeb(lmax,rlmin,rlmax,lcl[1,:],lcl[1,:],lcl[2,:])
+Ag['TT'], Ac['TT'] = curvedsky.norm_lens.qtt(lmax,rlmin,rlmax,lcl[0,:],lcl[0,:])
+Ag['TE'], Ac['TE'] = curvedsky.norm_lens.qte(lmax,rlmin,rlmax,lcl[3,:],lcl[0,:],lcl[1,:])
+Ag['TB'], Ac['TB'] = curvedsky.norm_lens.qtb(lmax,rlmin,rlmax,lcl[3,:],lcl[0,:],lcl[2,:])
+Ag['EE'], Ac['EE'] = curvedsky.norm_lens.qee(lmax,rlmin,rlmax,lcl[1,:],lcl[1,:])
+Ag['EB'], Ac['EB'] = curvedsky.norm_lens.qeb(lmax,rlmin,rlmax,lcl[1,:],lcl[1,:],lcl[2,:])
 
 # simple diagonal c-inverse
 Fl = np.zeros((3,lmax+1,lmax+1))

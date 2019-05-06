@@ -22,7 +22,15 @@ contains
 !//// Fourier modes ////!
 
 subroutine el2d(nx,ny,D,els)
-! return absolute value of multipole in 2D
+!*  Return absolute value of multipole in 2D grids
+!* 
+!*  Args:
+!*    - nx, ny (int):  number of Lx and Ly grids
+!*    - D[xy] (double):  map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*  
+!*  Returns:
+!*    - els[nx,ny] (double):  absolute value of Fourier mode, (Lx**2+Ly**2)**0.5, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -45,6 +53,18 @@ end subroutine el2d
 
 
 subroutine elarrays(nx,ny,D,elx,ely,els,eli)
+!*  Return Lx, Ly, absolute value of multipole, and its inverse in 2D grids
+!* 
+!*  Args:
+!*    - nx, ny (int):  number of Lx and Ly grids
+!*    - D[xy] (double):  map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*  
+!*  Returns:
+!*    - elx[nx,ny] (double) : Lx, with bounds (nx,ny)
+!*    - ely[nx,ny] (double) : Ly, with bounds (nx,ny)
+!*    - els[nx,ny] (double) : absolute value of Fourier mode, (Lx**2+Ly**2)**0.5, with bounds (nx,ny)
+!*    - eli[nx,ny] (double) : inverse of els, with bounds (nx,ny)
+!*
   implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
@@ -58,6 +78,22 @@ end subroutine elarrays
 !//// Compute Cl from Fourier modes ////!
 
 subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
+!*  Compute angular power spectrum from Fourier modes, with multipole binning
+!* 
+!*  Args:
+!*    - bn (int)      : number of multipole bin
+!*    - oL[2] (int)   : minimum and maximum multipoles of the output cl
+!*    - nx, ny (int)  : number of Lx and Ly grids
+!*    - D[xy] (double): map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    - alm1[nx,ny] (dcmplx): Fourier mode, with bounds (nx,ny)
+!* 
+!*  Args(optional):
+!*    - alm2[nx,ny] (dcmplx): Fourier mode, with bounds (nx,ny), default to None
+!*    - spc (str)           : type of multipole binning, i.e., linear spacing (spc='', default), or log spacing (spc='log')
+!*
+!*  Returns:
+!*    - Cb[bin] (double) : angular power spectrum with multipole binning, with bounds (bn)
+!*
   implicit none
   !inputs
   integer, intent(in) :: bn, nx, ny
@@ -97,14 +133,28 @@ subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
 end subroutine alm2bcl
 
 
-subroutine c2d2bcl(nx,ny,D,Cl,bn,oL,Cb,spc)
-! cl2d -> binned cl1d
+subroutine c2d2bcl(nx,ny,D,c2d,bn,oL,Cb,spc)
+!*  Return 1D angular power spectrum with multipole binning from a 2D power spectrum
+!*
+!*  Args:
+!*    - nx, ny (int)       : number of Lx and Ly grids
+!*    - D[xy] (double)     : map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    - c2d[nx,ny] (double): 2D power spectrum, with bounds (nx,ny)
+!*    - bn (int)           : number of multipole bin
+!*    - oL[2] (int)        : minimum and maximum multipoles of the output cl
+!*    
+!*  Args(optional):
+!*    - spc (str) : type of multipole binning, i.e., linear spacing (spc='', default), or log spacing (spc='log')
+!*
+!*  Returns:
+!*    - Cb[bin] (double) : angular power spectrum with multipole binning, with bounds (bn)
+!*
   implicit none
   !I/O
   integer, intent(in) :: bn, nx, ny
   integer, intent(in), dimension(2) :: oL
   double precision, intent(in), dimension(2) :: D
-  double precision, intent(in), dimension(nx,ny) :: Cl
+  double precision, intent(in), dimension(nx,ny) :: c2d
   double precision, intent(out), dimension(bn) :: Cb
   !optional
   character(*), intent(in), optional :: spc
@@ -121,7 +171,7 @@ subroutine c2d2bcl(nx,ny,D,Cl,bn,oL,Cb,spc)
 
   call make_lmask((/nx,ny/),D,oL,lmask)
   call el2d(nx,ny,D,els)
-  call power_binning(bp,els,lmask*Cl,lmask,Cb,vAb)
+  call power_binning(bp,els,lmask*c2d,lmask,Cb,vAb)
 
 end subroutine c2d2bcl
 
@@ -129,7 +179,18 @@ end subroutine c2d2bcl
 ! Power spectrum interpolation
 
 subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
-!* Transform Cl to Cl2D with linear interpolation
+!*  Assign values of 1D angular power spectrum on to 2D grid with linear interpolation
+!*
+!*  Args: 
+!*    - nx, ny (int)   : number of Lx and Ly grids
+!*    - D[xy] (double) : map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    - lmin (int)     : minimum multipole of cl to be interpolated
+!*    - lmax (int)     : maximum multipole of cl to be interpolated
+!*    - Cl[l] (double) : 1D power spectrum, with bounds (0:lmax)
+!*
+!*  Returns:
+!*    - c2d[nx,ny] (double): 2D power spectrum, with bounds (nx,ny)
+!* 
   implicit none
   !I/O
   integer, intent(in) :: nx, ny, lmin, lmax
@@ -162,36 +223,49 @@ subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
 end subroutine cl2c2d
 
 
-subroutine cb2c2d(bn,bc,nx,ny,D,eL,Cb,C2d,method0,bp)
-! Interpolate binned Cl to 2D Cl
+subroutine cb2c2d(bn,bc,nx,ny,D,lmin,lmax,Cb,C2d,method)
+!*  Assign values of 1D angular power spectrum on to 2D grid with linear interpolation
+!*
+!*  Args: 
+!*    - bn (int)        : number of multipole bins
+!*    - bc[bin] (double): multipole bin center, with bounds (bn)
+!*    - nx, ny (int)    : number of Lx and Ly grids
+!*    - D[xy] (double)  : map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    - lmin (int)      : minimum multipole of cl to be interpolated
+!*    - lmax (int)      : maximum multipole of cl to be interpolated
+!*    - Cb[bin] (double): 1D power spectrum with multipole binning, with bounds (bn)
+!*
+!*  Args(optional):
+!*    - method (str) : interpolation method from binned to unbinned angular spectrum, i.e., spline ('', default), or linear ('linear') interpolation
+!*
+!*  Returns:
+!*    - c2d[nx,ny] (double): 2D power spectrum, with bounds (nx,ny)
+!* 
   implicit none
   !I/O
-  integer, intent(in) :: bn, nx, ny
-  integer, intent(in), dimension(2) :: eL
+  integer, intent(in) :: bn, nx, ny, lmin, lmax
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(bn) :: bc, Cb
   double precision, intent(out), dimension(nx,ny) :: C2d
   !optional
-  character(*), intent(in), optional :: method0
-  !f2py character(*) :: method0=''
-  double precision, intent(in), optional, dimension(bn+1) :: bp
+  character(*), intent(in), optional :: method
+  !f2py character(*) :: method=''
   !internal
   character(8) :: m
-  double precision, allocatable :: Cl(:), bp0(:)
+  double precision, allocatable :: Cl(:)
 
-  allocate(Cl(eL(2)),bp0(size(bc)+1)); Cl=0d0; bp0=0d0
+  allocate(Cl(0:lmax)); Cl=0d0
 
   m = ''
-  if(present(bp))      bp0 = bp
-  if(present(method0)) m   = method0 
+  if(present(method)) m   = method
 
   !interpolate Cb -> Cl
-  call cb2cl(bc,Cb,Cl,bp=bp0,method=m)
+  call cb2cl(bc,Cb,Cl(1:lmax),method=m)
 
   !interpolate Cl -> C2d
-  call cl2c2d(nx,ny,D,eL(1),eL(2),Cl,c2d)
+  call cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
 
-  deallocate(Cl,bp0)
+  deallocate(Cl)
 
 end subroutine cb2c2d
 
@@ -199,19 +273,22 @@ end subroutine cb2c2d
 !//// Gaussian field generation ////!
 
 subroutine gauss1alm(nx,ny,D,lmin,lmax,Cl,alm)
-! Generate 1D-array random gaussian fields in 2D Fourier space for a given isotropic spectrum
-! Note: satisfy a^*_l = a_{-l}
+!*  Generate random gaussian fields in 2D Fourier space for a given isotropic spectrum, satisfying a^*_l = a_{-l}
+!*
+!*  Args:
+!*    - nx, ny (int)    : number of Lx and Ly grids
+!*    - D[xy] (double)  : map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    - lmin (int)      : minimum multipole of cl to be interpolated
+!*    - lmax (int)      : maximum multipole of cl to be interpolated
+!*    - Cl[l] (double) : 1D power spectrum, with bounds (0:lmax)
+!*
+!*  Returns:
+!*    - alm[lx,ly] (dcmplx): random gaussian fields on 2D Fourier plane, with bounds (nx,ny)
+!*
   implicit none
-  ![input]
-  ! ny --- x and y grid number
-  ! D(2)  --- x and y length
-  ! iL(2) --- min/max multipoles of the random gaussian fields
-  ! Cl(:) --- power spectrum
   integer, intent(in) :: lmin, lmax, nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(0:lmax) :: Cl
-  ![output]
-  ! alm[x,y] --- random gaussian fields of a nx x ny array
   double complex, intent(out), dimension(nx,ny) :: alm
   !internal
   integer :: i, j, n, l0, l1
@@ -220,9 +297,9 @@ subroutine gauss1alm(nx,ny,D,lmin,lmax,Cl,alm)
   double precision, allocatable :: amp(:), amp2d(:,:)
 
   ! check
-  if(mod(nx,2)/=0.or.mod(ny,2)/=0) stop 'error (gaussian_alm) : nx and/or ny should be even integers'
+  if(mod(nx,2)/=0.or.mod(ny,2)/=0) write(*,*) 'WARNING (gauss1alm) : current code assumes nx, ny to be even'
  
-  call InitRandom(-1)
+  call initrandom(-1)
 
   !* make cl on 2d grid
   allocate(amp(size(Cl)),amp2d(nx,ny))
@@ -230,7 +307,7 @@ subroutine gauss1alm(nx,ny,D,lmin,lmax,Cl,alm)
   d0 = D(1)*D(2)
   do i = lmin, lmax
     if (Cl(i)<0d0) then
-      write(*,*) 'error: cl is negative', cl(i), i
+      write(*,*) 'error (gauss1alm): cl is negative', cl(i), i
       stop
     end if
     amp(i) = dsqrt(d0*Cl(i)*0.5d0)  ! \sqrt(\delta(l=0)*Cl(l)/2)
@@ -261,7 +338,7 @@ subroutine gauss1alm(nx,ny,D,lmin,lmax,Cl,alm)
 
   !* check
   if(elxy(nx,nx,D(1))<lmax.or.elxy(ny,ny,D(2))<lmax) then
-    write(*,*) 'error: inclusion of Fourier mode is incorrect'
+    write(*,*) 'error (gauss1alm): inclusion of Fourier mode is incorrect'
     write(*,*) 'maximum ell should be lower than', elxy(nx,nx,D(1)), 'or', elxy(ny,ny,D(2))
     stop
   end if
@@ -304,6 +381,21 @@ end subroutine gauss1alm
 
 
 subroutine gauss2alm(nx,ny,D,lmin,lmax,TT,TE,EE,tlm,elm)
+!*  Generate two correlated random gaussian fields in 2D Fourier space for a given isotropic spectrum
+!*
+!*  Args:
+!*    - nx, ny (int)    : number of Lx and Ly grids
+!*    - D[xy] (double)  : map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    - lmin (int)      : minimum multipole of cl to be interpolated
+!*    - lmax (int)      : maximum multipole of cl to be interpolated
+!*    - TT[l] (double)  : the 1st 1D power spectrum, with bounds (0:lmax)
+!*    - TE[l] (double)  : the cross 1D power spectrum, with bounds (0:lmax)
+!*    - EE[l] (double)  : the 2nd 1D power spectrum, with bounds (0:lmax)
+!*
+!*  Returns:
+!*    - tlm[lx,ly] (dcmplx): the 1st random gaussian fields on 2D Fourier plane, with bounds (nx,ny)
+!*    - elm[lx,ly] (dcmplx): the 2nd random gaussian fields on 2D Fourier plane, with bounds (nx,ny)
+!*
   implicit none
   integer, intent(in) :: nx, ny, lmin, lmax
   double precision, intent(in), dimension(2) :: D
@@ -372,16 +464,16 @@ subroutine window_sin(nx,ny,D,W,ap,cut)
 end subroutine window_sin
 
 
-subroutine window_norm(nx,ny,W,num,Wn)
+subroutine window_norm(nx,ny,wind,num,wn)
   implicit none
   integer, intent(in) :: nx, ny, num
-  double precision, intent(in), dimension(nx,ny) :: W
-  double precision, intent(out), dimension(0:num) :: Wn
+  double precision, intent(in), dimension(nx,ny) :: wind
+  double precision, intent(out), dimension(0:num) :: wn
   integer :: n
 
-  Wn(0) = 1d0
+  wn(0) = 1d0
   do n = 1, num
-    Wn(n) = sum(W**n)/dble(nx*ny)
+    wn(n) = sum(wind**n)/dble(nx*ny)
   end do
 
 end subroutine window_norm
@@ -449,14 +541,14 @@ end subroutine get_angle
 
 subroutine cutmap(ox,oy,cx,cy,omap,cmap)
   implicit none
-  integer, intent(in) :: ox,oy,cx,cy
+  integer, intent(in) :: ox, oy, cx, cy
   double precision, intent(in), dimension(ox,oy) :: omap
   double precision, intent(out), dimension(cx,cy) :: cmap
   integer :: nx, ny
 
   do nx = 1, cx
     do ny = 1, cy
-      cmap(nx,ny) = omap(nx+ox/2-cx/2,ny+oy/2-cy/2)
+      cmap(nx,ny) = omap(nx+(ox-cx)*0.5,ny+(oy-cy)*0.5)
     end do
   end do
  

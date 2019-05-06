@@ -18,19 +18,19 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
 !*  Computing lensing B mode as a convolution of wiener-filtered E-mode and lensing potential
 !*
 !*  Args:
-!*    - lmax (int)        : maximum multipole of output lensing B-mode alm
-!*    - elmin (int)       : minimum multipole of wiener-filtered E-mode alm
-!*    - elmax (int)       : maximum multipole of wiener-filtered E-mode alm
-!*    - plmin (int)       : minimum multipole of wiener-filtered lensing potential alm
-!*    - plmax (int)       : maximum multipole of wiener-filtered lensing potential alm
-!*    - wElm[l,m] (dcmplx): wiener-filtered E-mode alm, with bounds (0:elmax,0:elmax)
-!*    - wplm[l,m] (dcmplx): wiener-filtered lensing potential alm, with bounds (0:plmax,0:plmax)
+!*    :lmax (int)         : Maximum multipole of output lensing B-mode alm
+!*    :elmin (int)        : Minimum multipole of wiener-filtered E-mode alm
+!*    :elmax (int)        : Maximum multipole of wiener-filtered E-mode alm
+!*    :plmin (int)        : Minimum multipole of wiener-filtered lensing potential alm
+!*    :plmax (int)        : Maximum multipole of wiener-filtered lensing potential alm
+!*    :wElm [l,m] (dcmplx): Wiener-filtered E-mode alm, with bounds (0:elmax,0:elmax)
+!*    :wplm [l,m] (dcmplx): Wiener-filtered lensing potential alm, with bounds (0:plmax,0:plmax)
 !*
 !*  Args(optional):
-!*    - nside (int)       : Nside for the convolution calculation, default to lmax
+!*    :nside (int)        : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
-!*    - lBlm[l,m] (dcmplx): Lensing B-mode alm, with bounds (0:lmax,0:lmax)
+!*    :lBlm [l,m] (dcmplx): Lensing B-mode alm, with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
@@ -51,14 +51,12 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
 
   allocate(A1(0:npix-1,2),A3(0:npix-1,2),A(0:npix-1,2))
 
-  write(*,*) 'Elm to map (spin-1 transform)'
   allocate(alm(2,0:elmax,0:elmax)); alm = 0d0
   do l = elmin, elmax
     alm(1,l,:) = WElm(l,:)*dsqrt(dble((l+2)*(l-1))*0.5)
   end do 
   call alm2map_spin(nside,elmax,elmax,1,alm,A1)
 
-  write(*,*) 'Elm to map (spin-3 transform)'
   alm = 0d0
   do l = elmin, elmax
     alm(1,l,:) = WElm(l,:)*dsqrt(dble((l-2)*(l+3))*0.5)
@@ -66,7 +64,6 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
   call alm2map_spin(nside,elmax,elmax,3,alm,A3)
   deallocate(alm)
 
-  write(*,*) 'glm to map (spin-1 transform)'
   allocate(alm(2,0:plmax,0:plmax)); alm=0d0
   alm = 0d0
   do l = plmin, plmax
@@ -102,15 +99,15 @@ subroutine shiftvec(npix,lmax,plm,beta,nremap)
 !*  and alphaw is the filtered lensing deflection vector (see arXiv:1701.01712).
 !*
 !*  Args:
-!*    - npix (int)          : pixel number of output shift vector
-!*    - lmax (int)          : maximum multipole of the input plm
-!*    - plm[l,m] (dcmplx)   : wiener-filtered lensing potential alm, with bounds (0:lmax,0:lmax)
+!*    :npix (int)           : Pixel number of output shift vector
+!*    :lmax (int)           : Maximum multipole of the input plm
+!*    :plm [l,m] (dcmplx)   : Wiener-filtered lensing potential alm, with bounds (0:lmax,0:lmax)
 !*
 !*  Args(optional):
-!*    - nremap (int)        : number of iteration for computing the shift vector
+!*    :nremap (int)         : Number of iteration for computing the shift vector
 !*
 !*  Returns:
-!*    - beta[pix,2] (double): 2D shift vector, with bounds (0:npix-1,1:2)
+!*    :beta [pix,2] (double): 2D shift vector, with bounds (0:npix-1,1:2)
 !*
   implicit none
   !I/O
@@ -151,13 +148,13 @@ subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
 !*  alm[0,:,:] is temperature, alm[1,:,:] is E mode, and alm[2,:,:] is B mode.
 !*
 !*  Args:
-!*    - npix (int)               : pixel number of output shift vector
-!*    - lmax (int)               : maximum multipole of the input plm
-!*    - beta[pix,2] (double)     : 2D shift vector, with bounds (0:npix-1,1:2)
-!*    - alm_in[TEB,l,m] (dcmplx) : input T/E/B alms to be remapped, with bounds (1:3,0:lmax,0:lmax).
+!*    :npix (int)                : Pixel number of output shift vector
+!*    :lmax (int)                : Maximum multipole of the input plm
+!*    :beta [pix,2] (double)     : 2D shift vector, with bounds (0:npix-1,1:2)
+!*    :alm_in [TEB,l,m] (dcmplx) : Input T/E/B alms to be remapped, with bounds (1:3,0:lmax,0:lmax).
 !*
 !*  Returns:
-!*    - alm_re[TEB,l,m] (dcmplx) : remapped T/E/B alms, with bounds (1:3,0:lmax,0:lmax). 
+!*    :alm_re [TEB,l,m] (dcmplx) : Remapped T/E/B alms, with bounds (1:3,0:lmax,0:lmax). 
 !*
   implicit none
   !I/O

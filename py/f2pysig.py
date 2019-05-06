@@ -68,7 +68,7 @@ for mod in modname:
       if '::' in line and '!f2py' in line:
         op = line.replace('\n','').split('::')
         opt.append(op)
-        print(op)
+        #print(op)
 
 
     # extract fuction
@@ -81,11 +81,10 @@ for mod in modname:
     # extract args description from the lines
     for p in args:
       for dec in declare:
-          print(dec[1])
+          #print(dec[1])
 
           # split to avoid confusion of e.g. "abc" and "abctype"
-          #d = re.sub("[\(].*?[\)]", "", dec[1].replace(',','')).split()
-          d = dec[1].replace(',','').split()
+          d = dec[1].replace(',',' ').split()
           if p in d:
 
             # for optional args

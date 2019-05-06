@@ -39,7 +39,7 @@ The curvedsky analysis tools are also tested as follows for the lensing reconstr
   - https://arxiv.org/abs/1812.10635 : the bi-spectrum
 
 
-# Acknowledgment
+# Acknowledgement
 
 The library software uses the following public codes: FFTW, HEALPix, LAPACK, CFITSIO, LensPix. 
 

@@ -1,17 +1,17 @@
 # A simple lensing reconstruction in flat sky
 import numpy as np
-import flatskypy as flatsky
-import basicpy as basic
+import flatsky
+import basic
 
 # parameters
 Tcmb = 2.72e6
 lmax = 3000
-rL = [500,3000]
+rL = [100,3000]
 oL = [2,3000]
 nx, ny = 512, 512
-D  = np.array([nx,ny]) / 120.*np.pi/180.
+D  = np.array([nx,ny]) / 60.*np.pi/180.
 bn = 50
-mc = 10
+mc = 100
 
 # binned multipoles
 bp, bc = basic.aps.binning(bn,oL)

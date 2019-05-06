@@ -17,7 +17,7 @@ makef2py()
 {
   echo '----' ${1} '----'
   cd ${1}/src/
-  ./makefile all
+  ./makefile.sh all
   cd ${cwd}
 }
 
@@ -37,10 +37,9 @@ if [ ${1} = "F90" -o ${1} = "all" ]; then
 fi
 
 if [ ${1} = "f2py" -o ${1} = "all" ]; then
-  rm -rf wrap/*.so
-  rm -rf wrap_py2/*.so
+  #rm -rf wrap/*.so
+  #rm -rf wrap_py2/*.so
   makef2py basic
-  makef2py analytic
   makef2py flatsky
   makef2py curvedsky
 fi
