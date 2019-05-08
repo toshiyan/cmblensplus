@@ -552,8 +552,8 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 !*   :ascale (double)    : Apodization length [deg] from the closest masked pixel
 !*
 !*  Args(optional):
-!*   :order           : Pixel order, 1 for RING (default), otherwize NESTED
-!*   :holeminsize     : Minimum hole size [arcmin] (i.e., holes within this size in filled), default to 0
+!*   :order (int)         : Pixel order, 1 for RING (default), otherwize NESTED
+!*   :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size in filled), default to 0
 !*
 !*  Returns:
 !*   :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
@@ -714,7 +714,7 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 end subroutine lm_healpy2healpix
 
 
-subroutine cosin_healpix(npix,lmax,cosin) 
+subroutine cosin_healpix(npix,lmax,cosin)
 !*  Return cos(theta) as a function of the Healpix pixel index
 !*
 !*  Args:
@@ -722,7 +722,7 @@ subroutine cosin_healpix(npix,lmax,cosin)
 !*    :lmax (int) : Maximum multipole
 !*
 !*  Returns:
-!*    :cosin [pix] (double) : cos(theta), with bounds (0:npix-1)
+!*    :cosin [pix] (double) : cosin(theta), with bounds (0:npix-1)
 !*
   !I/O
   implicit none
@@ -766,6 +766,7 @@ subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
   !optional
   integer, intent(in), optional :: nside
   !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
   !internal
   integer :: n, i, l, npix
   double precision :: dnu, dtt, dtp, dpp, atant, mcV(0:2)

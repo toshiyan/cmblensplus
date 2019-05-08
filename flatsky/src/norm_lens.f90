@@ -1,5 +1,5 @@
 !///////////////////////////////////////////////////////////!
-! * Lensing Reconstruction Kernel
+! 2D Lensing Reconstruction Normalization
 !///////////////////////////////////////////////////////////!
 
 module norm_lens
@@ -14,16 +14,28 @@ module norm_lens
 
 contains 
 
-!/////////////////////////////////////////////////////////////////////////////////////!
-! 2D normalization
 
-subroutine qtt(nx,ny,D,rL,OC,CT,eL,Ag,Ac)
+subroutine qtt(nx,ny,D,rL,OT,TT,eL,Ag,Ac)
+!*  Normalization of the temperature quadratic estimator for CMB lensing potential and its curl mode
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :OT[lx,ly] (double) : Inverse of Observed temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :TT[lx,ly] (double) : Theory temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)        : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
+!*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL
   double precision, intent(in), dimension(2) :: D
-  double precision, intent(in), dimension(nx,ny) :: CT, OC
+  double precision, intent(in), dimension(nx,ny) :: OT, TT
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
   !internal
   integer :: i, j, nn(2)
@@ -37,12 +49,12 @@ subroutine qtt(nx,ny,D,rL,OC,CT,eL,Ag,Ac)
   ! filtering
   call make_lmask(nn,D,rL,lmask)
 
-  Axx = lmask * lx**2 * CT**2*OC
-  Axy = lmask * lx*ly * CT**2*OC
-  Ayy = lmask * ly**2 * CT**2*OC
-  A   = lmask * OC
-  Bx  = lmask * lx * CT * OC
-  By  = lmask * ly * CT * OC
+  Axx = lmask * lx**2 * TT**2*OT
+  Axy = lmask * lx*ly * TT**2*OT
+  Ayy = lmask * ly**2 * TT**2*OT
+  A   = lmask * OT
+  Bx  = lmask * lx * TT * OT
+  By  = lmask * ly * TT * OT
 
   ! convolution
   call dft(Axx,nn,D,-1)
@@ -78,6 +90,21 @@ end subroutine qtt
 
 
 subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
+!*  Normalization of the TE quadratic estimator for CMB lensing potential and its curl mode
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :OT[lx,ly] (double) : Inverse of Observed temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :OE[lx,ly] (double) : Inverse of Observed E-mode power spectrum on 2D grid, with bounds (nx,ny)
+!*    :TE[lx,ly] (double) : Theory TE cross spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)        : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
+!*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -85,7 +112,7 @@ subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(nx,ny) :: TE, OT, OE
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
-! [internal]
+  !internal
   integer :: i, j, nn(2)
   double precision, dimension(nx,ny) :: lmask, lx, ly, Agg, Acc
   double complex, dimension(nx,ny) :: ei2p, Axx, Axy, Ayy, Cxx, Cxy, Cyy, Ax, Ay, A, Bm, Bp, Bx, By, Bxx, Bxy, Byy
@@ -186,6 +213,21 @@ end subroutine qte
 
 
 subroutine qtb(nx,ny,D,OT,OB,TE,rL,eL,Ag,Ac)
+!*  Normalization of the TB quadratic estimator for CMB lensing potential and its curl mode
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :OT[lx,ly] (double) : Inverse of Observed temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :OB[lx,ly] (double) : Inverse of Observed B-mode power spectrum on 2D grid, with bounds (nx,ny)
+!*    :TE[lx,ly] (double) : Theory TE cross spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)        : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
+!*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -193,7 +235,7 @@ subroutine qtb(nx,ny,D,OT,OB,TE,rL,eL,Ag,Ac)
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(nx,ny) :: TE, OT, OB
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
-! [internal]
+  !internal
   integer :: i, j, nn(2)
   double precision, dimension(nx,ny) :: lx, ly, lmask, Agg, Acc
   double complex, dimension(nx,ny) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, ei2p
@@ -248,6 +290,20 @@ end subroutine qtb
 
 
 subroutine qee(nx,ny,D,OE,EE,rL,eL,Ag,Ac)
+!*  Normalization of the EE quadratic estimator for CMB lensing potential and its curl mode
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :OE[lx,ly] (double) : Inverse of Observed E-mode power spectrum on 2D grid, with bounds (nx,ny)
+!*    :EE[lx,ly] (double) : Theory E-mode spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)        : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
+!*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -321,6 +377,21 @@ end subroutine qee
 
 
 subroutine qeb(nx,ny,D,OE,OB,EE,rL,eL,Ag,Ac)
+!*  Normalization of the EB quadratic estimator for CMB lensing potential and its curl mode
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :OE[lx,ly] (double) : Inverse of Observed E-mode power spectrum on 2D grid, with bounds (nx,ny)
+!*    :OB[lx,ly] (double) : Inverse of Observed B-mode power spectrum on 2D grid, with bounds (nx,ny)
+!*    :EE[lx,ly] (double) : Theory E-mode spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)        : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
+!*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -378,10 +449,9 @@ subroutine qeb(nx,ny,D,OE,OB,EE,rL,eL,Ag,Ac)
     end do
   end do
 
-
 end subroutine qeb
 
-end module norm_lens
 
+end module norm_lens
 
 

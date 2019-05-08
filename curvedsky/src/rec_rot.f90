@@ -32,7 +32,8 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside)
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
-!f2py integer :: nside = lmax
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
   double precision, intent(in), dimension(0:rlmax) :: fCE
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: alm

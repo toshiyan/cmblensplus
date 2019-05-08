@@ -34,7 +34,8 @@ subroutine qtt_sym(lmax,rlmin,rlmax,Tlm,slm,nside)
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
-!f2py integer :: nside = lmax
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: slm
   !internal
@@ -90,7 +91,8 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside)
   integer, intent(in), optional :: nside
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm1, Tlm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: slm
-!f2py integer :: nside = lmax
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
   !internal
   integer :: l, npix, ns
   double precision, allocatable :: map(:,:)

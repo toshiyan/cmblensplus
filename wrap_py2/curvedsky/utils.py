@@ -138,23 +138,23 @@ def get_apod_window(s,a):
   """
   return libcurvedsky.utils.get_apod_window(s,a)
 
-def eb_separate(npix,lmax,W,QUin):
+def eb_separate(npix,lmax,W,Q,U,Elm):
   """
-  E/B mode seperation based on the chi-field estimator.
+  E/B mode seperation based on the chi-field estimator. See e.g. Sec.III.2 of arXiv:1305.7441 for numerical implimentation.
 
   Args:
     :npix (*int*): Pixel number of the desired map
     :lmax (*int*): Maximum multipole used for the harmonic transform internally
-    :W[*pix,2*] (*double*): Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1,2)
-    :QUin[*pix,2*] (*double*): Input QU map, with bounds (0:npix-1,2)
+    :W[*pix*] (*double*): Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1)
+    :Q/U[*pix*] (*double*): Input Q/U map, with bounds (0:npix-1)
 
   Returns:
-    :QUou[*pix,2*] (*double*): E/B separated QU map, with bounds (0:npix-1,2)
+    :Elm/Blm[*l,m*] (*dcmplx*): Seperated E/B modes, with bounds (0:lmax,0:lmax)
 
   Usage:
-    :QUou = curvedsky.utils.eb_separate(npix,lmax,W,QUin):
+    :Blm = curvedsky.utils.eb_separate(npix,lmax,W,Q,U,Elm):
   """
-  return libcurvedsky.utils.eb_separate(npix,lmax,W,QUin)
+  return libcurvedsky.utils.eb_separate(npix,lmax,W,Q,U,Elm)
 
 def alm2cl(lmax,alm1,alm2=None):
   """

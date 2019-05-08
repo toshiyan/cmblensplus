@@ -16,6 +16,19 @@ contains
 
 
 subroutine qtt(nx,ny,D,rL,fC,T1,T2,tlm)
+!*  Reconstructing patchy tau from the temperature quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double) : Temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :T1[lx,ly] (dcmplx) : 2D Fourier modes of 1st inverse-variance filtered temperature, with bounds (nx,ny)
+!*    :T2[lx,ly] (dcmplx) : 2D Fourier modes of 2nd inverse-variance filtered temperature, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :tlm[lx,ly] (dcmplx): 2D Fourier modes of patchy tau, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -49,6 +62,19 @@ end subroutine qtt
 
 
 subroutine qte(nx,ny,D,rL,fC,T,E,tlm)
+!*  Reconstructing patchy tau from the suboptimal TE quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double) : TE cross power spectrum on 2D grid, with bounds (nx,ny)
+!*    :T[lx,ly] (dcmplx)  : 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
+!*    :E[lx,ly] (dcmplx)  : 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -86,6 +112,19 @@ end subroutine qte
 
 
 subroutine qtb(nx,ny,D,rL,fC,T,B,tlm)
+!*  Reconstructing patchy tau from the TB quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)         : Number of Lx and Ly grids
+!*    :D[xy] (double)       : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)          : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double)   : TE cross power spectrum on 2D grid, with bounds (nx,ny)
+!*    :T[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
+!*    :B[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -119,6 +158,19 @@ end subroutine qtb
 
 
 subroutine qee(nx,ny,D,rL,fC,E1,E2,tlm)
+!*  Reconstructing patchy tau from the EE quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double) : EE power spectrum on 2D grid, with bounds (nx,ny)
+!*    :E1[lx,ly] (dcmplx) : 2D Fourier modes of 1st inverse-variance filtered E-mode, with bounds (nx,ny)
+!*    :E2[lx,ly] (dcmplx) : 2D Fourier modes of 2nd inverse-variance filtered E-mode, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -152,6 +204,19 @@ end subroutine qee
 
 
 subroutine qeb(nx,ny,D,rL,fC,E,B,tlm)
+!*  Reconstructing patchy tau from the EB quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)         : Number of Lx and Ly grids
+!*    :D[xy] (double)       : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)          : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double)   : EE power spectrum on 2D grid, with bounds (nx,ny)
+!*    :E[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
+!*    :B[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny

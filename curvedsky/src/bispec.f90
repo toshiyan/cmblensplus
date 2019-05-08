@@ -359,7 +359,7 @@ subroutine isos(eL,aL,l1,alm,bispec,bst)
   integer, intent(in) :: l1
   integer, intent(in), dimension(2) :: eL, aL
   integer, intent(in), optional :: bst
-!f2py integer :: bst = 2
+  !f2py integer :: bst = 2
   double complex, intent(in), dimension(0:l1,0:l1) :: alm
   double precision, intent(out) :: bispec
   !internal

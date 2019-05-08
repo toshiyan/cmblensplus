@@ -176,7 +176,7 @@ def alm2cl(lmax,alm1,alm2=None):
   if alm2 is None: alm2= alm1
   return libcurvedsky.utils.alm2cl(lmax,alm1,alm2)
 
-def alm2bcl(bn,lmax,alm1,alm2=None,spc=None):
+def alm2bcl(bn,lmax,alm1,alm2=None,spc= ''):
   """
   From alm to angular power spectrum with multipole binning
 
@@ -196,10 +196,9 @@ def alm2bcl(bn,lmax,alm1,alm2=None,spc=None):
     :cb = curvedsky.utils.alm2bcl(bn,lmax,alm1,alm2,spc):
   """
   if alm2 is None: alm2= alm1
-  if spc is None: spc= ''
   return libcurvedsky.utils.alm2bcl(bn,lmax,alm1,alm2,spc)
 
-def apodize(npix,rmask,ascale,order=None,holeminsize=None):
+def apodize(npix,rmask,ascale,order= 1,holeminsize= 0):
   """
   Compute apodized window function. Partially use Healpix's process_mask code.
 
@@ -209,8 +208,8 @@ def apodize(npix,rmask,ascale,order=None,holeminsize=None):
     :ascale (*double*): Apodization length [*deg*] from the closest masked pixel
 
   Args(optional):
-   :order           : Pixel order, 1 for RING (default), otherwize NESTED
-   :holeminsize     : Minimum hole size [*arcmin*] (i.e., holes within this size in filled), default to 0
+    :order (*int*): Pixel order, 1 for RING (default), otherwize NESTED
+    :holeminsize (*double*): Minimum hole size [*arcmin*] (i.e., holes within this size in filled), default to 0
 
   Returns:
     :amask[*pix*] (*double*): Apodization window, with bounds (0:npix-1), using the same ordering as input
@@ -218,8 +217,6 @@ def apodize(npix,rmask,ascale,order=None,holeminsize=None):
   Usage:
     :amask = curvedsky.utils.apodize(npix,rmask,ascale,order,holeminsize):
   """
-  if order is None: order= 1
-  if holeminsize is None: holeminsize= 0
   return libcurvedsky.utils.apodize(npix,rmask,ascale,order,holeminsize)
 
 def hp_map2alm(nside,lmax,mmax,map):
@@ -278,7 +275,7 @@ def lm_healpy2healpix(lmpy,almpy,lmax):
   """
   return libcurvedsky.utils.lm_healpy2healpix(lmpy,almpy,lmax)
 
-def cosin_healpix(npix,lmax) :
+def cosin_healpix(npix,lmax):
   """
   Return cos(theta) as a function of the Healpix pixel index
 
@@ -287,12 +284,12 @@ def cosin_healpix(npix,lmax) :
     :lmax (*int*): Maximum multipole
 
   Returns:
-    :cosin [*pix*] (*double*): cos(theta), with bounds (0:npix-1)
+    :cosin [*pix*] (*double*): cosin(theta), with bounds (0:npix-1)
 
   Usage:
-    :cosin = curvedsky.utils.cosin_healpix(npix,lmax) :
+    :cosin = curvedsky.utils.cosin_healpix(npix,lmax):
   """
-  return libcurvedsky.utils.cosin_healpix(npix,lmax) 
+  return libcurvedsky.utils.cosin_healpix(npix,lmax)
 
 def calc_mfs(bn,nu,lmax,walm,nside=None):
   """

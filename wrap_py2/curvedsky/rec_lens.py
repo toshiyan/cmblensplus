@@ -1,6 +1,6 @@
 import libcurvedsky
 
-def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside=None,gtype=None):
+def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,nside=None,gtype=None):
   """
   Reconstructing CMB lensing potential and its curl mode from the temperature quadratic estimator
 
@@ -20,13 +20,13 @@ def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside=None,gtype=None):
     :clm [*l,m*] (*dcmplx*): Curl mode (pseudo lensing potential) alm, with bounds (0:lmax,0:lmax)
 
   Usage:
-    :glm,clm = curvedsky.rec_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside,gtype):
+    :clm = curvedsky.rec_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,nside,gtype):
   """
   if nside is None: nside= lmax
   if gtype is None: gtype= ''
-  return libcurvedsky.rec_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside,gtype)
+  return libcurvedsky.rec_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,nside,gtype)
 
-def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside=None,gtype=None):
+def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,nside=None,gtype=None):
   """
   Reconstructing CMB lensing potential and its curl mode from the TE quadratic estimator
 
@@ -46,13 +46,13 @@ def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside=None,gtype=None):
     :clm [*l,m*] (*dcmplx*): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   Usage:
-    :glm,clm = curvedsky.rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside,gtype):
+    :clm = curvedsky.rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,nside,gtype):
   """
   if nside is None: nside= lmax
   if gtype is None: gtype= ''
-  return libcurvedsky.rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside,gtype)
+  return libcurvedsky.rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,nside,gtype)
 
-def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside=None,gtype=None):
+def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,nside=None,gtype=None):
   """
   Reconstructing CMB lensing potential and its curl mode from the TB quadratic estimator
 
@@ -72,13 +72,13 @@ def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside=None,gtype=None):
     :clm (*dcmplx*): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   Usage:
-    :glm,clm = curvedsky.rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside,gtype):
+    :clm = curvedsky.rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,nside,gtype):
   """
   if nside is None: nside= lmax
   if gtype is None: gtype= ''
-  return libcurvedsky.rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside,gtype)
+  return libcurvedsky.rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,nside,gtype)
 
-def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside=None,gtype=None):
+def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,nside=None,gtype=None):
   """
   Reconstructing CMB lensing potential and its curl mode from the EE quadratic estimator
 
@@ -98,13 +98,13 @@ def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside=None,gtype=None):
     :clm (*dcmplx*): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   Usage:
-    :glm,clm = curvedsky.rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside,gtype):
+    :clm = curvedsky.rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,nside,gtype):
   """
   if nside is None: nside= lmax
   if gtype is None: gtype= ''
-  return libcurvedsky.rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside,gtype)
+  return libcurvedsky.rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,nside,gtype)
 
-def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside=None,gtype=None):
+def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,nside=None,gtype=None):
   """
   Reconstructing CMB lensing potential and its curl mode from the EB quadratic estimator
 
@@ -124,13 +124,13 @@ def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside=None,gtype=None):
     :clm (*dcmplx*): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   Usage:
-    :glm,clm = curvedsky.rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside,gtype):
+    :clm = curvedsky.rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,nside,gtype):
   """
   if nside is None: nside= lmax
   if gtype is None: gtype= ''
-  return libcurvedsky.rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside,gtype)
+  return libcurvedsky.rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,nside,gtype)
 
-def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside=None,gtype=None):
+def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,nside=None,gtype=None):
   """
   Reconstructing CMB lensing potential and its curl mode from the BB quadratic estimator
 
@@ -150,9 +150,9 @@ def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside=None,gtype=None):
     :clm (*dcmplx*): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   Usage:
-    :glm,clm = curvedsky.rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside,gtype):
+    :clm = curvedsky.rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,nside,gtype):
   """
   if nside is None: nside= lmax
   if gtype is None: gtype= ''
-  return libcurvedsky.rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside,gtype)
+  return libcurvedsky.rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,nside,gtype)
 

@@ -16,6 +16,23 @@ contains
 
 
 subroutine qtt(nx,ny,D,rL,fC,T1,T2,glm,clm,gtype)
+!*  Reconstructing CMB lensing potential and its curl mode from the temperature quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double) : Temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :T1[lx,ly] (dcmplx) : 2D Fourier modes of 1st inverse-variance filtered temperature, with bounds (nx,ny)
+!*    :T2[lx,ly] (dcmplx) : 2D Fourier modes of 2nd inverse-variance filtered temperature, with bounds (nx,ny)
+!*
+!*  Args(optional):
+!*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
+!*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -27,7 +44,7 @@ subroutine qtt(nx,ny,D,rL,fC,T1,T2,glm,clm,gtype)
   !(optional)
   character(1), intent(in), optional :: gtype
   !f2py character(1) :: gtype = ''
-! [internal]
+  ![internal]
   integer :: i, j, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
   double complex, allocatable :: aT(:,:), almx(:,:), almy(:,:), blmx(:,:), blmy(:,:)
@@ -87,8 +104,25 @@ end subroutine qtt
 
 
 subroutine qte(nx,ny,D,rL,fC,T,E,glm,clm,gtype)
+!*  Reconstructing CMB lensing potential and its curl mode from the suboptimal TE quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double) : TE cross power spectrum on 2D grid, with bounds (nx,ny)
+!*    :T[lx,ly] (dcmplx)  : 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
+!*    :E[lx,ly] (dcmplx)  : 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
+!*
+!*  Args(optional):
+!*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
+!*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
+!*
   implicit none
-! I/O
+  !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
   double precision, intent(in), dimension(2) :: D
@@ -98,7 +132,7 @@ subroutine qte(nx,ny,D,rL,fC,T,E,glm,clm,gtype)
   !(optional)
   character(1), intent(in), optional :: gtype
   !f2py character(1) :: gtype = ''
-! [internal]
+  ![internal]
   integer :: i, j, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
   double complex, allocatable :: aTx(:,:), aTy(:,:), bT(:,:), aE(:,:), bEx(:,:), bEy(:,:), almx(:,:), almy(:,:), ei2p(:,:)
@@ -155,8 +189,25 @@ end subroutine qte
 
 
 subroutine qtb(nx,ny,D,rL,fC,T,B,glm,clm,gtype)
+!*  Reconstructing CMB lensing potential and its curl mode from the TB quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)         : Number of Lx and Ly grids
+!*    :D[xy] (double)       : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)          : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double)   : TE cross power spectrum on 2D grid, with bounds (nx,ny)
+!*    :T[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
+!*    :B[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+!*
+!*  Args(optional):
+!*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
+!*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
+!*
   implicit none
-! [input]
+  !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
   double precision, intent(in), dimension(2) :: D
@@ -166,7 +217,7 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,glm,clm,gtype)
   !(optional)
   character(1), intent(in), optional :: gtype
   !f2py character(1) :: gtype = ''
-! [internal]
+  ![internal]
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
   double complex, allocatable :: wB(:,:),wTx(:,:),wTy(:,:),almx(:,:),almy(:,:),ei2p(:,:)
@@ -210,8 +261,25 @@ end subroutine qtb
 
 
 subroutine qee(nx,ny,D,rL,fC,E1,E2,glm,clm,gtype)
+!*  Reconstructing CMB lensing potential and its curl mode from the EE quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double) : EE power spectrum on 2D grid, with bounds (nx,ny)
+!*    :E1[lx,ly] (dcmplx) : 2D Fourier modes of 1st inverse-variance filtered E-mode, with bounds (nx,ny)
+!*    :E2[lx,ly] (dcmplx) : 2D Fourier modes of 2nd inverse-variance filtered E-mode, with bounds (nx,ny)
+!*
+!*  Args(optional):
+!*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
+!*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
+!*
   implicit none
-! [input]
+  !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
   double precision, intent(in), dimension(2) :: D
@@ -221,12 +289,12 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,glm,clm,gtype)
   !(optional)
   character(1), intent(in), optional :: gtype
   !f2py character(1) :: gtype = ''
-! [internal]
+  ![internal]
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
   double complex, allocatable :: wE1(:,:), wE2x(:,:), wE2y(:,:), almx(:,:), almy(:,:), ei2p(:,:)
 
-  nn   = (/nx,ny/)
+  nn = (/nx,ny/)
 
   allocate(wE1(nx,ny),wE2x(nx,ny),wE2y(nx,ny),lx(nx,ny),ly(nx,ny),li(nx,ny),els(nx,ny),ei2p(nx,ny))
   call elarrays_2d(nn,D,elx=lx,ely=ly,eli=li,els=els,ei2p=ei2p)
@@ -265,6 +333,23 @@ end subroutine qee
 
 
 subroutine qeb(nx,ny,D,rL,fC,E,B,glm,clm,gtype)
+!*  Reconstructing CMB lensing potential and its curl mode from the EB quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)         : Number of Lx and Ly grids
+!*    :D[xy] (double)       : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)          : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double)   : EE power spectrum on 2D grid, with bounds (nx,ny)
+!*    :E[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
+!*    :B[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+!*
+!*  Args(optional):
+!*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
+!*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -323,6 +408,23 @@ end subroutine qeb
 
 
 subroutine qbb(nx,ny,D,rL,fC,B1,B2,glm,clm,gtype)
+!*  Reconstructing CMB lensing potential and its curl mode from the BB quadratic estimator
+!*
+!*  Args:
+!*    :nx, ny (int)         : Number of Lx and Ly grids
+!*    :D[xy] (double)       : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)          : Minimum and maximum multipole of CMB for reconstruction
+!*    :fC[lx,ly] (double)   : BB power spectrum on 2D grid, with bounds (nx,ny)
+!*    :B1[lx,ly] (dcmplx)   : 2D Fourier modes of 1st inverse-variance filtered B-mode, with bounds (nx,ny)
+!*    :B2[lx,ly] (dcmplx)   : 2D Fourier modes of 2nd inverse-variance filtered B-mode, with bounds (nx,ny)
+!*
+!*  Args(optional):
+!*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
+!*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny

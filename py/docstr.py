@@ -58,18 +58,25 @@ for mod in modname:
     # check optional or output arguments
     pout = []
     popt = []
+    pops = [] #optional arguments whose default value depends on the input arguments
     for p in args:
       for dec in declare:
-        if p in dec[1]:
+        if p in dec[1].replace(',',' ').split():
           if 'optional' in dec[0]:
+            ops = False
             # look for def value
             for l in slines:
               if p in l and '!docstr' in l:
                 defval = l[l.find('::')+3:].replace('\n','').split('=')[1]
+                ops = True
                 break
               if p in l and '!f2py' in l:
                 defval = l[l.find('::')+3:].replace('\n','').split('=')[1]
-            popt.append([p,defval])
+            #store optional arg + its def val
+            if ops: 
+              pops.append([p,defval])
+            else:
+              popt.append([p,defval])
             break
           elif 'intent(out)' in dec[0]:
             pout.append(p)
@@ -77,6 +84,7 @@ for mod in modname:
 
     #print('optional args:',popt)
     #print('output args:',pout)
+    #print('output args with special defval:',pops)
 
     # remove output args from func
     for p in pout:
@@ -86,19 +94,31 @@ for mod in modname:
     gunc = libname+'.'+mod+'.'+func
     hunc = libname.replace('lib','')+'.'+mod+'.'+func
 
-    # set value for optional args
-    # set 0 at the function as sometimes the default value depends on input
-    # decompose elements and rejoin to avoid confusion e.g. "abc" and "abctype"
+    # set value for optional arguments
     for p in popt:
       subf = []
-      for f in func.replace(')','').split(','):
-        if p[0] in f and len(p[0])==len(f): #replace to p=0, only for exact match
+      # loop for argments in the function definition
+      for f in func.replace(')','').split(','): 
+        if p[0] in f and len(p[0])==len(f): 
+          subf.append(p[0]+'='+p[1])
+        else: #store default args
+          subf.append(f)
+      func = ','.join(subf)+')'
+
+    # set value for special optional args
+    # set None at the function as the default value depends on input
+    # decompose elements and rejoin to avoid confusion e.g. "abc" and "abctype"
+    for p in pops:
+      subf = []
+      # loop for argments in the function definition
+      for f in func.replace(')','').split(','): 
+        if p[0] in f and len(p[0])==len(f): #replace to p=None, only for exact match
           subf.append(p[0]+'=None')
         else: #store default args
           subf.append(f)
       func = ','.join(subf)+')'
 
-    #print('created func:',func)
+    print('create',mod+'.'+func)
 
     # add to pyname
     f = open(pyname,'a+')
@@ -127,7 +147,7 @@ for mod in modname:
     f.write('  Usage:\n')
     f.write('    :'+','.join(pout)+' = '+hunc+':\n')
     f.write('  """\n')
-    for p in popt:
+    for p in pops:
       f.write('  if '+p[0]+' is None: '+p[0]+'='+p[1]+'\n')
     f.write('  return '+gunc+'\n')
     f.write('\n')

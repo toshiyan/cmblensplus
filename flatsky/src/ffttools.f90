@@ -22,6 +22,18 @@ contains
 
 
 subroutine dft1d(map0,nx,ny,npix,D,trans,map1)
+!*  DFT for 1D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of x/Lx and y/Ly grids
+!*    :npix (int)        : Total number of grids (npix=nx*ny)
+!*    :trans (int)       : 1 (map to Fourier) or -1 (Fourier to map)
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :map0[pix] (dcmplx): Data on 2D grid to be transformed, with bounds (npix)
+!*
+!*  Returns:
+!*    :map1[pix] (dcmplx): Transformed data on 2D grid, with bounds (npix)
+!*
   implicit none
   integer, intent(in) :: nx, ny, npix, trans
   double precision, intent(in), dimension(2) :: D
@@ -40,6 +52,17 @@ end subroutine dft1d
 
 
 subroutine dft2d(map0,nx,ny,D,trans,map1)
+!*  DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of x/Lx and y/Ly grids
+!*    :trans (int)       : 1 (map to Fourier) or -1 (Fourier to map)
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :map0[x,y] (dcmplx): Data on 2D grid to be transformed, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :map1[x,y] (dcmplx): Transformed data on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   integer, intent(in) :: nx, ny, trans
   double precision, intent(in), dimension(2) :: D
@@ -58,6 +81,17 @@ end subroutine dft2d
 
 
 subroutine dft2dr(map0,nx,ny,D,trans,map1)
+!*  DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of x/Lx and y/Ly grids
+!*    :trans (int)       : 1 (map to Fourier) or -1 (Fourier to map)
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :map0[x,y] (double): Data on 2D grid to be transformed, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :map1[x,y] (double): Transformed data on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   integer, intent(in) :: nx, ny, trans
   double precision, intent(in), dimension(2) :: D
@@ -76,6 +110,17 @@ end subroutine dft2dr
 
 
 subroutine dft2drc(map0,nx,ny,D,trans,map1)
+!*  DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of x/Lx and y/Ly grids
+!*    :trans (int)       : 1 (map to Fourier) or -1 (Fourier to map)
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :map0[x,y] (double): Data on 2D grid to be transformed, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :map1[x,y] (dcmplx): Transformed data on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   integer, intent(in) :: nx, ny, trans
   double precision, intent(in), dimension(2) :: D
@@ -94,6 +139,17 @@ end subroutine dft2drc
 
 
 subroutine dft2dcr(map0,nx,ny,D,trans,map1)
+!*  DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of x/Lx and y/Ly grids
+!*    :trans (int)       : 1 (map to Fourier) or -1 (Fourier to map)
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :map0[x,y] (dcmplx): Data on 2D grid to be transformed, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :map1[x,y] (double): Transformed data on 2D grid, with bounds (nx,ny)
+!*
   implicit none
   integer, intent(in) :: nx, ny, trans
   double precision, intent(in), dimension(2) :: D
@@ -112,7 +168,20 @@ end subroutine dft2dcr
 
 
 subroutine eb_separate(nx,ny,D,QU,EB,W,Wd)
-! * compute Smith's pure EB estimator
+!*  Compute Smith's pure EB estimator in flatsky
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of x/Lx and y/Ly grids
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :W[x,y] (double)   : Window function, with bounds (nx,ny)
+!*    :QU[x,y,2] (double): Q and U maps, with bounds (nx,ny,2)
+!*
+!*  Args(optional):
+!*    :Wd[5,x,y] (double): Precomputed window function derivaives, dW/dx, dW/dw, d^2W/dx^2, d^2W/dxdy, d^2W/dy^2, with bounds (5,nx,ny)
+!*
+!*  Returns:
+!*    :EB[2,x,y] (dcmplx): E and B modes in 2D Fourier grid, with bounds (2,nx,ny)
+!*
   implicit none
   !I/O
   integer, intent(in) :: nx, ny
@@ -123,6 +192,7 @@ subroutine eb_separate(nx,ny,D,QU,EB,W,Wd)
   !(optional)
   double precision, intent(in), optional, dimension(5,nx,ny) :: Wd
   !f2py double precision :: Wd = 0
+  !docstr :: Wd = np.zeros((5,nx,ny))
   !internal
   integer :: i, j, n, npix, nn(2)
   double precision :: lx, ly
@@ -142,7 +212,7 @@ subroutine eb_separate(nx,ny,D,QU,EB,W,Wd)
 
   !//// derivatives of window functions ////!
   allocate(Wx(nx,ny),Wy(nx,ny),Wxx(nx,ny),Wxy(nx,ny),Wyy(nx,ny))
-  if (present(Wd)) then
+  if (present(Wd).and.sum(Wd)/=0d0) then
     Wx  = Wd(1,:,:)
     Wy  = Wd(2,:,:)
     Wxx = Wd(3,:,:)
@@ -162,7 +232,7 @@ subroutine eb_separate(nx,ny,D,QU,EB,W,Wd)
   B2y = -2*iu*( QU(:,:,1)*Wx+QU(:,:,2)*Wy ) 
   deallocate(Wx,Wy,Wxx,Wxy,Wyy)
 
-  !* Transform to Fourier Space
+  !Transform to Fourier Space
   call dft(E1,nn,D,1)
   call dft(B1,nn,D,1)
   call dft(E2x,nn,D,1)
@@ -170,7 +240,7 @@ subroutine eb_separate(nx,ny,D,QU,EB,W,Wd)
   call dft(B2x,nn,D,1)
   call dft(B2y,nn,D,1)
 
-  !* add corrections
+  !Add corrections
   EB = 0d0
   do i = 1, nn(1)
     lx = twopi*dble(i-1-nn(1)*0.5d0)/D(1)

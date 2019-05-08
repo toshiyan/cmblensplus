@@ -39,7 +39,8 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
   double complex, intent(in), dimension(0:plmax,0:plmax)  :: wplm !wiener filtered phi alm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: lBlm
   integer, intent(in), optional :: nside
-!f2py integer :: nside = lmax
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
   !internal
   integer :: l, m, npix, ns
   double precision, dimension(:,:), allocatable :: A1,A3,A,map
@@ -141,6 +142,38 @@ subroutine shiftvec(npix,lmax,plm,beta,nremap)
   deallocate(plm0,map,alpha,dalpha)
 
 end subroutine shiftvec
+
+
+subroutine phi2grad(npix,lmax,plm,grad)
+!*  Return the deflection vector, grad, at the Healpix pixel
+!*
+!*  Args:
+!*    :npix (int)           : Pixel number of output deflection vector
+!*    :lmax (int)           : Maximum multipole of the input plm/clm
+!*    :plm [l,m] (dcmplx)   : Lensing potential alm, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :grad [pix,2] (double): 2D deflection vector, with bounds (0:npix-1,1:2)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: plm
+  double precision, intent(out), dimension(0:npix-1,2) :: grad
+  !internal
+  integer :: nside
+  double precision, allocatable :: map(:)
+  double complex, allocatable :: plm0(:,:,:)
+
+  nside = int(dsqrt(npix/12d0))
+  write(*,*) 'Nside =', nside
+
+  allocate(plm0(1,0:lmax,0:lmax),map(0:npix-1))
+  plm0(1,:,:) = plm(:,:)
+  call alm2map_der(nside,lmax,lmax,plm0,map,grad)
+  deallocate(plm0,map)
+
+end subroutine phi2grad
 
 
 subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)

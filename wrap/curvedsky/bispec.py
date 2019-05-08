@@ -20,7 +20,7 @@ def make_quad_gauss(lmax,alm):
   """
   return libcurvedsky.bispec.make_quad_gauss(lmax,alm)
 
-def bispec_norm(bn,bp,bstype=None,bst=None,sL=None):
+def bispec_norm(bn,bp,bstype= 'equi',bst= 2,sL=None):
   """
   Return normalization of the binned reduced bispectrum for a given multipole bin
 
@@ -39,12 +39,10 @@ def bispec_norm(bn,bp,bstype=None,bst=None,sL=None):
   Usage:
     :norm = curvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL):
   """
-  if bstype is None: bstype= 'equi'
-  if bst is None: bst= 2
   if sL is None: sL= [int(bp[0]),int(bp[1])]
   return libcurvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL)
 
-def bispec_bin(bn,bp,lmax,alm,bstype=None,bst=None,sL=None):
+def bispec_bin(bn,bp,lmax,alm,bstype= 'equi',bst= 'equi',sL=None):
   """
   Return the unnormalized binned reduced bispectrum for a given multipole bin
 
@@ -65,12 +63,10 @@ def bispec_bin(bn,bp,lmax,alm,bstype=None,bst=None,sL=None):
   Usage:
     :bis = curvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL):
   """
-  if bstype is None: bstype= 'equi'
-  if bst is None: bst= 'equi'
   if sL is None: sL= [int(bp[0]),int(bp[1])]
   return libcurvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
 
-def equi(lmin,lmax,alm,bst=None):
+def equi(lmin,lmax,alm,bst= 2):
   """
   Compute equilateral shape of the unnormalized binned reduced bispectrum for a given alm, b[*l,l,l*]
 
@@ -88,10 +84,9 @@ def equi(lmin,lmax,alm,bst=None):
   Usage:
     :bispec = curvedsky.bispec.equi(lmin,lmax,alm,bst):
   """
-  if bst is None: bst= 2
   return libcurvedsky.bispec.equi(lmin,lmax,alm,bst)
 
-def fold(lmin,lmax,alm,bst=None):
+def fold(lmin,lmax,alm,bst= 2):
   """
   Compute folded shape of the unnormalized binned reduced bispectrum for a given alm, b[*l,l/2,l/2*]
 
@@ -109,10 +104,9 @@ def fold(lmin,lmax,alm,bst=None):
   Usage:
     :bispec = curvedsky.bispec.fold(lmin,lmax,alm,bst):
   """
-  if bst is None: bst= 2
   return libcurvedsky.bispec.fold(lmin,lmax,alm,bst)
 
-def sque(eL,sL,l1,alm,bst=None):
+def sque(eL,sL,l1,alm,bst= 2):
   """
   Compute squeezed shape of the unnormalized binned reduced bispectrum for a given alm, b[*sL,eL,eL*]
 
@@ -131,10 +125,9 @@ def sque(eL,sL,l1,alm,bst=None):
   Usage:
     :bispec = curvedsky.bispec.sque(eL,sL,l1,alm,bst):
   """
-  if bst is None: bst= 2
   return libcurvedsky.bispec.sque(eL,sL,l1,alm,bst)
 
-def isos(eL,aL,l1,alm,bst=None):
+def isos(eL,aL,l1,alm,bst= 2):
   """
   Compute isosceles shape of the unnormalized binned reduced bispectrum for a given alm, b[*eL,aL,aL*]
 
@@ -153,6 +146,5 @@ def isos(eL,aL,l1,alm,bst=None):
   Usage:
     :bispec = curvedsky.bispec.isos(eL,aL,l1,alm,bst):
   """
-  if bst is None: bst= 2
   return libcurvedsky.bispec.isos(eL,aL,l1,alm,bst)
 

@@ -35,8 +35,9 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype)
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
   character(1), intent(in), optional :: gtype
-!f2py integer :: nside = lmax
-!f2py character(1) :: gtype = ''
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
+  !f2py character(1) :: gtype = ''
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm1, Tlm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
@@ -119,8 +120,9 @@ subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside,gtype)
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
   character(1), intent(in), optional :: gtype
-!f2py integer :: nside = lmax
-!f2py character(1) :: gtype = ''
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
+  !f2py character(1) :: gtype = ''
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in),  dimension(0:rlmax,0:rlmax) :: Tlm, Elm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
@@ -213,16 +215,17 @@ subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside,gtype)
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*
 !*  Returns:
-!*    :glm (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
-!*    :clm (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
+!*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
+!*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
   implicit none 
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
   character(1), intent(in), optional :: gtype
-!f2py integer :: nside = lmax
-!f2py character(1) :: gtype = ''
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
+  !f2py character(1) :: gtype = ''
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
@@ -305,16 +308,17 @@ subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside,gtype)
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*
 !*  Returns:
-!*    :glm (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
-!*    :clm (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
+!*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
+!*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
   implicit none 
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
   character(1), intent(in), optional :: gtype
-!f2py integer :: nside = lmax
-!f2py character(1) :: gtype = ''
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
+  !f2py character(1) :: gtype = ''
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm1, Elm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
@@ -396,16 +400,17 @@ subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside,gtype)
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*
 !*  Returns:
-!*    :glm (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
-!*    :clm (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
+!*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
+!*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
   character(1), intent(in), optional :: gtype
-!f2py integer :: nside = lmax
-!f2py character(1) :: gtype = ''
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
+  !f2py character(1) :: gtype = ''
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
@@ -524,16 +529,17 @@ subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside,gtype)
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*
 !*  Returns:
-!*    :glm (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
-!*    :clm (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
+!*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
+!*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
   integer, intent(in), optional :: nside
   character(1), intent(in), optional :: gtype
-!f2py integer :: nside = lmax
-!f2py character(1) :: gtype = ''
+  !f2py integer :: nside = lmax
+  !docstr :: nside = lmax
+  !f2py character(1) :: gtype = ''
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Blm1, Blm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm

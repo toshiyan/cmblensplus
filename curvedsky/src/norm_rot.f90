@@ -11,28 +11,45 @@ module norm_rot
 contains
 
 
-subroutine qeb(lmax,rlmin,rlmax,fCEE,OCEE,OCBB,Al)
+subroutine qeb(lmax,rlmin,rlmax,fC,OCE,OCB,Aa)
+!*  Normalization of reconstructed pol. rot. angle from the EB quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)  : Theory EE angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Returns:
+!*    :Aa [l] (double) : Pol. rot. angle normalization, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
-  double precision, intent(in), dimension(0:rlmax) :: fCEE, OCEE, OCBB
-  double precision, intent(out), dimension(0:lmax) :: Al
+  double precision, intent(in), dimension(0:rlmax) :: fC, OCE, OCB
+  double precision, intent(out), dimension(0:lmax) :: Aa
   !internal
   integer :: l, rL(2)
   double precision, dimension(rlmin:rlmax) :: W1, W2
   double precision, dimension(lmax) :: Sm
 
   write(*,*) 'norm qEB (rot)'
-
   rL = (/rlmin,rlmax/)
-  W1 = 1d0/OCBB(rlmin:rlmax)
-  W2 = fCEE(rlmin:rlmax)**2 / OCEE(rlmin:rlmax)
+
+  do l = rlmin, rlmax
+    if (OCE(l)==0d0) stop 'error (norm_rot.qeb): observed clee is zero'
+    if (OCB(l)==0d0) stop 'error (norm_rot.qeb): observed clbb is zero'
+  end do
+
+  W1 = 1d0/OCB(rlmin:rlmax)
+  W2 = fC(rlmin:rlmax)**2 / OCE(rlmin:rlmax)
   Sm = 0d0
   call kernels_rot(rL,W1,W2,Sm,'Sm')
 
-  Al = 0d0
+  Aa = 0d0
   do l = 1, lmax
-    if (Sm(l)/=0d0)  Al(l) = 1d0/Sm(l)
+    if (Sm(l)/=0d0)  Aa(l) = 1d0/Sm(l)
   end do
 
 end subroutine qeb

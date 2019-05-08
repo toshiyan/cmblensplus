@@ -18,7 +18,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,OCT,Ag,Ac,gtype)
 !*  Normalization of reconstructed CMB lensing potential and its curl mode from the temperature quadratic estimator
 !*
 !*  Args:
-!*    :lmax (int): Maximum multipole of output lensing potential alms
+!*    :lmax (int): Maximum multipole of output normalization spectrum
 !*    :rlmin/rlmax (int)   : Minimum/Maximum multipole of CMB for reconstruction
 !*    :fC [l] (double) : Theory temperature angular power spectrum, with bounds (0:rlmax)
 !*    :OCT [l] (double): Observed temperature angular power spectrum, with bounds (0:rlmax)
@@ -79,6 +79,23 @@ end subroutine qtt
 
 
 subroutine qte(lmax,rlmin,rlmax,fC,OCT,OCE,Ag,Ac,gtype)
+!*  Normalization of reconstructed CMB lensing potential and its curl mode from the TE quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)  : Theory TE angular power spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double) : Observed temperature angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
+!*    :Ac [l] (double) : Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+!*
+
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -136,6 +153,22 @@ end subroutine qte
 
 
 subroutine qtb(lmax,rlmin,rlmax,fC,OCT,OCB,Ag,Ac,gtype)
+!*  Normalization of reconstructed CMB lensing potential and its curl mode from the TB quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)  : Theory TE angular power spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double) : Observed temperature angular power spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
+!*    :Ac [l] (double) : Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -183,6 +216,21 @@ end subroutine qtb
 
 
 subroutine qee(lmax,rlmin,rlmax,fC,OCE,Ag,Ac,gtype)
+!*  Normalization of reconstructed CMB lensing potential and its curl mode from the E-mode quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)  : Theory EE angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
+!*    :Ac [l] (double) : Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -233,6 +281,22 @@ end subroutine qee
 
 
 subroutine qeb(lmax,rlmin,rlmax,fC,OCE,OCB,Ag,Ac,gtype)
+!*  Normalization of reconstructed CMB lensing potential and its curl mode from the EB quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)  : Theory EE angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
+!*    :Ac [l] (double) : Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -280,6 +344,21 @@ end subroutine qeb
 
 
 subroutine qbb(lmax,rlmin,rlmax,fC,OCB,Ag,Ac,gtype)
+!*  Normalization of reconstructed CMB lensing potential and its curl mode from the B-mode quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)  : Theory BB angular power spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
+!*    :Ac [l] (double) : Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -328,6 +407,24 @@ end subroutine qbb
 
 
 subroutine qttte(lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,Ig,Ic,gtype)
+!*  Correlation between unnormalized TT and TE quadratic estimators
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fCTT [l] (double): Theory temperature angular power spectrum, with bounds (0:rlmax)
+!*    :fCTE [l] (double): Theory TE angular power spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double) : Observed temperature angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCTE [l] (double): Observed TE angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
+!*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -396,6 +493,24 @@ end subroutine qttte
 
 
 subroutine qttee(lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,Ig,Ic,gtype)
+!*  Correlation between unnormalized TT and EE quadratic estimators
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fCTT [l] (double): Theory temperature angular power spectrum, with bounds (0:rlmax)
+!*    :fCEE [l] (double): Theory E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double) : Observed temperature angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCTE [l] (double): Observed TE angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
+!*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -450,6 +565,24 @@ end subroutine qttee
 
 
 subroutine qteee(lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,Ig,Ic,gtype)
+!*  Correlation between unnormalized TE and EE quadratic estimators
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fCEE [l] (double): Theory E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :fCTE [l] (double): Theory TE angular power spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double) : Observed temperature angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCTE [l] (double): Observed TE angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
+!*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -516,6 +649,25 @@ end subroutine qteee
 
 
 subroutine qtbeb(lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,Ig,Ic,gtype)
+!*  Correlation between unnormalized TB and EB quadratic estimators
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fCEE [l] (double): Theory E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :fCBB [l] (double): Theory B-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double) : Observed temperature angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCTE [l] (double): Observed TE angular power spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
+!*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
@@ -575,7 +727,7 @@ subroutine qmv(lmax,QDO,Al,Il,MV,Nl)
 !*
 !*  Args:
 !*    :lmax (int):    Maximum multipole of the output power spectra
-!*    :QDO[6] (bool): Specifying which estimators to be combined for the minimum variance estimator, with size (6). The oder is TT, TE, EE, TB, EB and BB. 
+!*    :QDO[6] (bool): Specifying which estimators to be combined for the minimum variance estimator, with size (6). The oder is TT, TE, EE, TB, EB and BB. Currently, BB is always False
 !*    :Al [5,l] (double): Normalizations of each estimator (TT, TE, EE, TB, EB). 
 !*    :Il [4,l] (double): Correlation between different estimators (TTxTE, TTxEE, TExEE, TBxEB).
 !*
@@ -600,12 +752,6 @@ subroutine qmv(lmax,QDO,Al,Il,MV,Nl)
   write(*,*) 'norm qMV (lens)'
   id = 0
 
-  ! set ids
-  !do X = 1, qn
-  !  if(QDO(X)) id(X) = 1 + maxval(id)
-  !end do
-  !qmax = maxval(id)
-  !write(*,*) qmax
   qmax = qn
  
   MV = 0d0
@@ -689,8 +835,10 @@ subroutine qall(QDO,lmax,rlmin,rlmax,fC,OC,Ag,Ac,Nlg,Nlc,gtype)
 !*    :gtype (str): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*
 !*  Returns:
-!*    :Ag/Ac [6,l] (double)   : Normalization of the TT, TE, EE, TB, EB, and MV estimators for gradient/curl modes, with bounds (6,0:lmax)
-!*    :Nlg/Nlc [6,l] (double) : Weights for TT, TE, EE, TB, EB, and BB (=0) estimators for gradient/curl modes, with bounds (6,0:lmax)
+!*    :Ag [6,l] (double)  : Normalization of the TT, TE, EE, TB, EB, and MV estimators for lensing potential, with bounds (6,0:lmax)
+!*    :Ac [6,l] (double)  : Same as Ag but for curl mode
+!*    :Nlg [6,l] (double) : Weights for TT, TE, EE, TB, EB, and BB (=0) estimators for lensing potential, with bounds (6,0:lmax)
+!*    :Nlc [6,l] (double) : Same as Nlg but for curl mode
 !*
   implicit none
   !I/O
@@ -732,54 +880,76 @@ subroutine qall(QDO,lmax,rlmin,rlmax,fC,OC,Ag,Ac,Nlg,Nlc,gtype)
 end subroutine qall
 
 
-subroutine qeb_iter(rlmin,rlmax,dlmin,dlmax,fCEE,Cpp,oEE,oBB,Alg,Alc,iter,conv)
+subroutine qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,Ag,Ac,iter,conv)
+!*  Normalization of reconstructed CMB lensing potential and its curl mode from the EB quadratic estimator
+!*
+!*  Args:
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :dlmin/dlmax (int): Minimum/Maximum multipole of E mode and lensing potential for delensing
+!*    :fC [l] (double)  : Theory EE angular power spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
+!*    :Cpp [l] (double) : Theory lensing potential angular power spectrum, with bounds (0:dlmax)
+!*
+!*  Args(optional):
+!*    :iter (int)    : number of iteration, default to 1 (no iteration)
+!*    :conv (double) : a parameter for convergence the iteration, default to 0.001
+!*
+!*  Returns:
+!*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
+!*    :Ac [l] (double) : Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+!*
   implicit none
   !I/O
   integer, intent(in) :: rlmin, rlmax, dlmin, dlmax
-  double precision, intent(in), dimension(0:rlmax) :: fCEE, oEE, oBB
+  double precision, intent(in), dimension(0:rlmax) :: fC, OCE, OCB
   double precision, intent(in), dimension(0:dlmax) :: Cpp
-  double precision, intent(out), dimension(0:dlmax) :: Alg, Alc
+  double precision, intent(out), dimension(0:dlmax) :: Ag, Ac
   !optional
   integer, intent(in), optional :: iter
   double precision, intent(in), optional :: conv
   !f2py integer :: iter = 1
   !f2py double precision :: conv = 0.001
   !internal
-  integer :: i, n, l
-  double precision :: ratio
-  double precision, dimension(:), allocatable :: AlgEB, rCBB
+  integer :: i, n, l, it
+  double precision :: ratio, c
+  double precision, dimension(:), allocatable :: AgEB, rCBB
 
-  allocate(AlgEB(0:dlmax),rCBB(0:rlmax));  AlgEB=0d0;  rCBB=0d0
+  allocate(AgEB(0:dlmax),rCBB(0:rlmax));  AgEB=0d0;  rCBB=0d0
 
   if (rlmax<dlmax) stop 'error (qeb_iter): does not support rlmax<dlmax case'
 
   !initial values
   ratio = 1d0
-  rCBB  = oBB(:rlmax)
+  rCBB  = OCB
+  it = 1
+  c  = 0.001
+  if (present(iter)) it = iter
+  if (present(conv)) c  = conv
 
-  do n = 1, iter !loop for iteration 
+  do n = 1, it !loop for iteration 
 
     !lensing reconstruction with EB
-    call qeb(dlmax,rlmin,rlmax,fCEE,oEE,rCBB,AlgEB,Alc)
+    call qeb(dlmax,rlmin,rlmax,fC,OCE,rCBB,AgEB,Ac)
 
-    !convergence check
+    !convergence check using gradient mode
     if (n>=2) then
-      ratio = (sum(Alg)/sum(AlgEB)-1d0)/dble(dlmax)
+      ratio = (sum(Ag)/sum(AgEB)-1d0)/dble(dlmax)
       write(*,*) n, ratio
     end if
-    Alg = AlgEB
+    Ag = AgEB
 
-    if (abs(ratio) < conv) exit
+    if (abs(ratio) < c) exit
 
     !delensing with EB-estimator
-    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),fCEE(1:dlmax),Cpp(1:dlmax),oEE(1:dlmax)-fCEE(1:dlmax),AlgEB,rCBB)
-    rCBB = oBB(:rlmax) - rCBB !delensed B-mode
+    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),fC(1:dlmax),Cpp(1:dlmax),OCE(1:dlmax)-fC(1:dlmax),AgEB,rCBB)
+    rCBB = OCB - rCBB !delensed B-mode
 
-    if(n==iter) stop 'not converged'
+    if(n==it) stop 'not converged'
 
   end do
 
-  deallocate(AlgEB,rCBB)
+  deallocate(AgEB,rCBB)
 
 end subroutine qeb_iter
 

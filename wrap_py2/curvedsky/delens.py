@@ -50,6 +50,23 @@ def shiftvec(npix,lmax,plm,nremap=None):
   if nremap is None: nremap= 3
   return libcurvedsky.delens.shiftvec(npix,lmax,plm,nremap)
 
+def phi2grad(npix,lmax,plm):
+  """
+  Return the deflection vector, grad, at the Healpix pixel
+
+  Args:
+    :npix (*int*): Pixel number of output deflection vector
+    :lmax (*int*): Maximum multipole of the input plm/clm
+    :plm [*l,m*] (*dcmplx*): Lensing potential alm, with bounds (0:lmax,0:lmax)
+
+  Returns:
+    :grad [*pix,2*] (*double*): 2D deflection vector, with bounds (0:npix-1,1:2)
+
+  Usage:
+    :grad = curvedsky.delens.phi2grad(npix,lmax,plm):
+  """
+  return libcurvedsky.delens.phi2grad(npix,lmax,plm)
+
 def remap_tp(npix,lmax,beta,alm_in):
   """
   Remapping CMB temperaure and polarization with a given shift vector, grad, based on a simple implementation of LensPix. 
