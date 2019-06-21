@@ -13,31 +13,35 @@ elif sys.version_info[:3] > (2,5,2):
 # compute normalization
 @profile
 def al(p,f,r):
-  '''
-  Return normalization of the quadratic estimators
-  '''
+    '''
+    Return normalization of the quadratic estimators
+    '''
 
-  for q in p.qlist:
+    for q in p.qlist:
 
-    if p.qtype=='lens':
-      if q=='TT': Ag, Ac = curvedsky.norm_lens.qtt(p.lmax,p.rlmin,p.rlmax,r.lcl[0,:],r.oc[0,:],gtype='k')
-      if q=='TE': Ag, Ac = curvedsky.norm_lens.qte(p.lmax,p.rlmin,p.rlmax,r.lcl[3,:],r.oc[0,:],r.oc[1,:],gtype='k')
-      if q=='EE': Ag, Ac = curvedsky.norm_lens.qee(p.lmax,p.rlmin,p.rlmax,r.lcl[1,:],r.oc[1,:],gtype='k')
-      if q=='TB': Ag, Ac = curvedsky.norm_lens.qtb(p.lmax,p.rlmin,p.rlmax,r.lcl[3,:],r.oc[0,:],r.oc[2,:],gtype='k')
-      if q=='EB': Ag, Ac = curvedsky.norm_lens.qeb(p.lmax,p.rlmin,p.rlmax,r.lcl[1,:],r.oc[1,:],r.oc[2,:],gtype='k')
-      if q=='MV':
-        ag, ac, Wg, Wc = curvedsky.norm_lens.qall(p.qDO,p.lmax,p.rlmin,p.rlmax,r.lcl,r.oc,gtype='k')
-        Ag, Ac = ag[5,:], ac[5,:]
+        if p.qtype=='lens':
+            if q=='TT': Ag, Ac = curvedsky.norm_lens.qtt(p.lmax,p.rlmin,p.rlmax,r.lcl[0,:],r.oc[0,:],gtype='k')
+            if q=='TE': Ag, Ac = curvedsky.norm_lens.qte(p.lmax,p.rlmin,p.rlmax,r.lcl[3,:],r.oc[0,:],r.oc[1,:],gtype='k')
+            if q=='EE': Ag, Ac = curvedsky.norm_lens.qee(p.lmax,p.rlmin,p.rlmax,r.lcl[1,:],r.oc[1,:],gtype='k')
+            if q=='TB': Ag, Ac = curvedsky.norm_lens.qtb(p.lmax,p.rlmin,p.rlmax,r.lcl[3,:],r.oc[0,:],r.oc[2,:],gtype='k')
+            if q=='EB': Ag, Ac = curvedsky.norm_lens.qeb(p.lmax,p.rlmin,p.rlmax,r.lcl[1,:],r.oc[1,:],r.oc[2,:],gtype='k')
+            if q=='MV':
+                ag, ac, Wg, Wc = curvedsky.norm_lens.qall(p.qDO,p.lmax,p.rlmin,p.rlmax,r.lcl,r.oc,gtype='k')
+                Ag, Ac = ag[5,:], ac[5,:]
 
-    if p.qtype=='rot':
-      if q=='EB':
-        Ac = np.zeros(p.lmax+1)
-        Ag = curvedsky.norm_rot.qeb(p.lmax,p.rlmin,p.rlmax,r.lcl[1,:],r.oc[1,:],r.oc[2,:])
+        if p.qtype=='rot':
+            Ac = np.zeros(p.lmax+1)
 
-    # save
-    np.savetxt(f.quad[q].al,np.array((r.eL,Ag,Ac)).T)
-    if q=='MV' and p.qtype=='lens': 
-      for qi, qq in enumerate(['TT','TE','EE','TB','EB']): np.savetxt(f.quad[qq].wl,np.array((r.eL,Wg[qi,:],Wc[qi,:])).T)
+            if q=='TB':
+                Ag = curvedsky.norm_rot.qtb(p.lmax,p.rlmin,p.rlmax,r.lcl[3,:],r.oc[0,:],r.oc[2,:])
+
+            if q=='EB':
+                Ag = curvedsky.norm_rot.qeb(p.lmax,p.rlmin,p.rlmax,r.lcl[1,:],r.oc[1,:],r.oc[2,:])
+
+        # save
+        np.savetxt(f.quad[q].al,np.array((r.eL,Ag,Ac)).T)
+        if q=='MV' and p.qtype=='lens': 
+            for qi, qq in enumerate(['TT','TE','EE','TB','EB']): np.savetxt(f.quad[qq].wl,np.array((r.eL,Wg[qi,:],Wc[qi,:])).T)
 
 
 
@@ -86,6 +90,7 @@ def qrec(p,falm,fquad,r):
         if q=='MV':  glm, clm = gmv, cmv
 
       if p.qtype=='rot':
+        if q=='TB':  glm = curvedsky.rec_rot.qtb(p.lmax,p.rlmin,p.rlmax,r.lcl[3,:],Talm,Balm,nside=p.nsidet)
         if q=='EB':  glm = curvedsky.rec_rot.qeb(p.lmax,p.rlmin,p.rlmax,r.lcl[1,:],Ealm,Balm,nside=p.nsidet)
         clm = glm*0.
 
@@ -255,6 +260,10 @@ def qXY(q,p,lcl,alm1,alm2,blm1,blm2):
     return glm1+glm2, clm1+clm2
 
   if p.qtype=='rot':
+    if q=='TB':
+      rlm1 = curvedsky.rec_rot.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm1,blm2,nside=p.nsidet)
+      rlm2 = curvedsky.rec_rot.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm2,blm1,nside=p.nsidet)
+
     if q=='EB':
       rlm1 = curvedsky.rec_rot.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm1,blm2,nside=p.nsidet)
       rlm2 = curvedsky.rec_rot.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm2,blm1,nside=p.nsidet)

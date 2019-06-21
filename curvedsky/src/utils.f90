@@ -28,7 +28,7 @@ module utils
 contains
 
 
-subroutine gauss1alm(lmax,cl,alm)
+subroutine gauss1alm(lmax,Cl,alm)
 !*  Generating alm as a random Gaussian field whose power spectrum is cl. The output alm is given by a 2D array.
 !*
 !*  Args:
@@ -46,12 +46,15 @@ subroutine gauss1alm(lmax,cl,alm)
   !internal
   integer :: l,m
   
+  if (size(Cl)/=lmax+1) stop 'error (gauss1alm): size of cl is strange'
+
   call initrandom(-1)
+
   alm = 0
   do l = 1, lmax
-    alm(l,0) = Gaussian1()* sqrt(Cl(l))
+    alm(l,0) = Gaussian1()* dsqrt(Cl(l))
     do m = 1, l
-      alm(l,m) = cmplx(Gaussian1(),Gaussian1())*sqrt(Cl(l)/2)
+      alm(l,m) = cmplx(Gaussian1(),Gaussian1())*dsqrt(Cl(l)/2d0)
     end do 
   end do
 
@@ -377,7 +380,7 @@ subroutine eb_separate(npix,lmax,W,Q,U,Elm,Blm)
 !*    :npix (int)        : Pixel number of the desired map
 !*    :lmax (int)        : Maximum multipole used for the harmonic transform internally
 !*    :W[pix] (double)   : Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1)
-!*    :Q/U[pix] (double) : Input Q/U map, with bounds (0:npix-1)
+!*    :Q/U[pix] (double) : Input Q/U map already multiplied by W, with bounds (0:npix-1)
 !*
 !*  Returns:
 !*    :Elm/Blm[l,m]  (dcmplx) : Seperated E/B modes, with bounds (0:lmax,0:lmax)
@@ -388,7 +391,7 @@ subroutine eb_separate(npix,lmax,W,Q,U,Elm,Blm)
   double precision, intent(in), dimension(0:npix-1) :: W, Q, U
   double complex, intent(out), dimension(0:lmax,0:lmax) :: Elm, Blm
   !internal
-  integer :: i, l, nside
+  integer :: i, n, l, nside
   double precision :: al, n1(lmax), n2(lmax)
   double precision, allocatable, dimension(:,:) :: W1, W2, P2, P1, P0
   double complex, allocatable, dimension(:,:,:) :: alm0, alm1, alm2, wlm, tlm
@@ -406,27 +409,37 @@ subroutine eb_separate(npix,lmax,W,Q,U,Elm,Blm)
   allocate(wlm(1,0:lmax,0:lmax))
   call map2alm(nside,lmax,lmax,W,wlm)
 
-  !compute del^1 W
   allocate(W1(0:npix-1,2),W2(0:npix-1,2),tlm(2,0:lmax,0:lmax))
+  !compute del^1 W
   tlm = 0d0
-  do l = 2, lmax
-    tlm(1,l,:) = wlm(1,l,:)*n1(l)
+  do l = 1, lmax
+    tlm(1,l,0:l) = wlm(1,l,0:l)*n1(l)
   end do
   call alm2map_spin(nside,lmax,lmax,1,tlm,W1)
 
   !compute del^2 W
   tlm = 0d0
   do l = 2, lmax
-    tlm(1,l,:) = wlm(1,l,:)*n2(l)
+    tlm(1,l,0:l) = wlm(1,l,0:l)*n2(l)
   end do
   call alm2map_spin(nside,lmax,lmax,2,tlm,W2)
-
   deallocate(tlm,wlm)
+
+  !inverse mask
+  do n = 0, npix-1
+    if (W(n)==0d0) then
+      W1(n,:) = 0d0
+      W2(n,:) = 0d0
+    else
+      W1(n,:) = W1(n,:)/W(n)
+      W2(n,:) = W2(n,:)/W(n)
+    end if
+  end do
 
   !//// compute P1=conjg(W1)*(Q+iU), P0=conjg(W2)*(Q+iU) ////!
   allocate(P2(0:npix-1,2),P1(0:npix-1,2),P0(0:npix-1,2))
-  P2(:,1) = W*Q
-  P2(:,2) = W*U
+  P2(:,1) = Q
+  P2(:,2) = U
   P1(:,1) = W1(:,1)*Q + W1(:,2)*U
   P1(:,2) = W1(:,1)*U - W1(:,2)*Q
   P0(:,1) = W2(:,1)*Q + W2(:,2)*U
@@ -548,12 +561,12 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 !*
 !*  Args:
 !*   :npix (int)         : Number of pixel
-!*   :rmask[pix] (double): Input window function, with bounds (0:pix-1)
+!*   :rmask[pix] (double): Input window function, with bounds (0:pix-1). Pixels at rmask=0 is considered as masked pixels. 
 !*   :ascale (double)    : Apodization length [deg] from the closest masked pixel
 !*
 !*  Args(optional):
 !*   :order (int)         : Pixel order, 1 for RING (default), otherwize NESTED
-!*   :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size in filled), default to 0
+!*   :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size is filled), default to 0
 !*
 !*  Returns:
 !*   :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
@@ -585,8 +598,10 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
      call convert_ring2nest(nside, map)
   end if
 
-  allocate(mask(0:npix-1))
-  mask = NINT(map(:,1))
+  allocate(mask(0:npix-1)); mask=0
+  do n = 0, npix-1
+    if (map(n,1)/=0d0)  mask(n) = int(map(n,1)/map(n,1))
+  end do
 
   !remove small holes
   hsize = nint( holeminsize / (4*pi/npix * (60d0*180d0/pi)**2) )
@@ -605,15 +620,81 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
   !compute apodization
   write(*,*) 'compute apodized window'
   amask = 0d0
-  do n = 1, npix
+  do n = 0, npix-1
     x = (1d0-dcos(map(n,1)))/(1d0-dcos(ascale*pi/180d0))
     y = min(1d0, dsqrt(x) )
-    amask(n-1) = (y - dsin(2*pi*y)/(2*pi)) * rmask(n)
+    amask(n) = (y - dsin(2*pi*y)/(2*pi)) * rmask(n)
   end do
 
   deallocate(map)
 
 end subroutine apodize
+
+
+subroutine hp_alm2map(npix,lmax,mmax,alm,map)
+!*  Ylm transform of the map to alm with the healpix (l,m) order
+!*
+!*  Args:
+!*    :npix (int)         : Pixel number of the input map
+!*    :lmax (int)         : Maximum multipole of the input alm
+!*    :mmax (int)         : Maximum m of the input alm
+!*    :alm [l,m] (dcmplx) : Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :map [pix] (double) : Transformed map, with bounds (0:npix-1)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax, mmax
+  double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
+  double precision, intent(out), dimension(0:npix-1) :: map
+  !internal
+  integer :: nside
+  double complex :: tlm(1,0:lmax,0:mmax)
+
+  nside = int(dsqrt(npix/12d0))
+
+  tlm(1,:,:) = alm
+  call alm2map(nside,lmax,mmax,tlm,map)
+
+end subroutine hp_alm2map
+
+
+subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
+!*  Ylm transform of the map to alm with the healpix (l,m) order
+!*
+!*  Args:
+!*    :npix (int)         : Pixel number of the input map
+!*    :lmax (int)         : Maximum multipole of the input alm
+!*    :mmax (int)         : Maximum m of the input alm
+!*    :spin (int)         : Spin of the transform
+!*    :elm [l,m] (dcmplx) : Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+!*    :blm [l,m] (dcmplx) : Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :map0 [pix] (double): Real part of the transformed map (Q-like map), with bounds (0:npix-1)
+!*    :map1 [pix] (double): Imaginary part of the transformed map (U-like map), with bounds (0:npix-1)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax, mmax, spin
+  double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
+  double precision, intent(out), dimension(0:npix-1) :: map0, map1
+  !internal
+  integer :: nside
+  double precision :: map(0:npix-1,2)
+  double complex :: alm(2,0:lmax,0:lmax)
+
+  nside = int(dsqrt(npix/12d0))
+
+  alm(1,:,:) = elm
+  alm(2,:,:) = blm
+  call alm2map_spin(nside,lmax,mmax,spin,alm,map)
+  map0 = map(:,1)
+  map1 = map(:,2)
+
+end subroutine hp_alm2map_spin
+
 
 
 subroutine hp_map2alm(nside,lmax,mmax,map,alm)
@@ -811,6 +892,172 @@ subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
 end subroutine calc_mfs
 
 
+!//////////////////////////////////////////////////////////////////!
+! Conjugate gradient decent algorithm for curvedsky
+!//////////////////////////////////////////////////////////////////!
+
+subroutine cinv(npix,lmax,cl,nij,alm,itern,xlm)
+!* Computing inverse-variance filtered multipoles: C^-1d
+!* The power spectrum is assumed to be an isotropic Gaussian spectrum. 
+!* Inverse noise covariance is given in pixel space and uncorrelated (nij = sigma x delta_ij).
+!*
+!*  Args:
+!*    :npix (int) : Number of pixel
+!*    :lmax (int) : Maximum multipole of alm
+!*    :cl[l] (double) : Angular power spectrum of alm, with bounds (0:lmax)
+!*    :nij[pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:npix-1)
+!*    :alm[l,m] (dcmplx) : Input alm, with bouds (0:lmax,0:lmax)
+!*    :itern (int) : Number of interation
+!*
+!*  Returns:
+!*    :xlm[l,m] (dcmplx) : C-inverse filtered multipoles, with bounds (0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax, itern
+  double precision, intent(in), dimension(0:lmax) :: cl
+  double precision, intent(in), dimension(0:npix-1) :: nij
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: xlm
+  !internal
+  integer :: l
+  double precision, dimension(0:lmax,0:lmax) :: clh
+  double complex, allocatable :: b(:,:)
+
+  clh = 0d0
+  do l = 1, lmax
+    clh(l,0:l) = dsqrt(cl(l))
+  end do
+
+  allocate(b(0:lmax,0:lmax));  b=0d0
+  !first compute b = C^1/2 N^-1 X
+  call mat_multi(npix,lmax,clh,nij,alm,b)
+  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
+  call cg_algorithm(npix,lmax,clh,nij,b,xlm,itern)
+  deallocate(b)
+
+  do l = 1, lmax
+    if (cl(l)>0d0) xlm(l,:) = xlm(l,:)/cl(l)
+  end do
+
+end subroutine cinv
+
+
+subroutine cg_algorithm(npix,lmax,clh,nij,b,x,itern)
+!* Searching a solution of Ax=b with the Conjugate Gradient Algorithm iteratively
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax, itern
+  double precision, intent(in), dimension(0:lmax,0:lmax) :: clh
+  double precision, intent(in), dimension(0:npix-1) :: nij
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: b
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: x
+  !internal
+  integer :: i, l, iter, roundoff=50
+  double precision :: dr, dr0, tdr, alpha, eps = 1d-6, ndiag
+  double complex, dimension(0:lmax,0:lmax) :: r, tAr, p, r0, Ap
+
+  ndiag = sum(nij)/dble(npix)
+
+  call mat_multi(npix,lmax,clh,nij,x,r,'lhs')  ! r = Ax
+  r = b - r
+
+  !multiply preconditioner
+  p = r/(1d0+ndiag*clh**2)   ! p = tA r
+
+  !initial distance
+  dr0 = sum(conjg(r)*p)
+  dr  = dr0
+
+  !iteration num
+  iter = 0
+
+  do i = 1, itern
+
+    call mat_multi(npix,lmax,clh,nij,p,Ap,'lhs')  ! Ap = A p
+    alpha = dr/sum(conjg(p)*Ap)
+    x = x + alpha*p
+    iter = iter + 1
+
+    if(iter-int(dble(iter)/dble(roundoff))*roundoff==0) then 
+      r0 = r
+      call mat_multi(npix,lmax,clh,nij,x,r0,'lhs')  !r0 = A x
+      r0 = b - r0
+      write(*,*) sum(abs(r0)**2)/dble(lmax**2)
+    end if
+
+    r = r - alpha*Ap
+    !tAr = tA x r
+    tAr = r/(1d0+ndiag*clh**2)
+    tdr = sum(conjg(r)*tAr)
+    p   = tAr + (tdr/dr)*p
+    dr  = tdr
+
+    if(dr<eps**2*dr0) then 
+      write(*,*) iter, dr/dr0
+      exit !Norm of r is sufficiently small
+    end if 
+
+  end do
+
+
+end subroutine cg_algorithm
+
+
+subroutine mat_multi(npix,lmax,clh,nij,x,v,mtype)
+!* multiplying matrix
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax
+  double precision, intent(in), dimension(0:lmax,0:lmax) :: clh
+  double precision, intent(in), dimension(0:npix-1) :: nij
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: x
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: v
+  !optional
+  character(4), intent(in), optional :: mtype
+  !f2py character(4) :: mtype = ''
+  !internal
+  character(4) :: m = ''
+  integer :: l, nside
+  double precision :: map(0:npix-1)
+  double complex :: alm(1,0:lmax,0:lmax)
+
+  if (present(mtype))  m = mtype
+
+  nside = int(sqrt(npix/12d0))
+
+  if (m=='lhs') then
+    !multiply C^{1/2}
+    alm(1,:,:) = clh*x
+  else
+    alm(1,:,:) = x
+  end if
+
+  !alm to map
+  call alm2map(nside,lmax,lmax,alm,map)
+
+  !multiply N^-1
+  map = map*nij
+
+  !map to alm
+  call map2alm(nside,lmax,lmax,map,alm)
+
+  !multiply C^{1/2}
+  alm(1,:,:) = clh*alm(1,:,:)
+
+  if (m=='lhs') then
+    !make 1+C^{1/2}N^{-1}C^{1/2}
+    v = x + alm(1,:,:)
+  else
+    v = alm(1,:,:)
+  end if
+
+
+end subroutine mat_multi
+
+
+
 end module utils
+
 
 

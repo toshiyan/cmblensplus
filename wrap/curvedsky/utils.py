@@ -1,6 +1,6 @@
 import libcurvedsky
 
-def gauss1alm(lmax,cl):
+def gauss1alm(lmax,Cl):
   """
   Generating alm as a random Gaussian field whose power spectrum is cl. The output alm is given by a 2D array.
 
@@ -12,9 +12,9 @@ def gauss1alm(lmax,cl):
     :alm [*l,m*] (*dcmplx*): Random Gaussian alm, with bounds (0:lmax,0:lmax)
 
   Usage:
-    :alm = curvedsky.utils.gauss1alm(lmax,cl):
+    :alm = curvedsky.utils.gauss1alm(lmax,Cl):
   """
-  return libcurvedsky.utils.gauss1alm(lmax,cl)
+  return libcurvedsky.utils.gauss1alm(lmax,Cl)
 
 def gauss2alm(lmax,cl1,cl2,xl):
   """
@@ -146,7 +146,7 @@ def eb_separate(npix,lmax,W,Q,U):
     :npix (*int*): Pixel number of the desired map
     :lmax (*int*): Maximum multipole used for the harmonic transform internally
     :W[*pix*] (*double*): Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1)
-    :Q/U[*pix*] (*double*): Input Q/U map, with bounds (0:npix-1)
+    :Q/U[*pix*] (*double*): Input Q/U map already multiplied by W, with bounds (0:npix-1)
 
   Returns:
     :Elm/Blm[*l,m*] (*dcmplx*): Seperated E/B modes, with bounds (0:lmax,0:lmax)
@@ -204,12 +204,12 @@ def apodize(npix,rmask,ascale,order= 1,holeminsize= 0):
 
   Args:
     :npix (*int*): Number of pixel
-    :rmask[*pix*] (*double*): Input window function, with bounds (0:pix-1)
+    :rmask[*pix*] (*double*): Input window function, with bounds (0:pix-1). Pixels at rmask=0 is considered as masked pixels.
     :ascale (*double*): Apodization length [*deg*] from the closest masked pixel
 
   Args(optional):
     :order (*int*): Pixel order, 1 for RING (default), otherwize NESTED
-    :holeminsize (*double*): Minimum hole size [*arcmin*] (i.e., holes within this size in filled), default to 0
+    :holeminsize (*double*): Minimum hole size [*arcmin*] (i.e., holes within this size is filled), default to 0
 
   Returns:
     :amask[*pix*] (*double*): Apodization window, with bounds (0:npix-1), using the same ordering as input
@@ -218,6 +218,45 @@ def apodize(npix,rmask,ascale,order= 1,holeminsize= 0):
     :amask = curvedsky.utils.apodize(npix,rmask,ascale,order,holeminsize):
   """
   return libcurvedsky.utils.apodize(npix,rmask,ascale,order,holeminsize)
+
+def hp_alm2map(npix,lmax,mmax,alm):
+  """
+  Ylm transform of the map to alm with the healpix (l,m) order
+
+  Args:
+    :npix (*int*): Pixel number of the input map
+    :lmax (*int*): Maximum multipole of the input alm
+    :mmax (*int*): Maximum m of the input alm
+    :alm [*l,m*] (*dcmplx*): Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+
+  Returns:
+    :map [*pix*] (*double*): Transformed map, with bounds (0:npix-1)
+
+  Usage:
+    :map = curvedsky.utils.hp_alm2map(npix,lmax,mmax,alm):
+  """
+  return libcurvedsky.utils.hp_alm2map(npix,lmax,mmax,alm)
+
+def hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm):
+  """
+  Ylm transform of the map to alm with the healpix (l,m) order
+
+  Args:
+    :npix (*int*): Pixel number of the input map
+    :lmax (*int*): Maximum multipole of the input alm
+    :mmax (*int*): Maximum m of the input alm
+    :spin (*int*): Spin of the transform
+    :elm [*l,m*] (*dcmplx*): Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+    :blm [*l,m*] (*dcmplx*): Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+
+  Returns:
+    :map0 [*pix*] (*double*): Real part of the transformed map (Q-like map), with bounds (0:npix-1)
+    :map1 [*pix*] (*double*): Imaginary part of the transformed map (U-like map), with bounds (0:npix-1)
+
+  Usage:
+    :map0,map1 = curvedsky.utils.hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm):
+  """
+  return libcurvedsky.utils.hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm)
 
 def hp_map2alm(nside,lmax,mmax,map):
   """
@@ -312,4 +351,42 @@ def calc_mfs(bn,nu,lmax,walm,nside=None):
   """
   if nside is None: nside= lmax
   return libcurvedsky.utils.calc_mfs(bn,nu,lmax,walm,nside)
+
+def cinv(npix,lmax,cl,nij,alm,itern):
+  """
+ Computing inverse-variance filtered multipoles: C^-1d
+ The power spectrum is assumed to be an isotropic Gaussian spectrum. 
+ Inverse noise covariance is given in pixel space and uncorrelated (nij = sigma x delta_ij).
+
+  Args:
+    :npix (*int*): Number of pixel
+    :lmax (*int*): Maximum multipole of alm
+    :cl[*l*] (*double*): Angular power spectrum of alm, with bounds (0:lmax)
+    :nij[*pix*] (*double*): Inverse of the noise variance at each pixel, with bounds (0:npix-1)
+    :alm[*l,m*] (*dcmplx*): Input alm, with bouds (0:lmax,0:lmax)
+    :itern (*int*): Number of interation
+
+  Returns:
+    :xlm[*l,m*] (*dcmplx*): C-inverse filtered multipoles, with bounds (0:lmax,0:lmax)
+
+  Usage:
+    :xlm = curvedsky.utils.cinv(npix,lmax,cl,nij,alm,itern):
+  """
+  return libcurvedsky.utils.cinv(npix,lmax,cl,nij,alm,itern)
+
+def cg_algorithm(npix,lmax,clh,nij,b,itern):
+  """
+ Searching a solution of Ax=b with the Conjugate Gradient Algorithm iteratively
+  Usage:
+    :x = curvedsky.utils.cg_algorithm(npix,lmax,clh,nij,b,itern):
+  """
+  return libcurvedsky.utils.cg_algorithm(npix,lmax,clh,nij,b,itern)
+
+def mat_multi(npix,lmax,clh,nij,x,mtype= ''):
+  """
+ multiplying matrix
+  Usage:
+    :v = curvedsky.utils.mat_multi(npix,lmax,clh,nij,x,mtype):
+  """
+  return libcurvedsky.utils.mat_multi(npix,lmax,clh,nij,x,mtype)
 

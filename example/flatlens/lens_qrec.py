@@ -6,12 +6,12 @@ import basic
 # parameters
 Tcmb = 2.72e6
 lmax = 3000
-rL = [100,3000]
+rL = [100,2500]
 oL = [2,3000]
 nx, ny = 512, 512
 D  = np.array([nx,ny]) / 60.*np.pi/180.
 bn = 50
-mc = 100
+mc = 10
 
 # binned multipoles
 bp, bc = basic.aps.binning(bn,oL)
@@ -45,6 +45,17 @@ Ag['TE'], Ac['TE'] = flatsky.norm_lens.qte(nx,ny,D,rL,iltt,ilee,clte,oL)
 Ag['TB'], Ac['TB'] = flatsky.norm_lens.qtb(nx,ny,D,iltt,ilbb,clte,rL,oL)
 Ag['EE'], Ac['EE'] = flatsky.norm_lens.qee(nx,ny,D,ilee,clee,rL,oL)
 Ag['EB'], Ac['EB'] = flatsky.norm_lens.qeb(nx,ny,D,ilee,ilbb,clee,rL,oL)
+
+# kappa binned spectrum
+Alg = {}
+Alc = {}
+for q in ['TT','TE','TB','EE','EB']:
+  Alg[q] = flatsky.utils.c2d2bcl(nx,ny,D,kl**2*Ag[q],bn,oL)
+  Alc[q] = flatsky.utils.c2d2bcl(nx,ny,D,kl**2*Ac[q],bn,oL)
+
+# save
+np.savetxt('al_grad.dat',np.array((bc,Alg['TT'],Alg['TE'],Alg['TB'],Alg['EE'],Alg['EB'])).T,fmt='%8.6e')
+np.savetxt('al_curl.dat',np.array((bc,Alc['TT'],Alc['TE'],Alc['TB'],Alc['EE'],Alc['EB'])).T,fmt='%8.6e')
 
 # loop for realizations
 cls = np.zeros((mc,3,bn))

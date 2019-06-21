@@ -880,14 +880,16 @@ subroutine qall(QDO,lmax,rlmin,rlmax,fC,OC,Ag,Ac,Nlg,Nlc,gtype)
 end subroutine qall
 
 
-subroutine qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,Ag,Ac,iter,conv)
+subroutine qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,Ag,Ac,iter,conv)
 !*  Normalization of reconstructed CMB lensing potential and its curl mode from the EB quadratic estimator
 !*
 !*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization
+!*    :elmax (int)      : Maximum multipole of input EE spectra, CE and OCE
 !*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
 !*    :dlmin/dlmax (int): Minimum/Maximum multipole of E mode and lensing potential for delensing
-!*    :fC [l] (double)  : Theory EE angular power spectrum, with bounds (0:rlmax)
-!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :CE [l] (double)  : Theory EE angular power spectrum, with bounds (0:elmax)
+!*    :OCE [l] (double) : Observed E-mode angular power spectrum, with bounds (0:elmax)
 !*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
 !*    :Cpp [l] (double) : Theory lensing potential angular power spectrum, with bounds (0:dlmax)
 !*
@@ -901,23 +903,25 @@ subroutine qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,Ag,Ac,iter,conv)
 !*
   implicit none
   !I/O
-  integer, intent(in) :: rlmin, rlmax, dlmin, dlmax
-  double precision, intent(in), dimension(0:rlmax) :: fC, OCE, OCB
+  integer, intent(in) :: lmax, elmax, rlmin, rlmax, dlmin, dlmax
+  double precision, intent(in), dimension(0:elmax) :: CE, OCE
+  double precision, intent(in), dimension(0:rlmax) :: OCB
   double precision, intent(in), dimension(0:dlmax) :: Cpp
-  double precision, intent(out), dimension(0:dlmax) :: Ag, Ac
+  double precision, intent(out), dimension(0:lmax) :: Ag, Ac
   !optional
   integer, intent(in), optional :: iter
   double precision, intent(in), optional :: conv
   !f2py integer :: iter = 1
-  !f2py double precision :: conv = 0.001
+  !f2py double precision :: conv = 1e-6
   !internal
   integer :: i, n, l, it
   double precision :: ratio, c
-  double precision, dimension(:), allocatable :: AgEB, rCBB
+  double precision :: AgEB(0:dlmax), rCBB(0:rlmax)
 
-  allocate(AgEB(0:dlmax),rCBB(0:rlmax));  AgEB=0d0;  rCBB=0d0
+  AgEB=0d0
+  rCBB=0d0
 
-  if (rlmax<dlmax) stop 'error (qeb_iter): does not support rlmax<dlmax case'
+  if (elmax<dlmax.or.elmax<rlmax) stop 'error (qeb_iter): does not support elmax<dlmax or elmax<rlmax'
 
   !initial values
   ratio = 1d0
@@ -930,7 +934,7 @@ subroutine qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,Ag,Ac,iter,conv)
   do n = 1, it !loop for iteration 
 
     !lensing reconstruction with EB
-    call qeb(dlmax,rlmin,rlmax,fC,OCE,rCBB,AgEB,Ac)
+    call qeb(dlmax,rlmin,rlmax,CE(0:rlmax),OCE(0:rlmax),rCBB,AgEB,Ac)
 
     !convergence check using gradient mode
     if (n>=2) then
@@ -942,14 +946,13 @@ subroutine qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,Ag,Ac,iter,conv)
     if (abs(ratio) < c) exit
 
     !delensing with EB-estimator
-    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),fC(1:dlmax),Cpp(1:dlmax),OCE(1:dlmax)-fC(1:dlmax),AgEB,rCBB)
+    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),CE(1:dlmax),Cpp(1:dlmax),OCE(1:dlmax)-CE(1:dlmax),AgEB,rCBB)
     rCBB = OCB - rCBB !delensed B-mode
 
     if(n==it) stop 'not converged'
 
   end do
 
-  deallocate(AgEB,rCBB)
 
 end subroutine qeb_iter
 

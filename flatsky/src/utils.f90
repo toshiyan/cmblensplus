@@ -301,7 +301,7 @@ subroutine gauss1alm(nx,ny,D,lmin,lmax,Cl,alm)
  
   call initrandom(-1)
 
-  !* make cl on 2d grid
+  ! make cl on 2d grid
   allocate(amp(size(Cl)),amp2d(nx,ny))
   amp = 0d0
   d0 = D(1)*D(2)
@@ -326,17 +326,17 @@ subroutine gauss1alm(nx,ny,D,lmin,lmax,Cl,alm)
   end do
   deallocate(amp)
 
-  !* alm=0 if i=1 or j=1 for symmetry
-  !* center: (ic,jc) = (nx/2+1, ny/2+1)
+  ! alm=0 if i=1 or j=1 for symmetry
+  ! center: (ic,jc) = (nx/2+1, ny/2+1)
   alm = 0d0
 
-  !* maximum nn
+  ! maximum nn
   !ijmin = max ( 2, int( nn(:)*0.5d0 + 1 - iL(2)*D(:)/twopi ) )
   !ijmax = min ( nn(:), int( nn(:)*0.5d0 + 1 + iL(2)*D(:)/twopi ) + 1 )
   ijmin = 2
   ijmax = (/nx,ny/)
 
-  !* check
+  ! check
   if(elxy(nx,nx,D(1))<lmax.or.elxy(ny,ny,D(2))<lmax) then
     write(*,*) 'error (gauss1alm): inclusion of Fourier mode is incorrect'
     write(*,*) 'maximum ell should be lower than', elxy(nx,nx,D(1)), 'or', elxy(ny,ny,D(2))

@@ -203,14 +203,15 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,tlm)
 end subroutine qee
 
 
-subroutine qeb(nx,ny,D,rL,fC,E,B,tlm)
+subroutine qeb(nx,ny,D,rL,fE,fB,E,B,tlm)
 !*  Reconstructing patchy tau from the EB quadratic estimator
 !*
 !*  Args:
 !*    :nx, ny (int)         : Number of Lx and Ly grids
 !*    :D[xy] (double)       : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
 !*    :rL[2] (int)          : Minimum and maximum multipole of CMB for reconstruction
-!*    :fC[lx,ly] (double)   : EE power spectrum on 2D grid, with bounds (nx,ny)
+!*    :fE[lx,ly] (double)   : EE power spectrum on 2D grid, with bounds (nx,ny)
+!*    :fB[lx,ly] (double)   : BB power spectrum on 2D grid, with bounds (nx,ny)
 !*    :E[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
 !*    :B[lx,ly] (dcmplx)    : 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
 !*
@@ -222,26 +223,30 @@ subroutine qeb(nx,ny,D,rL,fC,E,B,tlm)
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
   double precision, intent(in), dimension(2) :: D
-  double precision, intent(in), dimension(nx,ny) :: fC
+  double precision, intent(in), dimension(nx,ny) :: fE, fB
   double complex, intent(in), dimension(nx,ny) :: E, B
   double complex, intent(out), dimension(nx,ny) :: tlm
   !internal
   integer :: nn(2)
   double precision, dimension(nx,ny) :: els, lmask
-  double complex, dimension(nx,ny) :: wE, wB, alm, ei2p
+  double complex, dimension(nx,ny) :: aE, bE, aB, bB, alm, ei2p
 
   nn = (/nx,ny/)
   call elarrays_2d(nn,D,els=els,ei2p=ei2p)
 
   ! filtering
   call make_lmask(nn,D,rL,lmask)
-  wE = lmask*fC*E*ei2p
-  wB = lmask*B*conjg(ei2p)
+  bE = lmask*fE*E*ei2p
+  aB = lmask*B*conjg(ei2p)
+  bB = lmask*fB*B*conjg(ei2p)
+  aE = lmask*E*ei2p
 
   ! convolution
-  call dft(wB,nn,D,-1)
-  call dft(wE,nn,D,-1)
-  alm = aimag(wB*wE)
+  call dft(bE,nn,D,-1)
+  call dft(aB,nn,D,-1)
+  call dft(bB,nn,D,-1)
+  call dft(aE,nn,D,-1)
+  alm = aimag(bE*aB-aE*bB)
   call dft(alm,nn,D,1)
 
   tlm = alm

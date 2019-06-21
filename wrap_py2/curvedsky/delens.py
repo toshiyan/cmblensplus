@@ -25,7 +25,7 @@ def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside=None):
   if nside is None: nside= lmax
   return libcurvedsky.delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside)
 
-def shiftvec(npix,lmax,plm,nremap=None):
+def shiftvec(npix,lmax,plm,nremap= 3):
   """
   Return the anti deflection vector, beta, at the Healpix pixel for the delensing where 
 
@@ -47,7 +47,6 @@ def shiftvec(npix,lmax,plm,nremap=None):
   Usage:
     :beta = curvedsky.delens.shiftvec(npix,lmax,plm,nremap):
   """
-  if nremap is None: nremap= 3
   return libcurvedsky.delens.shiftvec(npix,lmax,plm,nremap)
 
 def phi2grad(npix,lmax,plm):

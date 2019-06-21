@@ -279,15 +279,17 @@ def qall(QDO,lmax,rlmin,rlmax,fC,OC,gtype= ''):
   """
   return libcurvedsky.norm_lens.qall(QDO,lmax,rlmin,rlmax,fC,OC,gtype)
 
-def qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,iter= 1,conv= 0.001):
+def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter= 1,conv= 1e-6):
   """
   Normalization of reconstructed CMB lensing potential and its curl mode from the EB quadratic estimator
 
   Args:
+    :lmax (*int*): Maximum multipole of output normalization
+    :elmax (*int*): Maximum multipole of input EE spectra, CE and OCE
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
     :dlmin/dlmax (*int*): Minimum/Maximum multipole of E mode and lensing potential for delensing
-    :fC [*l*] (*double*): Theory EE angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
+    :CE [*l*] (*double*): Theory EE angular power spectrum, with bounds (0:elmax)
+    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:elmax)
     :OCB [*l*] (*double*): Observed B-mode angular power spectrum, with bounds (0:rlmax)
     :Cpp [*l*] (*double*): Theory lensing potential angular power spectrum, with bounds (0:dlmax)
 
@@ -300,7 +302,7 @@ def qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,iter= 1,conv= 0.001):
     :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,iter,conv):
+    :Ag,Ac = curvedsky.norm_lens.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv):
   """
-  return libcurvedsky.norm_lens.qeb_iter(rlmin,rlmax,dlmin,dlmax,fC,OCE,OCB,Cpp,iter,conv)
+  return libcurvedsky.norm_lens.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv)
 

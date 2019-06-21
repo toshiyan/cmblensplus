@@ -140,11 +140,6 @@ def gauss1alm(nx,ny,D,lmin,lmax,Cl):
   Returns:
     :alm[*lx,ly*] (*dcmplx*): random gaussian fields on 2D Fourier plane, with bounds (nx,ny)
 
-   make cl on 2d grid
-   alm=0 if i=1 or j=1 for symmetry
-   center: (ic,jc) = (nx/2+1, ny/2+1)
-   maximum nn
-   check
   Usage:
     :alm = flatsky.utils.gauss1alm(nx,ny,D,lmin,lmax,Cl):
   """

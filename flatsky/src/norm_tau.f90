@@ -15,6 +15,63 @@ module norm_tau
 contains 
 
 
+subroutine qtt(nx,ny,D,rL,OT,TT,eL,At)
+!*  Normalization of the temperature quadratic estimator for patchy tau
+!*
+!*  Args:
+!*    :nx, ny (int)       : Number of Lx and Ly grids
+!*    :D[xy] (double)     : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)        : Minimum and maximum multipole of CMB for reconstruction
+!*    :OT[lx,ly] (double) : Inverse of Observed temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :TT[lx,ly] (double) : Theory temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)        : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :At[lx,ly] (dcmplx) : Normalization of patchy tau on 2D grid, with bounds (nx,ny)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: nx, ny
+  integer, intent(in), dimension(2) :: eL, rL
+  double precision, intent(in), dimension(2) :: D
+  double precision, intent(in), dimension(nx,ny) :: OT, TT
+  double precision, intent(out), dimension(nx,ny) :: At
+  !internal
+  integer :: i, j, nn(2)
+  double precision, dimension(nx,ny) :: lmask, Al
+  double complex, dimension(nx,ny) :: A1, A2, B
+
+  nn = (/nx,ny/)
+
+  ! filtering
+  call make_lmask(nn,D,rL,lmask)
+
+  A1 = lmask * OT * TT**2
+  A2 = lmask * OT
+  B  = lmask * OT * TT
+
+  ! convolution
+  call dft(A1,nn,D,-1)
+  call dft(A2,nn,D,-1)
+  call dft(B,nn,D,-1)
+  B = A1*A2 + B**2
+  call dft(B,nn,D,1)
+
+  ! normalization
+  call make_lmask(nn,D,eL,lmask)
+  Al = lmask * B
+
+  ! inversion
+  At = 0d0
+  do i = 1, nx
+    do j = 1, ny
+      if (Al(i,j)>0d0)  At(i,j) = 1d0/Al(i,j)
+    end do
+  end do
+
+end subroutine qtt
+
+
 subroutine qeb(nx,ny,D,rL,IE,IB,EE,eL,At)
 !*  Normalization of the EB quadratic estimator for patchy tau
 !*

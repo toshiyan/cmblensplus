@@ -127,16 +127,16 @@ subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
   Axx = lmask * OT * TE**2 * ei2p**2/2d0 * lx**2
   Axy = lmask * OT * TE**2 * ei2p**2/2d0 * lx*ly*2d0
   Ayy = lmask * OT * TE**2 * ei2p**2/2d0 * ly**2
+  Bm  = lmask * OE * conjg(ei2p)**2
   Cxx = lmask * OT * TE**2 / 2d0 * lx**2
   Cxy = lmask * OT * TE**2 / 2d0 * lx*ly*2d0
   Cyy = lmask * OT * TE**2 / 2d0 * ly**2
+  Bp  = lmask * OE
   Ax  = lmask * OT * TE * ei2p * lx
   Ay  = lmask * OT * TE * ei2p * ly
-  A   = lmask * OT
-  Bm  = lmask * OE * conjg(ei2p)**2
-  Bp  = lmask * OE
   Bx  = lmask * OE * TE * conjg(ei2p) * lx
   By  = lmask * OE * TE * conjg(ei2p) * ly
+  A   = lmask * OT
   Bxx = lmask * OE * TE**2 * lx**2
   Bxy = lmask * OE * TE**2 * lx*ly*2d0
   Byy = lmask * OE * TE**2 * ly**2
@@ -160,38 +160,12 @@ subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
   call dft(Byy,nn,D,-1)
 
   ! convolution
-  Axx = Axx*Bm + Cxx*Bp
-  Axy = Axy*Bm + Cxy*Bp
-  Ayy = Ayy*Bm + Cyy*Bp
+  Axx = Axx*Bm + Cxx*Bp + 2*Ax*Bx + A*Bxx
+  Axy = Axy*Bm + Cxy*Bp + 2*(Ax*By + Ay*Bx) + A*Bxy
+  Ayy = Ayy*Bm + Cyy*Bp + 2*Ay*By + A*Byy
   call dft(Axx,nn,D,1)
   call dft(Axy,nn,D,1)
   call dft(Ayy,nn,D,1)
-  Axx = dble(Axx)
-  Axy = dble(Axy)
-  Ayy = dble(Ayy)
-
-  !overwrite C
-  Cxx = Ax*Bx
-  Cxy = Ax*By + Ay*Bx
-  Cyy = Ay*By
-  call dft(Cxx,nn,D,1)
-  call dft(Cxy,nn,D,1)
-  call dft(Cyy,nn,D,1)
-  Cxx = dble(Cxx)
-  Cxy = dble(Cxy)
-  Cyy = dble(Cyy)
-
-  Bxx = A*Bxx
-  Bxy = A*Bxy
-  Byy = A*Byy
-
-  call dft(Bxx,nn,D,1)
-  call dft(Bxy,nn,D,1)
-  call dft(Byy,nn,D,1)
-
-  Axx = Axx + 2*Cxx + Bxx
-  Axy = Axy + 2*Cxy + Bxy
-  Ayy = Ayy + 2*Cyy + Byy
 
   ! normalization
   call make_lmask(nn,D,eL,lmask)
