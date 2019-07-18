@@ -5,7 +5,7 @@ import basic
 
 Tcmb  = 2.726e6    # CMB temperature
 lmax  = 3000       # maximum multipole of output normalization
-rlmin = 500        # reconstruction multipole range
+rlmin = 400        # reconstruction multipole range
 rlmax = 3000
 sig   = 10.
 ac2rad = np.pi/180./60.

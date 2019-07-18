@@ -177,7 +177,8 @@ end subroutine phi2grad
 
 
 subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
-!*  Remapping CMB temperaure and polarization with a given shift vector, grad, based on a simple implementation of LensPix. 
+!*  Remapping CMB temperaure and polarization with a given shift vector, beta, based on a simple implementation of LensPix;
+!*    X(n+beta)
 !*  alm[0,:,:] is temperature, alm[1,:,:] is E mode, and alm[2,:,:] is B mode.
 !*
 !*  Args:
