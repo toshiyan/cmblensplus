@@ -46,16 +46,16 @@ def al(p,f,r):
 
 
 def loadnorm(p,files):
-  Ag = {}
-  Ac = {}
-  Wg = {}
-  Wc = {}
-  for q in p.qlist:
-    Ag[q], Ac[q] = np.loadtxt(files[q].al,unpack=True,usecols=(1,2))
-  if 'MV' in p.qlist and p.qtype=='lens': 
-    for qi, qq in enumerate(['TT','TE','EE','TB','EB']):  Wg[qq], Wc[qq] = np.loadtxt(files[q].wl,unpack=True,usecols=(1,2))
+    Ag = {}
+    Ac = {}
+    Wg = {}
+    Wc = {}
+    for q in p.qlist:
+        Ag[q], Ac[q] = np.loadtxt(files[q].al,unpack=True,usecols=(1,2))
+    if 'MV' in p.qlist and p.qtype=='lens':
+        for qi, qq in enumerate(['TT','TE','EE','TB','EB']):  Wg[qq], Wc[qq] = np.loadtxt(files[qq].wl,unpack=True,usecols=(1,2))
 
-  return Ag, Ac, Wg, Wc
+    return Ag, Ac, Wg, Wc
 
 
 
