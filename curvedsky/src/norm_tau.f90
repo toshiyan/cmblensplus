@@ -3,10 +3,10 @@
 !////////////////////////////////////////////////////!
 
 module norm_tau
-  use alkernel, only: Kernels_Tau
+  use alkernel, only: kernels_tau, kernels_rot
   implicit none
 
-  private Kernels_Tau
+  private kernels_tau, kernels_rot
 
 contains
 
@@ -58,6 +58,61 @@ subroutine qtt(lmax,rlmin,rlmax,fC,OCT,At)
   end do
 
 end subroutine qtt
+
+
+subroutine oeb(lmax,rlmin,rlmax,EB,OCE,OCB,At)
+!*  Normalization of reconstructed amplitude from the EB quadratic estimator
+!*  The kernels are the same as the rotation normalization but with a factor 4. 
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :EB [l] (double)  : Theory EB spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed EE spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed BB spectrum, with bounds (0:rlmax)
+!*
+!*  Returns:
+!*    :At [l] (double)  : Normalization, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, rlmin, rlmax
+  double precision, intent(in), dimension(0:rlmax) :: EB, OCE, OCB
+  double precision, intent(out), dimension(0:lmax) :: At
+  !internal
+  integer :: l, rL(2)
+  double precision, dimension(rlmin:rlmax) :: W1, W2
+  double precision, dimension(3,lmax) :: SG
+
+  write(*,*) 'norm qEB (tau)'
+  rL = (/rlmin,rlmax/)
+  SG = 0d0
+
+  do l = rlmin, rlmax
+    if (OCE(l)==0d0) stop 'error (norm_rot.qeb): observed clee is zero'
+    if (OCB(l)==0d0) stop 'error (norm_rot.qeb): observed clbb is zero'
+  end do
+
+  W1 = 1d0/OCE(rlmin:rlmax)
+  W2 = EB(rlmin:rlmax)**2 / OCB(rlmin:rlmax)
+  call kernels_rot(rL,W1,W2,SG(1,:),'Sm')
+
+  W1 = EB(rlmin:rlmax)/OCE(rlmin:rlmax)
+  W2 = EB(rlmin:rlmax)/OCB(rlmin:rlmax)
+  call kernels_rot(rL,W1,W2,SG(2,:),'Gm')
+  SG(2,:) = 2d0*SG(2,:)
+
+  W1 = 1d0/OCB(rlmin:rlmax)
+  W2 = EB(rlmin:rlmax)**2 / OCE(rlmin:rlmax)
+  call kernels_rot(rL,W1,W2,SG(3,:),'Sm')
+
+  At = 0d0
+  do l = 1, lmax
+    if (sum(SG(:,l))/=0d0)  At(l) = 4d0/sum(SG(:,l))
+  end do
+
+end subroutine oeb
+
 
 
 end module norm_tau

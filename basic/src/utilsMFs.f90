@@ -32,11 +32,9 @@ subroutine CalcMFs(sigma2,Skew,Kurt,MFs,nus)
       case(0)
         vk2 = skew(1)**2/72.d0*Her(5,nu) + Kurt(1)/24.d0*Her(3,nu)
       case(1)
-        vk2 = skew(1)**2/72.d0*Her(6,nu) + (Kurt(1)-skew(1)*skew(2))/24.d0*Her(4,nu) &
-          - (Kurt(2)+3.d0*skew(2)**2/8.d0)*Her(2,nu)/12.d0 - Kurt(4)/8.d0
+        vk2 = skew(1)**2/72.d0*Her(6,nu) + (Kurt(1)-skew(1)*skew(2))/24.d0*Her(4,nu) - (Kurt(2)+3.d0*skew(2)**2/8.d0)*Her(2,nu)/12.d0 - Kurt(4)/8.d0
       case(2)
-        vk2 = skew(1)**2/72.d0*Her(7,nu) + (Kurt(1)-2*skew(1)*skew(2))/24.d0*Her(5,nu) &
-          - (Kurt(2)+skew(2)**2/2.d0)*Her(3,nu)/6.d0 - (Kurt(3)+skew(2)*skew(3)/2.d0)*Her(1,nu)/2.d0
+        vk2 = skew(1)**2/72.d0*Her(7,nu) + (Kurt(1)-2*skew(1)*skew(2))/24.d0*Her(5,nu) - (Kurt(2)+skew(2)**2/2.d0)*Her(3,nu)/6.d0 - (Kurt(3)+skew(2)*skew(3)/2.d0)*Her(1,nu)/2.d0
       end select
       Ak = pi/(omega(2-k)*omega(k))*dsqrt(sigma2(1)/(2.d0*sigma2(0)))**k/((2.d0*pi)**((k+1)*0.5d0))
       MFs(k+1,i) = Ak*dexp(-nu**2*0.5d0)*( vk0 + dsqrt(sigma2(0))*vk1 + sigma2(0)*vk2 )
@@ -51,13 +49,14 @@ function omega(n)
   integer, intent(in) :: n 
   double precision :: omega
 
-  if (n==0) then 
+  select case (n)
+  case (0)
     omega = 1d0
-  else if (n==1) then 
+  case (1)
     omega = 2d0
-  else 
+  case default
     omega = pi
-  end if
+  end select
 
 end function omega
 
@@ -189,7 +188,7 @@ subroutine calc_skew(Skew,sigma2,CTT,CTd,eL,th)
   ! * range of L2 --- [L1, lmax] 
   !     The range of L2 is restricted by the triangle relation:
   !         |L0-L1| <= L2 <= L0+L1 
-  ! * finally we multiplied "6" 
+  ! * finally multiplied by "6" 
   ! * initial wigner-3j symbols are recursively computed: 
   !   (2,2,2) - (3,3,4) - (4,4,4) - (5,5,6) - ...
 
@@ -225,7 +224,7 @@ subroutine calc_skew(Skew,sigma2,CTT,CTd,eL,th)
           skew = skew + mcS*bW*W_inf**2
         end if 
       end if 
-      if(L2+2<=eL(2)) then
+      if (L2+2<=eL(2)) then
         do L3 = L2+2, min(eL(2),L1+L2)
           aL3 = dble(L3)
           ! recursion formula 
@@ -239,10 +238,8 @@ subroutine calc_skew(Skew,sigma2,CTT,CTd,eL,th)
           W_mid  = W_sup
         end do 
       end if
-      WL1L2p0 = -dsqrt((2*aL2-aL1+2)*(2*aL2-aL1+1)/(2*aL2+aL1+3)/ &
-        (2*aL2+aL1+2))*((2*aL2+aL1+2)/(2*aL2-aL1+2))*WL1L2p0
-      WL1L2p1 = -dsqrt((2*aL2-aL1+3)*(2*aL2-aL1+2)/(2*aL2+aL1+4)/ &
-        (2*aL2+aL1+3))*((2*aL2+aL1+3)/(2*aL2-aL1+3))*WL1L2p1
+      WL1L2p0 = -dsqrt((2*aL2-aL1+2)*(2*aL2-aL1+1)/(2*aL2+aL1+3)/(2*aL2+aL1+2))*((2*aL2+aL1+2)/(2*aL2-aL1+2))*WL1L2p0
+      WL1L2p1 = -dsqrt((2*aL2-aL1+3)*(2*aL2-aL1+2)/(2*aL2+aL1+4)/(2*aL2+aL1+3))*((2*aL2+aL1+3)/(2*aL2-aL1+3))*WL1L2p1
     end do 
     iniW0 = iniW
   end do
@@ -253,6 +250,7 @@ subroutine calc_skew(Skew,sigma2,CTT,CTd,eL,th)
   write(*,*) "skew", skew(1), skew(2), skew(3)
 
 end subroutine calc_skew
+
 
 subroutine Init_Wjm(L0,W,W0,even)
   implicit none
@@ -286,6 +284,7 @@ subroutine Init_Wjm(L0,W,W0,even)
 
 end subroutine Init_Wjm
 
+
 subroutine Recursion_Ini(L,L1,L2,a,c)
   implicit none
   !I/O
@@ -296,6 +295,7 @@ subroutine Recursion_Ini(L,L1,L2,a,c)
   c = (L2-1)*dsqrt((-L2+L+L1+1)*(L2-L+L1)*(L2+L-L1)*(L2+L+L1+1))
 
 end subroutine Recursion_Ini
+
 
 subroutine calc_prefactor(mcS,aL1,aL2,aL3,q2)
   implicit none
@@ -338,6 +338,7 @@ subroutine reducedbisp(L1,L2,L3,bW,CTT,CTd,eL,th)
     *(2.d0*aL1+1.d0)*(2.d0*aL2+1.d0)*(2.d0*aL3+1.d0)/(4.d0*pi)
 
 end subroutine reducedbisp
+
 
 function WL(eL,L,th)
   implicit none

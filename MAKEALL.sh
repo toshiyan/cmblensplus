@@ -2,6 +2,7 @@
 
 cwd=$(pwd)
 
+# define functions
 makeF90()
 {
   echo '----' ${1} '----'
@@ -28,20 +29,25 @@ if [ ${1} = "clean" ]; then
   rm -rf F90/mod/*.mod
 fi
 
-if [ ${1} = "F90" -o ${1} = "all" ]; then
+# compile f90 sources
+if [ ${1} = "F90" -o ${1} = "all" -o ${1} = "basic" -o ${1} = "flatsky" -o ${1} = "curvedsky" ]; then
   rm -rf F90/lib/*.a
   rm -rf F90/mod/*.mod
   makeF90 src_utils
   makeF90 src_matrix
+fi
+if [ ${1} = "F90" -o ${1} = "all" -o ${1} = "flatsky" ]; then
   makeF90 src_dft
 fi
 
-if [ ${1} = "f2py" -o ${1} = "all" ]; then
-  #rm -rf wrap/*.so
-  #rm -rf wrap_py2/*.so
+# create python modules
+if [ ${1} = "f2py" -o ${1} = "all" -o ${1} = "basic" ]; then
   makef2py basic
+fi
+if [ ${1} = "f2py" -o ${1} = "all" -o ${1} = "flatsky" ]; then
   makef2py flatsky
+fi
+if [ ${1} = "f2py" -o ${1} = "all" -o ${1} = "curvedsky" ]; then
   makef2py curvedsky
 fi
-
 

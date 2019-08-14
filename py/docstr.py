@@ -54,6 +54,7 @@ for mod in modname:
 
     # extract parameters from function
     args = func[func.find('(')+1:func.find(')')].split(',')
+    #print(args)
 
     # check optional or output arguments
     pout = []
@@ -88,7 +89,8 @@ for mod in modname:
 
     # remove output args from func
     for p in pout:
-      func = func.replace(','+p,'')
+      func = func.replace(','+p+',',',')
+      func = func.replace(','+p+')',')')
 
     # original function
     gunc = libname+'.'+mod+'.'+func

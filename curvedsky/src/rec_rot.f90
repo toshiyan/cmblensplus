@@ -70,7 +70,7 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside)
   call map2alm(nside,lmax,lmax,map,xlm)
   deallocate(map)
 
-  ! compute glm and clm 
+  ! compute alm
   write(*,*) 'compute polarization rotation'
   alm = 0d0
   do l = 1, lmax
