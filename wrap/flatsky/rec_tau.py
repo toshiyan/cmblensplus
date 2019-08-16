@@ -80,7 +80,7 @@ def qee(nx,ny,D,rL,fC,E1,E2):
   """
   return libflatsky.rec_tau.qee(nx,ny,D,rL,fC,E1,E2)
 
-def qeb(nx,ny,D,rL,fC,E,B):
+def qeb(nx,ny,D,rL,fE,fB,E,B):
   """
   Reconstructing patchy tau from the EB quadratic estimator
 
@@ -88,7 +88,8 @@ def qeb(nx,ny,D,rL,fC,E,B):
     :nx, ny (*int*): Number of Lx and Ly grids
     :D[*xy*] (*double*): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
     :rL[*2*] (*int*): Minimum and maximum multipole of CMB for reconstruction
-    :fC[*lx,ly*] (*double*): EE power spectrum on 2D grid, with bounds (nx,ny)
+    :fE[*lx,ly*] (*double*): EE power spectrum on 2D grid, with bounds (nx,ny)
+    :fB[*lx,ly*] (*double*): BB power spectrum on 2D grid, with bounds (nx,ny)
     :E[*lx,ly*] (*dcmplx*): 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
     :B[*lx,ly*] (*dcmplx*): 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
 
@@ -96,7 +97,7 @@ def qeb(nx,ny,D,rL,fC,E,B):
     :tlm[*lx,ly*] (*dcmplx*): 2D Fourier modes of patchy tau, with bounds (nx,ny)
 
   Usage:
-    :tlm = flatsky.rec_tau.qeb(nx,ny,D,rL,fC,E,B):
+    :tlm = flatsky.rec_tau.qeb(nx,ny,D,rL,fE,fB,E,B):
   """
-  return libflatsky.rec_tau.qeb(nx,ny,D,rL,fC,E,B)
+  return libflatsky.rec_tau.qeb(nx,ny,D,rL,fE,fB,E,B)
 

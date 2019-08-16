@@ -167,6 +167,72 @@ subroutine dft2dcr(map0,nx,ny,D,trans,map1)
 end subroutine dft2dcr
 
 
+subroutine dft2dpol(nx,ny,D,Q,U,E,B)
+!*  Spin-2 DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)   : Number of x/Lx and y/Ly grids
+!*    :D[2] (double)  : Side length (x and y) of map
+!*    :Q[x,y] (doub;e): Q on 2D grid to be transformed, with bounds (nx,ny)
+!*    :U[x,y] (doub;e): U on 2D grid to be transformed, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :E[x,y] (dcmplx): E on 2D Fourier grid, with bounds (nx,ny)
+!*    :B[x,y] (dcmplx): B on 2D Fourier grid, with bounds (nx,ny)
+!*
+  implicit none
+  integer, intent(in) :: nx, ny
+  double precision, intent(in), dimension(2) :: D
+  double complex, intent(in), dimension(nx,ny) :: Q, U
+  double precision, intent(out), dimension(nx,ny) :: E, B
+  integer :: nn(2)
+  double precision :: QU(nx,ny,2)
+  double complex :: EB(2,nx,ny)
+
+  nn(1) = nx
+  nn(2) = ny
+  QU(:,:,1) = Q
+  QU(:,:,2) = U
+  call dft_pol(QU,nn,D,EB,1)
+  E  = EB(1,:,:)
+  B  = EB(2,:,:)
+
+end subroutine dft2dpol
+
+
+subroutine idft2dpol(nx,ny,D,E,B,Q,U)
+!*  Spin-2 Inverse DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)   : Number of x/Lx and y/Ly grids
+!*    :D[2] (double)  : Side length (x and y) of map
+!*    :E[x,y] (dcmplx): E on 2D Fourier grid, with bounds (nx,ny)
+!*    :B[x,y] (dcmplx): B on 2D Fourier grid, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :Q[x,y] (doub;e): Q on 2D grid, with bounds (nx,ny)
+!*    :U[x,y] (doub;e): U on 2D grid, with bounds (nx,ny)
+!*
+  implicit none
+  integer, intent(in) :: nx, ny
+  double precision, intent(in), dimension(2) :: D
+  double precision, intent(in), dimension(nx,ny) :: E, B
+  double complex, intent(out), dimension(nx,ny) :: Q, U
+  integer :: nn(2)
+  double precision :: QU(nx,ny,2)
+  double complex :: EB(2,nx,ny)
+
+  nn(1) = nx
+  nn(2) = ny
+  EB(1,:,:) = E
+  EB(2,:,:) = B
+  call dft_pol(QU,nn,D,EB,-1)
+  Q = QU(:,:,1)
+  U = QU(:,:,2)
+
+end subroutine idft2dpol
+
+
 subroutine eb_separate(nx,ny,D,QU,EB,W,Wd)
 !*  Compute Smith's pure EB estimator in flatsky
 !*
@@ -174,7 +240,7 @@ subroutine eb_separate(nx,ny,D,QU,EB,W,Wd)
 !*    :nx, ny (int)      : Number of x/Lx and y/Ly grids
 !*    :D[2] (double)     : Side length (x and y) of map
 !*    :W[x,y] (double)   : Window function, with bounds (nx,ny)
-!*    :QU[x,y,2] (double): Q and U maps, with bounds (nx,ny,2)
+!*    :QU[x,y,2] (double): unmasked Q and U maps, with bounds (nx,ny,2)
 !*
 !*  Args(optional):
 !*    :Wd[5,x,y] (double): Precomputed window function derivaives, dW/dx, dW/dw, d^2W/dx^2, d^2W/dxdy, d^2W/dy^2, with bounds (5,nx,ny)

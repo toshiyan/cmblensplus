@@ -91,6 +91,44 @@ def dft2dcr(map0,nx,ny,D,trans):
   """
   return libflatsky.ffttools.dft2dcr(map0,nx,ny,D,trans)
 
+def dft2dpol(nx,ny,D,Q,U):
+  """
+  Spin-2 DFT for 2D array. 
+
+  Args:
+    :nx, ny (*int*): Number of x/Lx and y/Ly grids
+    :D[*2*] (*double*): Side length (x and y) of map
+    :Q[*x,y*] (doub;e): Q on 2D grid to be transformed, with bounds (nx,ny)
+    :U[*x,y*] (doub;e): U on 2D grid to be transformed, with bounds (nx,ny)
+
+  Returns:
+    :E[*x,y*] (*dcmplx*): E on 2D Fourier grid, with bounds (nx,ny)
+    :B[*x,y*] (*dcmplx*): B on 2D Fourier grid, with bounds (nx,ny)
+
+  Usage:
+    :E,B = flatsky.ffttools.dft2dpol(nx,ny,D,Q,U):
+  """
+  return libflatsky.ffttools.dft2dpol(nx,ny,D,Q,U)
+
+def idft2dpol(nx,ny,D,E,B):
+  """
+  Spin-2 Inverse DFT for 2D array. 
+
+  Args:
+    :nx, ny (*int*): Number of x/Lx and y/Ly grids
+    :D[*2*] (*double*): Side length (x and y) of map
+    :E[*x,y*] (*dcmplx*): E on 2D Fourier grid, with bounds (nx,ny)
+    :B[*x,y*] (*dcmplx*): B on 2D Fourier grid, with bounds (nx,ny)
+
+  Returns:
+    :Q[*x,y*] (doub;e): Q on 2D grid, with bounds (nx,ny)
+    :U[*x,y*] (doub;e): U on 2D grid, with bounds (nx,ny)
+
+  Usage:
+    :Q,U = flatsky.ffttools.idft2dpol(nx,ny,D,E,B):
+  """
+  return libflatsky.ffttools.idft2dpol(nx,ny,D,E,B)
+
 def eb_separate(nx,ny,D,QU,W,Wd=None):
   """
   Compute Smith's pure EB estimator in flatsky
@@ -99,7 +137,7 @@ def eb_separate(nx,ny,D,QU,W,Wd=None):
     :nx, ny (*int*): Number of x/Lx and y/Ly grids
     :D[*2*] (*double*): Side length (x and y) of map
     :W[*x,y*] (*double*): Window function, with bounds (nx,ny)
-    :QU[*x,y,2*] (*double*): Q and U maps, with bounds (nx,ny,2)
+    :QU[*x,y,2*] (*double*): unmasked Q and U maps, with bounds (nx,ny,2)
 
   Args(optional):
     :Wd[*5,x,y*] (*double*): Precomputed window function derivaives, dW/dx, dW/dw, d^2W/dx^2, d^2W/dxdy, d^2W/dy^2, with bounds (5,nx,ny)

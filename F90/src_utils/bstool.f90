@@ -21,6 +21,7 @@ module bstool
     double precision, allocatable :: mgp(:,:) 
     !RT
     double precision, allocatable :: dnq(:), Ik(:,:), PE(:,:)
+    double precision, allocatable :: gammanz(:), anz(:), bnz(:), cnz(:), alphanz1(:), alphanz2(:), betanz(:)
   endtype bispecfunc
 
   private pi
@@ -99,6 +100,8 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype)
         call RTformula_3h_funcs(b%q(i,:),cp%h,om,b%sz(i),b%n(i),b%plL(i,:),b%Ik(i,:),b%PE(i,:),b%dnq(i))
       end if
     end do
+    allocate(b%gammanz(zn),b%anz(zn),b%bnz(zn),b%cnz(zn),b%alphanz1(zn),b%alphanz2(zn),b%betanz(zn))
+    call RTformula_1h_zcoeff(b%sz,b%n,b%gammanz,b%anz,b%bnz,b%cnz,b%alphanz1,b%alphanz2,b%betanz)
 
   end select
 
@@ -163,7 +166,8 @@ subroutine bispec_lens_lss_kernel(cp,b,l1,l2,l3,bl,model)
       call bispec_matter_3B(b%q(i,[l1,l2,l3]),b%plL(i,[l1,l2,l3]),b%pl(i,[l1,l2,l3]),fh,bk)
     case('RT')
       fh = b%dnq(i)*b%q(i,[l1,l2,l3])
-      call bispec_matter_RT(cp,b%q(i,[l1,l2,l3]),b%plL(i,[l1,l2,l3]),b%z(i),b%sz(i),b%n(i),b%Ik(i,l1)*b%Ik(i,l2)*b%Ik(i,l3),b%PE(i,[l1,l2,l3]),fh,bk)
+      call bispec_matter_RT(cp,b%q(i,[l1,l2,l3]),b%plL(i,[l1,l2,l3]),b%z(i),b%sz(i),b%n(i),b%Ik(i,l1)*b%Ik(i,l2)*b%Ik(i,l3),b%PE(i,[l1,l2,l3]),b%gammanz(i),b%anz(i),b%bnz(i),b%cnz(i),b%alphanz1(i),b%alphanz2(i),b%betanz(i),fh,bk)
+      !call bispec_matter_RT(cp,b%q(i,[l1,l2,l3]),b%plL(i,[l1,l2,l3]),b%z(i),b%sz(i),b%n(i),b%Ik(i,l1)*b%Ik(i,l2)*b%Ik(i,l3),b%PE(i,[l1,l2,l3]),fh,bk)
     end select
 
     bl = bl + b%zker(i) * bk
@@ -215,11 +219,12 @@ subroutine bispec_matter_3B(q,plL,pl,fh,bk)
 end subroutine bispec_matter_3B
 
 
-subroutine bispec_matter_RT(cp,q,plL,z,sz,nef,Iks,PE,fh,bk)
+subroutine bispec_matter_RT(cp,q,plL,z,sz,nef,Iks,PE,gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz,fh,bk)
+!subroutine bispec_matter_RT(cp,q,plL,z,sz,nef,Iks,PE,fh,bk)
   implicit none
   !input
   type(cosmoparams), intent(in) :: cp
-  double precision, intent(in) :: q(3), plL(3), z, sz, nef, Iks, PE(3), fh(3)
+  double precision, intent(in) :: q(3), plL(3), z, sz, nef, Iks, PE(3), fh(3), gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz
   !output
   double precision, intent(out) :: bk
   !internal
@@ -234,7 +239,8 @@ subroutine bispec_matter_RT(cp,q,plL,z,sz,nef,Iks,PE,fh,bk)
   call F2_Kernel(q([3,1,2]),p,p,F2(3))
 
   if (z<9d0) then
-    call RTformula_1h(q,cp%ns,sz,nef,bk)
+    call RTformula_1h(q,cp%ns,gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz,bk)
+    !call RTformula_1h(q,cp%ns,log10(sz),nef,bk)
     bk = bk/cp%h**6 + 2d0*Iks*((F2(1)+fh(3))*PE(1)*PE(2) + (F2(2)+fh(1))*PE(2)*PE(3) + (F2(3)+fh(2))*PE(3)*PE(1))
   else
     bk = 2d0*(F2(1)*plL(1)*plL(2) + F2(2)*plL(2)*plL(3) + F2(3)*plL(3)*plL(1))
@@ -325,9 +331,76 @@ function coeff_fih(Kl,Dz,h,knl)  result(f)
 end function coeff_fih
 
 
-subroutine RTformula_1h(q,ns,sigma8,n_eff,bk)
+subroutine RTformula_1h_zcoeff(sz,n,gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz)
   implicit none
-  double precision, intent(in)  :: q(3), ns, sigma8, n_eff
+  double precision, intent(in)  :: sz(:), n(:)
+  double precision, intent(out) :: gammanz(:), anz(:), bnz(:), cnz(:), alphanz1(:), alphanz2(:), betanz(:)
+
+  !coefficients
+  gammanz = 10d0**(0.182+0.57*n)
+  anz = -2.167 - 2.944*log10(sz) - 1.106*log10(sz)**2 - 2.865*log10(sz)**3
+  bnz = -3.428 - 2.681*log10(sz) + 1.624*log10(sz)**2 - 0.095*log10(sz)**3
+  cnz =  0.159 - 1.107*n
+  alphanz1 = -4.348 - 3.006*n - 0.5745*n**2 
+  alphanz2 = 10d0**(-0.9+0.2*n)
+  betanz   = -1.731 - 2.845*n - 1.4995*n**2 - 0.2811*n**3
+
+  anz = 10**anz
+  bnz = 10**bnz
+  cnz = 10**cnz
+  alphanz1 = 10**alphanz1
+  betanz   = 10**betanz
+  
+end subroutine RTformula_1h_zcoeff
+
+
+subroutine RTformula_1h(q,ns,gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz,bk)
+  implicit none
+  double precision, intent(in)  :: q(3), ns, gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz
+  double precision, intent(out) :: bk
+  integer :: i, imin(1), imax(1)
+  double precision :: kmin, kmax, kmid, r1, r2
+  double precision :: gamman, an, bn, cn, alphan, betan, ln10
+
+  !set kmin, kmax and r1, r2
+  kmin  = minval(q)
+  kmax  = maxval(q)
+  if (kmin==kmax) then
+    kmid = kmin
+  else
+    imax = minloc(q)
+    imin = maxloc(q)
+    do i = 1, 3
+      if (i/=imin(1).and.i/=imax(1)) kmid = q(i)
+    end do
+  end if
+  r1 = kmin/kmax
+  r2 = (kmid+kmin-kmax)/kmax
+
+  !coefficients
+  ln10 = 2.30258509299d0
+  !an = anz*10d0**(-0.31*r1**gammanz)
+  an = anz*dexp(ln10*(-0.31*dexp(dlog(r1)*gammanz)))
+  bn = bnz
+  cn = cnz
+  !alphan = alphanz1*10**(alphanz2*r2**2)
+  !betan  = betanz*10**(0.007*r2)
+  alphan = alphanz1*dexp(ln10*alphanz2*r2**2)
+  betan  = betanz*(1d0+ln10*0.007*r2+(ln10*0.007*r2)**2/2d0) !accurate to 10^-6 for -1<=r2<=1
+
+  if (alphan>1.-(2./3.)*ns)  alphan = 1.-(2./3.)*ns
+
+  bk = 1d0
+  do i = 1, 3
+    bk = bk * cn*q(i) / ( (an*dexp(dlog(q(i))*alphan)+bn*dexp(dlog(q(i))*betan)) * (1d0+cn*q(i)) )
+  end do
+
+end subroutine RTformula_1h
+
+
+subroutine RTformula_1h_old(q,ns,log10s8z,n,bk)
+  implicit none
+  double precision, intent(in)  :: q(3), ns, log10s8z, n
   double precision, intent(out) :: bk
   integer :: i, imin(1), imax(1)
   double precision :: kmin, kmax, kmid, r1, r2
@@ -349,12 +422,12 @@ subroutine RTformula_1h(q,ns,sigma8,n_eff,bk)
   r2 = (kmid+kmin-kmax)/kmax
 
   !coefficients
-  gamman = 10**(0.182+0.57*n_eff)
-  an = -2.167-2.944*log10(sigma8)-1.106*log10(sigma8)**2-2.865*log10(sigma8)**3-0.310*r1**gamman
-  bn = -3.428-2.681*log10(sigma8)+1.624*log10(sigma8)**2-0.095*log10(sigma8)**3
-  cn = 0.159-1.107*n_eff
-  alphan = -4.348 - 3.006*n_eff - 0.5745*n_eff**2 + 10.**(-0.9+0.2*n_eff)*r2**2
-  betan  = -1.731 - 2.845*n_eff - 1.4995*n_eff**2 - 0.2811*n_eff**3 + 0.007*r2
+  gamman = 10d0**(0.182+0.57*n)
+  an = -2.167 - 2.944*log10s8z - 1.106*log10s8z**2 - 2.865*log10s8z**3 - 0.310*r1**gamman
+  bn = -3.428 - 2.681*log10s8z + 1.624*log10s8z**2 - 0.095*log10s8z**3
+  cn =  0.159 - 1.107*n
+  alphan = -4.348 - 3.006*n - 0.5745*n**2 + 10d0**(-0.9+0.2*n)*r2**2
+  betan  = -1.731 - 2.845*n - 1.4995*n**2 - 0.2811*n**3 + 0.007*r2
 
   an = 10**an
   bn = 10**bn
@@ -366,10 +439,10 @@ subroutine RTformula_1h(q,ns,sigma8,n_eff,bk)
 
   bk = 1d0
   do i = 1, 3
-    bk = bk * 1d0/(an*q(i)**alphan+bn*q(i)**betan) * 1d0/(1d0+1d0/(cn*q(i)))
+    bk = bk * cn*q(i) / ( (an*q(i)**alphan+bn*q(i)**betan) * (1d0+cn*q(i)) )
   end do
 
-end subroutine RTformula_1h
+end subroutine RTformula_1h_old
 
 
 subroutine RTformula_3h_funcs(q,h,om,sigma8,n_eff,Plin,Ik,PE,dnq)
@@ -745,13 +818,13 @@ subroutine skewspec_lens(cp,b,oL,eL,sigma,wp,ck,model,W,skew)
   double precision, intent(in) :: sigma(2), wp(:,:), ck(:,:), W(:)
   double precision, intent(out) :: skew(:,:)
   !internal
-  integer :: l1, l2, l3
-  double precision :: bisp(2), blll, Illl
+  integer :: l1, l2, l3, a1, a2, a3
+  double precision :: bisp(2), blll, Illl, del
 
   skew = 0d0
 
   do l1 = oL(1), oL(2)
-    if (mod(l1,100)==0) write(*,*) l1
+    !if (mod(l1,100)==0) write(*,*) l1
     write(*,*) l1
     do l2 = eL(1), eL(2)
       do l3 = eL(1), eL(2)
@@ -761,17 +834,25 @@ subroutine skewspec_lens(cp,b,oL,eL,sigma,wp,ck,model,W,skew)
         if (l2>l3+l1.or.l2<abs(l3-l1)) cycle
         if (mod(l1+l2+l3,2)==1) cycle
 
+        !del = 2d0
+        !if (l2==l3) del = 1d0
+
+        del = 1d0
         bisp = 0d0
         call bispec_lens_lss_kernel(cp,b,l1,l2,l3,bisp(1),model)
         !call bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp(2))
         Illl = W3j_approx(dble(l1),dble(l2),dble(l3))*dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
-        blll = sum(bisp) * Illl**2/(2d0*l3+1d0) * W(l1)*W(l2)*W(l3)
+        blll = del * sum(bisp) * Illl**2 * W(l1)*W(l2)*W(l3)
+        a1 = dble(l1*(l1+1))
+        a2 = dble(l2*(l2+1))
+        a3 = dble(l3*(l3+1))
         skew(1,l1) = skew(1,l1) + blll
-        skew(2,l1) = skew(2,l1) + blll * (l1*(l1+1)+l2*(l2+1)+l3*(l3+1))
-        skew(3,l1) = skew(3,l1) + blll * ((l1*(l1+1)+l2*(l2+1)-l3*(l3+1))*l3*(l3+1)+(l2*(l2+1)+l3*(l3+1)-l1*(l1+1))*l1*(l1+1)+(l3*(l3+1)+l1*(l1+1)-l2*(l2+1))*l2*(l2+1))
+        skew(2,l1) = skew(2,l1) + blll * (a1+a2+a3)
+        skew(3,l1) = skew(3,l1) + blll * ((a1+a2-a3)*a3+(a2+a3-a1)*a1+(a3+a1-a2)*a2)
 
       end do
     end do
+    skew(:,l1) = skew(:,l1)/(2d0*l1+1d0)
   end do
 
   !skew(1,:) = skew(1,:)/(12d0*pi*sigma(0)**4)

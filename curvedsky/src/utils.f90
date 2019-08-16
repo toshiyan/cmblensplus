@@ -766,11 +766,11 @@ end subroutine hp_map2alm_spin
 
 
 subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
-!*  Transform healpy alm to healpix alm 
+!*  Transform healpy alm to healpix alm
 !*
 !*  Args:
 !*    :lmpy (int)           : Length of healpy alm
-!*    :lmax (int)           : Maximum multipole
+!*    :lmax (int)           : Maximum multipole of the output alm
 !*    :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
 !*
 !*  Returns:
@@ -893,13 +893,15 @@ end subroutine calc_mfs
 
 
 !//////////////////////////////////////////////////////////////////!
-! Conjugate gradient decent algorithm for curvedsky
+! Conjugate gradient decent for curvedsky
 !//////////////////////////////////////////////////////////////////!
 
 subroutine cinv(npix,lmax,cl,nij,alm,itern,xlm)
 !* Computing inverse-variance filtered multipoles: C^-1d
-!* The power spectrum is assumed to be an isotropic Gaussian spectrum. 
-!* Inverse noise covariance is given in pixel space and uncorrelated (nij = sigma x delta_ij).
+!* This code assumes
+!*   - The signal power spectrum is isotropic Gaussian. 
+!*   - Inverse noise covariance is given in pixel space and uncorrelated (nij = sigma x delta_ij).
+!*   - The data model is bxS+N
 !*
 !*  Args:
 !*    :npix (int) : Number of pixel
@@ -944,7 +946,7 @@ end subroutine cinv
 
 
 subroutine cg_algorithm(npix,lmax,clh,nij,b,x,itern)
-!* Searching a solution of Ax=b with the Conjugate Gradient Algorithm iteratively
+!* Searching a solution of Ax=b with the Conjugate Gradient iteratively
   implicit none
   !I/O
   integer, intent(in) :: npix, lmax, itern

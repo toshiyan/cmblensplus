@@ -75,6 +75,46 @@ subroutine elarrays(nx,ny,D,elx,ely,els,eli)
 end subroutine elarrays
 
 
+subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
+!* Return mask in 2D Fourier space. The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
+!*
+!* Args: 
+!*    :nx, ny (int):  number of Lx and Ly grids
+!*    :D[xy] (double):  map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*
+!* Args(optional):
+!*    :lmin/lmax (int)  : Minimum/Maximum of multipoles
+!*    :lxcut/lycut (int): Lx/ly cut of multipoles
+!*  
+!*  Returns:
+!*    :lmask[nx,ny] (double) : Mask, with bounds (nx,ny)
+!*
+  implicit none
+  integer, intent(in) :: nx, ny
+  double precision, intent(in), dimension(2) :: D
+  double precision, intent(out), dimension(nx,ny) :: lmask
+  double precision, intent(in), optional :: lmin, lmax, lxcut, lycut
+  !f2py integer :: lmin  = 0
+  !f2py integer :: lmax  = 1000
+  !f2py integer :: lxcut = 0
+  !f2py integer :: lycut = 0
+  integer :: i, j
+  double precision :: els(nx,ny), elx(nx,ny), ely(nx,ny)
+
+  call elarrays_2d((/nx,ny/),D,elx,ely,els)
+
+  lmask = 1d0
+  do i = 1, nx
+    do j = 1, ny
+      if (present(lmin).and.els(i,j)<lmin)   lmask(i,j) = 0d0
+      if (present(lmax).and.els(i,j)>lmax)   lmask(i,j) = 0d0
+      if (present(lxcut).and.elx(i,j)<lxcut) lmask(i,j) = 0d0
+      if (present(lycut).and.ely(i,j)<lycut) lmask(i,j) = 0d0
+    end do
+  end do
+
+end subroutine elmask
+
 !//// Compute Cl from Fourier modes ////!
 
 subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
