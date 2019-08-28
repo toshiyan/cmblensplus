@@ -45,3 +45,26 @@ def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside=None):
   if nside is None: nside= lmax
   return libcurvedsky.rec_tau.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside)
 
+def oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,nside=None):
+  """
+  Reconstructing amplitude modulation by the odd EB quadratic estimator
+
+  Args:
+    :lmax (*int*): Maximum multipole of output lensing potential alms
+    :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
+    :fEB [*l*] (*double*): EB spectrum, with bounds (0:rlmax)
+    :Elm [*l,m*] (*dcmplx*): Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
+    :Blm [*l,m*] (*dcmplx*): Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
+
+  Args(optional):
+    :nside (*int*): Nside for the convolution calculation, default to lmax
+
+  Returns:
+    :alm [*l,m*] (*dcmplx*): Reconstructed alm, with bounds (0:lmax,0:lmax)
+
+  Usage:
+    :alm = curvedsky.rec_tau.oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,nside):
+  """
+  if nside is None: nside= lmax
+  return libcurvedsky.rec_tau.oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,nside)
+

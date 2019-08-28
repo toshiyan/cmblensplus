@@ -45,7 +45,7 @@ def elmask(nx,ny,D,lmin= 0,lmax= 1000,lxcut= 0,lycut= 0):
 
  Args(optional):
     :lmin/lmax (*int*): Minimum/Maximum of multipoles
-    :lxcut/lycut (*int*): Lx/ly cut of multipoles
+    :lxcut/lycut (*int*): Remove |Lx|<lxcut / |Ly|<lycut cut of multipoles
   
   Returns:
     :lmask[*nx,ny*] (*double*): Mask, with bounds (nx,ny)

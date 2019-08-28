@@ -68,7 +68,7 @@ def bispec_bin(bn,bp,lmax,alm,bstype= 'equi',bst= 'equi',sL=None):
 
 def equi(lmin,lmax,alm,bst= 2):
   """
-  Compute equilateral shape of the unnormalized binned reduced bispectrum for a given alm, b[*l,l,l*]
+  Compute equilateral shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l,l]
 
   Args:
     :lmin (*int*): Minimum multipole of the bin
@@ -88,7 +88,7 @@ def equi(lmin,lmax,alm,bst= 2):
 
 def fold(lmin,lmax,alm,bst= 2):
   """
-  Compute folded shape of the unnormalized binned reduced bispectrum for a given alm, b[*l,l/2,l/2*]
+  Compute folded shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l/2,l/2]
 
   Args:
     :lmin (*int*): Minimum multipole of the bin
@@ -108,7 +108,7 @@ def fold(lmin,lmax,alm,bst= 2):
 
 def sque(eL,sL,l1,alm,bst= 2):
   """
-  Compute squeezed shape of the unnormalized binned reduced bispectrum for a given alm, b[*sL,eL,eL*]
+  Compute squeezed shape of the unnormalized binned reduced bispectrum for a given alm, b[sL,eL,eL]
 
   Args:
     :eL[*2*] (*int*): Minimum and maximum multipoles of the bin, with bounds (2)
@@ -129,7 +129,7 @@ def sque(eL,sL,l1,alm,bst= 2):
 
 def isos(eL,aL,l1,alm,bst= 2):
   """
-  Compute isosceles shape of the unnormalized binned reduced bispectrum for a given alm, b[*eL,aL,aL*]
+  Compute isosceles shape of the unnormalized binned reduced bispectrum for a given alm, b[eL,aL,aL]
 
   Args:
     :eL[*2*] (*int*): Minimum and maximum multipoles of the bin, with bounds (2)

@@ -140,7 +140,7 @@ subroutine oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,alm,nside)
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output lensing potential alms
 !*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
-!*    :fEB [l] (double)   : EB spectrum, with bounds (0:rlmax)
+!*    :fEB [l] (double)   : EB cross-spectrum, with bounds (0:rlmax)
 !*    :Elm [l,m] (dcmplx) : Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*

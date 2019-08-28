@@ -4,7 +4,7 @@
 
 module ffttools
   use constants, only: iu, pi, twopi
-  use fftw,      only: dft, dft_pol, window_deriv
+  use fftw,      only: dft, dft_2darray, dft_pol, window_deriv
   implicit none
 
   INTEGER FFTW_ESTIMATE
@@ -16,7 +16,7 @@ module ffttools
 
   private FFTW_ESTIMATE
   private iu, pi, twopi
-  private dft, dft_pol, window_deriv
+  private dft, dft_2darray, dft_pol, window_deriv
 
 contains 
 
@@ -132,7 +132,7 @@ subroutine dft2drc(map0,nx,ny,D,trans,map1)
   nn(1) = nx
   nn(2) = ny
   map   = map0
-  call dft(map,nn,D,trans)
+  call dft_2darray(map,nn,D,trans)
   map1  = map
 
 end subroutine dft2drc
@@ -183,8 +183,8 @@ subroutine dft2dpol(nx,ny,D,Q,U,E,B)
   implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
-  double complex, intent(in), dimension(nx,ny) :: Q, U
-  double precision, intent(out), dimension(nx,ny) :: E, B
+  double precision, intent(in), dimension(nx,ny) :: Q, U
+  double complex, intent(out), dimension(nx,ny) :: E, B
   integer :: nn(2)
   double precision :: QU(nx,ny,2)
   double complex :: EB(2,nx,ny)
@@ -216,8 +216,8 @@ subroutine idft2dpol(nx,ny,D,E,B,Q,U)
   implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
-  double precision, intent(in), dimension(nx,ny) :: E, B
-  double complex, intent(out), dimension(nx,ny) :: Q, U
+  double complex, intent(in), dimension(nx,ny) :: E, B
+  double precision, intent(out), dimension(nx,ny) :: Q, U
   integer :: nn(2)
   double precision :: QU(nx,ny,2)
   double complex :: EB(2,nx,ny)

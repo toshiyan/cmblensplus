@@ -1,5 +1,5 @@
 !////////////////////////////////////////////////////////////////!
-! * CMB lensing bispectrum subroutines for analytic calculation
+! * Weak lensing bispectrum subroutines for analytic calculation
 !////////////////////////////////////////////////////////////////!
 
 module bstool
@@ -332,6 +332,7 @@ end function coeff_fih
 
 
 subroutine RTformula_1h_zcoeff(sz,n,gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz)
+  !precomputed before ell loops
   implicit none
   double precision, intent(in)  :: sz(:), n(:)
   double precision, intent(out) :: gammanz(:), anz(:), bnz(:), cnz(:), alphanz1(:), alphanz2(:), betanz(:)
@@ -384,8 +385,8 @@ subroutine RTformula_1h(q,ns,gammanz,anz,bnz,cnz,alphanz1,alphanz2,betanz,bk)
   bn = bnz
   cn = cnz
   !alphan = alphanz1*10**(alphanz2*r2**2)
-  !betan  = betanz*10**(0.007*r2)
   alphan = alphanz1*dexp(ln10*alphanz2*r2**2)
+  !betan  = betanz*10**(0.007*r2)
   betan  = betanz*(1d0+ln10*0.007*r2+(ln10*0.007*r2)**2/2d0) !accurate to 10^-6 for -1<=r2<=1
 
   if (alphan>1.-(2./3.)*ns)  alphan = 1.-(2./3.)*ns
@@ -445,23 +446,23 @@ subroutine RTformula_1h_old(q,ns,log10s8z,n,bk)
 end subroutine RTformula_1h_old
 
 
-subroutine RTformula_3h_funcs(q,h,om,sigma8,n_eff,Plin,Ik,PE,dnq)
+subroutine RTformula_3h_funcs(q,h,om,sigma8,n,Plin,Ik,PE,dnq)
   implicit none
-  double precision, intent(in)  :: q(:), h, om, sigma8, n_eff, Plin(:)
+  double precision, intent(in)  :: q(:), h, om, sigma8, n, Plin(:)
   double precision, intent(out) :: PE(:), IK(:), dnq
   integer :: ki
   double precision :: fn, gn, hn, mn, nn, mun, nun, pn, dn, en
 
-  fn  = -10.533 - 16.838*n_eff - 9.3048*n_eff**2 - 1.8263*n_eff**3
-  gn  = 2.787  + 2.405*n_eff + 0.4577*n_eff**2
-  hn  = -1.118 - 0.394*n_eff
+  fn  = -10.533 - 16.838*n - 9.3048*n**2 - 1.8263*n**3
+  gn  = 2.787  + 2.405*n + 0.4577*n**2
+  hn  = -1.118 - 0.394*n
   mn  = -2.605 - 2.434*log10(sigma8) + 5.71*log10(sigma8)**2
   nn  = -4.468 - 3.08*log10(sigma8) + 1.035*log10(sigma8)**2
-  mun = 15.312 + 22.977*n_eff + 10.9579*n_eff**2 + 1.6586*n_eff**3
-  nun = 1.347  + 1.246*n_eff  + 0.4525*n_eff**2
-  pn  = 0.071  - 0.433*n_eff
+  mun = 15.312 + 22.977*n + 10.9579*n**2 + 1.6586*n**3
+  nun = 1.347  + 1.246*n  + 0.4525*n**2
+  pn  = 0.071  - 0.433*n
   dn  = -0.483 + 0.892*log10(sigma8) - 0.086*om
-  en  = -0.632 + 0.646*n_eff
+  en  = -0.632 + 0.646*n
 
   fn  = 10d0**fn
   gn  = 10d0**gn
@@ -827,17 +828,16 @@ subroutine skewspec_lens(cp,b,oL,eL,sigma,wp,ck,model,W,skew)
     !if (mod(l1,100)==0) write(*,*) l1
     write(*,*) l1
     do l2 = eL(1), eL(2)
-      do l3 = eL(1), eL(2)
+      do l3 = l2, eL(2)
 
         if (l3>l1+l2.or.l3<abs(l1-l2)) cycle
         if (l1>l2+l3.or.l1<abs(l2-l3)) cycle
         if (l2>l3+l1.or.l2<abs(l3-l1)) cycle
         if (mod(l1+l2+l3,2)==1) cycle
 
-        !del = 2d0
-        !if (l2==l3) del = 1d0
+        del = 2d0
+        if (l2==l3) del = 1d0
 
-        del = 1d0
         bisp = 0d0
         call bispec_lens_lss_kernel(cp,b,l1,l2,l3,bisp(1),model)
         !call bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp(2))

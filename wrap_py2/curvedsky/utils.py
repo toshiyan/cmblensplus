@@ -55,7 +55,7 @@ def gaussTEB(lmax,TT,EE,BB,TE):
 
 def gauss3alm(lmax,cl):
   """
-  Generating three alms as random Gaussian fields whose covariance is given by cl[*i,j*].
+  Generating three alms as random Gaussian fields whose covariance is given by cl[i,j].
 
   Args:
     :lmax (*int*): Maximum multipole of the output alm
@@ -71,7 +71,7 @@ def gauss3alm(lmax,cl):
 
 def gauss4alm(lmax,cl):
   """
-  Generating four alms as random Gaussian fields whose covariance is given by cl[*i,j*].
+  Generating four alms as random Gaussian fields whose covariance is given by cl[i,j].
 
   Args:
     :lmax (*int*): Maximum multipole of the output alm
@@ -299,11 +299,11 @@ def hp_map2alm_spin(nside,lmax,mmax,spin,map0,map1):
 
 def lm_healpy2healpix(lmpy,almpy,lmax):
   """
-  Transform healpy alm to healpix alm 
+  Transform healpy alm to healpix alm
 
   Args:
     :lmpy (*int*): Length of healpy alm
-    :lmax (*int*): Maximum multipole
+    :lmax (*int*): Maximum multipole of the output alm
     :almpy[*index*] (*dcmplx*): Healpy alm, with bounds (0:lmpy-1)
 
   Returns:
@@ -351,42 +351,4 @@ def calc_mfs(bn,nu,lmax,walm,nside=None):
   """
   if nside is None: nside= lmax
   return libcurvedsky.utils.calc_mfs(bn,nu,lmax,walm,nside)
-
-def cinv(npix,lmax,cl,nij,alm,itern):
-  """
- Computing inverse-variance filtered multipoles: C^-1d
- The power spectrum is assumed to be an isotropic Gaussian spectrum. 
- Inverse noise covariance is given in pixel space and uncorrelated (nij = sigma x delta_ij).
-
-  Args:
-    :npix (*int*): Number of pixel
-    :lmax (*int*): Maximum multipole of alm
-    :cl[*l*] (*double*): Angular power spectrum of alm, with bounds (0:lmax)
-    :nij[*pix*] (*double*): Inverse of the noise variance at each pixel, with bounds (0:npix-1)
-    :alm[*l,m*] (*dcmplx*): Input alm, with bouds (0:lmax,0:lmax)
-    :itern (*int*): Number of interation
-
-  Returns:
-    :xlm[*l,m*] (*dcmplx*): C-inverse filtered multipoles, with bounds (0:lmax,0:lmax)
-
-  Usage:
-    :xlm = curvedsky.utils.cinv(npix,lmax,cl,nij,alm,itern):
-  """
-  return libcurvedsky.utils.cinv(npix,lmax,cl,nij,alm,itern)
-
-def cg_algorithm(npix,lmax,clh,nij,b,itern):
-  """
- Searching a solution of Ax=b with the Conjugate Gradient Algorithm iteratively
-  Usage:
-    :x = curvedsky.utils.cg_algorithm(npix,lmax,clh,nij,b,itern):
-  """
-  return libcurvedsky.utils.cg_algorithm(npix,lmax,clh,nij,b,itern)
-
-def mat_multi(npix,lmax,clh,nij,x,mtype= ''):
-  """
- multiplying matrix
-  Usage:
-    :v = curvedsky.utils.mat_multi(npix,lmax,clh,nij,x,mtype):
-  """
-  return libcurvedsky.utils.mat_multi(npix,lmax,clh,nij,x,mtype)
 

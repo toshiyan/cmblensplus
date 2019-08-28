@@ -3,6 +3,10 @@
 option="${modd} ${libd} ${link}"
 obj="${target}.pyf ${scan}"
 
+if [ ${1} != "all" -a ${1} != "scan" -a ${1} != "compile" -a ${1} != "docs" -a ${1} != "clean" -a ${1} != "dev" ]; then
+	echo "the argument must be either all, scan, compile, docs, clean or dev"
+fi
+
 # create signature file
 if [ ${1} = "scan" -o ${1} = "all" -o ${1} = "dev" ]; then
   rm -rf ${target}.pyf

@@ -84,7 +84,7 @@ subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
 !*
 !* Args(optional):
 !*    :lmin/lmax (int)  : Minimum/Maximum of multipoles
-!*    :lxcut/lycut (int): Lx/ly cut of multipoles
+!*    :lxcut/lycut (int): Remove |Lx|<lxcut / |Ly|<lycut cut of multipoles
 !*  
 !*  Returns:
 !*    :lmask[nx,ny] (double) : Mask, with bounds (nx,ny)
@@ -106,10 +106,10 @@ subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
   lmask = 1d0
   do i = 1, nx
     do j = 1, ny
-      if (present(lmin).and.els(i,j)<lmin)   lmask(i,j) = 0d0
-      if (present(lmax).and.els(i,j)>lmax)   lmask(i,j) = 0d0
-      if (present(lxcut).and.elx(i,j)<lxcut) lmask(i,j) = 0d0
-      if (present(lycut).and.ely(i,j)<lycut) lmask(i,j) = 0d0
+      if (present(lmin).and.els(i,j)<lmin)        lmask(i,j) = 0d0
+      if (present(lmax).and.els(i,j)>lmax)        lmask(i,j) = 0d0
+      if (present(lxcut).and.abs(elx(i,j))<lxcut) lmask(i,j) = 0d0
+      if (present(lycut).and.abs(ely(i,j))<lycut) lmask(i,j) = 0d0
     end do
   end do
 
