@@ -7,6 +7,7 @@ import curvedsky.norm_rot
 import curvedsky.norm_tau
 import curvedsky.norm_src
 import curvedsky.utils
+import curvedsky.cninv
 import curvedsky.bispec
 import curvedsky.delens
 

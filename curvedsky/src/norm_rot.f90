@@ -1,5 +1,5 @@
 !////////////////////////////////////////////////////!
-! * Normalization of quadratic rotation reconstruction
+! Normalization of quadratic rotation reconstruction
 !////////////////////////////////////////////////////!
 
 module norm_rot
@@ -17,9 +17,9 @@ subroutine qtb(lmax,rlmin,rlmax,fC,OCT,OCB,Aa)
 !*  Args:
 !*    :lmax (int)       : Maximum multipole of output normalization spectrum
 !*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
-!*    :fC [l] (double)  : Theory TE angular power spectrum, with bounds (0:rlmax)
-!*    :OCT [l] (double) : Observed temperature angular power spectrum, with bounds (0:rlmax)
-!*    :OCB [l] (double) : Observed B-mode angular power spectrum, with bounds (0:rlmax)
+!*    :fC [l] (double)  : Theory TE spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double) : Observed TT spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed BB spectrum, with bounds (0:rlmax)
 !*
 !*  Returns:
 !*    :Aa [l] (double) : Pol. rot. angle normalization, with bounds (0:lmax)

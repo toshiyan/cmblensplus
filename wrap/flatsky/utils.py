@@ -37,15 +37,15 @@ def elarrays(nx,ny,D):
 
 def elmask(nx,ny,D,lmin= 0,lmax= 1000,lxcut= 0,lycut= 0):
   """
- Return mask in 2D Fourier space. The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
+  Return mask in 2D Fourier space. The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
 
- Args: 
+  Args: 
     :nx, ny (*int*): number of Lx and Ly grids
     :D[*xy*] (*double*): map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
 
- Args(optional):
+  Args(optional):
     :lmin/lmax (*int*): Minimum/Maximum of multipoles
-    :lxcut/lycut (*int*): Lx/ly cut of multipoles
+    :lxcut/lycut (*int*): Remove |Lx|<lxcut / |Ly|<lycut cut of multipoles
   
   Returns:
     :lmask[*nx,ny*] (*double*): Mask, with bounds (nx,ny)
@@ -73,8 +73,6 @@ def alm2bcl(bn,oL,nx,ny,D,alm1,alm2=None,spc=''):
   Returns:
     :Cb[*bin*] (*double*): angular power spectrum with multipole binning, with bounds (bn)
 
-   2D power spectrum
-   to 1D power spectrum
   Usage:
     :Cb = flatsky.utils.alm2bcl(bn,oL,nx,ny,D,alm1,alm2,spc):
   """

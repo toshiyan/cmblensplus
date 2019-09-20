@@ -7,8 +7,8 @@ def qtt(lmax,rlmin,rlmax,fC,OCT,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory temperature angular power spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed temperature angular power spectrum, with bounds (0:rlmax)
+    :fC [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -29,9 +29,9 @@ def qte(lmax,rlmin,rlmax,fC,OCT,OCE,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory TE angular power spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed temperature angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
+    :fC [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -52,9 +52,9 @@ def qtb(lmax,rlmin,rlmax,fC,OCT,OCB,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory TE angular power spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed temperature angular power spectrum, with bounds (0:rlmax)
-    :OCB [*l*] (*double*): Observed B-mode angular power spectrum, with bounds (0:rlmax)
+    :fC [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+    :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -75,8 +75,8 @@ def qee(lmax,rlmin,rlmax,fC,OCE,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory EE angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
+    :fC [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -97,9 +97,9 @@ def qeb(lmax,rlmin,rlmax,fC,OCE,OCB,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory EE angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
-    :OCB [*l*] (*double*): Observed B-mode angular power spectrum, with bounds (0:rlmax)
+    :fC [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
+    :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -120,8 +120,8 @@ def qbb(lmax,rlmin,rlmax,fC,OCB,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory BB angular power spectrum, with bounds (0:rlmax)
-    :OCB [*l*] (*double*): Observed B-mode angular power spectrum, with bounds (0:rlmax)
+    :fC [*l*] (*double*): Theory BB spectrum, with bounds (0:rlmax)
+    :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -142,11 +142,11 @@ def qttte(lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fCTT [*l*] (*double*): Theory temperature angular power spectrum, with bounds (0:rlmax)
-    :fCTE [*l*] (*double*): Theory TE angular power spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed temperature angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
-    :OCTE [*l*] (*double*): Observed TE angular power spectrum, with bounds (0:rlmax)
+    :fCTT [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
+    :fCTE [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
+    :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -167,11 +167,11 @@ def qttee(lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fCTT [*l*] (*double*): Theory temperature angular power spectrum, with bounds (0:rlmax)
-    :fCEE [*l*] (*double*): Theory E-mode angular power spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed temperature angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
-    :OCTE [*l*] (*double*): Observed TE angular power spectrum, with bounds (0:rlmax)
+    :fCTT [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
+    :fCEE [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
+    :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -192,11 +192,11 @@ def qteee(lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fCEE [*l*] (*double*): Theory E-mode angular power spectrum, with bounds (0:rlmax)
-    :fCTE [*l*] (*double*): Theory TE angular power spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed temperature angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
-    :OCTE [*l*] (*double*): Observed TE angular power spectrum, with bounds (0:rlmax)
+    :fCEE [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
+    :fCTE [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
+    :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -217,12 +217,12 @@ def qtbeb(lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,gtype= ''):
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fCEE [*l*] (*double*): Theory E-mode angular power spectrum, with bounds (0:rlmax)
-    :fCBB [*l*] (*double*): Theory B-mode angular power spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed temperature angular power spectrum, with bounds (0:rlmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:rlmax)
-    :OCB [*l*] (*double*): Observed B-mode angular power spectrum, with bounds (0:rlmax)
-    :OCTE [*l*] (*double*): Observed TE angular power spectrum, with bounds (0:rlmax)
+    :fCEE [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
+    :fCBB [*l*] (*double*): Theory BB spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
+    :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
+    :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
     :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
@@ -289,9 +289,9 @@ def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter= 1,conv= 1e-
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
     :dlmin/dlmax (*int*): Minimum/Maximum multipole of E mode and lensing potential for delensing
     :CE [*l*] (*double*): Theory EE angular power spectrum, with bounds (0:elmax)
-    :OCE [*l*] (*double*): Observed E-mode angular power spectrum, with bounds (0:elmax)
-    :OCB [*l*] (*double*): Observed B-mode angular power spectrum, with bounds (0:rlmax)
-    :Cpp [*l*] (*double*): Theory lensing potential angular power spectrum, with bounds (0:dlmax)
+    :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:elmax)
+    :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
+    :Cpp [*l*] (*double*): Theory lensing potential spectrum, with bounds (0:dlmax)
 
   Args(optional):
     :iter (*int*): number of iteration, default to 1 (no iteration)
@@ -305,4 +305,25 @@ def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter= 1,conv= 1e-
     :Ag,Ac = curvedsky.norm_lens.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv):
   """
   return libcurvedsky.norm_lens.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv)
+
+def ttt(lmax,rlmin,rlmax,fC,OCT,gtype= ''):
+  """
+  Cross normalization between lensing potential and amplitude modulation from the temperature quadratic estimator
+
+  Args:
+    :lmax (*int*): Maximum multipole of output normalization spectrum
+    :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
+    :fC [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+
+  Args(optional):
+    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+
+  Returns:
+    :Ag [*l*] (*double*): Cross normalization, with bounds (0:lmax)
+
+  Usage:
+    :Ag = curvedsky.norm_lens.ttt(lmax,rlmin,rlmax,fC,OCT,gtype):
+  """
+  return libcurvedsky.norm_lens.ttt(lmax,rlmin,rlmax,fC,OCT,gtype)
 

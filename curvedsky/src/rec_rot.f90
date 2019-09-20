@@ -18,12 +18,12 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside)
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output lensing potential alms
 !*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
-!*    :fCE [l] (double)   : E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :fCE [l] (double)   : EE spectrum, with bounds (0:rlmax)
 !*    :Elm [l,m] (dcmplx) : Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)  : Nside for the convolution calculation, default to lmax
+!*    :nside (int)        : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
 !*    :alm [l,m] (dcmplx) : Rotation angle alm, with bounds (0:lmax,0:lmax)

@@ -15,7 +15,7 @@ def dft1d(map0,nx,ny,npix,D,trans,map1):
     :map1[*pix*] (*dcmplx*): Transformed data on 2D grid, with bounds (npix)
 
   Usage:
-    : = flatsky.ffttools.dft1d(map0,nx,ny,npix,D,trans,map1):
+    :map1(npix) = flatsky.ffttools.dft1d(map0,nx,ny,npix,D,trans,map1):
   """
   return libflatsky.ffttools.dft1d(map0,nx,ny,npix,D,trans,map1)
 

@@ -9,4 +9,5 @@ else
   pyv=""
 fi
 
+echo $pyv
 

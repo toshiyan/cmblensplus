@@ -76,13 +76,13 @@ end subroutine elarrays
 
 
 subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
-!* Return mask in 2D Fourier space. The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
+!*  Return mask in 2D Fourier space. The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
 !*
-!* Args: 
+!*  Args: 
 !*    :nx, ny (int):  number of Lx and Ly grids
 !*    :D[xy] (double):  map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
 !*
-!* Args(optional):
+!*  Args(optional):
 !*    :lmin/lmax (int)  : Minimum/Maximum of multipoles
 !*    :lxcut/lycut (int): Remove |Lx|<lxcut / |Ly|<lycut cut of multipoles
 !*  
@@ -156,7 +156,7 @@ subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
   spc0  = ''
   if (present(spc))  spc0 = spc
 
-  !* 2D power spectrum
+  ! 2D power spectrum
   allocate(C(nx,ny),alm0(nx,ny))
   alm0 = alm1
   if (present(alm2).and.sum(abs(alm2))==0) alm0 = alm1
@@ -164,7 +164,7 @@ subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
   C = (alm1*conjg(alm0)+alm0*conjg(alm1))*0.5d0/(D(1)*D(2)) 
   deallocate(alm0)
 
-  !* to 1D power spectrum
+  ! to 1D power spectrum
   call c2d2bcl(nx,ny,D,C,bn,oL,Cb,spc=spc0)
 
   deallocate(C)

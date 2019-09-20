@@ -18,7 +18,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype)
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output lensing potential alms
 !*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
-!*    :fC [l] (double)    : Temperature power spectrum, with bounds (0:rlmax)
+!*    :fC [l] (double)    : TT spectrum, with bounds (0:rlmax)
 !*    :Tlm1 [l,m] (dcmplx): 1st inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
@@ -103,7 +103,7 @@ subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside,gtype)
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output lensing potential alms
 !*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
-!*    :fC [l] (double)    : Temperature-E cross-angular power spectrum, with bounds (0:rlmax)
+!*    :fC [l] (double)    : TE spectrum, with bounds (0:rlmax)
 !*    :Tlm [l,m] (dcmplx) : Inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*    :Elm [l,m] (dcmplx) : Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
@@ -206,7 +206,7 @@ subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside,gtype)
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output lensing potential alms
 !*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
-!*    :fC [l] (double)    : Temperature-E cross-angular power spectrum, with bounds (0:rlmax)
+!*    :fC [l] (double)    : TE spectrum, with bounds (0:rlmax)
 !*    :Tlm [l,m] (dcmplx) : Inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
@@ -299,7 +299,7 @@ subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside,gtype)
 !*  Args:
 !*    :lmax (int)        : Maximum multipole of output lensing potential alms
 !*    :rlmin/rlmax (int) : Minimum/Maximum multipole of CMB for reconstruction
-!*    :fC [l] (double) : E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :fC [l] (double)   : EE spectrum, with bounds (0:rlmax)
 !*    :Elm1 [l,m] (dcmplx): 1st inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*    :Elm2 [l,m] (dcmplx): 2nd inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
@@ -391,7 +391,7 @@ subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside,gtype)
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output lensing potential alms
 !*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
-!*    :fC [l] (double)    : E-mode angular power spectrum, with bounds (0:rlmax)
+!*    :fC [l] (double)    : EE spectrum, with bounds (0:rlmax)
 !*    :Elm [l,m] (dcmplx) : Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
@@ -518,9 +518,9 @@ subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside,gtype)
 !*  Reconstructing CMB lensing potential and its curl mode from the BB quadratic estimator
 !*
 !*  Args:
-!*    :lmax (int)    : Maximum multipole of output lensing potential alms
-!*    :rlmin/rlmax (int) : Minimum/Maximum multipoles of CMB for reconstruction
-!*    :fC [l] (double): B-mode angular power spectrum, with bounds (0:rlmax)
+!*    :lmax (int)          : Maximum multipole of output lensing potential alms
+!*    :rlmin/rlmax (int)   : Minimum/Maximum multipoles of CMB for reconstruction
+!*    :fC [l] (double)     : BB spectrum, with bounds (0:rlmax)
 !*    :Blm1 [l,m] (dcmplx) : 1st inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*    :Blm2 [l,m] (dcmplx) : 2nd inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*

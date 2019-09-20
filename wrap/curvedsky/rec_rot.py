@@ -7,7 +7,7 @@ def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside=None):
   Args:
     :lmax (*int*): Maximum multipole of output lensing potential alms
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fCE [*l*] (*double*): E-mode angular power spectrum, with bounds (0:rlmax)
+    :fCE [*l*] (*double*): EE spectrum, with bounds (0:rlmax)
     :Elm [*l,m*] (*dcmplx*): Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
     :Blm [*l,m*] (*dcmplx*): Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 

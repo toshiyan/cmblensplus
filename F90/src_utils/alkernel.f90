@@ -375,11 +375,7 @@ subroutine Kernels_Rot(rL,WA,WB,X,kernel)
   do i = 1, GL%n !Gauss-Legendre Integration
     mu = GL%z(i)
     select case(kernel)
-    case ('Sm')
-      call Zeta(2,2,rL,WA,mu,ZA22)
-      call Zeta(2,2,rL,WB,mu,ZB22)
-      II = ZA22(1)*ZB22(1)+ZA22(2)*ZB22(2)
-    case ('Gm')
+    case ('Sm','Gm')
       call Zeta(2,2,rL,WA,mu,ZA22)
       call Zeta(2,2,rL,WB,mu,ZB22)
       II = ZA22(1)*ZB22(1)+ZA22(2)*ZB22(2)
@@ -409,6 +405,7 @@ subroutine Kernels_Rot(rL,WA,WB,X,kernel)
 
 end subroutine Kernels_Rot
 
+
 subroutine Kernels_Tau(rL,WA,WB,X,kernel,gln,gle)
   implicit none
   !I/O
@@ -420,22 +417,13 @@ subroutine Kernels_Tau(rL,WA,WB,X,kernel,gln,gle)
   double precision, intent(out) :: X(:)
   !internal
   type(gauss_legendre_params) :: GL
-  character(LEN=4) :: selec
   integer :: i, l, lmax, gn
-  double precision :: pm, mu, Ip, Im, al, c1_inv, c3, ge
+  double precision :: mu, II, al, c1_inv, c3, ge
   double precision, dimension(2) :: d00_sup, d00_mid, d00_inf
-  double precision, dimension(2) :: ZA00
-  double precision, dimension(2) :: ZB00
+  double precision, dimension(2) :: ZA00, ZB00, ZA22, ZB22
 
   !* initialize
   lmax = size(X)
-
-  if (kernel=='Sp'.or.kernel=='Gp') pm = 1d0
-  if (kernel=='Sm'.or.kernel=='Gm') pm = -1d0
-
-  selec = kernel
-  if (kernel=='Sp'.or.kernel=='Sm') selec = 'Spm'
-  if (kernel=='Gp'.or.kernel=='Gm') selec = 'Gpm'
 
   X = 0d0
 
@@ -444,23 +432,25 @@ subroutine Kernels_Tau(rL,WA,WB,X,kernel,gln,gle)
   ge = 1d-15
   if (present(gln)) gn = gln
   if (present(gle)) ge = gle
-  call gl_initialize(GL,gln,gle)
+  call gl_initialize(GL,gn,ge)
 
   do i = 1, GL%n !Gauss-Legendre Integration
     mu = GL%z(i)
-    select case(selec)
-    case ('S0')
+    select case(kernel)
+    case ('S0','G0')
       call ZETA(0,0,rL,WA,mu,ZA00)
       call ZETA(0,0,rL,WB,mu,ZB00)
-      Ip = ZA00(1)*ZB00(1)
-    case ('G0') !same as S0
-      call ZETA(0,0,rL,WA,mu,ZA00)
-      call ZETA(0,0,rL,WB,mu,ZB00)
-      Ip = ZA00(1)*ZB00(1)
+      II = 2d0*ZA00(1)*ZB00(1)
     case ('Sc')
     case ('Gc')
-    case ('Spm')
-    case ('Gpm')
+    case ('Sp','Gp')
+      call Zeta(2,2,rL,WA,mu,ZA22)
+      call Zeta(2,2,rL,WB,mu,ZB22)
+      II = ZA22(1)*ZB22(1)+ZA22(2)*ZB22(2)
+    case ('Sm','Gm')
+      call Zeta(2,2,rL,WA,mu,ZA22)
+      call Zeta(2,2,rL,WB,mu,ZB22)
+      II = ZA22(1)*ZB22(1)-ZA22(2)*ZB22(2)
     case default
       stop 'error: no kernel'
     end select
@@ -477,7 +467,7 @@ subroutine Kernels_Tau(rL,WA,WB,X,kernel,gln,gle)
         d00_sup(1) = (mu*d00_mid(1) - c3*d00_inf(1))*c1_inv
         d00_sup(2) = (mu*d00_mid(2) - c3*d00_inf(2))*c1_inv
       end if
-      X(l) = X(l) + Ip*d00_sup(1)*GL%w(i)*2d0*pi
+      X(l) = X(l) + II*d00_sup(1)*GL%w(i)*pi
       d00_inf = d00_mid
       d00_mid = d00_sup
     end do
@@ -486,6 +476,80 @@ subroutine Kernels_Tau(rL,WA,WB,X,kernel,gln,gle)
   call gl_finalize(GL)
 
 end subroutine Kernels_Tau
+
+
+subroutine Kernels_LensTau(rL,WA,WB,X,kernel)
+!Kernels of lensing reconstruction x tau
+  implicit none
+  !I/O
+  character(*), intent(in) :: kernel
+  integer, intent(in) :: rL(2)
+  double precision, intent(in), dimension(rL(1):rL(2)) :: WA, WB
+  double precision, intent(out) :: X(:,:)
+  !internal
+  type(gauss_legendre_params) :: GL
+  integer :: i, l, lmax
+  double precision :: pm, mu, II, al, c1_inv, c2p, c2m, c3
+  double precision, dimension(rL(1):rL(2)) :: al0, alp2, alm2
+  double precision, dimension(2) :: d10, d10_mid, d10_inf
+  double precision, dimension(2) :: ZA00, ZA22
+  double precision, dimension(2) :: ZB10, ZB32, ZB21
+
+  !* initialize
+  lmax = size(X,dim=2)
+
+  if (kernel=='Sp'.or.kernel=='Gp') pm = 1d0
+  if (kernel=='Sm'.or.kernel=='Gm') pm = -1d0
+
+  X = 0d0
+
+  do l = rL(1), rL(2)
+    al = dble(l)
+    al0(l) = dsqrt(al*(al+1))
+    alp2(l) = dsqrt((al-2)*(al+3))
+    alm2(l) = dsqrt((al+2)*(al-1))
+  end do
+
+  !* GL quadrature
+  call gl_initialize(GL,int((3*max(rL(2),lmax)+1)/2),1d-15)
+
+  do i = 1, GL%n !Gauss-Legendre Integration
+    mu = GL%z(i)
+    select case(kernel)
+    case ('S0','G0')
+      call ZETA(0,0,rL,WA,mu,ZA00)
+      call ZETA(1,0,rL,WB*al0,mu,ZB10)
+      II = ZA00(1)*ZB10(1)*2d0
+    case ('Sc','Gc')
+    case ('Sp','Gp','Sm','Gm')
+      call Zeta(2,2,rL,WA,mu,ZA22)
+      call Zeta(3,2,rL,WB*alp2,mu,ZB32)
+      call Zeta(2,1,rL,WB*alm2,mu,ZB21)
+      II = ((ZB32(1)-ZB21(1))*ZA22(1)+pm*(ZB32(2)+ZB21(2))*ZA22(2))/2d0
+    case default
+      stop 'error: no kernel'
+    end select
+    do l = 1, lmax ! loop for l
+      al = dble(l)
+      if (l==1) then 
+        d10_mid  = 0d0 !d^0_10(mu)
+        d10 = -dsqrt(1-mu**2)/dsqrt(2.d0) !d^1_10(mu)
+      else
+        c1_inv = al*(2d0*al-1d0)/(dsqrt((al**2-1d0))*al)
+        c3 = dsqrt(((al-1d0)**2-1d0))*(al-1d0)/((al-1d0)*(2d0*al-1d0))
+        d10(1) = (mu*d10_mid(1) - c3*d10_inf(1))*c1_inv
+        d10(2) = (mu*d10_mid(2) - c3*d10_inf(2))*c1_inv
+      end if
+      X(1:2,l) = X(1:2,l) + II*d10(1)*dsqrt(l*(l+1d0))*GL%w(i)*pi
+      d10_inf = d10_mid
+      d10_mid = d10
+    end do
+  end do
+
+  call gl_finalize(GL)
+
+end subroutine Kernels_LensTau
+
 
 
 end module alkernel

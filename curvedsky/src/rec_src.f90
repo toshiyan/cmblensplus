@@ -21,11 +21,11 @@ subroutine qtt_sym(lmax,rlmin,rlmax,Tlm,slm,nside)
 !*
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output point-source alms
-!*    :rlmin/rlmax (int)   : Minimum/Maximum multipole of CMB for reconstruction
+!*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
 !*    :Tlm [l,m] (dcmplx) : Inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)       : Nside for the convolution calculation, default to lmax
+!*    :nside (int)        : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
 !*    :slm [l,m] (dcmplx) : Point-source alm, with bounds (0:lmax,0:lmax)
@@ -75,12 +75,12 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside)
 !*
 !*  Args:
 !*    :lmax (int)         : Maximum multipole of output point-source alms
-!*    :rlmin/rlmax (int)   : Minimum/Maximum multipole of CMB for reconstruction
+!*    :rlmin/rlmax (int)  : Minimum/Maximum multipole of CMB for reconstruction
 !*    :Tlm1 [l,m] (dcmplx): 1st inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)       : Nside for the convolution calculation, default to lmax
+!*    :nside (int)        : Nside for the convolution calculation, default to lmax
 !*
 !*  Returns:
 !*    :slm [l,m] (dcmplx) : Point-source alm, with bounds (0:lmax,0:lmax)

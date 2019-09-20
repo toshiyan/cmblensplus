@@ -4,15 +4,125 @@
 
 module cninv
   !from F90/src_utils
-  use spht,      only: spht_alm2map, spht_map2alm
+  use constants, only: pi
+  use spht,      only: mat_multi, mat_multi0
   implicit none
 
-  private spht_alm2map, spht_map2alm
+  private pi
+  private mat_multi, mat_multi0
 
 contains
 
 
-subroutine cnfilter(n,npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
+subroutine cnfilter(npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
+!* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
+!* This code assumes
+!*   - The signal power spectrum is isotropic Gaussian. 
+!*   - Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
+!*   - The data model is bxS+N
+!*
+!*  Args:
+!*    :npix (int) : Number of pixel
+!*    :lmax (int) : Maximum multipole of alm
+!*    :cl[n,l] (double) : Angular power spectrum of alm, with bounds (0:lmax)
+!*    :nij[pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:npix-1)
+!*    :alm[l,m] (dcmplx) : Input alm, with bouds (0:lmax,0:lmax)
+!*    :itern (int) : Number of interation
+!*
+!*  Args(optional): 
+!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
+!*
+!*  Returns:
+!*    :xlm[l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  character(1), intent(in) :: filter
+  integer, intent(in) :: npix, lmax, itern
+  double precision, intent(in) :: eps
+  !opt4py :: eps = 1e-6
+  !opt4py :: filter = ''
+  double precision, intent(in), dimension(0:lmax) :: cl
+  double precision, intent(in), dimension(0:npix-1) :: nij
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: xlm
+  !internal
+  integer :: ni, l
+  double precision :: clh(1:1,0:lmax,0:lmax), ninv(1:1,0:npix-1)
+  double complex :: b(1:1,0:lmax,0:lmax), nalm(1:1,0:lmax,0:lmax), nxlm(1:1,0:lmax,0:lmax)
+
+  clh = 0d0
+  do l = 1, lmax
+    clh(1,l,0:l) = dsqrt(cl(l))
+  end do
+
+  !first compute b = C^1/2 N^-1 X
+  ninv(1,:)   = nij
+  nalm(1,:,:) = alm
+  call mat_multi(1,npix,lmax,clh,ninv,nalm,b,'rhs')
+  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
+  call cg_algorithm(1,npix,lmax,clh,ninv,b,nxlm,itern,eps)
+
+  xlm = 0d0
+  do l = 1, lmax
+      if (filter=='')   xlm(l,0:l) = nxlm(1,l,0:l)/clh(1,l,0:l)
+      if (filter=='W')  xlm(l,0:l) = nxlm(1,l,0:l)*clh(1,l,0:l)
+  end do
+
+end subroutine cnfilter
+
+
+subroutine cnfilter0(npix,lmax,cl,nij,alm,itern,xlm)
+!* Computing inverse-variance filtered multipoles: C^-1d
+!* This code assumes
+!*   - The signal power spectrum is isotropic Gaussian. 
+!*   - Inverse noise covariance is given in pixel space and uncorrelated (nij = sigma x delta_ij).
+!*   - The data model is bxS+N
+!*
+!*  Args:
+!*    :npix (int) : Number of pixel
+!*    :lmax (int) : Maximum multipole of alm
+!*    :cl[l] (double) : Angular power spectrum of alm, with bounds (0:lmax)
+!*    :nij[pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:npix-1)
+!*    :alm[l,m] (dcmplx) : Input alm, with bouds (0:lmax,0:lmax)
+!*    :itern (int) : Number of interation
+!*
+!*  Returns:
+!*    :xlm[l,m] (dcmplx) : C-inverse filtered multipoles, with bounds (0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax, itern
+  double precision, intent(in), dimension(0:lmax) :: cl
+  double precision, intent(in), dimension(0:npix-1) :: nij
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: xlm
+  !internal
+  integer :: l
+  double precision, dimension(0:lmax,0:lmax) :: clh
+  double complex, allocatable :: b(:,:)
+
+  clh = 0d0
+  do l = 1, lmax
+    clh(l,0:l) = dsqrt(cl(l))
+  end do
+
+  allocate(b(0:lmax,0:lmax));  b=0d0
+  !first compute b = C^1/2 N^-1 X
+  call mat_multi0(npix,lmax,clh,nij,alm,b)
+  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
+  call cg_algorithm0(npix,lmax,clh,nij,b,xlm,itern)
+  deallocate(b)
+
+  do l = 1, lmax
+    xlm(l,0:l) = xlm(l,0:l)*clh(l,0:l)
+  end do
+
+end subroutine cnfilter0
+
+
+subroutine cnfilterpol(n,npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
 !* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
 !* This code assumes
 !*   - The signal power spectrum is isotropic Gaussian. 
@@ -48,12 +158,14 @@ subroutine cnfilter(n,npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
   integer :: ni, l
-  double precision, dimension(n,0:lmax) :: clh
+  double precision, dimension(n,0:lmax,0:lmax) :: clh
   double complex :: b(n,0:lmax,0:lmax)
 
   clh = 0d0
-  do l = 1, lmax
-    clh(:,l) = dsqrt(cl(:,l))
+  do ni = 1, n
+    do l = 1, lmax
+      clh(ni,l,0:l) = dsqrt(cl(ni,l))
+    end do
   end do
 
   !first compute b = C^1/2 N^-1 X
@@ -61,14 +173,12 @@ subroutine cnfilter(n,npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
   !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
   call cg_algorithm(n,npix,lmax,clh,nij,b,xlm,itern,eps)
 
-  do ni = 1, n
-    do l = 1, lmax
-      if (filter=='')   xlm(ni,l,:) = xlm(ni,l,:)/clh(ni,l)
-      if (filter=='W')  xlm(ni,l,:) = xlm(ni,l,:)*clh(ni,l)
-    end do
+  do l = 1, lmax
+      if (filter=='')   xlm(:,l,0:l) = xlm(:,l,0:l)/clh(:,l,0:l)
+      if (filter=='W')  xlm(:,l,0:l) = xlm(:,l,0:l)*clh(:,l,0:l)
   end do
 
-end subroutine cnfilter
+end subroutine cnfilterpol
 
 
 subroutine cg_algorithm(n,npix,lmax,clh,nij,b,x,itern,eps)
@@ -99,84 +209,61 @@ subroutine cg_algorithm(n,npix,lmax,clh,nij,b,x,itern,eps)
   integer, intent(in) :: n, npix, lmax, itern
   double precision, intent(in) :: eps
   !opt4py :: eps = 1e-6
-  double precision, intent(in), dimension(n,0:lmax) :: clh
+  double precision, intent(in), dimension(n,0:lmax,0:lmax) :: clh
   double precision, intent(in), dimension(n,0:npix-1) :: nij
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
   !internal
-  integer :: ni, i, l, iter, roundoff=50
-  double precision :: dr, dr0, tdr, alpha, ndiag
-  double complex, dimension(1:n,0:lmax,0:lmax) :: r, z, p, r0, Ap, M
+  integer :: ni, i, l, ro=50
+  double precision :: bb, d, d0, td, alpha, ndiag, M(1:n,0:lmax,0:lmax)
+  double complex, dimension(1:n,0:lmax,0:lmax) :: r, z, p, Ap
 
   !preconditioning matrix (M) which makes MA ~ I
-  M = 0d0
   do ni = 1, n
-    ndiag = sum(nij(ni,:))/size(nij)
-    do l = 1, lmax
-      M(ni,l,:) = 1d0/(1d0+ndiag*clh(ni,l)**2)
-    end do
+    ndiag = sum(nij(ni,:))*4d0*pi/size(nij)
+    M(ni,:,:) = 1d0/(1d0+ndiag*clh(ni,:,:)**2)
   end do
+  !write(*,*) sum(M)/size(M)
+  bb = sum(abs(b)**2)
 
   !initial value (this is the solution if MA=I)
   x = M*b
+  !write(*,*) sum(abs(x)**2)/bb, bb
   !x = 0
 
   !residual
   call mat_multi(n,npix,lmax,clh,nij,x,r,'lhs')
-  r = b - r 
+  !write(*,*) sum(abs(r)**2)/bb
+  r = b - r
+  !write(*,*) sum(abs(r)**2)/bb
 
   !set other values
   z = M*r 
   p = z
 
   !initial distance
-  dr0 = sum(conjg(r)*z)
-  dr  = dr0
-  if (dr<1d-10*size(x)) return 
-
-  !iteration num
-  iter = 0
+  d0 = sum(conjg(r)*z)
+  d  = d0
 
   do i = 1, itern
 
-    ! check exit condition
-    if (dr<eps*size(x)) then 
-      !exit loop if |r_i|/|r_0| becomes very small
-      write(*,*) iter, dr/dr0
-      exit !Norm of r is sufficiently small
-    end if
-    iter = iter + 1
-
-    ! Ap(i)
     call mat_multi(n,npix,lmax,clh,nij,p,Ap,'lhs')
-    
-    ! alpha(i) = |r(i)|^2_tA / |p(i)|^2_A
-    alpha = dr/sum(conjg(p)*Ap)
-
-    ! x(i+1) = x(i) + akpha(i)p(i)
+    alpha = d/sum(conjg(p)*Ap)
     x = x + alpha*p
-
-    ! r(i+1) = r(i) - alpha(i)Ap(i)
     r = r - alpha*Ap
 
-    ! residual multiplied by preconditioning matrix
+    if (i-int(dble(i)/dble(ro))*ro==0)  write(*,*) sum(abs(r)**2)/bb, d/bb
+
     z = M*r
+    td = sum(conjg(r)*z)
+    p  = z + (td/d)*p
+    d  = td
 
-    !distance
-    tdr = sum(conjg(r)*z)
-
-    ! p(i+1) = z(i+1) + beta(i)p(i)
-    p   = z + (tdr/dr)*p
-
-    ! update dr
-    dr  = tdr
-
-    !check distance
-    if(iter-int(dble(iter)/dble(roundoff))*roundoff==0) then 
-      !r0 = r
-      !call mat_multi(npix,lmax,clh,nij,x,r0,'lhs')  !r0 = A x
-      !r0 = b - r0
-      write(*,*) iter, dr/dr0
+    ! check exit condition
+    if (d<eps**2*d0) then 
+      !exit loop if |r_i|/|r_0| becomes very small
+      write(*,*) i, d/d0
+      exit !Norm of r is sufficiently small
     end if
 
   end do
@@ -185,54 +272,66 @@ subroutine cg_algorithm(n,npix,lmax,clh,nij,b,x,itern,eps)
 end subroutine cg_algorithm
 
 
-subroutine mat_multi(n,npix,lmax,clh,nij,x,v,mtype)
-!* multiplying matrix
+subroutine cg_algorithm0(npix,lmax,clh,nij,b,x,itern)
+!* Searching a solution of Ax=b with the Conjugate Gradient iteratively
   implicit none
   !I/O
-  character(3), intent(in) :: mtype
-  integer, intent(in) :: n, npix, lmax
-  double precision, intent(in), dimension(n,0:lmax) :: clh
-  double precision, intent(in), dimension(n,0:npix-1) :: nij
-  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: x
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
+  integer, intent(in) :: npix, lmax, itern
+  double precision, intent(in), dimension(0:lmax,0:lmax) :: clh
+  double precision, intent(in), dimension(0:npix-1) :: nij
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: b
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: x
   !internal
-  integer :: p, l, nside
-  double precision :: map(n,0:npix-1)
-  double complex :: alm(n,0:lmax,0:lmax)
+  integer :: i, l, ro=50
+  double precision :: bb, d, d0, td, alpha, eps = 1d-6, ndiag, M(0:lmax,0:lmax)
+  double complex, dimension(0:lmax,0:lmax) :: r, tAr, p, r0, Ap, z
 
-  nside = int(sqrt(npix/12d0))
+  ndiag = sum(nij)*4d0*pi/dble(npix) !diagonal inverse noise covariance
+  M = 1d0/(1d0+ndiag*clh**2) !preconditioning matrix
+  !write(*,*) sum(M)/size(M)
+  bb = sum(abs(b)**2)
 
-  if (mtype=='lhs') then
-    do p = 1, n
-      do l = 0, lmax
-        !multiply C^{1/2}
-        alm(p,l,:) = clh(p,l)*x(p,l,:)
-      end do
-    end do
-  else
-    alm = x
-  end if
+  x = M*b
+  !write(*,*) sum(abs(x)**2)/bb, bb
+  !x = 0
 
-  !multiply noise covariance in pixel space
-  call spht_alm2map(n,npix,lmax,lmax,alm,map)
-  map = map*nij
-  call spht_map2alm(n,npix,lmax,lmax,map,alm)
+  call mat_multi0(npix,lmax,clh,nij,x,r,'lhs')  ! r = Ax
+  !write(*,*) sum(abs(r)**2)/bb
+  r = b - r
+  !write(*,*) sum(abs(r)**2)/bb
 
-  !multiply C^{1/2}
-  do p = 1, n
-    do l = 0, lmax
-      alm(p,l,:) = clh(p,l)*alm(p,l,:)
-    end do
+  !multiply preconditioner
+  z = M*r
+  p = z
+
+  !initial distance
+  d0 = sum(conjg(r)*z)
+  d  = d0
+
+  do i = 1, itern
+
+    call mat_multi0(npix,lmax,clh,nij,p,Ap,'lhs')  ! Ap = A p
+    alpha = d/sum(conjg(p)*Ap)
+    x = x + alpha*p
+    r = r - alpha*Ap
+
+    if (i-int(dble(i)/dble(ro))*ro==0)  write(*,*) sum(abs(r)**2)/bb, d/bb
+
+    z  = M*r
+    td = sum(conjg(r)*z)
+    p  = z + (td/d)*p
+    d  = td
+
+    if (d<eps**2*d0) then 
+      write(*,*) i, d/d0
+      exit !Norm of r is sufficiently small
+    end if 
+
   end do
 
-  if (mtype=='lhs') then
-    !make 1+C^{1/2}N^{-1}C^{1/2}
-    v = x + alm
-  else
-    v = alm
-  end if
 
-end subroutine mat_multi
+end subroutine cg_algorithm0
+
 
 
 end module cninv
