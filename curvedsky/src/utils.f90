@@ -631,6 +631,34 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 end subroutine apodize
 
 
+subroutine almxfl(lmax,mmax,alm,cl,xlm)
+!*  Calculate xlm[l,m] = alm[l,m] x cl[l]
+!*
+!*  Args:
+!*    :lmax (int)         : Maximum multipole of the input alm
+!*    :mmax (int)         : Maximum m of the input alm
+!*    :alm [l,m] (dcmplx) : Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+!*    :cl [l] (double)    : 1D spectrum to be multiplied to alm, with bounds (0:lmax)
+!*
+!*  Returns:
+!*    :xlm [l,m] (dcmplx) : Modified alm, with bounds (0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, mmax
+  double precision, intent(in), dimension(0:lmax) :: cl
+  double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
+  double complex, intent(out), dimension(0:lmax,0:mmax) :: xlm
+  !internal
+  integer :: l
+
+  do l = 0, lmax
+    xlm(l,:) = alm(l,:) * cl(l)
+  end do
+
+end subroutine almxfl
+
+
 subroutine hp_alm2map(npix,lmax,mmax,alm,map)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
@@ -784,7 +812,7 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 
   !i = m*(lmax+1) - m(m-1)/2 + (l-m)
   almpix = 0d0
-  if (2*lmpy/=(lmax+1)*(lmax+2)) stop 'size of almpy is inconsistent with that of almpix'
+  if (2*lmpy/=(lmax+1)*(lmax+2)) stop 'error (lm_healpy2healpix): size of almpy is inconsistent with that of almpix'
   do m = 0, lmax
     do l = m, lmax
       i = m*lmax - int(m*(m-1d0)/2d0) + l

@@ -13,110 +13,193 @@ module norm_flat
 contains
 
 
-subroutine ALXY_FLAT(est,eL,rL,Alg,Alc,fC,W1,W2,weight,gln,gle,lxcut)
-! * integrating fXY*gXY
+subroutine alxy_flat_integ(q,qtype,eL,rL,Alg,Alc,fC,W1,W2,AA,BB,AB,gln,gle,lxcut)
+! integrating fXY*gXY
   implicit none
   !I/O
-  character(*), intent(in) :: est
-  character(*), intent(in), optional :: weight
+  character(*), intent(in) :: q, qtype
   integer, intent(in) :: el(2), rL(2)
   integer, intent(in), optional :: gln, lxcut
-  double precision, intent(in) :: fC(:), W1(:), W2(:)
-  double precision, intent(in), optional :: gle
+  double precision, intent(in) :: fC(:)
+  double precision, intent(in), optional :: gle, W1(:), W2(:), AA(:), BB(:), AB(:)
   double precision, intent(out) :: Alg(:), Alc(:)
   !internal
   type(gauss_legendre_params) :: GL
-  character(16) :: ftype = 'lensing'
   integer :: l, L1, L2, i, n
   double precision :: eps, lx1, lx2
   double precision, dimension(:), allocatable :: phi, intg, intc
 
-  write(*,*) 'alflat', est
+  if (q=='Tx'.and..not.(present(AA).and.present(BB).and.(present(AB)))) stop 'error (alflat): asymetric estimator needs all auto/cross spectra'
 
-  if (present(weight)) ftype = weight
-
-  !* prepare GL quadrature
-  n = rL(2)
+  !prepare GL quadrature
+  n   = rL(2)
   eps = 1d-14
   if (present(gln)) n = gln
   if (present(gle)) eps = gle
   call gl_initialize(GL,n,eps)
 
-  allocate(phi(GL%n),intg(GL%n),intc(GL%n));  phi=0d0;  intg=0d0;  intc=0d0
+  allocate(phi(GL%n));  phi=0d0
   phi = pi + pi*GL%z
 
-  !* calculate Al
+  !calculate normalization
+  Alg = 0d0
+  Alc = 0d0
   do l = eL(1), eL(2) ! for lensing multipoles 
-    L1 = rL(1)
-    !* integral
-    do n = 1, rL(2)-rL(1)
-      L1 = L1 + 1
+
+    !integral of ell
+    do L1 = rL(1), rL(2)
+
+      !integral of angle
+      allocate(intg(GL%n),intc(GL%n))
+      intg = 0d0
+      intc = 0d0
+
       do i = 1, GL%n
+
         if (present(lxcut)) then
           lx1 = dble(L1)*dcos(phi(i))
           lx2 = dble(l) - lx1
           if (abs(lx1)<lxcut.or.abs(lx2)<lxcut) cycle
         end if
         L2 = int(dsqrt(dble(l)**2+dble(L1)**2-2*l*L1*dcos(phi(i))))
-        select case(est)
+
+        if (rL(1)>L2.or.L2>rL(2)) cycle !outside of reconstruction multipole range
+
+        !choose integrant: fXY*gXY
+        select case(q)
         case ('TT')
-          call KTT(rL,l,L1,phi(i),fC(L1),fC(L2),W1(L1),W2(L2),intg(i),intc(i),ftype)
+          call KTT(rL,l,L1,phi(i),fC(L1),fC(L2),W1(L1),W2(L2),intg(i),intc(i),qtype)
+        case ('Tx')
+          call KTx(rL,l,L1,phi(i),fC(L1),fC(L2),AA(L1),AA(L2),BB(L1),BB(L2),AB(L1),AB(L2),intg(i),intc(i),qtype)
         case ('EB','TB')
-          call KEB(rL,l,L1,phi(i),fC(L1),W1(L1),W2(L2),intg(i),intc(i),ftype)
+          call KEB(rL,l,L1,phi(i),fC(L1),W1(L1),W2(L2),intg(i),intc(i),qtype)
         end select
+
       end do
+
       Alg(l) = Alg(l) + dble(L1)*sum(intg*GL%w)*pi/(2*pi)**2
       Alc(l) = Alc(l) + dble(L1)*sum(intc*GL%w)*pi/(2*pi)**2
+
+      deallocate(intg,intc)
+
     end do
+
     if (Alg(l)/=0d0) Alg(l) = 1d0/Alg(l)
     if (Alc(l)/=0d0) Alc(l) = 1d0/Alc(l)
+
   end do
 
-  deallocate(phi,intg,intc)
+  deallocate(phi)
   call gl_finalize(GL)
 
-end subroutine ALXY_FLAT
+end subroutine alxy_flat_integ
 
 
-subroutine KTT(rL,l,L1,phi,fC1,fC2,W1,W2,Kg,Kc,ftype)
+subroutine KTT(rL,l,L1,phi,fC1,fC2,W1,W2,Kg,Kc,qtype)
   implicit none
   !I/O
-  character(*), intent(in) :: ftype
+  character(*), intent(in) :: qtype
   integer, intent(in) :: rL(1:2), l, L1
   double precision, intent(in) :: phi, fC1, fC2, W1, W2
   double precision, intent(out) :: Kg, Kc
   !internal
-  double precision :: al0, aL1, aL2, sin2, L1l(2), L2l(2), csp1(2), csp2(2), vL0(2), vL1(2), vL2(2)
+  double precision :: L1l(2), L2l(2), vL0(2), vL1(2), vL2(2)
 
   !* l vectors
   vl0 = [dble(l),0d0]
   vL1 = [dble(L1)*dcos(phi),dble(L1)*dsin(phi)]
   vL2 = vl0 - vL1
-  al0 = dble(l)
-  aL1 = dble(L1)
-  aL2 = dsqrt(dot_product(vL2,vL2))
+  L1l = [dot_product(vl0,vL1),vL1(1)*vl0(2)-vL1(2)*vl0(1)]
+  L2l = [dot_product(vl0,vL2),vL2(1)*vl0(2)-vL2(2)*vl0(1)]
 
   Kg = 0d0
   Kc = 0d0
-  if (rL(1)<=int(aL2).and.int(aL2)<=rL(2)) then 
-    L1l = [dot_product(vl0,vL1),vL1(1)*vl0(2)-vL1(2)*vl0(1)]
-    L2l = [dot_product(vl0,vL2),vL2(1)*vl0(2)-vL2(2)*vl0(1)]
-    select case (ftype)
-    case ('lensing')
-      Kg = (fC1*L1l(1)+fC2*L2l(1))**2*W1*W2/2d0
-      Kc = (fC1*L1l(2)+fC2*L2l(2))**2*W1*W2/2d0
-    case ('patchytau')
-      Kg = (fC1+fC2)**2*W1*W2/2d0
-    end select
-  end if
+  select case (qtype)
+  case ('lensing')
+    Kg = (fC1*L1l(1)+fC2*L2l(1))**2*W1*W2/2d0
+    Kc = (fC1*L1l(2)+fC2*L2l(2))**2*W1*W2/2d0
+  case ('patchytau')
+    Kg = (fC1+fC2)**2*W1*W2/2d0
+  end select
 
 end subroutine KTT
 
 
-subroutine KEB(rL,l,L1,phi,fC,W1,W2,Kg,Kc,ftype)
+subroutine KTx(rL,l,L1,phi,C1,C2,AA1,AA2,BB1,BB2,AB1,AB2,Kg,Kc,qtype)
   implicit none
   !I/O
-  character(*), intent(in) :: ftype
+  character(*), intent(in) :: qtype
+  integer, intent(in) :: rL(1:2), l, L1
+  double precision, intent(in) :: phi, C1, C2, AA1, AA2, BB1, BB2, AB1, AB2
+  double precision, intent(out) :: Kg, Kc
+  !internal
+  double precision :: a, b, x, fxy, gxy(3), L1l(2), L2l(2), vL0(2), vL1(2), vL2(2), rA1, rA2, rB1, rB2
+
+  !* l vectors
+  vl0 = [dble(l),0d0]
+  vL1 = [dble(L1)*dcos(phi),dble(L1)*dsin(phi)]
+  vL2 = vl0 - vL1
+  L1l = [dot_product(vl0,vL1),vL1(1)*vl0(2)-vL1(2)*vl0(1)]
+  L2l = [dot_product(vl0,vL2),vL2(1)*vl0(2)-vL2(2)*vl0(1)]
+
+  Kg  = 0d0
+  Kc  = 0d0
+  rA1 = AB1/AA1
+  rA2 = AB2/AA2
+  rB1 = AB1/BB1
+  rB2 = AB2/BB2
+  fxy = C1*L1l(1)+C2*L2l(1)
+  a   = rA1*rB2
+  b   = rA2*rB1
+  select case (qtype)
+  case ('lensing')
+    if (abs(1d0-a*b)<1e-30) then
+      gxy(1) = fxy/(2d0*AA1*BB2)
+      gxy(2) = gxy(1)
+      gxy(3) = fxy/(2d0*AA2*BB1)
+    else
+      gxy(1) = fxy/(AA1*BB2)*(1-b)/(1-a*b)
+      gxy(2) = gxy(1)
+      gxy(3) = fxy/(AA2*BB1)*(1-a)/(1-a*b)
+    end if
+  case ('lensing0')
+    gxy(1) = fxy/(AA1*BB2)*(1-b)*(1+a*b)
+    gxy(2) = gxy(1)
+    gxy(3) = fxy/(AA2*BB1)*(1-a)*(1+a*b)
+  case ('lensing1')
+    gxy(1) = fxy/(AA1*BB2)*(1+(a-1)*b)
+    gxy(2) = gxy(1)
+    gxy(3) = fxy/(AA2*BB1)*(1+(b-1)*a)
+  case ('lensing2')
+    gxy(1) = fxy/(AA1*BB2)*(1+(a-1)*b+a*(a-1)*b**2)
+    gxy(2) = gxy(1)
+    gxy(3) = fxy/(AA2*BB1)*(1+(b-1)*a+b*(b-1)*a**2)
+  case ('lensinge')
+    gxy(1) = fxy/(AA1*BB2)*(1-b+a*b*(1-(1-a)*b/(1-0.7*rA2)))
+    gxy(2) = gxy(1)
+    gxy(3) = fxy/(AA2*BB1)*(1-a+b*a*(1-(1-b)*a/(1-0.7*rA1)))
+  case ('lensinga')
+    gxy(1) = L1l(1)*C1/(AA1*BB2)
+    gxy(2) = gxy(1)
+    gxy(3) = L2l(1)*C2/(AA2*BB1)
+  case ('lensingc')
+    gxy(1) = L1l(1)*C1/(AA1*BB2)
+    gxy(2) = L2l(1)*C2/(BB2*AA1)
+    gxy(3) = L1l(1)*C1/(BB1*AA2)
+  case default
+    stop 'error: no qtype specified'
+  end select
+
+  Kg = fxy*gxy(1)
+  Kc = gxy(1)*(gxy(2)*AA1*BB2 + gxy(3)*AB1*AB2) !variance
+
+end subroutine KTx
+
+
+subroutine KEB(rL,l,L1,phi,fC,W1,W2,Kg,Kc,qtype)
+  implicit none
+  !I/O
+  character(*), intent(in) :: qtype
   integer, intent(in) :: rL(1:2), l, L1
   double precision, intent(in) :: phi, fC, W1, W2
   double precision, intent(out) :: Kg, Kc
@@ -133,37 +216,36 @@ subroutine KEB(rL,l,L1,phi,fC,W1,W2,Kg,Kc,ftype)
 
   Kg = 0d0
   Kc = 0d0
-  if (rL(1)<=int(aL2).and.int(aL2)<=rL(2)) then 
-    ! L1 * L and L1 x L
-    L1l  = [dot_product(vL0,vL1),vL1(1)*vL0(2)-vL1(2)*vL0(1)]
-    L2l  = [dot_product(vL0,vL2),vL2(1)*vL0(2)-vL2(2)*vL0(1)]
-    ! cos(phi), sin(phi)
-    cos1 = L1l(1)/(aL1*aL0)
-    sin1 = - L1l(2)/(aL1*aL0)
-    cos2 = L2l(1)/(aL2*aL0)
-    sin2 = - L2l(2)/(aL2*aL0)
-    ! sin2(phi1-phi2)
-    sin2m = 2d0*(sin1*cos2-sin2*cos1)*(cos1*cos2+sin1*sin2)
-    ! sin2(phi1+phi2)
-    sin2p = 2d0*(sin1*cos2+sin2*cos1)*(cos1*cos2-sin1*sin2)
-    ! sin2(phi1)
-    sin22 = 2d0*sin2*cos2
-    select case (ftype)
-    case ('lensing')
-      Kg = (fC*L1l(1)*sin2m)**2*W1*W2
-      Kc = (fC*L1l(2)*sin2m)**2*W1*W2
-    case ('rotation')
-      Kg = (2d0*fC)**2*(1d0-sin2m**2)*W1*W2
-    case ('patchytau')
-      Kg = (fC*sin2m)**2*W1*W2
-    case ('t2p0')
-      Kg = (fC*sin22)**2*W1*W2
-      Kc = (fC)**2*(1d0-sin22**2)*W1*W2
-    case ('spinflip')
-      Kg = (fC*sin2p)**2*W1*W2
-      Kc = (fC)**2*(1d0-sin2p**2)*W1*W2
-    end select
-  end if
+
+  ! L1 * L and L1 x L
+  L1l  = [dot_product(vL0,vL1),vL1(1)*vL0(2)-vL1(2)*vL0(1)]
+  L2l  = [dot_product(vL0,vL2),vL2(1)*vL0(2)-vL2(2)*vL0(1)]
+  ! cos(phi), sin(phi)
+  cos1 = L1l(1)/(aL1*aL0)
+  sin1 = - L1l(2)/(aL1*aL0)
+  cos2 = L2l(1)/(aL2*aL0)
+  sin2 = - L2l(2)/(aL2*aL0)
+  ! sin2(phi1-phi2)
+  sin2m = 2d0*(sin1*cos2-sin2*cos1)*(cos1*cos2+sin1*sin2)
+  ! sin2(phi1+phi2)
+  sin2p = 2d0*(sin1*cos2+sin2*cos1)*(cos1*cos2-sin1*sin2)
+  ! sin2(phi1)
+  sin22 = 2d0*sin2*cos2
+  select case (qtype)
+  case ('lensing')
+    Kg = (fC*L1l(1)*sin2m)**2*W1*W2
+    Kc = (fC*L1l(2)*sin2m)**2*W1*W2
+  case ('rotation')
+    Kg = (2d0*fC)**2*(1d0-sin2m**2)*W1*W2
+  case ('patchytau')
+    Kg = (fC*sin2m)**2*W1*W2
+  case ('t2p0')
+    Kg = (fC*sin22)**2*W1*W2
+    Kc = (fC)**2*(1d0-sin22**2)*W1*W2
+  case ('spinflip')
+    Kg = (fC*sin2p)**2*W1*W2
+    Kc = (fC)**2*(1d0-sin2p**2)*W1*W2
+  end select
 
 end subroutine KEB
 

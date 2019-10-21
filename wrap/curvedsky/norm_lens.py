@@ -306,3 +306,24 @@ def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter= 1,conv= 1e-
   """
   return libcurvedsky.norm_lens.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv)
 
+def ttt(lmax,rlmin,rlmax,fC,OCT,gtype= ''):
+  """
+  Cross normalization between lensing potential and amplitude modulation from the temperature quadratic estimator
+
+  Args:
+    :lmax (*int*): Maximum multipole of output normalization spectrum
+    :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
+    :fC [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
+    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
+
+  Args(optional):
+    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+
+  Returns:
+    :Ag [*l*] (*double*): Cross normalization, with bounds (0:lmax)
+
+  Usage:
+    :Ag = curvedsky.norm_lens.ttt(lmax,rlmin,rlmax,fC,OCT,gtype):
+  """
+  return libcurvedsky.norm_lens.ttt(lmax,rlmin,rlmax,fC,OCT,gtype)
+

@@ -16,7 +16,7 @@ def binning(bn,eL,spc= ''):
     :bc (*double*): bin centers, with bounds (bn)
 
   Usage:
-    :bp,bc = basic.aps.binning(bn,eL,spc):
+    :bc,bp = basic.aps.binning(bn,eL,spc):
   """
   return libbasic.aps.binning(bn,eL,spc)
 

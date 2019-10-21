@@ -624,8 +624,8 @@ subroutine set_three_ells(shap,l,eL,l0,l1,l2,l3)
       l3 = l
     case('fold')
       l1 = l
-      l2 = l/2
-      l3 = l/2
+      l2 = int(l*0.5)
+      l3 = l2
     case('sque')
       l1 = l0
       l2 = l

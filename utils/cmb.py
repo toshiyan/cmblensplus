@@ -55,9 +55,9 @@ def nl_white(sigma,theta,lmax,Tcmb=2.72e6):
 def beam(theta,lmax):
     ac2rad = np.pi/10800.
     L      = np.linspace(0,lmax,lmax+1)
-    beam   = np.exp(L*(L+1)*(theta*ac2rad)**2/(16.*np.log(2.)))
-    Lmax   = int(10./(theta*ac2rad))
-    beam[Lmax:] = beam[min(lmax,Lmax-1)]
+    beam   = np.exp(-L*(L+1)*(theta*ac2rad)**2/(16.*np.log(2.)))
+    #Lmax   = int(10./(theta*ac2rad))
+    #beam[Lmax:] = beam[min(lmax,Lmax-1)]
     return beam
 
 

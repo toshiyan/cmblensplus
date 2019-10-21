@@ -110,55 +110,56 @@ subroutine mat_multi(n,npix,lmax,clh,nij,x,v,mtype)
 end subroutine mat_multi
 
 
-subroutine mat_multi0(npix,lmax,clh,nij,x,v,mtype)
-!* multiplying matrix (same as mat_multi)
+subroutine mat_multi_freq_rhs(n,k,npix,lmax,clh,nij,x,v)
   implicit none
   !I/O
-  integer, intent(in) :: npix, lmax
-  double precision, intent(in), dimension(0:lmax,0:lmax) :: clh
-  double precision, intent(in), dimension(0:npix-1) :: nij
-  double complex, intent(in), dimension(0:lmax,0:lmax) :: x
-  double complex, intent(out), dimension(0:lmax,0:lmax) :: v
-  !optional
-  character(3), intent(in), optional :: mtype
-  !f2py character(4) :: mtype = ''
+  integer, intent(in) :: n, k, npix, lmax
+  double precision, intent(in), dimension(n,k,0:lmax,0:lmax) :: clh
+  double precision, intent(in), dimension(n,k,0:npix-1) :: nij, x
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
   !internal
-  character(3) :: m = ''
-  integer :: l, nside
-  double precision :: map(0:npix-1)
-  double complex :: alm(1,0:lmax,0:lmax)
+  integer :: ki
+  double precision :: map(n,k,0:npix-1)
+  double complex :: alm(n,0:lmax,0:lmax)
 
-  if (present(mtype))  m = mtype
+  v   = 0d0
+  map = x*nij
+  do ki = 1, k
+    call spht_map2alm(n,npix,lmax,lmax,map(:,ki,:),alm)
+    v = v + clh(:,ki,:,:)*alm
+  end do
 
-  nside = int(sqrt(npix/12d0))
+end subroutine mat_multi_freq_rhs
 
-  if (m=='lhs') then
+
+subroutine mat_multi_freq_lhs(n,k,npix,lmax,clh,nij,x,v)
+  implicit none
+  !I/O
+  integer, intent(in) :: n, k, npix, lmax
+  double precision, intent(in), dimension(n,k,0:lmax,0:lmax) :: clh
+  double precision, intent(in), dimension(n,k,0:npix-1) :: nij
+  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: x
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
+  !internal
+  integer :: p, ki
+  double precision :: map(n,0:npix-1)
+  double complex :: alm(n,0:lmax,0:lmax), blm(n,0:lmax,0:lmax)
+
+  blm = 0d0
+  do ki = 1, k
+    alm = clh(:,ki,:,:)*x
+    !multiply noise covariance in pixel space
+    call spht_alm2map(n,npix,lmax,lmax,alm,map)
+    map = map*nij(:,ki,:)
+    call spht_map2alm(n,npix,lmax,lmax,map,alm)
     !multiply C^{1/2}
-    alm(1,:,:) = clh*x
-  else
-    alm(1,:,:) = x
-  end if
+    blm = blm + clh(:,ki,:,:)*alm
+  end do
 
-  !alm to map
-  call alm2map(nside,lmax,lmax,alm,map)
+  !make 1+C^{1/2}N^{-1}C^{1/2}
+  v = x + blm
 
-  !multiply N^-1
-  map = map*nij
-
-  !map to alm
-  call map2alm(nside,lmax,lmax,map,alm)
-
-  !multiply C^{1/2}
-  alm(1,:,:) = clh*alm(1,:,:)
-
-  if (m=='lhs') then
-    !make 1+C^{1/2}N^{-1}C^{1/2}
-    v = x + alm(1,:,:)
-  else
-    v = alm(1,:,:)
-  end if
-
-end subroutine mat_multi0
+end subroutine mat_multi_freq_lhs
 
 
 end module spht

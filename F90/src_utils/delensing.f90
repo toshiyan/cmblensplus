@@ -64,7 +64,7 @@ subroutine RES_CLBB(oL,dL,CE,Cp,CB,WE,Wp,NE,Np)
   end if
 
 ! Lensing B-mode power spectrum
-  call conv_egrad(oL,dL,CE(dL(1):dL(2)),Cp(dL(1):dL(2)),CBL)
+  call conv_egrad(oL,[1,dL(2)],CE(1:dL(2)),Cp(1:dL(2)),CBL)
 
   CB = CBL
   CB(oL(1):oL(2)) = CBL(oL(1):oL(2)) - CBW(oL(1):oL(2))

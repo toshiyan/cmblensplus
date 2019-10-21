@@ -81,7 +81,6 @@ for mod in modname:
     # extract args description from the lines
     for p in args:
       for dec in declare:
-          #print(dec[1])
 
           # split to avoid confusion of e.g. "abc" and "abctype"
           d = dec[1].replace(',',' ').split()
@@ -98,7 +97,7 @@ for mod in modname:
 
             # check dependence
             for q in args:
-              if q in dec[0] or q in defval:
+              if q in dec[0][dec[0].find('dimension'):] or q in defval:
                 output += ', depend('+q+')'
 
             output += ' :: ' + p
