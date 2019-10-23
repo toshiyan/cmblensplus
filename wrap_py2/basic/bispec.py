@@ -14,6 +14,13 @@ def bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,p
   """
   return libbasic.bispec.bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,pktype,ltype)
 
+def bispeclens_gauss_bin(shap,bn,lmin,lmax,cl):
+  """
+  Usage:
+    :bl = basic.bispec.bispeclens_gauss_bin(shap,bn,lmin,lmax,cl):
+  """
+  return libbasic.bispec.bispeclens_gauss_bin(shap,bn,lmin,lmax,cl)
+
 def zpoints(zmin,zmax,zn,zspace= 1):
   """
   Usage:

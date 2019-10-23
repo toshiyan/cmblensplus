@@ -159,7 +159,7 @@ subroutine bispec_lens_lss_kernel(cp,b,l1,l2,l3,bl,model)
   do i = 1, zn
 
     select case (model)
-    case('SC','GM','TR')
+    case('SC','GM','LN')
       call bispec_matter_9p(b%q(i,[l1,l2,l3]),b%pl(i,[l1,l2,l3]),reshape(b%abc(:,i,[l1,l2,l3]),[3,3]),bk,b%mgp(:,i))
     case('3B')
       fh = coeff_fih(b%kl(i,l1)+b%kl(i,l2)+b%kl(i,l3),b%D(i),cp%h,b%knl(i))
@@ -863,7 +863,7 @@ end subroutine skewspec_lens
 
 
 subroutine bispec_gauss_bin(eL1,eL2,eL3,cl,f)
-! reduced bispectrum for with flat binning (a=g+g^2)
+! reduced bispectrum for the quadratic gaussian model (a=g+g^2)
   implicit none
   integer, intent(in) :: eL1(2), eL2(2), eL3(2)
   double precision, intent(in) :: cl(:)
@@ -1050,8 +1050,8 @@ subroutine get_pk(cp,z,k,pkL0,pkL,pk,ftype)
     pkL(i,:) = D(i)**2*pkL0  !linear P(k,z) (i=1 -> z=0)
   end do
 
-  if (fit=='TR')  pk = pkL  !use linear 
-  if (fit/='TR')  call NonLinRatios(pkL,z,k,cp,pk,ftype=fit) !nonlinear Pk
+  if (fit=='Lin')  pk = pkL  !use linear 
+  if (fit/='Lin')  call NonLinRatios(pkL,z,k,cp,pk,ftype=fit) !nonlinear Pk
 
   !call savetxt('pklin.dat',ki/h,pklini(pkout,:)*h**3,ow=.true.)
   !call savetxt('pk.dat',ki/h,pki(pkout,:)*h**3,ow=.true.)

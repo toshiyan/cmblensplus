@@ -16,9 +16,9 @@ contains
 subroutine cnfilter(npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
 !* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
 !* This code assumes
-!*   - The signal power spectrum is isotropic Gaussian. 
-!*   - Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*   - The data model is bxS+N
+!*    1) The signal power spectrum is isotropic Gaussian. 
+!*    2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
+!*    3) The data model is bxS+N
 !*
 !*  Args:
 !*    :npix (int) : Number of pixel
@@ -75,9 +75,9 @@ end subroutine cnfilter
 subroutine cnfilterpol(n,npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
 !* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
 !* This code assumes
-!*   - The signal power spectrum is isotropic Gaussian. 
-!*   - Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*   - The data model is bxS+N
+!*   1) The signal power spectrum is isotropic Gaussian. 
+!*   2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
+!*   3) The data model is bxS+N
 !*
 !*  Args:
 !*    :n (int) : Number of maps
@@ -131,12 +131,100 @@ subroutine cnfilterpol(n,npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
 end subroutine cnfilterpol
 
 
+subroutine cg_algorithm(n,npix,lmax,clh,nij,b,x,itern,eps)
+!*  Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
+!*  The code assumes
+!*    1) A = [1 + C^1/2 N^-1 C^1/2]
+!*    2) C^1/2 is diagonal
+!*    3) N is diagonal in pixel space (statistically isotropic noise)
+!*
+!*  Args:
+!*    :n (int) : Number of maps
+!*    :npix (int) : Number of pixel
+!*    :lmax (int) : Maximum multipole of alm
+!*    :clh[n,l] (double) : Square root of angular spectrum (C^1/2), with bounds (0:n-1,0:lmax)
+!*    :nij[n,pix] (double) : Inverse of the noise variance (N^-1) at each pixel, with bounds (0:n-1,0:npix-1)
+!*    :b[n,l,m] (dcmplx) : RHS, with bounds (0:n-1,0:lmax,0:lmax)
+!*    :itern (int) : Number of interation
+!*    
+!*  Args(optional): 
+!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!*
+!*  Returns:
+!*    :x[n,l,m] (dcmplx) : C-inverse filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
+!* 
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: n, npix, lmax, itern
+  double precision, intent(in) :: eps
+  !opt4py :: eps = 1e-6
+  double precision, intent(in), dimension(n,0:lmax,0:lmax) :: clh
+  double precision, intent(in), dimension(n,0:npix-1) :: nij
+  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
+  !internal
+  integer :: ni, i, l, ro=50
+  double precision :: absb, absr, d, d0, td, alpha, ndiag, M(1:n,0:lmax,0:lmax)
+  double complex, dimension(1:n,0:lmax,0:lmax) :: r, z, p, Ap
+
+  !preconditioning matrix (M) which makes MA ~ I
+  do ni = 1, n
+    ndiag = sum(nij(ni,:))*4d0*pi/size(nij)
+    M(ni,:,:) = 1d0/(1d0+ndiag*clh(ni,:,:)**2)
+  end do
+  absb = dsqrt(sum(abs(b)**2))
+
+  !initial value (this is the solution if MA=I)
+  x = M*b
+
+  !residual
+  call mat_multi(n,npix,lmax,clh,nij,x,r,'lhs')
+  r = b - r
+
+  !set other values
+  z = M*r 
+  p = z
+
+  !initial distance
+  d0 = sum(conjg(r)*z)
+  d  = d0
+
+  do i = 1, itern
+
+    call mat_multi(n,npix,lmax,clh,nij,p,Ap,'lhs')
+    alpha = d/sum(conjg(p)*Ap)
+    x = x + alpha*p
+    r = r - alpha*Ap
+
+    absr = dsqrt(sum(abs(r)**2))
+    if (i-int(dble(i)/dble(ro))*ro==0)  write(*,*) absr/absb, d/d0
+
+    z = M*r
+    td = sum(conjg(r)*z)
+    p  = z + (td/d)*p
+    d  = td
+
+    ! check exit condition
+    if (absr<eps*absb) then 
+      !exit loop if |r|/|b| becomes very small
+      write(*,*) i, absr/absb
+      exit !Norm of r is sufficiently small
+    end if
+
+  end do
+
+
+end subroutine cg_algorithm
+
+
+
 subroutine cnfilter_lat(n,k1,lmax,cl,bl1,npix1,nij1,map1,itern,xlm,eps,filter)
 !* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
 !* This code assumes
-!*   - The signal power spectrum is isotropic Gaussian. 
-!*   - Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*   - The data model is bxS+N
+!*   1) The signal power spectrum is isotropic Gaussian. 
+!*   2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
+!*   3) The data model is bxS+N
 !*
 !*  Args:
 !*    :n (int) : T(1), Q/U(2) or T/Q/U(3)
@@ -199,9 +287,9 @@ end subroutine cnfilter_lat
 subroutine cg_algorithm_lat(n,k1,lmax,clh1,npix1,nij1,b,x,itern,eps)
 !*  Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
 !*  The code assumes 
-!*    - A = [1 + C^1/2 N^-1 C^1/2]
-!*    - C^1/2 is diagonal
-!*    - N is diagonal in pixel space (statistically isotropic noise)
+!*    1) A = [1 + C^1/2 N^-1 C^1/2]
+!*    2) C^1/2 is diagonal
+!*    3) N is diagonal in pixel space (statistically isotropic noise)
 !*
 !*  Args:
 !*    :n (int) : T(1), Q/U(2), or T/Q/U(3)
@@ -289,9 +377,9 @@ end subroutine cg_algorithm_lat
 subroutine cnfilter_so(n,k1,k2,lmax,cl,bl1,bl2,npix1,npix2,nij1,nij2,map1,map2,itern,xlm,eps,filter)
 !* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
 !* This code assumes
-!*   - The signal power spectrum is isotropic Gaussian. 
-!*   - Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*   - The data model is bxS+N
+!*   1) The signal power spectrum is isotropic Gaussian. 
+!*   2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
+!*   3) The data model is bxS+N
 !*
 !*  Args:
 !*    :n (int) : T(1), Q/U(2) or T/Q/U(3)
@@ -367,9 +455,9 @@ end subroutine cnfilter_so
 subroutine cg_algorithm_so(n,k1,k2,lmax,clh1,clh2,npix1,npix2,nij1,nij2,b,x,itern,eps)
 !*  Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
 !*  The code assumes 
-!*    - A = [1 + C^1/2 N^-1 C^1/2]
-!*    - C^1/2 is diagonal
-!*    - N is diagonal in pixel space (statistically isotropic noise)
+!*    1) A = [1 + C^1/2 N^-1 C^1/2]
+!*    2) C^1/2 is diagonal
+!*    3) N is diagonal in pixel space (statistically isotropic noise)
 !*
 !*  Args:
 !*    :n (int) : T(1), Q/U(2), or T/Q/U(3)
@@ -465,93 +553,6 @@ subroutine cg_algorithm_so(n,k1,k2,lmax,clh1,clh2,npix1,npix2,nij1,nij2,b,x,iter
   end do
 
 end subroutine cg_algorithm_so
-
-
-subroutine cg_algorithm(n,npix,lmax,clh,nij,b,x,itern,eps)
-!*  Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
-!*  The code assumes
-!*    - A = [1 + C^1/2 N^-1 C^1/2]
-!*    - C^1/2 is diagonal
-!*    - N is diagonal in pixel space (statistically isotropic noise)
-!*
-!*  Args:
-!*    :n (int) : Number of maps
-!*    :npix (int) : Number of pixel
-!*    :lmax (int) : Maximum multipole of alm
-!*    :clh[n,l] (double) : Square root of angular spectrum (C^1/2), with bounds (0:n-1,0:lmax)
-!*    :nij[n,pix] (double) : Inverse of the noise variance (N^-1) at each pixel, with bounds (0:n-1,0:npix-1)
-!*    :b[n,l,m] (dcmplx) : RHS, with bounds (0:n-1,0:lmax,0:lmax)
-!*    :itern (int) : Number of interation
-!*    
-!*  Args(optional): 
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
-!*
-!*  Returns:
-!*    :x[n,l,m] (dcmplx) : C-inverse filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
-!* 
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: n, npix, lmax, itern
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
-  double precision, intent(in), dimension(n,0:lmax,0:lmax) :: clh
-  double precision, intent(in), dimension(n,0:npix-1) :: nij
-  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
-  !internal
-  integer :: ni, i, l, ro=50
-  double precision :: absb, absr, d, d0, td, alpha, ndiag, M(1:n,0:lmax,0:lmax)
-  double complex, dimension(1:n,0:lmax,0:lmax) :: r, z, p, Ap
-
-  !preconditioning matrix (M) which makes MA ~ I
-  do ni = 1, n
-    ndiag = sum(nij(ni,:))*4d0*pi/size(nij)
-    M(ni,:,:) = 1d0/(1d0+ndiag*clh(ni,:,:)**2)
-  end do
-  absb = dsqrt(sum(abs(b)**2))
-
-  !initial value (this is the solution if MA=I)
-  x = M*b
-
-  !residual
-  call mat_multi(n,npix,lmax,clh,nij,x,r,'lhs')
-  r = b - r
-
-  !set other values
-  z = M*r 
-  p = z
-
-  !initial distance
-  d0 = sum(conjg(r)*z)
-  d  = d0
-
-  do i = 1, itern
-
-    call mat_multi(n,npix,lmax,clh,nij,p,Ap,'lhs')
-    alpha = d/sum(conjg(p)*Ap)
-    x = x + alpha*p
-    r = r - alpha*Ap
-
-    absr = dsqrt(sum(abs(r)**2))
-    if (i-int(dble(i)/dble(ro))*ro==0)  write(*,*) absr/absb, d/d0
-
-    z = M*r
-    td = sum(conjg(r)*z)
-    p  = z + (td/d)*p
-    d  = td
-
-    ! check exit condition
-    if (absr<eps*absb) then 
-      !exit loop if |r|/|b| becomes very small
-      write(*,*) i, absr/absb
-      exit !Norm of r is sufficiently small
-    end if
-
-  end do
-
-
-end subroutine cg_algorithm
 
 
 end module cninv

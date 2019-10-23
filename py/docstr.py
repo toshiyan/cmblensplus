@@ -69,6 +69,7 @@ def ext_optional(pset,declare,slines):
 
 
 def funcopt(func,pset,ispops=False):
+    # remove optional args
     for p in pset:
         subf = []
         # loop for argments in the function definition
