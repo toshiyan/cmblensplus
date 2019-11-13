@@ -20,7 +20,7 @@ def binning(bn,eL,spc= ''):
   """
   return libbasic.aps.binning(bn,eL,spc)
 
-def read_cambcls(f,lmin,lmax,numcls,bb= 0,raw= 0):
+def read_cambcls(f,lmin,lmax,numcls,bb=False,lsq=True):
   """
   Return CMB cls from CAMB output files
 
@@ -31,16 +31,16 @@ def read_cambcls(f,lmin,lmax,numcls,bb= 0,raw= 0):
     :numcls (*int*): Number of cls to be read
 
   Args(Optional):
-    :bb (*bool*): Including BB in the file or not. The data should be TT, EE, TE, dd, Td (,Ed) if bb = False (default), and TT, EE, BB, TE if bb = True.
-    :raw (*bool*): The cls in the file are multiplied by l(l+1)/2pi if raw = False (default)
+    :bb (*bool*): Filetype. The data should be TT, EE, TE, dd, Td (,Ed) if bb = False (default), and TT, EE, BB, TE if bb = True.
+    :lsq (*bool*): The cls is divided by l(l+1)/2pi if lsq = True (default)
 
   Returns:
     :cl[*numcls,l*] (*double*): Angular power spectra, with bountd (numcls,0:lmax)
 
   Usage:
-    :cl = basic.aps.read_cambcls(f,lmin,lmax,numcls,bb,raw):
+    :cl = basic.aps.read_cambcls(f,lmin,lmax,numcls,bb,lsq):
   """
-  return libbasic.aps.read_cambcls(f,lmin,lmax,numcls,bb,raw)
+  return libbasic.aps.read_cambcls(f,lmin,lmax,numcls,bb,lsq)
 
 def map_vars(lmax,cl):
   """

@@ -2,7 +2,6 @@ import numpy as np
 import sys
 import basic
 import curvedsky
-from memory_profiler import profile
 
 if sys.version_info[:3] > (3,0):
   import pickle
@@ -10,7 +9,6 @@ elif sys.version_info[:3] > (2,5,2):
   import cPickle as pickle
 
 
-@profile
 def aps(snmin,snmax,bn,binspc,lmax,falm):
     '''
     Compute CMB aps (TT,EE,BB,TE)

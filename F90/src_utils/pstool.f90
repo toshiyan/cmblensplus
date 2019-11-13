@@ -326,32 +326,32 @@ subroutine power_binning_full(bp,eL,Cl,bC,Vl)
 end subroutine power_binning_full
 
 
-subroutine readcl_camb(Cl,f,eL,HasBB,rawCl)
-!* Read cls from CAMB output files
-!* This routine assumes that the file is obtained by CAMB and contains 
-!*   l, TT, EE, TE, dd, Td, (Ed) 
-!* if hasbb = false (e.g., scalcls.dat), or 
-!*   l, TT, EE, BB, TE, (curl)
-!* if hasbb = true (e.g., lensedcls.dat). 
-!* rawCl is for multipole factor
+subroutine readcl_camb(cl,f,eL,bb,lsq)
+!* Read cls from CAMB output files. This routine assumes that the file is obtained by CAMB and contains 
+!*
+!*   bb = False: l, TT, EE, TE, dd, Td, (Ed)
+!*   bb = True:  l, TT, EE, BB, TE, (curl)
+!*
+!* lsq = True to remove multipole factor
+!*
   implicit none 
-!
 ![input]
   character(*), intent(in) :: f
   integer, intent(in) :: eL(1:2)
   double precision, intent(out) :: Cl(:,:)
-!
-!(optional)
-  logical, intent(in), optional :: hasbb, rawCl
-!
+  logical, intent(in) :: lsq, bb
 ![internal]
   double precision :: rC(1:10)
-  integer :: i, l, n, m
+  integer :: i, l, n, m, k, nn
+
+  k = size(cl,dim=1)
 
   open(unit=20,file=trim(f),status='old')
 
   n = FileColumns(20)
   m = FileLines(20)
+
+  write(*,*) n, m
 
   do i = 1, m
 
@@ -359,26 +359,18 @@ subroutine readcl_camb(Cl,f,eL,HasBB,rawCl)
 
     if (el(1)>l.or.l>el(2)) cycle
 
-    if (.not.(present(rawCl).and.rawCl)) then
+    if (lsq) then
       rC = rC*2d0*pi/dble(l**2+l)
-      if (.not.(present(hasbb).and.hasbb)) then
-        rC(4) = rC(4)*dble(l+1d0)/(2d0*pi*dble(l)**3)
-        rC(5) = rC(5)*dble(l+1d0)/(2d0*pi*dble(l)**2)
+      if (.not.bb) then
+        if(n>=5) rC(4) = rC(4)*dble(l+1d0)/(2d0*pi*dble(l)**3)
+        if(n>=6) rC(5) = rC(5)*dble(l+1d0)/(2d0*pi*dble(l)**2)
       end if
     end if
 
-    cl(1,l) = rC(1) !TT
-    cl(2,l) = rC(2) !EE
-
-    if(present(hasbb).and.hasbb) then
-      cl(3,l) = rC(3) !BB
-      cl(4,l) = rC(4) !TE
-    else
-      cl(3,l) = rC(3) !TE
-      cl(4,l) = rC(4) !dd
-      cl(5,l) = rC(5) !Td
-      if(n>=7) cl(6,l) = rC(6) !Ed
-    end if
+    ! to output
+    do nn = 2, n
+      if(k>=nn-1) cl(nn-1,l) = rC(nn-1)
+    end do
 
   end do
 

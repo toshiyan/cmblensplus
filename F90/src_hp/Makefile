@@ -22,7 +22,7 @@ LINK= -lutils -lhealpix -lcfitsio -liomp5 -lpthread
 
 OPTION = $(MODD) $(LIBD) $(LINK)
 
-OBJ = spht.o
+OBJ = spht.o hp_bsp.o
 
 $(target): $(OBJ)
 	ar cr $@ $^

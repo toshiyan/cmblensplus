@@ -5,9 +5,11 @@
 module bispec
   use alm_tools, only: alm2map, map2alm
   use constants, only: pi
+  use hp_bsp,    only: equi, fold, sque, isos, xequi, xfold, xsque, xisos
 
   private alm2map
   private pi
+  private equi, fold, sque, isos, xequi, xfold, xsque, xisos
 
 contains 
 
@@ -195,200 +197,59 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
 end subroutine bispec_bin
 
 
-subroutine equi(lmin,lmax,alm,bispec,bst)
-!*  Compute equilateral shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l,l]
+subroutine xbispec_bin(bn,bp,lmax,n,alm,bis,bstype,bst,sL)
+!*  Return the unnormalized binned reduced cross-bispectrum for a given multipole bin
 !*
 !*  Args:
-!*    :lmin (int)        : Minimum multipole of the bin
-!*    :lmax (int)        : Maximum multipole of the bin
-!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
+!*    :bn (int)           : Number of multipole bins
+!*    :bp [edge] (double) : Bin edges, with bounds (bn+1)
+!*    :lmax (int)         : Maximum multipole of the input alm
+!*    :n (int)            : Number of alms
+!*    :alm [n,l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:n-1,0:lmax,0:lmax)
 !*
 !*  Args(optional):
-!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :bstype (str)  : Configuration of the bispectrum, default to equilateral
+!*    :bst (int)     : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
+!*    :sL[2] (int)   : The fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
 !*
 !*  Returns:
-!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
+!*    :bis [bin] (double) : The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
 !*
   implicit none
   !I/O
-  integer, intent(in) :: lmin, lmax
-  integer, intent(in), optional :: bst
-!f2py integer :: bst = 2
-  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
-  double precision, intent(out) :: bispec
+  character(4), intent(in) :: bstype
+  integer, intent(in) :: bn, lmax, bst, n
+  integer, intent(in), dimension(2) :: sL
+  double precision, intent(in), dimension(bn+1) :: bp
+  double complex, intent(in), dimension(1:n,0:lmax,0:lmax) :: alm
+  double precision, intent(out), dimension(bn) :: bis
+  !opt4py :: bst = 2
+  !opt4py :: bstype = 'equi'
+  !opt4py :: sL = [0,0]
   !internal
-  integer :: l, nside
-  double precision, allocatable :: kmap(:)
-  double complex, allocatable :: klm(:,:,:)
+  integer :: aL(2), b, eL(2), l1
 
-  nside = 2*lmax
-  if (present(bst))  nside = bst*lmax
+  if (bp(bn+1)>lmax) stop 'error (xbispec_bin): not enough size of alm'
 
-  allocate(kmap(0:12*nside**2-1),klm(1,0:lmax,0:lmax))
+  aL = int(bp(bn/2:bn/2+1)) !middle bin
 
-  klm = 0d0
-  do l = lmin, lmax !multipole filtering
-    klm(1,l,0:l) = alm(l,0:l)
+  do b = 1, bn
+    eL = int(bp(b:b+1))
+    select case (bstype)
+    case ('equi')
+      call xequi(eL(1),eL(2),n,alm(:,0:eL(2),0:eL(2)),bis(b),bst)
+    case ('fold')
+      call xfold(eL(1),eL(2),n,alm(:,0:eL(2),0:eL(2)),bis(b),bst)
+    case ('sque')
+      l1 = max(eL(2),sL(2))
+      call xsque(eL,sL,l1,n,alm(:,0:l1,0:l1),bis(b),bst)
+    case ('isos')
+      l1 = max(eL(2),aL(2))
+      call xisos(eL,aL,l1,n,alm(:,0:l1,0:l1),bis(b),bst)
+    end select
   end do
 
-  call alm2map(nside,lmax,lmax,klm,kmap)
-  bispec = sum(kmap**3)*(4d0*pi)/(12d0*dble(nside)**2)
-
-  deallocate(kmap,klm)
-
-end subroutine equi
-
-
-subroutine fold(lmin,lmax,alm,bispec,bst)
-!*  Compute folded shape of the unnormalized binned reduced bispectrum for a given alm, b[l,l/2,l/2]
-!*
-!*  Args:
-!*    :lmin (int)        : Minimum multipole of the bin
-!*    :lmax (int)        : Maximum multipole of the bin
-!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
-!*
-!*  Args(optional):
-!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-!*
-!*  Returns:
-!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: lmin, lmax
-  integer, intent(in), optional :: bst
-!f2py integer :: bst = 2
-  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
-  double precision, intent(out) :: bispec
-  !internal
-  integer :: l, nside
-  double precision, allocatable :: kmap(:,:)
-  double complex, allocatable :: klm(:,:,:)
-
-  nside = 2*lmax
-  if (present(bst))  nside = bst*lmax
-
-  allocate(kmap(0:12*nside**2-1,2),klm(2,0:lmax,0:lmax))
-
-  klm = 0d0
-  do l = lmin, lmax !ell filtering
-    klm(1,l,0:l) = alm(l,0:l)
-  end do
-  do l = max(2,int(lmin/2d0)), int(lmax/2d0)
-    klm(2,l,0:l) = alm(l,0:l)
-  end do
-
-  call alm2map(nside,lmax,lmax,klm(1:1,:,:),kmap(:,1))
-  call alm2map(nside,lmax,lmax,klm(2:2,:,:),kmap(:,2))
-  bispec = sum(kmap(:,1)*kmap(:,2)**2) * (4d0*pi)/(12d0*dble(nside)**2)
-
-  deallocate(kmap,klm)
-
-end subroutine fold
-
-
-subroutine sque(eL,sL,l1,alm,bispec,bst)
-!*  Compute squeezed shape of the unnormalized binned reduced bispectrum for a given alm, b[sL,eL,eL]
-!*
-!*  Args:
-!*    :eL[2] (int)        : Minimum and maximum multipoles of the bin, with bounds (2)
-!*    :sL[2] (int)        : Minimum and maximum multipoles of the fixed bin, with bounds (2)
-!*    :l1 (int)           : Maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
-!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
-!*
-!*  Args(optional):
-!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-!*
-!*  Returns:
-!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: l1
-  integer, intent(in), dimension(2) :: eL, sL
-  integer, intent(in), optional :: bst
-!f2py integer :: bst = 2
-  double complex, intent(in), dimension(0:l1,0:l1) :: alm
-  double precision, intent(out) :: bispec
-  !internal
-  integer :: l, nside
-  double precision, allocatable :: kmap(:,:)
-  double complex, allocatable :: klm(:,:,:)
-
-  if (max(sL(2),eL(2))>l1) stop 'error (sque): l1 is too small'
-
-  nside = 2*l1
-  if (present(bst))  nside = bst*l1
-
-  allocate(kmap(0:12*nside**2-1,2),klm(2,0:l1,0:l1))
-
-  klm = 0d0
-  do l = sL(1), sL(2) !ell filtering
-    klm(1,l,0:l) = alm(l,0:l)
-  end do
-  do l = eL(1), eL(2)
-    klm(2,l,0:l) = alm(l,0:l)
-  end do
-
-  call alm2map(nside,l1,l1,klm(1:1,:,:),kmap(:,1))
-  call alm2map(nside,l1,l1,klm(2:2,:,:),kmap(:,2))
-  bispec = sum(kmap(:,1)*kmap(:,2)**2) * (4d0*pi)/(12d0*dble(nside)**2)
-
-  deallocate(kmap,klm)
-
-end subroutine sque
-
-
-subroutine isos(eL,aL,l1,alm,bispec,bst)
-!*  Compute isosceles shape of the unnormalized binned reduced bispectrum for a given alm, b[eL,aL,aL]
-!*
-!*  Args:
-!*    :eL[2] (int)        : Minimum and maximum multipoles of the bin, with bounds (2)
-!*    :aL[2] (int)        : Minimum and maximum multipoles of the fixed bin, with bounds (2)
-!*    :l1 (int)           : Maximum multipole of the input alm, satisfying eLmax,sLmax<=l1
-!*    :alm [l,m] (dcmplx) : Input harmonic coefficients, with bounds (0:lmax,0:lmax).
-!*
-!*  Args(optional):
-!*    :bst (int)         : A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-!*
-!*  Returns:
-!*    :bispec (double)   : Unnormalized binned reduced bispectrum at the bin, [lmin,lmax]
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: l1
-  integer, intent(in), dimension(2) :: eL, aL
-  integer, intent(in), optional :: bst
-  !f2py integer :: bst = 2
-  double complex, intent(in), dimension(0:l1,0:l1) :: alm
-  double precision, intent(out) :: bispec
-  !internal
-  integer :: l, nside
-  double precision, allocatable :: kmap(:,:)
-  double complex, allocatable :: klm(:,:,:)
-
-  if (max(aL(2),eL(2))>l1) stop 'error (isos): l1 is too small'
-
-  nside = 2*l1
-  if (present(bst))  nside = bst*l1
-
-  allocate(kmap(0:12*nside**2-1,2),klm(2,0:l1,0:l1))
-
-  klm = 0d0
-  do l = eL(1), eL(2) !ell filtering
-    klm(1,l,0:l) = alm(l,0:l)
-  end do
-  do l = aL(1), aL(2)
-    klm(2,l,0:l) = alm(l,0:l)
-  end do
-
-  call alm2map(nside,l1,l1,klm(1:1,:,:),kmap(:,1))
-  call alm2map(nside,l1,l1,klm(2:2,:,:),kmap(:,2))
-  bispec = sum(kmap(:,1)*kmap(:,2)**2) * (4d0*pi)/(12d0*dble(nside)**2)
-
-  deallocate(kmap,klm)
-
-end subroutine isos
+end subroutine xbispec_bin
 
 
 end module bispec

@@ -5,9 +5,10 @@ import curvedsky
 from memory_profiler import profile
 
 if sys.version_info[:3] > (3,0):
-  import pickle
+    import pickle
 elif sys.version_info[:3] > (2,5,2):
-  import cPickle as pickle
+    print('use cPickle')
+    import cPickle as pickle
 
 
 # compute normalization
@@ -117,6 +118,7 @@ def qrec(p,falm,fquad,r,diaginv=True):
             glm *= Ag[q][:,None]
             clm *= Ac[q][:,None]
             pickle.dump((glm,clm),open(fquad[q].alm[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
+            x = pickle.load(open(fquad[q].alm[i],"rb"))
 
             # T+P
             if q in p.qMV and 'MV' in p.qlist:

@@ -24,8 +24,7 @@ def ext_params(declare,argtype='intent(out)'):
             p = dec[1].replace(',',' ').split()
             pset.extend(p)
 
-    if pset: print(argtype+':',pset)
-
+    #if pset: print(argtype+':',pset)
     return pset
 
 
@@ -39,7 +38,7 @@ def ext_opt4py(slines):
             v = v.replace(' ','')
             pset.append([p,v])
 
-    if pset: print('extra optional args:',pset)
+    #if pset: print('extra optional args:',pset)
     return pset
 
 
@@ -62,8 +61,8 @@ def ext_optional(pset,declare,slines):
         else:
             popt.append([p,defval])
 
-    if popt: print('optional args:',popt)
-    if pops: print('output args with special defval:',pops)
+    #if popt: print('optional args:',popt)
+    #if pops: print('output args with special defval:',pops)
 
     return popt, pops
 
@@ -169,7 +168,7 @@ for mod in modname:
       func = funcopt(func,popt)
       func = funcopt(func,pext)
       func = funcopt(func,pops,True)
-      print('create',mod+'.'+func)
+      #print('create',mod+'.'+func)
 
       # add to pyname
       f = open(pyname,'a+')

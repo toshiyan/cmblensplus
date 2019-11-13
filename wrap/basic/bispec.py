@@ -104,7 +104,7 @@ def zpoints(zmin,zmax,zn,zspace=1):
 
 def skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,sigma,W,pktype='T12'):
   """
- Compute skewspectrum analytically
+  Compute skewspectrum analytically
   Usage:
     :skew = basic.bispec.skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,sigma,W,pktype):
   """

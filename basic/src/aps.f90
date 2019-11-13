@@ -47,7 +47,7 @@ subroutine binning(bn,eL,bp,bc,spc)
 end subroutine binning
 
 
-subroutine read_cambcls(f,lmin,lmax,numcls,cl,bb,raw)
+subroutine read_cambcls(f,lmin,lmax,numcls,cl,bb,lsq)
 !*  Return CMB cls from CAMB output files
 !*
 !*  Args:
@@ -57,23 +57,23 @@ subroutine read_cambcls(f,lmin,lmax,numcls,cl,bb,raw)
 !*    :numcls (int)    : Number of cls to be read
 !*
 !*  Args(Optional):
-!*    :bb (bool)   : Including BB in the file or not. The data should be TT, EE, TE, dd, Td (,Ed) if bb = False (default), and TT, EE, BB, TE if bb = True. 
-!*    :raw (bool)  : The cls in the file are multiplied by l(l+1)/2pi if raw = False (default)
+!*    :bb (bool)  : Filetype. The data should be TT, EE, TE, dd, Td (,Ed) if bb = False (default), and TT, EE, BB, TE if bb = True. 
+!*    :lsq (bool) : The cls is divided by l(l+1)/2pi if lsq = True (default)
 !*
 !*  Returns:
 !*    :cl[numcls,l] (double): Angular power spectra, with bountd (numcls,0:lmax)
 !*
   implicit none
   character(*), intent(in) :: f
+  logical, intent(in) :: lsq, bb
   integer, intent(in) :: lmin, lmax, numcls
   double precision, intent(out), dimension(numcls,0:lmax) :: cl
   !optional
-  logical, intent(in), optional :: bb, raw
-  !f2py logical :: bb = 0
-  !f2py logical :: raw = 0
+  !opt4py :: bb = False
+  !opt4py :: lsq = True
 
   cl(:,0) = 0d0
-  call readcl_camb(cl(:,1:lmax),f,(/lmin,lmax/),bb,raw)
+  call readcl_camb(cl(:,1:lmax),f,(/lmin,lmax/),bb,lsq)
 
 
 end subroutine read_cambcls
