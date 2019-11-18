@@ -74,7 +74,7 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside)
   write(*,*) 'compute polarization rotation'
   alm = 0d0
   do l = 1, lmax
-    alm(l,0:l) = 2d0*xlm(1,l,0:l)
+    alm(l,0:l) = -2d0*xlm(1,l,0:l)
   end do
   deallocate(xlm)
 
