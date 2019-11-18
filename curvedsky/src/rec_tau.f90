@@ -282,7 +282,7 @@ subroutine oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,alm,nside)
   write(*,*) 'compute reconstructed fields'
   alm = 0d0
   do l = 1, lmax
-    alm(l,0:l) = xlm(1,l,0:l)
+    alm(l,0:l) = -xlm(1,l,0:l)
   end do
   deallocate(xlm)
 
