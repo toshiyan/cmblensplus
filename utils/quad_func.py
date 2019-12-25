@@ -1,8 +1,10 @@
 
+import configparser
 import sys
+import os
 import numpy as np
+import basic
 import curvedsky
-from memory_profiler import profile
 
 if sys.version_info[:3] > (3,0):
     import pickle
@@ -11,215 +13,630 @@ elif sys.version_info[:3] > (2,5,2):
     import cPickle as pickle
 
 
-# compute normalization
-@profile
-def al(p,fquad,r):
-    '''
-    Return normalization of the quadratic estimators
-    '''
+# Define quad estimator names
+class quad_fname:
 
-    lcl = r.lcl[:,:p.rlmax+1]
-    oc  = r.oc[:,:p.rlmax+1]
+    def __init__(self,pquad,qest,root,ids,cmbtag):
 
-    for q in p.qlist:
+        # qtype is the type of mode coupling, such as lens, rot, etc
+        qalm = root + pquad.qtype + '/alm/'
+        qrdn = root + pquad.qtype + '/rdn0/'
+        qmlm = root + pquad.qtype + '/mean/'
+        qaps = root + pquad.qtype + '/aps/'
 
-        if p.qtype=='lens':
-            if q=='TT': Ag, Ac = curvedsky.norm_lens.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],oc[0,:],gtype='k')
-            if q=='TE': Ag, Ac = curvedsky.norm_lens.qte(p.lmax,p.rlmin,p.rlmax,lcl[3,:],oc[0,:],oc[1,:],gtype='k')
-            if q=='EE': Ag, Ac = curvedsky.norm_lens.qee(p.lmax,p.rlmin,p.rlmax,lcl[1,:],oc[1,:],gtype='k')
-            if q=='TB': Ag, Ac = curvedsky.norm_lens.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],oc[0,:],oc[2,:],gtype='k')
-            if q=='EB': Ag, Ac = curvedsky.norm_lens.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],oc[1,:],oc[2,:],gtype='k')
-            if q=='MV':
-                ag, ac, Wg, Wc = curvedsky.norm_lens.qall(p.qDO,p.lmax,p.rlmin,p.rlmax,lcl,oc,gtype='k')
-                Ag, Ac = ag[5,:], ac[5,:]
+        otag = pquad.otag
+        qtag = qest+'_'+cmbtag+pquad.ltag
 
-        if p.qtype=='rot':
-            Ac = np.zeros(p.lmax+1)
-            if q=='TB': Ag = curvedsky.norm_rot.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],oc[0,:],oc[2,:])
-            if q=='EB': Ag = curvedsky.norm_rot.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],oc[1,:],oc[2,:])
+        # normalization and tau transfer function
+        self.al   = qaps+'Al_'+qtag+'.dat'
+        self.wl   = qaps+'Wl_'+qtag+'.dat'
 
-        if p.qtype=='tau':
-            Ac = np.zeros(p.lmax+1)
-            if q=='TT': Ag = curvedsky.norm_tau.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],oc[0,:])
-            if q=='EB': Ag = curvedsky.norm_tau.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],oc[1,:],oc[2,:])
+        # N0/N1 bias
+        self.n0bl = qaps+'n0_'+qtag+'.dat'
+        self.n1bs = qaps+'n1_'+qtag+'.dat'
 
-        # save
-        np.savetxt(fquad[q].al,np.array((r.eL,Ag,Ac)).T)
-        if q=='MV' and p.qtype=='lens': 
-            for qi, qq in enumerate(['TT','TE','EE','TB','EB']): np.savetxt(fquad[qq].wl,np.array((r.eL,Wg[qi,:],Wc[qi,:])).T)
+        # mean field
+        self.ml   = [qmlm+'cl_'+qtag+'_'+x+'.dat' for x in ids]
+        self.mfb  = [qmlm+'mlm_'+qtag+'_'+x+'.pkl' for x in ids]
 
+        # reconstructed spectra
+        self.mcls = qaps+'cl_'+qtag+'.dat'
+        self.mcbs = qaps+'cl_'+qtag+otag+'.dat'
+        self.ocls = qaps+'cl_'+ids[0]+'_'+qtag+'.dat'
+        self.ocbs = qaps+'cl_'+ids[0]+'_'+qtag+otag+'.dat'
+        self.cl   = [qaps+'rlz/cl_'+qtag+'_'+x+'.dat' for x in ids]
 
-
-def loadnorm(p,files):
-    Ag = {}
-    Ac = {}
-    Wg = {}
-    Wc = {}
-    for q in p.qlist:
-        Ag[q], Ac[q] = np.loadtxt(files[q].al,unpack=True,usecols=(1,2))
-    if 'MV' in p.qlist and p.qtype=='lens':
-        for qi, qq in enumerate(['TT','TE','EE','TB','EB']):  Wg[qq], Wc[qq] = np.loadtxt(files[qq].wl,unpack=True,usecols=(1,2))
-
-    return Ag, Ac, Wg, Wc
+        # reconstructed alm and RDN0
+        self.alm   = [qalm+'alm_'+qtag+'_'+x+'.pkl' for x in ids]
+        self.rdn0  = [qrdn+'rdn0_'+qtag+'_'+x+'.dat' for x in ids]
+        self.drdn0 = [qrdn+'drdn0_'+qtag+'_'+x+'.dat' for x in ids]
 
 
+class quad:
 
-@profile
-def qrec(p,falm,fquad,r,diaginv=True):
-    '''
-    Return quadratic estimators
-    '''
-    lcl = r.lcl[:,:p.rlmax+1]
+    def __init__(self,conf,qDO=None,qMV=None,qlist=None,qtype=''):
 
-    # load normalization and weights
-    Ag, Ac, Wg, Wc = loadnorm(p,fquad)
+        # Define parameters for quadratic estimator computations
+        self.qtype = conf.get('qtype','lens')
+        if qtype!='':  self.qtype = qtype
 
-    # loop for realizations
-    for i in range(p.snmin,p.snmax):
-        print(i)
+        self.nside  = conf.getint('nside',1024)
+        self.rlmin  = conf.getint('rlmin',500)
+        self.rlmax  = conf.getint('rlmax',2048)
+        self.oLmin  = conf.getint('oLmin',1)
+        self.oLmax  = conf.getint('oLmax',2048)
+        self.bn     = conf.getint('bn',30) 
+        self.binspc = conf.get('binspc','')
+        self.snn0   = conf.getint('snn0',50)
+        self.snrd   = conf.getint('snrd',100)
+        self.snmf   = conf.getint('snmf',100)
+        self.oL     = [self.oLmin,self.oLmax]
 
-        gmv = 0.
-        cmv = 0.
+        #definition of T+P
+        if qDO==None:
+            self.qDO = [True,True,True,False,False,False]
+        if qMV==None:
+            self.qMV = ['TT','TE','EE']
 
-        for q in p.qlist:
+        #definition of qest
+        if qlist==None:
+            self.qlist = ['TT','TE','EE','TB','EB','MV']
+            if self.qtype=='rot':
+                self.qlist = ['EB']
+        else:
+            self.qlist = qlist
 
-            if diaginv:
-                if 'T' in q:  Talm = r.Fl['T'] * pickle.load(open(falm['T'][i],"rb"))
-                if 'E' in q:  Ealm = r.Fl['E'] * pickle.load(open(falm['E'][i],"rb"))
-                if 'B' in q:  Balm = r.Fl['B'] * pickle.load(open(falm['B'][i],"rb"))
+        #cinv diag filter
+        self.Fl = {}
+
+        #multipole bins
+        self.eL = np.linspace(0,self.oLmax,self.oLmax+1)
+        self.bp, self.bc = basic.aps.binning(self.bn,self.oL,spc=self.binspc)
+
+        #kappa
+        self.kL = self.eL*(self.eL+1.)*.5
+
+        #filename tags
+        self.ltag = '_l'+str(self.rlmin)+'-'+str(self.rlmax)
+        self.otag = '_oL'+str(self.oLmin)+'-'+str(self.oLmax)+'_b'+str(self.bn)+self.binspc
+
+        # cmb alm mtype
+        self.mtype = []
+        for q in self.qlist:
+            if not q[0] in self.mtype: self.mtype.append(q[0])
+            if not q[1] in self.mtype: self.mtype.append(q[1])
+
+
+    def fname(self,root,ids,cmbtag):
+        #setup filename
+
+        f = {}
+        for q in self.qlist:
+            f[q] = quad_fname(self,q,root,ids,cmbtag)
+
+        self.f = f
+
+
+    def diagcinv(self,ocl):
+
+        for m in ['T','E','B']:
+            self.Fl[m] = np.zeros((self.rlmax+1,self.rlmax+1))
+
+        for l in range(self.rlmin,self.rlmax+1):
+            self.Fl['T'][l,0:l+1] = 1./ocl[0,l]
+            self.Fl['E'][l,0:l+1] = 1./ocl[1,l]
+            self.Fl['B'][l,0:l+1] = 1./ocl[2,l]
+
+
+    # compute normalization
+    def al(self,lcl,ocl,output=True):
+        '''
+        Return normalization of the quadratic estimators
+        '''
+
+        lcl = lcl[:,:self.rlmax+1]
+        ocl = ocl[:,:self.rlmax+1]
+
+        Lmax  = self.oLmax
+        rlmin = self.rlmin
+        rlmax = self.rlmax
+        qlist = self.qlist
+        qtype = self.qtype
+        qDO   = self.qDO
+        oL    = np.linspace(0,Lmax,Lmax+1)
+
+        Ags = {}
+        Acs = {}
+        for q in qlist:
+
+            if qtype=='lens':
+                if q=='TT': Ag, Ac = curvedsky.norm_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype='k')
+                if q=='TE': Ag, Ac = curvedsky.norm_lens.qte(Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[1,:],gtype='k')
+                if q=='EE': Ag, Ac = curvedsky.norm_lens.qee(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],gtype='k')
+                if q=='TB': Ag, Ac = curvedsky.norm_lens.qtb(Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:],gtype='k')
+                if q=='EB': Ag, Ac = curvedsky.norm_lens.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],gtype='k')
+                if q=='MV':
+                    ag, ac, Wg, Wc = curvedsky.norm_lens.qall(qDO,Lmax,rlmin,rlmax,lcl,ocl,gtype='k')
+                    Ag, Ac = ag[5,:], ac[5,:]
+
+            if qtype=='rot':
+                Ac = np.zeros(Lmax+1)
+                if q=='TB': Ag = curvedsky.norm_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:])
+                if q=='EB': Ag = curvedsky.norm_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
+
+            if qtype=='tau':
+                Ac = np.zeros(Lmax+1)
+                if q=='TT': Ag = curvedsky.norm_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
+                if q=='EB': Ag = curvedsky.norm_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
+
+            # save
+            if output:
+                np.savetxt(self.f[q].al,np.array((oL,Ag,Ac)).T)
+                if q=='MV' and qtype=='lens': 
+                    for qi, qq in enumerate(['TT','TE','EE','TB','EB']): np.savetxt(self.f[qq].wl,np.array((oL,Wg[qi,:],Wc[qi,:])).T)
             else:
-                if 'T' in q:  Talm = pickle.load(open(falm['T'][i],"rb"))
-                if 'E' in q:  Ealm = pickle.load(open(falm['E'][i],"rb"))
-                if 'B' in q:  Balm = pickle.load(open(falm['B'][i],"rb"))
+                Ags[q] = Ag
+                Acs[q] = Ac
 
-            # trim
-            if 'T' in q:  Talm = Talm[:p.rlmax+1,:p.rlmax+1]
-            if 'E' in q:  Ealm = Ealm[:p.rlmax+1,:p.rlmax+1]
-            if 'B' in q:  Balm = Balm[:p.rlmax+1,:p.rlmax+1]
-
-            if p.qtype=='lens':
-                if q=='TT':  glm, clm = curvedsky.rec_lens.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],Talm,Talm,gtype='k',nside=p.nsidet)
-                if q=='TE':  glm, clm = curvedsky.rec_lens.qte(p.lmax,p.rlmin,p.rlmax,lcl[3,:],Talm,Ealm,gtype='k',nside=p.nsidet)
-                if q=='TB':  glm, clm = curvedsky.rec_lens.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],Talm,Balm,gtype='k',nside=p.nsidet)
-                if q=='EE':  glm, clm = curvedsky.rec_lens.qee(p.lmax,p.rlmin,p.rlmax,lcl[1,:],Ealm,Ealm,gtype='k',nside=p.nsidet)
-                if q=='EB':  glm, clm = curvedsky.rec_lens.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],Ealm,Balm,gtype='k',nside=p.nsidet)
-                if q=='MV':  glm, clm = gmv, cmv
-
-            if p.qtype=='rot':
-                if q=='TB':  glm = curvedsky.rec_rot.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],Talm,Balm,nside=p.nsidet)
-                if q=='EB':  glm = curvedsky.rec_rot.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],Ealm,Balm,nside=p.nsidet)
-                clm = glm*0.
-
-            if p.qtype=='tau':
-                if q=='TT':  glm = curvedsky.rec_tau.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],Talm,Talm,nside=p.nsidet)
-                if q=='EB':  glm = curvedsky.rec_tau.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],Ealm,Balm,nside=p.nsidet)
-                clm = glm*0.
-
-            glm *= Ag[q][:,None]
-            clm *= Ac[q][:,None]
-            pickle.dump((glm,clm),open(fquad[q].alm[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
-            x = pickle.load(open(fquad[q].alm[i],"rb"))
-
-            # T+P
-            if q in p.qMV and 'MV' in p.qlist:
-                gmv += Wg[q][:,None]*glm
-                cmv += Wc[q][:,None]*clm
+        if not output:
+            return Ags, Acs
 
 
-@profile
-def n0(p,falm,fquad,r):
+    def loadnorm(self):
+
+        Ag, Ac, Wg, Wc = {}, {}, {}, {}
+
+        for q in self.qlist:
+            Ag[q], Ac[q] = np.loadtxt(self.f[q].al,unpack=True,usecols=(1,2))
+        if 'MV' in self.qlist and self.qtype=='lens':
+            for qi, qq in enumerate(['TT','TE','EE','TB','EB']):  Wg[qq], Wc[qq] = np.loadtxt(self.f[qq].wl,unpack=True,usecols=(1,2))
+
+        return Ag, Ac, Wg, Wc
+
+
+    def qrec(self,snmin,snmax,falm,lcl,qout=None,diagcinv=True,overwrite=True):
+        '''
+        Return quadratic estimators
+        '''
+        lcl = lcl[:,:self.rlmax+1]
+        Lmax  = self.oLmax
+        rlmin = self.rlmin
+        rlmax = self.rlmax
+        nside = self.nside
+        qtype = self.qtype
+        if qout==None:  qout = self
+
+        # load normalization and weights
+        Ag, Ac, Wg, Wc = quad.loadnorm(self)
+
+        # loop for realizations
+        for i in range(snmin,snmax):
+            print(i)
+            gmv, cmv = 0., 0.
+
+            for q in self.qlist:
+
+                if not overwrite and os.path.exists(qout.f[q].alm[i]): 
+                    print('File exist:',qout.f[q].alm[i])
+                    continue
+
+                if diagcinv:
+                    if 'T' in q:  Talm = self.Fl['T'] * pickle.load(open(falm['T'][i],"rb"))[:rlmax+1,:rlmax+1]
+                    if 'E' in q:  Ealm = self.Fl['E'] * pickle.load(open(falm['E'][i],"rb"))[:rlmax+1,:rlmax+1]
+                    if 'B' in q:  Balm = self.Fl['B'] * pickle.load(open(falm['B'][i],"rb"))[:rlmax+1,:rlmax+1]
+                else:
+                    if 'T' in q:  Talm = pickle.load(open(falm['T'][i],"rb"))[:rlmax+1,:rlmax+1]
+                    if 'E' in q:  Ealm = pickle.load(open(falm['E'][i],"rb"))[:rlmax+1,:rlmax+1]
+                    if 'B' in q:  Balm = pickle.load(open(falm['B'][i],"rb"))[:rlmax+1,:rlmax+1]
+
+                if qtype=='lens':
+                    if q=='TT':  glm, clm = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],Talm,Talm,gtype='k',nside=nside)
+                    if q=='TE':  glm, clm = curvedsky.rec_lens.qte(Lmax,rlmin,rlmax,lcl[3,:],Talm,Ealm,gtype='k',nside=nside)
+                    if q=='TB':  glm, clm = curvedsky.rec_lens.qtb(Lmax,rlmin,rlmax,lcl[3,:],Talm,Balm,gtype='k',nside=nside)
+                    if q=='EE':  glm, clm = curvedsky.rec_lens.qee(Lmax,rlmin,rlmax,lcl[1,:],Ealm,Ealm,gtype='k',nside=nside)
+                    if q=='EB':  glm, clm = curvedsky.rec_lens.qeb(Lmax,rlmin,rlmax,lcl[1,:],Ealm,Balm,gtype='k',nside=nside)
+                    if q=='MV':  glm, clm = gmv, cmv
+
+                if qtype=='rot':
+                    if q=='TB':  glm = curvedsky.rec_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],Talm,Balm,nside=nside)
+                    if q=='EB':  glm = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],Ealm,Balm,nside=nside)
+                    clm = glm*0.
+
+                if qtype=='tau':
+                    if q=='TT':  glm = curvedsky.rec_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],Talm,Talm,nside=nside)
+                    if q=='EB':  glm = curvedsky.rec_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],Ealm,Balm,nside=nside)
+                    clm = glm*0.
+
+                glm *= Ag[q][:,None]
+                clm *= Ac[q][:,None]
+                pickle.dump((glm,clm),open(qout.f[q].alm[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
+
+                # T+P
+                if q in self.qMV and 'MV' in self.qlist:
+                    gmv += Wg[q][:,None]*glm
+                    cmv += Wc[q][:,None]*clm
+
+
+    def n0(self,falm,w4,lcl,overwrite=True):
+        '''
+        The N0 bias calculation
+        '''
+
+        for q in self.qlist:
+            if not overwrite and os.path.exists(self.f[q].n0bl): 
+                print('File exist:',self.f[q].n0bl)
+                return
+
+        # load normalization and weights
+        Ag, Ac, Wg, Wc = quad.loadnorm(self)
+
+        # maximum multipole of output
+        lcl = lcl[:,:self.rlmax+1]
+        Lmax  = self.oLmax
+        rlmin = self.rlmin
+        rlmax = self.rlmax
+        nside = self.nside
+        qlist = self.qlist
+        qtype = self.qtype
+        oL = np.linspace(0,Lmax,Lmax+1)
+
+        # power spectrum
+        cl ={}
+        for q in qlist:
+            cl[q] = np.zeros((2,Lmax+1))
+
+        # loop for realizations
+        for i in range(self.snn0):
+            print (2*i+1, 2*i+2)
+
+            gmv, cmv = 0., 0.
+
+            for q in qlist:
+
+                if q == 'MV':
+                    glm, clm = gmv, cmv
+                else:
+                    q1, q2 = q[0], q[1]
+                    print(q1,q2)
+                    alm1 = self.Fl[q1] * pickle.load(open(falm[q1][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
+                    alm2 = self.Fl[q1] * pickle.load(open(falm[q1][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
+                    if q1 == q2:
+                        blm1 = alm1
+                        blm2 = alm2
+                    else:
+                        blm1 = self.Fl[q2] * pickle.load(open(falm[q2][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
+                        blm2 = self.Fl[q2] * pickle.load(open(falm[q2][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
+                    glm, clm = qXY(qtype,q,Lmax,rlmin,rlmax,nside,lcl,alm1,alm2,blm1,blm2)
+
+                glm *= Ag[q][:,None]
+                clm *= Ac[q][:,None]
+
+                cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm)/(2*w4*self.snn0)
+                cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm)/(2*w4*self.snn0)
+
+                # T+P
+                if q in self.qMV and 'MV' in qlist:
+                    gmv += Wg[q][:,None]*glm
+                    cmv += Wc[q][:,None]*clm
+
+        for q in qlist:
+            if self.snn0 > 0:
+                print ('save N0 data')
+                np.savetxt(self.f[q].n0bl,np.concatenate((oL[None,:],cl[q])).T)
+
+
+    def diagrdn0(self,snmax,lcl,ocl,frcl):
+        
+        oL = np.linspace(0,self.oLmax,self.oLmax+1)
+        Ag, Ac, Wg, Wc = quad.loadnorm(self)
+
+        for i in range(snmax):
+            print ('Diag-RDN0',i)
+            rcl = np.loadtxt(frcl[i],unpack=True,usecols=(1,2,3,4))
+            rcl[np.where(rcl==0)] = 1e30 # a large number
+            # data x data
+            cl = ocl**2/rcl
+            Ags0, Acs0 = quad.al(self,lcl,cl,output=False)
+            # (data-sim) x (data-sim)
+            cl = ocl**2/(ocl-rcl)
+            Ags1, Acs1 = quad.al(self,lcl,cl,output=False)
+
+            for q in self.qlist:
+                Ags0[q][np.where(Ags0[q]==0)] = 1e30
+                Ags1[q][np.where(Ags1[q]==0)] = 1e30
+                Acs0[q][np.where(Acs0[q]==0)] = 1e30
+                Acs1[q][np.where(Acs1[q]==0)] = 1e30
+                n0g = Ag[q]**2*(1./Ags0[q]-1./Ags1[q])
+                n0c = Ac[q]**2*(1./Acs0[q]-1./Acs1[q])
+                np.savetxt(self.f[q].drdn0[i],np.array((oL,n0g,n0c)).T)
+
+
+    def rdn0(self,snmin,snmax,falm,w4,lcl):
+        '''
+        The sim-data-mixed term of the RDN0 bias calculation
+        '''
+
+        # load normalization and weights
+        Ag, Ac, Wg, Wc = quad.loadnorm(self)
+
+        # maximum multipole of output
+        lcl = lcl[:,:self.rlmax+1]
+        Lmax  = self.oLmax
+        rlmin = self.rlmin
+        rlmax = self.rlmax
+        nside = self.nside
+        qlist = self.qlist
+        qtype = self.qtype
+        oL = np.linspace(0,Lmax,Lmax+1)
+
+        # load N0
+        N0 = {}
+        for q in qlist:
+            N0[q] = np.loadtxt(self.f[q].n0bl,unpack=True,usecols=(1,2))
+
+        # compute RDN0
+        for i in range(snmin,snmax):
+            print(i)
+
+            # power spectrum
+            cl = {}
+            for q in qlist:
+                cl[q] = np.zeros((2,Lmax+1))
+
+            # load alm
+            almr = {}
+            for cmb in self.mtype:
+                almr[cmb] = self.Fl[cmb]*pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
+
+            # loop for I
+            for I in range(1,self.snrd+1):
+
+                gmv, cmv = 0., 0.
+
+                # load alm
+                alms = {}
+                for cmb in self.mtype:
+                    alms[cmb] = self.Fl[cmb]*pickle.load(open(falm[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
+
+                for q in qlist:
+
+                    q1, q2 = q[0], q[1]
+
+                    if I==i: continue
+                    print(I)
+
+                    if q=='MV':
+                        glm, clm = gmv, cmv
+                    else:
+                        glm, clm = qXY(qtype,q,Lmax,rlmin,rlmax,nside,lcl,almr[q1],alms[q1],almr[q2],alms[q2])
+
+                    glm *= Ag[q][:,None]
+                    clm *= Ac[q][:,None]
+
+                    cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm)
+                    cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm)
+
+                    # T+P
+                    if q in self.qMV and 'MV' in qlist:
+                        gmv += Wg[q][:,None]*glm
+                        cmv += Wc[q][:,None]*clm
+
+            if self.snrd>0:
+                if i==0:  sn = self.snrd
+                if i!=0:  sn = self.snrd-1
+                for q in qlist:
+                    cl[q] = cl[q]/(w4*sn) - N0[q]
+                    print ('save RDN0')
+                    np.savetxt(self.f[q].rdn0[i],np.concatenate((oL[None,:],cl[q])).T)
+
+
+    def mean(self,snmin,snmax,w4,overwrite=True):
+
+        Lmax  = self.oLmax
+        rlmin = self.rlmin
+        rlmax = self.rlmax
+        nside = self.nside
+        qlist = self.qlist
+        qtype = self.qtype
+        oL = np.linspace(0,Lmax,Lmax+1)
+
+        for q in qlist:
+
+            print('load data first',q)
+            glm = np.zeros((self.snmf,Lmax+1,Lmax+1),dtype=np.complex)
+            clm = np.zeros((self.snmf,Lmax+1,Lmax+1),dtype=np.complex)
+
+            for I in range(1,self.snmf+1):
+                print(I)
+                glm[I-1,:,:], clm[I-1,:,:] = pickle.load(open(self.f[q].alm[I],"rb"))
+
+            print('compute mean field')
+
+            for i in range(snmin,snmax):
+
+                if not overwrite and os.path.exists(self.f[q].mfb[i]): 
+                    print('File exist:',self.f[q].mfb[i])
+                    continue
+
+                print(i)
+                mfg = np.average(glm,axis=0)
+                mfc = np.average(clm,axis=0)
+                if i!=0: 
+                    mfg -= glm[i-1,:,:]/self.snmf
+                    mfc -= clm[i-1,:,:]/self.snmf
+                    mfg *= self.snmf/(self.snmf-1.)
+                    mfc *= self.snmf/(self.snmf-1.)
+
+                print('save to file')
+                pickle.dump((mfg,mfc),open(self.f[q].mfb[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
+
+                # compute mf cls
+                print('cl')
+                cl = np.zeros((2,Lmax+1))
+                cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg)/w4
+                cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc)/w4
+                np.savetxt(self.f[q].ml[i],np.concatenate((oL[None,:],cl)).T)
+
+
+
+def qXY(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,alm1,alm2,blm1,blm2):
+        # for N0 and RDN0 estimates
+
+        if qtype=='lens':
+            if qcomb=='TT':
+                glm1, clm1 = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm1,alm2,gtype='k',nside=nside)
+                glm2, clm2 = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm2,alm1,gtype='k',nside=nside)
+            if qcomb=='TE':
+                glm1, clm1 = curvedsky.rec_lens.qte(Lmax,rlmin,rlmax,lcl[3,:],alm1,blm2,gtype='k',nside=nside)
+                glm2, clm2 = curvedsky.rec_lens.qte(Lmax,rlmin,rlmax,lcl[3,:],alm2,blm1,gtype='k',nside=nside)
+            if qcomb=='TB':
+                glm1, clm1 = curvedsky.rec_lens.qtb(Lmax,rlmin,rlmax,lcl[3,:],alm1,blm2,gtype='k',nside=nside)
+                glm2, clm2 = curvedsky.rec_lens.qtb(Lmax,rlmin,rlmax,lcl[3,:],alm2,blm1,gtype='k',nside=nside)
+            if qcomb=='EE':
+                glm1, clm1 = curvedsky.rec_lens.qee(Lmax,rlmin,rlmax,lcl[1,:],alm1,alm2,gtype='k',nside=nside)
+                glm2, clm2 = curvedsky.rec_lens.qee(Lmax,rlmin,rlmax,lcl[1,:],alm2,alm1,gtype='k',nside=nside)
+            if qcomb=='EB':
+                glm1, clm1 = curvedsky.rec_lens.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm1,blm2,gtype='k',nside=nside)
+                glm2, clm2 = curvedsky.rec_lens.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm2,blm1,gtype='k',nside=nside)
+
+            return glm1+glm2, clm1+clm2
+
+        if qtype=='rot':
+            if qcomb=='TB':
+                rlm1 = curvedsky.rec_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],alm1,blm2,nside=nside)
+                rlm2 = curvedsky.rec_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],alm2,blm1,nside=nside)
+            if qcomb=='EB':
+                rlm1 = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm1,blm2,nside=nside)
+                rlm2 = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm2,blm1,nside=nside)
+
+            return rlm1+rlm2, (rlm1+rlm2)*0.
+
+        if qtype=='tau':
+            if qcomb=='TT':
+                rlm1 = curvedsky.rec_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm1,blm2,nside=nside)
+                rlm2 = curvedsky.rec_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm2,blm1,nside=nside)
+            if qcomb=='EB':
+                rlm1 = curvedsky.rec_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm1,blm2,nside=nside)
+                rlm2 = curvedsky.rec_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm2,blm1,nside=nside)
+
+            return rlm1+rlm2, (rlm1+rlm2)*0.
+
+
+
+def n0x(qx,qd0,qd1,falm,fblm,w4,lcl):
     '''
-    The N0 bias calculation
+    N0 for a^1 x a^2
     '''
 
     # load normalization and weights
-    Ag, Ac, Wg, Wc = loadnorm(p,fquad)
+    Ag0, Ac0, Wg0, Wc0 = quad.loadnorm(qd0)
+    Ag1, Ac1, Wg1, Wc1 = quad.loadnorm(qd1)
+
+    # maximum multipole of output
+    lcl = lcl[:,:qx.rlmax+1]
+    Lmax  = qx.oLmax
+    rlmin = qx.rlmin
+    rlmax = qx.rlmax
+    nside = qx.nside
+    qlist = qx.qlist
+    qtype = qx.qtype
+    oL = np.linspace(0,Lmax,Lmax+1)
 
     # power spectrum
     cl ={}
-    for q in p.qlist:
-        cl[q] = np.zeros((2,p.lmax+1))
+    for q in qlist:
+        cl[q] = np.zeros((2,Lmax+1))
 
     # loop for realizations
-    for i in range(p.snn0):
+    for i in range(qx.snn0):
         print (2*i+1, 2*i+2)
 
-        gmv = 0.
-        cmv = 0.
+        gmv, cmv = 0., 0.
 
-        for q in p.qlist:
+        for q in qlist:
 
             if q == 'MV':
                 glm, clm = gmv, cmv
             else:
                 q1, q2 = q[0], q[1]
                 print(q1,q2)
-                alm1 = r.Fl[q1] * pickle.load(open(falm[q1][2*i+1],"rb"))
-                alm2 = r.Fl[q1] * pickle.load(open(falm[q1][2*i+2],"rb"))
+                alm1 = qd0.Fl[q1] * pickle.load(open(falm[q1][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
+                alm2 = qd1.Fl[q1] * pickle.load(open(fblm[q1][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
                 if q1 == q2:
                     blm1 = alm1
                     blm2 = alm2
                 else:
-                    blm1 = r.Fl[q2] * pickle.load(open(falm[q2][2*i+1],"rb"))
-                    blm2 = r.Fl[q2] * pickle.load(open(falm[q2][2*i+2],"rb"))
-                glm, clm = qXY(q,p,r.lcl,alm1,alm2,blm1,blm2)
+                    blm1 = qd0.Fl[q2] * pickle.load(open(falm[q2][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
+                    blm2 = qd1.Fl[q2] * pickle.load(open(fblm[q2][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
+                glm, clm = qXY(qtype,q,Lmax,rlmin,rlmax,nside,lcl,alm1,alm2,blm1,blm2)
 
-            glm *= Ag[q][:,None]
-            clm *= Ac[q][:,None]
-
-            cl[q][0,:] += curvedsky.utils.alm2cl(p.lmax,glm)/(2*r.w4*p.snn0)
-            cl[q][1,:] += curvedsky.utils.alm2cl(p.lmax,clm)/(2*r.w4*p.snn0)
+            cl[q][0,:] += Ag0[q]*Ag1[q]*curvedsky.utils.alm2cl(Lmax,glm)/(2*w4*qx.snn0)
+            cl[q][1,:] += Ac0[q]*Ac1[q]*curvedsky.utils.alm2cl(Lmax,clm)/(2*w4*qx.snn0)
 
             # T+P
-            if q in p.qMV and 'MV' in p.qlist:
+            if q in qx.qMV and 'MV' in qlist:
                 gmv += Wg[q][:,None]*glm
                 cmv += Wc[q][:,None]*clm
 
-    for q in p.qlist:
-        if p.snn0>0:
+    for q in qlist:
+        if qx.snn0 > 0:
             print ('save N0 data')
-            np.savetxt(fquad[q].n0bl,np.concatenate((r.eL[None,:],cl[q])).T)
+            np.savetxt(qx.f[q].n0bl,np.concatenate((oL[None,:],cl[q])).T)
 
 
-@profile
-def rdn0(p,falm,fquad,r):
+
+def rdn0x(qx,qd0,qd1,snmin,snmax,falm,fblm,w4,lcl):
     '''
     The sim-data-mixed term of the RDN0 bias calculation
     '''
 
-    # load normalization and weights
-    Ag, Ac, Wg, Wc = loadnorm(p,fquad)
+    Ag0, Ac0, Wg0, Wc0 = quad.loadnorm(qd0)
+    Ag1, Ac1, Wg1, Wc1 = quad.loadnorm(qd1)
+
+    # maximum multipole of output
+    lcl = lcl[:,:qx.rlmax+1]
+    Lmax  = qx.oLmax
+    rlmin = qx.rlmin
+    rlmax = qx.rlmax
+    nside = qx.nside
+    qlist = qx.qlist
+    qtype = qx.qtype
+    oL = np.linspace(0,Lmax,Lmax+1)
 
     # load N0
     N0 = {}
-    for q in p.qlist:
-        N0[q] = np.loadtxt(fquad[q].n0bl,unpack=True,usecols=(1,2))
+    for q in qlist:
+        N0[q] = np.loadtxt(qx.f[q].n0bl,unpack=True,usecols=(1,2))
 
     # compute RDN0
-    for i in range(p.snmin,p.snmax):
+    for i in range(snmin,snmax):
         print(i)
 
         # power spectrum
         cl = {}
-        for q in p.qlist:
-            cl[q] = np.zeros((2,p.lmax+1))
+        for q in qlist:
+            cl[q] = np.zeros((1,Lmax+1))
 
         # load alm
         almr = {}
-        for cmb in ['T','E','B']:
-            almr[cmb] = r.Fl[cmb]*pickle.load(open(falm[cmb][i],"rb"))
+        blmr = {}
+        for cmb in qx.mtype:
+            almr[cmb] = qd0.Fl[cmb]*pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
+            blmr[cmb] = qd1.Fl[cmb]*pickle.load(open(fblm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
 
         # loop for I
-        for I in range(1,p.snrd+1):
+        for I in range(1,qx.snrd+1):
 
             gmv, cmv = 0., 0.
 
             # load alm
             alms = {}
-            for cmb in ['T','E','B']:
-                alms[cmb] = r.Fl[cmb]*pickle.load(open(falm[cmb][I],"rb"))
+            blms = {}
+            for cmb in qx.mtype:
+                alms[cmb] = qd0.Fl[cmb]*pickle.load(open(falm[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
+                blms[cmb] = qd1.Fl[cmb]*pickle.load(open(fblm[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
 
-            for q in p.qlist:
+            for q in qlist:
 
                 q1, q2 = q[0], q[1]
 
@@ -229,114 +646,35 @@ def rdn0(p,falm,fquad,r):
                 if q=='MV':
                     glm, clm = gmv, cmv
                 else:
-                    glm, clm = qXY(q,p,r.lcl,almr[q1],alms[q1],almr[q2],alms[q2])
+                    glm0, glm1 = qXYx(qtype,q,Lmax,rlmin,rlmax,nside,lcl,almr,blmr,alms,blms)
 
-                glm *= Ag[q][:,None]
-                clm *= Ac[q][:,None]
-
-                cl[q][0,:] += curvedsky.utils.alm2cl(p.lmax,glm)
-                cl[q][1,:] += curvedsky.utils.alm2cl(p.lmax,clm)
+                cl[q][0,:] += Ag0[q]*Ag1[q]*curvedsky.utils.alm2cl(Lmax,glm0,glm1)
+                #cl[q][1,:] += Ac0[q]*Ac1[q]*curvedsky.utils.alm2cl(Lmax,clm)
 
                 # T+P
-                if q in p.qMV and 'MV' in p.qlist:
-                    gmv += Wg[q][:,None]*glm
-                    cmv += Wc[q][:,None]*clm
+                if q in qx.qMV and 'MV' in qlist:
+                    gmv += (Wg0[q][:,None]*Wg1[q][:,None])**0.5*glm
+                    #cmv += (Wc0[q][:,None]*Wc1[q][:,None])**0.5*clm
 
-        if p.snrd>0:
-            if i==0:  sn = p.snrd
-            if i!=0:  sn = p.snrd-1
-            for q in p.qlist:
-                cl[q] = cl[q]/(r.w4*sn) - N0[q]
+        if qx.snrd>0:
+            if i==0:  sn = qx.snrd
+            if i!=0:  sn = qx.snrd-1
+            for q in qlist:
+                cl[q] = cl[q]/(w4*sn) - N0[q]
                 print ('save RDN0')
-                np.savetxt(fquad[q].rdn0[i],np.concatenate((r.eL[None,:],cl[q])).T)
+                np.savetxt(qx.f[q].rdn0[i],np.concatenate((oL[None,:],cl[q])).T)
 
 
-def qXY(q,p,lcl,alm1,alm2,blm1,blm2):
+def qXYx(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,almr,blmr,alms,blms):
 
-    if p.qtype=='lens':
+    q1, q2 = qcomb[0], qcomb[1]
 
-        if q=='TT':
-            glm1, clm1 = curvedsky.rec_lens.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],alm1,alm2,gtype='k',nside=p.nsidet)
-            glm2, clm2 = curvedsky.rec_lens.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],alm2,alm1,gtype='k',nside=p.nsidet)
+    if qtype=='rot':
+        if qcomb=='EB':
+            a01 = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],almr[q1],alms[q2],nside=nside)
+            a10 = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],alms[q1],almr[q2],nside=nside)
+            b01 = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],blmr[q1],blms[q2],nside=nside)
+            b10 = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],blms[q1],blmr[q2],nside=nside)
 
-        if q=='TE':
-            glm1, clm1 = curvedsky.rec_lens.qte(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm1,blm2,gtype='k',nside=p.nsidet)
-            glm2, clm2 = curvedsky.rec_lens.qte(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm2,blm1,gtype='k',nside=p.nsidet)
-
-        if q=='TB':
-            glm1, clm1 = curvedsky.rec_lens.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm1,blm2,gtype='k',nside=p.nsidet)
-            glm2, clm2 = curvedsky.rec_lens.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm2,blm1,gtype='k',nside=p.nsidet)
-
-        if q=='EE':
-            glm1, clm1 = curvedsky.rec_lens.qee(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm1,alm2,gtype='k',nside=p.nsidet)
-            glm2, clm2 = curvedsky.rec_lens.qee(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm2,alm1,gtype='k',nside=p.nsidet)
-
-        if q=='EB':
-            glm1, clm1 = curvedsky.rec_lens.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm1,blm2,gtype='k',nside=p.nsidet)
-            glm2, clm2 = curvedsky.rec_lens.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm2,blm1,gtype='k',nside=p.nsidet)
-
-        return glm1+glm2, clm1+clm2
-
-
-    if p.qtype=='rot':
-
-        if q=='TB':
-            rlm1 = curvedsky.rec_rot.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm1,blm2,nside=p.nsidet)
-            rlm2 = curvedsky.rec_rot.qtb(p.lmax,p.rlmin,p.rlmax,lcl[3,:],alm2,blm1,nside=p.nsidet)
-
-        if q=='EB':
-            rlm1 = curvedsky.rec_rot.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm1,blm2,nside=p.nsidet)
-            rlm2 = curvedsky.rec_rot.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm2,blm1,nside=p.nsidet)
-
-        return rlm1+rlm2, (rlm1+rlm2)*0.
-
-
-    if p.qtype=='tau':
-
-        if q=='TT':
-            rlm1 = curvedsky.rec_tau.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],alm1,blm2,nside=p.nsidet)
-            rlm2 = curvedsky.rec_tau.qtt(p.lmax,p.rlmin,p.rlmax,lcl[0,:],alm2,blm1,nside=p.nsidet)
-
-        if q=='EB':
-            rlm1 = curvedsky.rec_tau.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm1,blm2,nside=p.nsidet)
-            rlm2 = curvedsky.rec_tau.qeb(p.lmax,p.rlmin,p.rlmax,lcl[1,:],alm2,blm1,nside=p.nsidet)
-
-        return rlm1+rlm2, (rlm1+rlm2)*0.
-
-
-@profile
-def mean(p,fquad,r):
-
-    for q in p.qlist:
-
-        print('load data first',q)
-        glm = np.zeros((p.snmf,p.lmax+1,p.lmax+1),dtype=np.complex)
-        clm = np.zeros((p.snmf,p.lmax+1,p.lmax+1),dtype=np.complex)
-
-        for I in range(1,p.snmf+1):
-            print(I)
-            glm[I-1,:,:], clm[I-1,:,:] = pickle.load(open(fquad[q].alm[I],"rb"))
-
-        print('compute mean field')
-
-        for i in range(p.snmin,p.snmax):
-            print(i)
-            mfg = np.average(glm,axis=0)
-            mfc = np.average(clm,axis=0)
-            if i!=0: 
-                mfg -= glm[i-1,:,:]/p.snmf
-                mfc -= clm[i-1,:,:]/p.snmf
-                mfg *= p.snmf/(p.snmf-1.)
-                mfc *= p.snmf/(p.snmf-1.)
-
-            print('save to file')
-            pickle.dump((mfg,mfc),open(fquad[q].mfb[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
-
-            # compute mf cls
-            print('cl')
-            cl = np.zeros((2,p.lmax+1))
-            cl[0,:] = curvedsky.utils.alm2cl(p.lmax,mfg)/r.w4
-            cl[1,:] = curvedsky.utils.alm2cl(p.lmax,mfc)/r.w4
-            np.savetxt(fquad[q].ml[i],np.concatenate((r.eL[None,:],cl)).T)
-
+        return a01+a10, b01+b10
 

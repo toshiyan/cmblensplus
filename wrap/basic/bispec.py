@@ -63,6 +63,34 @@ def bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan=0.,ka
   """
   return libbasic.bispec.bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,pktype)
 
+def bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype='T12'):
+  """
+  Compute SNR of lensing bispectrum analytically
+ 
+  Args:
+    :cpmodel (*str*): cosmological parameter model (model0, modelw, or modelp)
+    :model (*str*): fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
+    :z[*zn*] (*double*): redshift points for the z-integral
+    :zn (*int*): number of redshifts for the z-integral
+    :dz[*zn*] (*double*): interval of z
+    :zs (*double*): source redshift
+    :lmin/lmax (*int*): minimum/maximum multipoles of the bispectrum
+    :cl[*l*] (*int*): observed lensing spectrum at 0<=l<=lmax
+    :k[*kn*] (*double*): k for the matter power spectrum
+    :pk0 (*double*): the linear matter power spectrum at z=0
+    :kn (*int*): size of k
+
+  Args(optional):
+    :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
+
+  Returns:
+    :snr (*double*): total SNR
+
+  Usage:
+    :snr = basic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype):
+  """
+  return libbasic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype)
+
 def bispeclens_gauss_bin(shap,bn,lmin,lmax,cl):
   """
   Compute binned bispectrum analytically for the quadratic gaussian model

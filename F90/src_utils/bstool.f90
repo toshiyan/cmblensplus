@@ -692,15 +692,14 @@ subroutine bispec_lens_bin(cp,b,eL1,eL2,eL3,wp,ck,m,bl0,bl1)
 end subroutine bispec_lens_bin
 
 
-
-subroutine snr_bispec_lens(cp,b,eL,Cl,wp,ck,m,snr)
+subroutine bispec_lens_snr(cp,b,eL,cl,wp,ck,m,snr)
 ! SNR sum of lensing bispectrum
   implicit none
   type(cosmoparams), intent(in) :: cp
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: m
   integer, intent(in) :: eL(2)
-  double precision, intent(in) :: Cl(:), wp(:,:), ck(:,:)
+  double precision, intent(in) :: cl(:), wp(:,:), ck(:,:)
   double precision, intent(out) :: snr
   !internal
   integer :: l1, l2, l3
@@ -708,6 +707,7 @@ subroutine snr_bispec_lens(cp,b,eL,Cl,wp,ck,m,snr)
 
   tot = 0d0
   do l1 = eL(1), eL(2)
+    if (mod(l1,10)==0) write(*,*) l1
     do l2 = l1, eL(2)
       do l3 = l2, eL(2)
 
@@ -723,7 +723,7 @@ subroutine snr_bispec_lens(cp,b,eL,Cl,wp,ck,m,snr)
         call bispec_lens_lss_kernel(cp,b,l1,l2,l3,bisp(1),m)
         call bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp(2))
         bisp = bisp * W3j_approx(dble(l1),dble(l2),dble(l3)) * dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
-        tot = tot + sum(bisp)**2/(Del*Cl(l1)*Cl(l2)*Cl(l3))
+        tot = tot + sum(bisp)**2/(Del*cl(l1)*cl(l2)*cl(l3))
 
       end do
     end do
@@ -731,10 +731,10 @@ subroutine snr_bispec_lens(cp,b,eL,Cl,wp,ck,m,snr)
 
   snr = dsqrt(tot)
 
-end subroutine snr_bispec_lens
+end subroutine bispec_lens_snr
 
 
-subroutine snr_bispec_lens_assym(cp,b,eL1,eL2,eL3,Cl,wp,ck,m,snr)
+subroutine bispec_lens_snr_assym(cp,b,eL1,eL2,eL3,Cl,wp,ck,m,snr)
 ! SNR sum of lensing bispectrum with assymetry in l1,l2,l3
   implicit none
   type(cosmoparams), intent(in) :: cp
@@ -767,7 +767,7 @@ subroutine snr_bispec_lens_assym(cp,b,eL1,eL2,eL3,Cl,wp,ck,m,snr)
 
   snr = dsqrt(tot)
 
-end subroutine snr_bispec_lens_assym
+end subroutine bispec_lens_snr_assym
 
 
 subroutine snr_xbisp(cp,b,eL,cgg,ckk,btype,m,snr)

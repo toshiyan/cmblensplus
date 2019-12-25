@@ -6,7 +6,7 @@ module bispec
   use general,   only: GLdxs, GLpoints, linspace, gauss_legendre_params, gl_initialize, gl_finalize
   use cosmofunc, only: cosmoparams, set_cosmoparams, omega_m
   use pstool,    only: binned_ells
-  use bstool,    only: bispecfunc, bispec_lens_bin, bispec_lens_lss, bispec_lens_pb, bispec_lens_lss_init, bispec_lens_pb_init, zinterp, skewspec_lens, bispec_gauss_bin
+  use bstool,    only: bispecfunc, bispec_lens_bin, bispec_lens_snr, bispec_lens_lss, bispec_lens_pb, bispec_lens_lss_init, bispec_lens_pb_init, zinterp, skewspec_lens, bispec_gauss_bin
   implicit none
 
 contains
@@ -177,6 +177,64 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
   end do
 
 end subroutine bispeclens_bin
+
+
+subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pktype)
+!*  Compute SNR of lensing bispectrum analytically
+!* 
+!*  Args:
+!*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
+!*    :model (str) : fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
+!*    :z[zn] (double) : redshift points for the z-integral
+!*    :zn (int) : number of redshifts for the z-integral
+!*    :dz[zn] (double) : interval of z
+!*    :zs (double) : source redshift
+!*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
+!*    :cl[l] (int) : observed lensing spectrum at 0<=l<=lmax
+!*    :k[kn] (double) : k for the matter power spectrum
+!*    :pk0 (double) : the linear matter power spectrum at z=0
+!*    :kn (int) : size of k
+!*
+!*  Args(optional):
+!*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
+!*
+!*  Returns:
+!*    :snr (double)  : total SNR
+!*
+  implicit none
+  !I/O
+  character(8), intent(in) :: cpmodel, model, pktype
+  integer, intent(in) :: lmin, lmax, zn, kn
+  double precision, intent(in) :: zs
+  double precision, intent(in), dimension(1:zn) :: z, dz
+  double precision, intent(in), dimension(1:kn) :: k, pk0
+  double precision, intent(in), dimension(0:lmax) :: cl
+  double precision, intent(out) :: snr
+  !opt4py :: pktype = 'T12'
+  !internal
+  integer :: eL(2)
+  double precision, allocatable :: wp(:,:), ck(:,:)
+  type(cosmoparams) :: cp
+  type(bispecfunc)  :: b
+
+  call set_cosmoparams(cp,cpmodel)
+
+  ! other parameters
+  if (lmin<1) stop 'lmin should be >=1' 
+  eL = (/lmin,lmax/)
+
+  ! precompute quantities for bispectrum
+  allocate(wp(zn,eL(2)),ck(zn,eL(2)))
+  call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,eL,model,pktype) !correction for h/Mpc to /Mpc
+  call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,eL,wp,ck)
+
+  ! snr
+  allocate(b%mgp(2,zn));  b%mgp=1d0
+  write(*,*) 'compute bispectrum snr'
+  call bispec_lens_snr(cp,b,eL,cl(1:lmax),wp,ck,model,snr)
+  deallocate(b%mgp,wp,ck)
+
+end subroutine bispeclens_snr
 
 
 subroutine bispeclens_gauss_bin(shap,bn,lmin,lmax,cl,bc,bl)

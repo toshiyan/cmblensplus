@@ -1,6 +1,6 @@
 import libbasic
 
-def binning(bn,eL,spc= ''):
+def binning(bn,eL,spc=''):
   """
  Return multipole-bin edges and centers
  
@@ -58,7 +58,7 @@ def map_vars(lmax,cl):
   """
   return libbasic.aps.map_vars(lmax,cl)
 
-def cl2bcl(bn,lmax,cl,spc= ''):
+def cl2bcl(bn,lmax,cl,lmin=1,spc=''):
   """
   From unbinned to binned angular power spectrum
 
@@ -68,13 +68,14 @@ def cl2bcl(bn,lmax,cl,spc= ''):
     :cl[*l*] (*double*): angular power spectrum, with bounds (0:lmax)
 
  Args(optional):
+    :lmin (*int*): minimum multipole
     :spc (*str*): bin spacing, '' = linear (default), 'log' = log spacing, 'log10' = log10 spacing, 'p2' = power of 2 spacing, 'p3' = power of 3 spacing
 
   Returns:
     :cb[*bin*] (*double*): auto or cross angular power spectrum with multipole binning, with bounds (0:bn-1)
 
   Usage:
-    :cb = basic.aps.cl2bcl(bn,lmax,cl,spc):
+    :cb = basic.aps.cl2bcl(bn,lmax,cl,lmin,spc):
   """
-  return libbasic.aps.cl2bcl(bn,lmax,cl,spc)
+  return libbasic.aps.cl2bcl(bn,lmax,cl,lmin,spc)
 

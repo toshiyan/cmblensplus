@@ -8,10 +8,11 @@ import curvedsky
 
 # define parameters
 Tcmb  = 2.726e6    # CMB temperature
-lmax  = 3000       # maximum multipole of output normalization
+lmax  = 2048       # maximum multipole of output normalization
 rlmin = 100
-rlmax = 3000      # reconstruction multipole range
+rlmax = 2048      # reconstruction multipole range
 sig   = 10.
+adeg  = 1. # signal
 ac2rad = np.pi/180./60.
 L = np.linspace(0,lmax,lmax+1)
 
@@ -24,14 +25,7 @@ nl[2,:] = 2*nl[0,:]
 ocl = lcl + nl
 
 # calculate normalizations
-Al = {}
-Rl = {}
-Al['qEB'] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
-Al['oEB'] = curvedsky.norm_tau.oeb(lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
-Rl['qEB'] = curvedsky.norm_rot.teb(lmax,rlmin,rlmax,lcl[1,:],lcl[1,:],ocl[1,:],ocl[2,:])
-Il = 1./(1.-Al['qEB']*Al['oEB']*Rl['qEB']**2)
-Al['QEB'] = Al['qEB']*Il
-np.savetxt('al.dat',np.array((L,Al['qEB'],Al['oEB'],Rl['qEB'],Al['QEB'])).T,fmt='%4.6e')
+Al = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
 
 # simple diagonal c-inverse
 Fl = np.zeros((3,lmax+1,lmax+1))
@@ -44,6 +38,13 @@ Talm, Ealm, Balm = curvedsky.utils.gaussTEB(lmax,lcl[0,:],lcl[1,:],lcl[2,:],lcl[
 Talm += curvedsky.utils.gauss1alm(lmax,nl[0,:])
 Ealm += curvedsky.utils.gauss1alm(lmax,nl[1,:])
 Balm += curvedsky.utils.gauss1alm(lmax,nl[2,:])
+aalm = curvedsky.utils.gauss1alm(lmax,np.exp(-L**2*(adeg*np.pi/180.)**2))
+
+alpha = curvedsky.utils.hp_alm2map(12*2048**2,lmax,lmax,aalm)
+Q, U = curvedsky.utils.hp_alm2map_spin(12*2048**2,lmax,lmax,2,Ealm,Balm)
+rQ = Q*np.cos(2.*alpha) - U*np.sin(2.*alpha)
+rU = Q*np.sin(2.*alpha) + U*np.cos(2.*alpha)
+Ealm, Balm = curvedsky.utils.hp_map2alm_spin(2048,lmax,lmax,2,rQ,rU)
 
 # diagonal filtering
 Talm *= Fl[0,:,:]
@@ -51,24 +52,14 @@ Ealm *= Fl[1,:,:]
 Balm *= Fl[2,:,:]
 
 # compute unnormalized estiamtors
-nsidet = 2048
-alm = {}
-alm['qEB'] = curvedsky.rec_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],Ealm,Balm)
-alm['oEB'] = curvedsky.rec_tau.oeb(lmax,rlmin,rlmax,lcl[1,:],Ealm,Balm)
+alm = curvedsky.rec_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],Ealm,Balm)
 
 # normalized estimators
-for qest in ['qEB','oEB']:
-    alm[qest] *= Al[qest][:,None]
-
-# bhe
-alm['QEB'] = alm['qEB'] - Al['qEB'][:,None]*Rl['qEB'][:,None]*alm['oEB']
-alm['QEB'] *= Il[:,None]
+alm *= Al[:,None]
 
 # compute power spectrum
-cl = {}
-for qest in ['qEB','oEB','QEB']:
-    cl[qest] = curvedsky.utils.alm2cl(lmax,alm[qest])
+cl = curvedsky.utils.alm2cl(lmax,alm,aalm)
 
 # save
-np.savetxt('cl_rot.dat',np.array((L,cl['qEB'],cl['oEB'],cl['QEB'])).T)
+np.savetxt('cl_rot.dat',np.array((L,cl)).T)
 

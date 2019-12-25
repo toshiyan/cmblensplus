@@ -219,6 +219,24 @@ def apodize(npix,rmask,ascale,order= 1,holeminsize= 0):
   """
   return libcurvedsky.utils.apodize(npix,rmask,ascale,order,holeminsize)
 
+def almxfl(lmax,mmax,alm,cl):
+  """
+  Calculate xlm[l,m] = alm[l,m] x cl[l]
+
+  Args:
+    :lmax (*int*): Maximum multipole of the input alm
+    :mmax (*int*): Maximum m of the input alm
+    :alm [*l,m*] (*dcmplx*): Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+    :cl [*l*] (*double*): 1D spectrum to be multiplied to alm, with bounds (0:lmax)
+
+  Returns:
+    :xlm [*l,m*] (*dcmplx*): Modified alm, with bounds (0:lmax,0:lmax)
+
+  Usage:
+    :xlm = curvedsky.utils.almxfl(lmax,mmax,alm,cl):
+  """
+  return libcurvedsky.utils.almxfl(lmax,mmax,alm,cl)
+
 def hp_alm2map(npix,lmax,mmax,alm):
   """
   Ylm transform of the map to alm with the healpix (l,m) order

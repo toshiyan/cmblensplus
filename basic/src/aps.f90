@@ -29,20 +29,15 @@ subroutine binning(bn,eL,bp,bc,spc)
 !*
   implicit none
   !I/O
+  character(4), intent(in) :: spc
   integer, intent(in) :: bn
   integer, intent(in), dimension(2) :: eL
-  double precision, intent(out), dimension(bn) :: bc
   double precision, intent(out), dimension(0:bn) :: bp
+  double precision, intent(out), dimension(bn) :: bc
   !optional
-  character(4), intent(in), optional :: spc
-  !f2py character(4) :: spc = ''
-  !internal
-  character(4) :: sp
+  !opt4py :: spc = ''
 
-  sp = ''
-  if (present(spc)) sp = spc
-
-  call binned_ells(eL,bp,bc,sp)
+  call binned_ells(eL,bp,bc,spc=spc)
 
 end subroutine binning
 
@@ -109,7 +104,7 @@ subroutine map_vars(lmax,cl,sigma)
 end subroutine map_vars
 
 
-subroutine cl2bcl(bn,lmax,cl,cb,spc)
+subroutine cl2bcl(bn,lmax,cl,cb,lmin,spc)
 !*  From unbinned to binned angular power spectrum
 !*
 !*  Args:
@@ -118,30 +113,27 @@ subroutine cl2bcl(bn,lmax,cl,cb,spc)
 !*    :cl[l] (double)   : angular power spectrum, with bounds (0:lmax)
 !*
 !* Args(optional):
+!*    :lmin (int) : minimum multipole
 !*    :spc (str) : bin spacing, '' = linear (default), 'log' = log spacing, 'log10' = log10 spacing, 'p2' = power of 2 spacing, 'p3' = power of 3 spacing
 !*
 !*  Returns:
 !*    :cb[bin] (double) : auto or cross angular power spectrum with multipole binning, with bounds (0:bn-1)
 !*
   implicit none
-  integer, intent(in) :: bn, lmax
+  character(4), intent(in) :: spc
+  integer, intent(in) :: bn, lmax, lmin
   double precision, intent(in), dimension(0:lmax) :: cl
   double precision, intent(out), dimension(bn) :: cb
-  !optional
-  character(4), intent(in), optional :: spc
-  !f2py character(4) :: spc = ''
+  !opt4py :: lmin = 1
+  !opt4py :: spc = ''
   !internal
   integer :: eL(2)
   double precision, allocatable :: bp(:)
-  character(4) :: sp
 
-  sp = ''
-  if (present(spc)) sp = spc
-
-  eL = (/1,lmax/)
+  eL = (/lmin,lmax/)
 
   allocate(bp(bn+1))
-  call binned_ells(eL,bp,spc=sp)
+  call binned_ells(eL,bp,spc=spc)
   call power_binning(bp,eL,cl(1:lmax),Cb)
   deallocate(bp)
 
