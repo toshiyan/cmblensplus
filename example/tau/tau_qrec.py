@@ -9,9 +9,9 @@ import curvedsky
 # define parameters
 Tcmb  = 2.726e6    # CMB temperature
 lmax  = 3000       # maximum multipole of output normalization
-rlmin = 100
+rlmin = 300
 rlmax = 3000      # reconstruction multipole range
-sig   = 10.
+sig   = 50.
 ac2rad = np.pi/180./60.
 L = np.linspace(0,lmax,lmax+1)
 

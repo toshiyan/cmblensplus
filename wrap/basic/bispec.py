@@ -130,11 +130,33 @@ def zpoints(zmin,zmax,zn,zspace=1):
   """
   return libbasic.bispec.zpoints(zmin,zmax,zn,zspace)
 
-def skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,sigma,W,pktype='T12'):
+def skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,pktype='T12',pb=True):
   """
-  Compute skewspectrum analytically
+ Compute skew spectrum analytically
+
+  Args:
+    :cpmodel (*str*): cosmological parameter model (model0, modelw, or modelp)
+    :model (*str*): fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
+    :z[*zn*] (*double*): redshift points for the z-integral
+    :dz[*zn*] (*double*): interval of z
+    :zn (*int*): number of redshifts for the z-integral
+    :zs (*double*): source redshift
+    :lmin/lmax (*int*): minimum/maximum multipoles of the bispectrum
+    :bn (*int*): number of multipoles for skew spectrum
+    :ols[*bn*] (*int*): multipoles to be computed for skew spectrum
+    :k[*kn*] (*double*): k for the matter power spectrum
+    :pk0 (*double*): the linear matter power spectrum at z=0
+    :kn (*int*): size of k
+
+  Args(optional):
+    :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
+    :pb (boolean) : with post-Born correction or not (default=True)
+
+  Returns:
+    :skew (*double*): skew-spectrum
+
   Usage:
-    :skew = basic.bispec.skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,sigma,W,pktype):
+    :skew = basic.bispec.skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,pktype,pb):
   """
-  return libbasic.bispec.skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,sigma,W,pktype)
+  return libbasic.bispec.skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,pktype,pb)
 

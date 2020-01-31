@@ -323,21 +323,44 @@ subroutine zpoints(zmin,zmax,zn,z,dz,zspace)
 end subroutine zpoints
 
 
-subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,sigma,W,skew,pktype)
-!*  Compute skewspectrum analytically
+subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,pktype,pb)
+!* Compute skew spectrum analytically
+!*
+!*  Args:
+!*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
+!*    :model (str) : fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
+!*    :z[zn] (double) : redshift points for the z-integral
+!*    :dz[zn] (double) : interval of z
+!*    :zn (int) : number of redshifts for the z-integral
+!*    :zs (double) : source redshift
+!*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
+!*    :bn (int) : number of multipoles for skew spectrum
+!*    :ols[bn] (int) : multipoles to be computed for skew spectrum
+!*    :k[kn] (double) : k for the matter power spectrum
+!*    :pk0 (double) : the linear matter power spectrum at z=0
+!*    :kn (int) : size of k
+!*
+!*  Args(optional):
+!*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
+!*    :pb (boolean) : with post-Born correction or not (default=True)
+!*
+!*  Returns:
+!*    :skew (double)  : skew-spectrum
+!*
   implicit none
   !I/O
   character(8), intent(in) :: cpmodel, model, pktype
-  integer, intent(in) :: olmin, olmax, lmin, lmax, zn, kn
+  integer, intent(in) :: bn, lmin, lmax, zn, kn
   double precision, intent(in) :: zs
-  double precision, intent(in), dimension(1:2) :: sigma
+  integer, intent(in), dimension(1:bn) :: ols
   double precision, intent(in), dimension(1:zn) :: z, dz
   double precision, intent(in), dimension(1:kn) :: k, pk0
-  double precision, intent(in), dimension(0:lmax) :: W
-  double precision, intent(out), dimension(1:3,0:olmax) :: skew
+  double precision, intent(out), dimension(1:3,1:bn) :: skew
+  logical, intent(in) :: pb
   !opt4py :: pktype = 'T12'
+  !opt4py :: pb = True
   !internal
-  integer :: oL(2), eL(2), tL(2)
+  integer :: n, eL(2), tL(2)
   double precision, allocatable :: wp(:,:), ck(:,:)
   type(gauss_legendre_params) :: gl
   type(cosmoparams) :: cp
@@ -348,8 +371,7 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,
 
   ! other parameters
   tL(1) = 1
-  tL(2) = max(lmax,olmax)
-  oL = (/olmin,olmax/)
+  tL(2) = max(lmax,ols(bn))
   eL = (/lmin,lmax/)
 
   ! skewspectrum
@@ -358,7 +380,10 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,olmin,olmax,lmin,lmax,k,pk0,kn,
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,tL,wp,ck)
   skew = 0d0
   write(*,*) 'calc skewspec'
-  call skewspec_lens(cp,b,oL,eL,sigma,wp,ck,model,W(1:),skew(:,1:))
+  do n = 1, bn
+    write(*,*) ols(n)
+    call skewspec_lens(cp,b,ols(n),eL,(/1d0,1d0/),wp,ck,model,skew(:,n),pb)
+  end do
   deallocate(wp,ck)
 
 end subroutine skewspeclens

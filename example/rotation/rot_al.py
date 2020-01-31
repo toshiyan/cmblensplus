@@ -23,8 +23,8 @@ ocl = lcl + nl
 eb = (L**(-5)/80.)
 
 # calculate normalizations
-Al = np.zeros((4,lmax+1))
-#Al[0,:] = curvedsky.norm_rot.qtb(lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:])
+Al = np.zeros((5,lmax+1))
+Al[4,:] = curvedsky.norm_rot.qtb(lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:])
 Al[0,:] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
 #Al[1,:] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],lcl[2,:])
 Al[1,:] = curvedsky.norm_tau.oeb(lmax,rlmin,rlmax,eb,ocl[1,:],ocl[2,:])

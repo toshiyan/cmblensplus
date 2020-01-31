@@ -810,24 +810,22 @@ subroutine snr_xbisp(cp,b,eL,cgg,ckk,btype,m,snr)
 end subroutine snr_xbisp
 
 
-subroutine skewspec_lens(cp,b,oL,eL,sigma,wp,ck,model,W,skew)
+subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,ck,model,skew,pb)
   implicit none
   type(cosmoparams), intent(in) :: cp
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: model
-  integer, intent(in) :: oL(2), eL(2)
-  double precision, intent(in) :: sigma(2), wp(:,:), ck(:,:), W(:)
-  double precision, intent(out) :: skew(:,:)
+  integer, intent(in) :: l1, eL(2)
+  double precision, intent(in) :: sigma(2), wp(:,:), ck(:,:)
+  double precision, intent(out) :: skew(:)
+  logical, intent(in) :: pb
   !internal
-  integer :: l1, l2, l3, a1, a2, a3
-  double precision :: bisp(2), blll, Illl, del
+  integer :: l2, l3, a1, a2, a3
+  double precision :: bisp(2), blll, hlll, del
 
   skew = 0d0
 
-  do l1 = oL(1), oL(2)
-    !if (mod(l1,100)==0) write(*,*) l1
-    write(*,*) l1
-    do l2 = eL(1), eL(2)
+  do l2 = eL(1), eL(2)
       do l3 = l2, eL(2)
 
         if (l3>l1+l2.or.l3<abs(l1-l2)) cycle
@@ -840,20 +838,19 @@ subroutine skewspec_lens(cp,b,oL,eL,sigma,wp,ck,model,W,skew)
 
         bisp = 0d0
         call bispec_lens_lss_kernel(cp,b,l1,l2,l3,bisp(1),model)
-        !call bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp(2))
-        Illl = W3j_approx(dble(l1),dble(l2),dble(l3))*dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
-        blll = del * sum(bisp) * Illl**2 * W(l1)*W(l2)*W(l3)
+        if (pb)  call bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp(2))
+        hlll = W3j_approx(dble(l1),dble(l2),dble(l3))*dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
+        blll = del * sum(bisp) * hlll**2
         a1 = dble(l1*(l1+1))
         a2 = dble(l2*(l2+1))
         a3 = dble(l3*(l3+1))
-        skew(1,l1) = skew(1,l1) + blll
-        skew(2,l1) = skew(2,l1) + blll * (a1+a2+a3)
-        skew(3,l1) = skew(3,l1) + blll * ((a1+a2-a3)*a3+(a2+a3-a1)*a1+(a3+a1-a2)*a2)
+        skew(1) = skew(1) + blll
+        skew(2) = skew(2) + blll * (a1+a2+a3)
+        skew(3) = skew(3) + blll * ((a1+a2-a3)*a3+(a2+a3-a1)*a1+(a3+a1-a2)*a2)
 
       end do
-    end do
-    skew(:,l1) = skew(:,l1)/(2d0*l1+1d0)
   end do
+  skew = skew/(2d0*l1+1d0)
 
   !skew(1,:) = skew(1,:)/(12d0*pi*sigma(0)**4)
   !skew(2,:) = skew(2,:)/(16d0*pi*sigma(0)**2*sigma(1)**2)
