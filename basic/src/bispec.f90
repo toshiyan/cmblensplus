@@ -22,7 +22,7 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
 !*    :z[zn] (double) : redshift points for the z-integral
 !*    :zn (int) : number of redshifts for the z-integral
 !*    :dz[zn] (double) : interval of z
-!*    :zs (double) : source redshift
+!*    :zs[3] (double) : source redshifts
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
 !*    :k[kn] (double) : k for the matter power spectrum
 !*    :pk0 (double) : the linear matter power spectrum at z=0
@@ -41,7 +41,8 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
   !I/O
   character(8), intent(in) :: shap, cpmodel, model, pktype, ltype
   integer, intent(in) :: lmin, lmax, zn, kn
-  double precision, intent(in) :: lan, kan, zs
+  double precision, intent(in), dimension(3) :: zs
+  double precision, intent(in) :: lan, kan
   double precision, intent(in), dimension(1:zn) :: z, dz
   double precision, intent(in), dimension(1:kn) :: k, pk0
   double precision, intent(out), dimension(lmin:lmax) :: bl0, bl1
@@ -51,7 +52,7 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
   !opt4py :: ltype = ''
   !internal
   integer :: l0, oL(2), i
-  double precision, allocatable :: wp(:,:), ck(:,:)
+  double precision, allocatable :: wp(:,:,:,:), ck(:,:,:)
   type(gauss_legendre_params) :: gl
   type(cosmoparams) :: cp
   type(bispecfunc)  :: b
@@ -64,7 +65,7 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
   oL = (/lmin,lmax/)
 
   ! precompute quantities for bispectrum
-  allocate(wp(zn,lmax),ck(zn,lmax))
+  allocate(wp(3,3,zn,lmax),ck(3,zn,lmax))
   call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,oL,model,pktype) !correction for h/Mpc to /Mpc
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,oL,wp,ck)
 
@@ -95,7 +96,7 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
 !*    :z[zn] (double) : redshift points for the z-integral
 !*    :zn (int) : number of redshifts for the z-integral
 !*    :dz[zn] (double) : interval of z
-!*    :zs (double) : source redshift
+!*    :zs[3] (double) : source redshifts
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
 !*    :bn (int) : number of multipole bins
 !*    :k[kn] (double) : k for the matter power spectrum
@@ -115,7 +116,8 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
   !I/O
   character(8), intent(in) :: shap, cpmodel, model, pktype
   integer, intent(in) :: lmin, lmax, zn, bn, kn
-  double precision, intent(in) :: lan, kan, zs
+  double precision, intent(in), dimension(3) :: zs
+  double precision, intent(in) :: lan, kan
   double precision, intent(in),  dimension(1:zn) :: z, dz
   double precision, intent(in),  dimension(1:kn) :: k, pk0
   double precision, intent(out), dimension(1:bn) :: bc, bl0, bl1
@@ -124,7 +126,7 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
   !opt4py :: pktype = 'T12'
   !internal
   integer :: oL(2), l, i, eL1(2), eL2(2), eL3(2)
-  double precision, allocatable :: bp(:), wp(:,:), ck(:,:)
+  double precision, allocatable :: bp(:), wp(:,:,:,:), ck(:,:,:)
   type(gauss_legendre_params) :: gl
   type(cosmoparams) :: cp
   type(bispecfunc)  :: b
@@ -136,7 +138,7 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
   oL = (/lmin,lmax/)
 
   ! precompute quantities for bispectrum
-  allocate(wp(zn,oL(2)),ck(zn,oL(2)))
+  allocate(wp(3,3,zn,oL(2)),ck(3,zn,oL(2)))
   call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,oL,model,pktype) !correction for h/Mpc to /Mpc
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,oL,wp,ck)
 
@@ -188,7 +190,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
 !*    :z[zn] (double) : redshift points for the z-integral
 !*    :zn (int) : number of redshifts for the z-integral
 !*    :dz[zn] (double) : interval of z
-!*    :zs (double) : source redshift
+!*    :zs[3] (double) : source redshifts
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
 !*    :cl[l] (int) : observed lensing spectrum at 0<=l<=lmax
 !*    :k[kn] (double) : k for the matter power spectrum
@@ -205,7 +207,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
   !I/O
   character(8), intent(in) :: cpmodel, model, pktype
   integer, intent(in) :: lmin, lmax, zn, kn
-  double precision, intent(in) :: zs
+  double precision, intent(in), dimension(3) :: zs
   double precision, intent(in), dimension(1:zn) :: z, dz
   double precision, intent(in), dimension(1:kn) :: k, pk0
   double precision, intent(in), dimension(0:lmax) :: cl
@@ -213,7 +215,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
   !opt4py :: pktype = 'T12'
   !internal
   integer :: eL(2)
-  double precision, allocatable :: wp(:,:), ck(:,:)
+  double precision, allocatable :: wp(:,:,:,:), ck(:,:,:)
   type(cosmoparams) :: cp
   type(bispecfunc)  :: b
 
@@ -224,7 +226,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
   eL = (/lmin,lmax/)
 
   ! precompute quantities for bispectrum
-  allocate(wp(zn,eL(2)),ck(zn,eL(2)))
+  allocate(wp(3,3,zn,eL(2)),ck(3,zn,eL(2)))
   call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,eL,model,pktype) !correction for h/Mpc to /Mpc
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,eL,wp,ck)
 
@@ -323,8 +325,8 @@ subroutine zpoints(zmin,zmax,zn,z,dz,zspace)
 end subroutine zpoints
 
 
-subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,pktype,pb)
-!* Compute skew spectrum analytically
+subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,theta,pktype,pb)
+!* Compute skew spectrum using a matter bispectrum fitting formula
 !*
 !*  Args:
 !*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
@@ -332,7 +334,7 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,
 !*    :z[zn] (double) : redshift points for the z-integral
 !*    :dz[zn] (double) : interval of z
 !*    :zn (int) : number of redshifts for the z-integral
-!*    :zs (double) : source redshift
+!*    :zs[2] (double) : source redshifts where zs[2] is used for the squared map
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
 !*    :bn (int) : number of multipoles for skew spectrum
 !*    :ols[bn] (int) : multipoles to be computed for skew spectrum
@@ -342,7 +344,8 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,
 !*
 !*  Args(optional):
 !*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
-!*    :pb (boolean) : with post-Born correction or not (default=True)
+!*    :theta (double) : kappa map resolution in arcmin
+!*    :pb (bool) : with post-Born correction or not (default=True)
 !*
 !*  Returns:
 !*    :skew (double)  : skew-spectrum
@@ -351,7 +354,8 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,
   !I/O
   character(8), intent(in) :: cpmodel, model, pktype
   integer, intent(in) :: bn, lmin, lmax, zn, kn
-  double precision, intent(in) :: zs
+  double precision, intent(in), dimension(2) :: zs
+  double precision, intent(in) :: theta
   integer, intent(in), dimension(1:bn) :: ols
   double precision, intent(in), dimension(1:zn) :: z, dz
   double precision, intent(in), dimension(1:kn) :: k, pk0
@@ -359,9 +363,11 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,
   logical, intent(in) :: pb
   !opt4py :: pktype = 'T12'
   !opt4py :: pb = True
+  !opt4py :: theta = 0.0
   !internal
   integer :: n, eL(2), tL(2)
-  double precision, allocatable :: wp(:,:), ck(:,:)
+  double precision :: zss(3)
+  double precision, allocatable :: wp(:,:,:,:), ck(:,:,:)
   type(gauss_legendre_params) :: gl
   type(cosmoparams) :: cp
   type(bispecfunc)  :: b
@@ -375,14 +381,17 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,
   eL = (/lmin,lmax/)
 
   ! skewspectrum
-  allocate(wp(zn,tL(2)),ck(zn,tL(2)))
-  call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,tL,model,pktype) 
-  call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,tL,wp,ck)
+  allocate(wp(3,3,zn,tL(2)),ck(3,zn,tL(2)))
+  zss(1) = zs(1)
+  zss(2) = zs(2)
+  zss(3) = zs(2)
+  call bispec_lens_lss_init(cp,b,z,dz,zss,k*cp%h,pk0/cp%h**3,tL,model,pktype) 
+  call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zss,tL,wp,ck)
   skew = 0d0
   write(*,*) 'calc skewspec'
   do n = 1, bn
-    write(*,*) ols(n)
-    call skewspec_lens(cp,b,ols(n),eL,(/1d0,1d0/),wp,ck,model,skew(:,n),pb)
+    call skewspec_lens(cp,b,ols(n),eL,(/1d0,1d0/),wp,ck,model,theta,skew(:,n),pb)
+    write(*,*) ols(n), skew(1,n)
   end do
   deallocate(wp,ck)
 
