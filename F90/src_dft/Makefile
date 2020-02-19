@@ -20,7 +20,11 @@ LINK = -lutils -lfftw3
 
 OPTION = $(MODD) $(LIBD) $(LINK)
 
-OBJ = fftw.o
+#OBJ = fftw.o
+
+SRC=$(wildcard *.f90)
+SRC=fft_kernels fft_remap
+OBJ=$(patsubst %.f90, %.o, $(SRC))
 
 $(target): $(OBJ)
 	ar cr $@ $^
@@ -32,5 +36,8 @@ install:
 	mv *.mod ${flib}/mod; mv $(target) ${flib}/lib/
 
 clean:
-	rm -f *.o* *.mod *.a
+	rm -f *.o *.mod *.a
+
+remove:
+	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC))
 
