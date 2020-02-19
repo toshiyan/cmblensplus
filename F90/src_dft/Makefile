@@ -14,17 +14,13 @@ FLAGS = $(FLAG) $(DBAG)
 ## Directories ##
 flib = ../
 FFTW = ${flib}/pub/FFTW/
-MODD = -I$(FFTW)/api -I$(flib)/mod
-LIBD = -L$(FFTW) -L$(flib)/lib
+MODD = -I$(FFTW)/include -I$(flib)/mod
+LIBD = -L$(FFTW)/lib -L$(flib)/lib
 LINK = -lutils -lfftw3
 
 OPTION = $(MODD) $(LIBD) $(LINK)
 
-#OBJ = fftw.o
-
-SRC=$(wildcard *.f90)
-SRC=fft_kernels fft_remap
-OBJ=$(patsubst %.f90, %.o, $(SRC))
+OBJ = fftw.o #fft_remap.o
 
 $(target): $(OBJ)
 	ar cr $@ $^
@@ -38,6 +34,7 @@ install:
 clean:
 	rm -f *.o *.mod *.a
 
+SRC=$(wildcard *.f90)
 remove:
 	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC))
 

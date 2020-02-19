@@ -2,7 +2,7 @@
 ! * dft module
 !////////////////////////////////////////////////////!
 
-module fft_kernels
+module fftw
   use constants, only: dlc, iu, pi, twopi
   use grid2d,    only: spin_weight
   implicit none
@@ -676,7 +676,7 @@ subroutine derivemap_all(D,map,derivmap)
 end subroutine derivemap_all
 
 
-end module fft_kernels
+end module fftw
 
 
 
