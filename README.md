@@ -1,4 +1,4 @@
-# CMB data analysis tool for some higher-order statistics
+# Analysis tools for 2D map to compute some higher-order statistics
 
 This package contains a Fortran wrapper for Python, to reconstruct lensing potential, cosmic bi-refrimgence, and patchy reionization from cosmic microwave background anisotropies (CMB) in full and flat sky. This package also includes modules for delensing, some bi-spectrum calculation, and so on. Installing this library at NERSC is straightforward. 
 
