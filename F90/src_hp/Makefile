@@ -24,9 +24,8 @@ LINK= -lutils -lhealpix -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefbla
 OPTION = $(MODD) $(LIBD) $(LINK)
 
 SRC=$(wildcard *.f90)
-OBJ=$(patsubst %.f90, %.o, $(SRC))
-
-#OBJ = hp_utils.o hp_udgrade.o hp_spht.o hp_bsp.o hp_cgd.o
+#OBJ=$(patsubst %.f90, %.o, $(SRC))
+OBJ = hp_utils.o hp_udgrade.o hp_spht.o hp_bsp.o hp_cgd.o
 
 $(target): $(OBJ)
 	ar cr $@ $^
