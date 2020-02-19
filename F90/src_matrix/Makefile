@@ -19,11 +19,13 @@ LAPACK = ${flibutils}/pub/LAPACK95/
 # compile links
 MODD = -I$(flibutils)/mod -I$(LAPACK)/mod
 LIBD = -L$(flibutils)/lib -L$(LAPACK)/lib
-LINK = -lutils -llapack95 -llapack -lrefblas
+LINK = -lmatrix -lutils -llapack95 -llapack -lrefblas
 OPTION = $(MODD) $(LIBD) $(LINK)
 
 # files to be compiled
-OBJ = blas.o lapack.o lapack95.o
+SRC=$(wildcard *.f90)
+OBJ=$(patsubst %.f90, %.o, $(SRC))
+#OBJ = blas.o lapack.o lapack95.o
 
 $(target): $(OBJ)
 	ar crs $@ $^
@@ -37,5 +39,6 @@ install:
 clean:
 	rm -f *.o* *.mod *.a
 
-# file dependencies
+remove:
+	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC)) ${flib}/lib/${target}
 

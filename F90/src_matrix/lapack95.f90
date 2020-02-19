@@ -8,13 +8,14 @@ module lapack95
 
 contains
 
-subroutine INV_LAPACK(K,M,accuracy)
+
+subroutine inv_matrix_d(K,M,accuracy)
 !* interface of the matrix inversion
   implicit none
   !I/O
   double precision, intent(inout) :: K(:,:)
-  double precision, intent(in), optional :: accuracy
   double precision, intent(out), optional :: M(:,:)
+  double precision, intent(in), optional :: accuracy
   !internal
   integer :: N
   integer, allocatable :: IPIV(:)
@@ -30,7 +31,7 @@ subroutine INV_LAPACK(K,M,accuracy)
     call LA_GETRF(iK,IPIV)
     call LA_GETRI(iK,IPIV)
   end if
-  if(present(accuracy)) call CHECK_INV_LAPACK(K,iK,accuracy)
+  if(present(accuracy)) call check_inv_matrix(K,iK,accuracy)
   if(present(M)) then
     M = iK
   else
@@ -38,10 +39,43 @@ subroutine INV_LAPACK(K,M,accuracy)
   end if
   deallocate(iK,IPIV)
 
-end subroutine INV_LAPACK
+end subroutine inv_matrix_d
 
 
-subroutine CHECK_INV_LAPACK(M,iM,accuracy)
+subroutine inv_matrix_c(K,M,accuracy)
+  Implicit none
+  double complex, intent(inout) :: K(:,:)
+  double complex, intent(out), optional :: M(:,:)
+  double precision, intent(in), optional :: accuracy
+  !internal
+  integer :: N, info
+  integer, allocatable :: IPIV(:)
+  double complex, allocatable :: iK(:,:), Work(:)
+
+  N = size(K,dim=1)
+  allocate(iK(N,N),IPIV(N),Work(N))
+
+  !* inverting matrix
+  if(N==1) then
+    iK = 1.d0/K
+  else
+    iK = K
+    call ZGETRF(N,N,iK,N,IPIV,info)
+    call ZGETRI(N,iK,N,IPIV,Work,N,info)
+    !call LA_ZGETRF(iK,IPIV)
+    !call LA_ZGETRI(iK,IPIV)
+  end if
+  if (present(M)) then
+    M = iK
+  else
+    K = iK
+  end if
+  deallocate(iK,IPIV,Work)
+
+end subroutine inv_matrix_c
+
+
+subroutine check_inv_matrix(M,iM,accuracy)
 !* input matrix (M) and its inverse (iM)
   implicit none
   !I/O
@@ -68,7 +102,7 @@ subroutine CHECK_INV_LAPACK(M,iM,accuracy)
   end do
   deallocate(A,tA,lam)
 
-end subroutine CHECK_INV_LAPACK
+end subroutine check_inv_matrix
 
 
 subroutine SYGV_LAPACK(K,U,D,M)
@@ -103,7 +137,6 @@ subroutine SYGV_LAPACK(K,U,D,M)
   deallocate(B)
  
 end subroutine SYGV_LAPACK
-
 
 
 subroutine CHECK_SYGV_LAPACK(D,U,M)
