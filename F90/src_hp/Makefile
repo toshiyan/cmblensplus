@@ -38,7 +38,7 @@ install:
 	mv *.mod ${flib}/mod; mv $(target) ${flib}/lib/
 
 clean:
-	rm -f *.o* *.mod *.a
+	rm -f *.o *.mod *.a
 
 remove:
 	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC))
