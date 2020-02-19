@@ -20,9 +20,7 @@ OPTION = $(MODD)
 
 #//// files to be compiled ////#
 # independent modules
-SRC=$(wildcard *.f90)
-OBJ=$(patsubst %.f90, %.o, $(SRC))
-#OBJ = constants.o funcs.o random.o io.o general.o cosmofunc.o pstool.o bstool.o grid2d.o alkernel.o delensing.o alflat.o bbflat.o
+OBJ = constants.o funcs.o random.o io.o general.o cosmofunc.o pstool.o bstool.o grid2d.o alkernel.o delensing.o alflat.o bbflat.o
 
 $(target): $(OBJ)
 	ar crs $@ $^
@@ -36,6 +34,7 @@ install:
 clean:
 	rm -f *.o *.mod *.a
 
+SRC=$(wildcard *.f90)
 remove:
 	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC)) ${flib}/lib/${target}
 
