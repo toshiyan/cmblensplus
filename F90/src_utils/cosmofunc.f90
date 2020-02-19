@@ -15,6 +15,10 @@ module cosmofunc
     module procedure D_z_single, D_z_array
   end interface
 
+  interface g_z
+    module procedure g_factor, g_factor_array
+  end interface
+
   interface H_z
     module procedure H_z_single, H_z_array
   end interface
@@ -168,9 +172,10 @@ function drho_da_de(a,cp)  result(f)
 end function drho_da_de
 
 
-function g_factor(z,Om,Ov,wz) 
-!* growth factor 
-! D(a) = a in matter dominated universe. See Eq.(3.8) of arXiv:1105.4825.
+function g_factor(z,Om,Ov,wz)
+! Growth factor at linear perturbation. 
+! g(a) = a in the Einstein de Sitter universe. 
+! See Eq.(3.8) of arXiv:1105.4825 for the algorithm
   implicit none
 !
 ! [inputs]
@@ -193,8 +198,26 @@ function g_factor(z,Om,Ov,wz)
 end function g_factor
 
 
+function g_factor_array(z,cp,n)  result(f)
+  implicit none
+  type(cosmoparams), intent(in) :: cp
+  integer, intent(in) :: n
+  double precision, intent(in) :: z(n)
+  integer :: i
+  double precision :: f(n), w
+
+  f = 1d0
+  do i = 1, n
+    if (z(i)==0d0) cycle
+    w = cp%w0 + (1d0-1d0/(1d0+z(i)))*cp%wa
+    f(i) = g_factor(z(i),cp%Om,cp%Ov,w)
+  end do
+
+end function g_factor_array
+
+
 function D_z_single(z,cp)  result(f)
-!* Linear growth rate
+! Linear growth factor, normalized to the current value
   implicit none
   type(cosmoparams), intent(in) :: cp
   double precision, intent(in) :: z
@@ -207,20 +230,42 @@ function D_z_single(z,cp)  result(f)
 end function D_z_single
 
 
-function D_z_array(z,cp)  result(f)
+function D_z_array(z,cp,n)  result(f)
   implicit none
   type(cosmoparams), intent(in) :: cp
-  double precision, intent(in) :: z(:)
+  integer, intent(in) :: n
+  double precision, intent(in) :: z(n)
   integer :: i
-  double precision :: f(size(z))
+  double precision :: f(n)
 
   f = 1d0
-  do i = 1, size(z)
+  do i = 1, n
     if (z(i)==0d0) cycle
     f(i) = D_z_single(z(i),cp)
   end do
 
 end function D_z_array
+
+
+function g_rate(z,Om,Ov,wz)
+! Growth rate at linear perturbation. 
+! f(a) = 1 in the Einstein de Sitter universe. 
+  implicit none
+!
+! [inputs]
+! z  --- redshift
+! Om --- Omega_m at z=0
+! Ov --- Omega_v at z=0
+! wz --- w(a) at input z
+  double precision, intent(in) :: z, Om, Ov, wz
+!
+! [internal]
+  double precision :: g_rate, a
+
+  a = 1d0/(1d0+z)
+  g_rate = dlog(g_factor(z,Om,Ov,wz))/dlog(a)
+
+end function g_rate
 
 
 !//// Cosmological Distance ////!

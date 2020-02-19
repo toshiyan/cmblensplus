@@ -5,7 +5,7 @@
 module bstool
   use constants, only: pi
   use general,   only: neighb, spline, splint, savetxt, gauss_legendre_params, gl_initialize, gl_finalize, glpoints, gldxs, linspace
-  use cosmofunc, only: C_z, H_z, D_z, NonLinRatios, pk2sigma, cosmoparams, omega_m, find_pknl_params
+  use cosmofunc, only: g_z, C_z, H_z, D_z, NonLinRatios, pk2sigma, cosmoparams, omega_m, find_pknl_params
   implicit none
 
   type bispecfunc
@@ -26,7 +26,7 @@ module bstool
 
   private pi
   private neighb, spline, splint, savetxt, gauss_legendre_params, gl_initialize, gl_finalize, glpoints, gldxs, linspace
-  private C_z, H_z, D_z, NonLinRatios, pk2sigma, cosmoparams, omega_m, find_pknl_params
+  private g_z, C_z, H_z, D_z, NonLinRatios, pk2sigma, cosmoparams, omega_m, find_pknl_params
 
 contains
 
@@ -38,13 +38,13 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype)
   type(bispecfunc), intent(inout) :: b
   character(*), intent(in) :: model, ftype
   integer, intent(in) :: oL(2)
-  double precision, intent(in)  :: z(:), dz(:), zs, k(:), pkl0(:)
+  double precision, intent(in)  :: z(:), dz(:), zs(3), k(:), pkl0(:)
   character(*), intent(in), optional :: btype
   !internal
   character(4) :: bisptype = 'kkk'
   logical :: nonlinear
   integer :: i, zn, kn
-  double precision :: chis, h, s0, om, ncur
+  double precision :: h, s0, om, ncur
   double precision, allocatable :: chi(:), pk(:,:), pkL(:,:)
 
   zn = size(z)  !number of z points for z-integral
@@ -63,7 +63,7 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype)
   !* sigma_8
   allocate(b%sz(zn),b%D(zn))
   s0   = dsqrt(pk2sigma(8d0/cp%h,k,pkL0))
-  b%D  = D_z(z,cp)
+  b%D  = D_z(z,cp,zn)
   b%sz = s0*b%D
   write(*,*) 'sigma8 = ', s0
 
@@ -491,22 +491,26 @@ subroutine bispec_lens_pb_init(cp,kl,pl,z,dz,zs,oL,wp,ck)
   implicit none
   type(cosmoparams), intent(in) :: cp
   integer, intent(in) :: oL(2)
-  double precision, intent(in) :: kl(:,:), pl(:,:), z(:), dz(:), zs
-  double precision, intent(out) :: wp(:,:), ck(:,:)
+  double precision, intent(in) :: kl(:,:), pl(:,:), z(:), dz(:), zs(3)
+  double precision, intent(out) :: wp(:,:,:,:), ck(:,:,:)
   integer :: zn
-  double precision :: chis
-  double precision, allocatable :: chi(:), Hz(:), wlf(:)
+  double precision :: chis(3)
+  double precision, allocatable :: chi(:), Hz(:), wlf(:), gz(:)
 
   zn = size(z)
 
   ! precompute quantities for post-Born bispectrum
-  allocate(chi(zn),Hz(zn),wlf(zn))
-  chis = C_z(zs,cp) !source comoving distance
+  allocate(chi(zn),Hz(zn),wlf(zn),gz(zn))
+  chis(1) = C_z(zs(1),cp) !source comoving distance
+  chis(2) = C_z(zs(2),cp) !source comoving distance
+  chis(3) = C_z(zs(3),cp) !source comoving distance
   chi  = C_z(z,cp)  !comoving distance at each z
   Hz   = H_z(z,cp)  !expansion rate at z
-  wlf  = 1.5d0*cp%Om*(cp%H0/3d5)**2*(1d0+z) !matter -> potential conversion factor (matter dominant)
+  !gz   = g_z(z,cp,zn)
+  wlf  = 1.5d0*cp%Om*(cp%H0/3d5)**2*(1d0+z) !matter -> potential conversion factor
+  !wlf  = 1.5d0*cp%Om*(cp%H0/3d5)**2/gz !matter -> potential conversion factor
   call precompute_postborn(dz/Hz,chi,chis,wlf,kl,pl,wp,ck)
-  deallocate(chi,Hz,wlf)
+  deallocate(chi,Hz,wlf,gz)
 
 end subroutine bispec_lens_pb_init
 
@@ -515,29 +519,40 @@ subroutine precompute_postborn(dchi,chi,chis,wlf,kl,pl,wp,ck)
 ! precomputing quantities relevant to the post-born correction
   implicit none
   !I/O
-  double precision, intent(in) :: chis, dchi(:), chi(:), wlf(:), kl(:,:), pl(:,:)
-  double precision, intent(out) :: wp(:,:), ck(:,:)
+  double precision, intent(in) :: chis(3), dchi(:), chi(:), wlf(:), kl(:,:), pl(:,:)
+  double precision, intent(out) :: wp(:,:,:,:), ck(:,:,:)
   !internal
-  integer :: i, j, l, zn, ln
-  double precision, allocatable :: fchi1(:), fchi2(:,:)
+  integer :: i, j, l, zn, ln, s, t
+  double precision, allocatable :: fchi1(:,:), fchi2(:,:)
 
   zn = size(kl,dim=1)
   ln = size(kl,dim=2)
 
-  allocate(fchi1(zn),fchi2(zn,zn)); fchi1=0d0; fchi2=0d0
+  allocate(fchi1(zn,3),fchi2(zn,zn)); fchi1=0d0; fchi2=0d0
 
-  fchi1 = (chis-chi)/(chi*chis)
+  do s = 1, 3
+    do i = 1, zn
+      if (chis(s)<chi(i)) cycle
+      fchi1(i,s) = (chis(s)-chi(i))/(chi(i)*chis(s))
+    end do
+  end do
 
   do i = 1, zn
     do j = 1, zn
       if (chi(i)<=chi(j)) fchi2(i,j) = (chi(j)-chi(i))/(chi(j)*chi(i))
     end do
-    wp(i,:) = pl(i,:) * ( wlf(i)/kl(i,:)**2 )**2 * dchi(i) * ((chis-chi(i))/(chis*chi(i)**2))**2
+    do s = 1, 3
+      do t = 1, 3
+        wp(s,t,i,:) = pl(i,:) * ( wlf(i)/kl(i,:)**2 )**2 * dchi(i)/chi(i)**2 * fchi1(i,s) * fchi1(i,t)
+      end do
+    end do
   end do
 
-  do j = 1, zn
-    do l = 2, ln
-      ck(j,l) = dble(l)**4*sum(pl(:,l)*(wlf/kl(:,l)**2)**2*(dchi/chi**2)*fchi1*fchi2(:,j))
+  do s = 1, 3
+    do j = 1, zn
+      do l = 2, ln
+        ck(s,j,l) = dble(l)**4*sum(pl(:,l)*(wlf/kl(:,l)**2)**2*(dchi/chi**2)*fchi1(:,s)*fchi2(:,j))
+      end do
     end do
   end do
 
@@ -552,7 +567,7 @@ subroutine bispec_lens_pb(shap,eL,wp,ck,bl,sql0,ltype)
   !I/O
   character(*), intent(in) :: shap
   integer, intent(in) :: eL(2)
-  double precision, intent(in) :: wp(:,:), ck(:,:)
+  double precision, intent(in) :: wp(:,:,:,:), ck(:,:,:)
   double precision, intent(out) :: bl(:)
   !optional
   character(*), intent(in), optional :: ltype
@@ -563,7 +578,7 @@ subroutine bispec_lens_pb(shap,eL,wp,ck,bl,sql0,ltype)
 
   ! initial set up
   bl = 0d0
-  zn = size(wp,dim=1)
+  zn = size(wp,dim=3)
   if (present(ltype)) lt = ltype
   if (present(sql0))  l0 = sql0
 
@@ -589,7 +604,7 @@ subroutine bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp)
   implicit none
   !I/O
   integer, intent(in) :: l1, l2, l3
-  double precision, intent(in) :: wp(:,:), ck(:,:)
+  double precision, intent(in) :: wp(:,:,:,:), ck(:,:,:)
   double precision, intent(out) :: bisp
   !internal
   double precision :: al1, al2, al3, l1l2, l2l3, l3l1
@@ -601,11 +616,10 @@ subroutine bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp)
   l2l3 = al1**2-al2**2-al3**2
   l3l1 = al2**2-al3**2-al1**2
 
-  !Post-Born correction: Eq.(4.4) of PL16
-  !wPp = dchi * W^2(chi,chi_s)/chi^2 * P_psi 
-  bisp =        l1l2/(2d0*al1**2*al2**2)*(l3l1*al1**4*sum(wp(:,l1)*ck(:,l2))+l2l3*al2**4*sum(wp(:,l2)*ck(:,l1)))
-  bisp = bisp + l2l3/(2d0*al2**2*al3**2)*(l1l2*al2**4*sum(wp(:,l2)*ck(:,l3))+l3l1*al3**4*sum(wp(:,l3)*ck(:,l2)))
-  bisp = bisp + l3l1/(2d0*al3**2*al1**2)*(l2l3*al3**4*sum(wp(:,l3)*ck(:,l1))+l1l2*al1**4*sum(wp(:,l1)*ck(:,l3)))
+  !Post-Born correction
+  bisp =        l1l2/(2d0*al1**2*al2**2)*(l3l1*al1**4*sum(wp(1,3,:,l1)*ck(2,:,l2))+l2l3*al2**4*sum(wp(2,3,:,l2)*ck(1,:,l1)))
+  bisp = bisp + l2l3/(2d0*al2**2*al3**2)*(l1l2*al2**4*sum(wp(2,1,:,l2)*ck(3,:,l3))+l3l1*al3**4*sum(wp(3,1,:,l3)*ck(2,:,l2)))
+  bisp = bisp + l3l1/(2d0*al3**2*al1**2)*(l2l3*al3**4*sum(wp(3,2,:,l3)*ck(1,:,l1))+l1l2*al1**4*sum(wp(1,2,:,l1)*ck(3,:,l3)))
 
 end subroutine bispec_lens_pb_kernel
 
@@ -650,7 +664,7 @@ subroutine bispec_lens_bin(cp,b,eL1,eL2,eL3,wp,ck,m,bl0,bl1)
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: m
   integer, intent(in) :: eL1(2), eL2(2), eL3(2)
-  double precision, intent(in) :: wp(:,:), ck(:,:)
+  double precision, intent(in) :: wp(:,:,:,:), ck(:,:,:)
   double precision, intent(out) :: bl0, bl1
   !internal
   integer :: l1, l2, l3, zn
@@ -699,7 +713,7 @@ subroutine bispec_lens_snr(cp,b,eL,cl,wp,ck,m,snr)
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: m
   integer, intent(in) :: eL(2)
-  double precision, intent(in) :: cl(:), wp(:,:), ck(:,:)
+  double precision, intent(in) :: cl(:), wp(:,:,:,:), ck(:,:,:)
   double precision, intent(out) :: snr
   !internal
   integer :: l1, l2, l3
@@ -741,7 +755,7 @@ subroutine bispec_lens_snr_assym(cp,b,eL1,eL2,eL3,Cl,wp,ck,m,snr)
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: m
   integer, intent(in) :: eL1(2), eL2(2), eL3(2)
-  double precision, intent(in) :: Cl(:), wp(:,:), ck(:,:)
+  double precision, intent(in) :: Cl(:), wp(:,:,:,:), ck(:,:,:)
   double precision, intent(out) :: snr
   integer :: l1, l2, l3
   double precision :: bisp(2), tot
@@ -810,20 +824,25 @@ subroutine snr_xbisp(cp,b,eL,cgg,ckk,btype,m,snr)
 end subroutine snr_xbisp
 
 
-subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,ck,model,skew,pb)
+subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,ck,model,theta,skew,pb)
   implicit none
   type(cosmoparams), intent(in) :: cp
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: model
   integer, intent(in) :: l1, eL(2)
-  double precision, intent(in) :: sigma(2), wp(:,:), ck(:,:)
+  double precision, intent(in) :: sigma(2), wp(:,:,:,:), ck(:,:,:), theta
   double precision, intent(out) :: skew(:)
   logical, intent(in) :: pb
   !internal
   integer :: l2, l3, a1, a2, a3
-  double precision :: bisp(2), blll, hlll, del
+  double precision :: bisp(2), blll, hlll, del, Wl(eL(2))
 
   skew = 0d0
+
+  Wl = 0d0
+  do l2 = eL(1), eL(2)
+    Wl(l2) = dexp(-dble(l2)*(l2+1d0)*(theta*pi/10800d0)**2/16d0/dlog(2d0))
+  end do
 
   do l2 = eL(1), eL(2)
       do l3 = l2, eL(2)
@@ -841,6 +860,7 @@ subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,ck,model,skew,pb)
         if (pb)  call bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp(2))
         hlll = W3j_approx(dble(l1),dble(l2),dble(l3))*dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
         blll = del * sum(bisp) * hlll**2
+        blll = blll * Wl(l1)*Wl(l2)*Wl(l3)
         a1 = dble(l1*(l1+1))
         a2 = dble(l2*(l2+1))
         a3 = dble(l3*(l3+1))
@@ -968,42 +988,50 @@ subroutine lens_zweight(cp,z,dz,zs,zker,btype)
   !lensing weights
   implicit none
   type(cosmoparams), intent(in) :: cp
-  double precision, intent(in)  :: z(:), dz(:), zs
+  double precision, intent(in)  :: z(:), dz(:), zs(3)
   double precision, intent(out) :: zker(:)
   character(*), intent(in), optional :: btype
   character(16) :: bisptype = 'kkk'
-  integer :: zn
-  double precision :: chis, h
-  double precision, allocatable :: Hz(:), chi(:), wlf(:)
+  integer :: s, zn
+  double precision :: chis(3), h
+  double precision, allocatable :: Hz(:), chi(:), wlf(:), wlens(:,:), gz(:)
 
   zn = size(z)
  
-  allocate(Hz(zn),chi(zn),wlf(zn))
-  chis = C_z(zs,cp) !source comoving distance
+  allocate(Hz(zn),chi(zn),wlf(zn),wlens(3,zn),gz(zn))
+  chis(1) = C_z(zs(1),cp) !source comoving distance
+  chis(2) = C_z(zs(2),cp) !source comoving distance
+  chis(3) = C_z(zs(3),cp) !source comoving distance
   chi  = C_z(z,cp)  !comoving distance at each z
   Hz   = H_z(z,cp)  !expansion rate at z
+  !gz   = g_z(z,cp,zn)
   h    = cp%H0/100d0
 
   ! lens kernel
-  wlf  = 1.5d0*cp%Om*(cp%H0/3d5)**2*(1d0+z) !matter -> potential conversion factor (matter dominant)
+  wlf  = 1.5d0*cp%Om*(cp%H0/3d5)**2*(1d0+z) !matter -> potential conversion factor
+  !wlf  = 1.5d0*cp%Om*(cp%H0/3d5)**2/gz !matter -> potential conversion factor
+
+  do s = 1, 3
+    wlens(s,:) = wlf*(chis(s)-chi)*chi/chis(s)
+  end do
 
   ! check errors
-  if (chis<maxval(chi)) stop 'chis is smaller than maximum of chi in the chi integral'
+  if (minval(chis)<maxval(chi)) stop 'chis is smaller than maximum of chi in the chi integral'
 
   ! choose kernel for z integral
   if (present(btype)) bisptype = btype
   select case (bisptype)
   case ('kkk')
-    zker = dz/Hz * (wlf*(chis-chi)*chi/chis)**3 / chi**4 
+    zker = dz/Hz * wlens(1,:)*wlens(2,:)*wlens(3,:) / chi**4 
   case ('gkk')
-    zker = dz/Hz * (wlf*(chis-chi)*chi/chis)**2 / chi**4 * Hz
+    zker = dz/Hz * wlens(1,:)*wlens(2,:) / chi**4 * Hz
   case ('ggk')
-    zker = dz/Hz * (wlf*(chis-chi)*chi/chis) / chi**4 * Hz**2
+    zker = dz/Hz * wlens(1,:) / chi**4 * Hz**2
   case default
     stop 'need z-kernel type'
   end select
 
-  deallocate(Hz,chi,wlf)
+  deallocate(Hz,chi,wlf,wlens,gz)
 
 end subroutine lens_zweight
 
@@ -1040,7 +1068,7 @@ subroutine get_pk(cp,z,k,pkL0,pkL,pk,ftype)
 
   zn = size(z)
   allocate(D(zn))
-  D  = D_z(z,cp)  !growth factor
+  D  = D_z(z,cp,zn)  !growth factor
   if (present(ftype)) fit=ftype
 
   do i = 1, zn
