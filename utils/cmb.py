@@ -64,16 +64,20 @@ def nl_white(sigma,theta,lmax,Tcmb=2.72e6):
 
 #////////// Angular power spectrum /////////#
 
-def aps(snmin,snmax,lmax,falm,verbose=True):
+def aps(snmin,snmax,lmax,falm,odd=True,verbose=True):
     '''
-    Compute CMB aps (TT,EE,BB,TE)
+    Compute CMB aps (TT,EE,BB,TE,TB,EB)
     '''
 
     if verbose: print('aps')
 
+    if odd: 
+        cn = 6
+    else:
+        cn = 4
+
     sn  = snmax - snmin + 1
-    #cbs = np.zeros((sn,4,bn))
-    cls = np.zeros((sn,4,lmax+1))
+    cls = np.zeros((sn,cn,lmax+1))
 
     for i in range(snmin,snmax+1):
 
@@ -90,11 +94,10 @@ def aps(snmin,snmax,lmax,falm,verbose=True):
         cls[ii,1,:] = curvedsky.utils.alm2cl(lmax,Ealm)
         cls[ii,2,:] = curvedsky.utils.alm2cl(lmax,Balm)
         cls[ii,3,:] = curvedsky.utils.alm2cl(lmax,Talm,Ealm)
+        if odd:
+            cls[ii,4,:] = curvedsky.utils.alm2cl(lmax,Talm,Balm)
+            cls[ii,5,:] = curvedsky.utils.alm2cl(lmax,Ealm,Balm)
 
-        #for j in range(4):
-        #    cbs[ii,j,:] = basic.aps.cl2bcl(bn,lmax,cls[ii,j,:],spc=binspc)
-
-    return cls#, cbs
-
+    return cls
 
 
