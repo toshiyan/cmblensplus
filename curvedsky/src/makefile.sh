@@ -6,9 +6,9 @@ source ../../sh/pyversion.sh
 source ../../sh/setup.sh
 
 # compile link
-modd="-I${lenspix}/mod -I${healpix}/include -I${flibloc}/mod"
-libd="-L${lenspix}/lib -L${healpix}/lib -L${cfitsio} -L${flibloc}/lib"
-link="-lhp -llenspix -lutils -lhealpix -lcfitsio -liomp5 -lpthread"
+modd="-I${lenspix}/mod -I${healpix}/include -I${lapack}/mod -I${flibloc}/mod"
+libd="-L${lenspix}/lib -L${healpix}/lib -L${lapack}/lib -L${cfitsio} -L${flibloc}/lib"
+link="-lhp -llenspix -lmatrix -lutils -lhealpix -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas"
 # liomp5 and lpthread are required to use healpix
 
 # files to be compiled

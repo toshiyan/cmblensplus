@@ -5,7 +5,8 @@
 module cninv
   !from F90/src_utils
   use constants, only: pi
-  use spht
+  use general, only: savetxt, check_error, str
+  use hp_cgd
   implicit none
 
   private pi
@@ -13,548 +14,336 @@ module cninv
 contains
 
 
-subroutine cnfilter(npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
+subroutine cnfilter(n,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,fratio,filter,verbose)
 !* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
 !* This code assumes
-!*    1) The signal power spectrum is isotropic Gaussian. 
-!*    2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*    3) The data model is bxS+N
+!*   1) The signal power spectrum is isotropic Gaussian. 
+!*   2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
+!*   3) The data model is S+N
 !*
 !* Args:
-!*    :npix (int) : Number of pixel
-!*    :lmax (int) : Maximum multipole of alm
-!*    :cl[n,l] (double) : Angular power spectrum of alm, with bounds (0:lmax)
-!*    :nij[pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:npix-1)
-!*    :alm[l,m] (dcmplx) : Input alm, with bouds (0:lmax,0:lmax)
-!*    :itern (int) : Number of interation
+!*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
+!*    :npix (int) : Number of pixels of input map(s)
+!*    :lmax (int) : Maximum multipole of the input cl
+!*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
+!*    :bl[l] (double) : Beam spectrum with bounds (0:lmax)
+!*    :iNcov[n,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
+!*    :maps[n,pix] (double) : Input T, Q, U maps, with bouds (0:n-1,0:npix-1)
 !*
-!* Args(optional): 
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!* Args(optional):
+!*    :chn (int) : number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
+!*    :lmaxs[chain] (int) : Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
+!*    :nsides[chain] (int) : Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside. 
+!*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
+!*    :fratio (str): Output filename of |r|^2/|b^2|
+!*    :verbose (bool): Check the matrix at the coarsest grid. 
 !*
 !* Returns:
-!*    :xlm[l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:lmax,0:lmax)
+!*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 !*
   implicit none
   !I/O
+  logical, intent(in) :: verbose
   character(1), intent(in) :: filter
-  integer, intent(in) :: npix, lmax, itern
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
+  character(100), intent(in) :: fratio
+  integer, intent(in) :: n, npix, lmax, chn
+  integer, intent(in), dimension(1:chn) :: lmaxs, nsides, itns
+  double precision, intent(in), dimension(1:chn) :: eps
+  !opt4py :: chn = 1
+  !opt4py :: lmaxs = [0]
+  !opt4py :: nsides = [0]
+  !opt4py :: itns = [1]
+  !opt4py :: eps = [1e-6]
   !opt4py :: filter = ''
-  double precision, intent(in), dimension(0:lmax) :: cl
-  double precision, intent(in), dimension(0:npix-1) :: nij
-  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
-  double complex, intent(out), dimension(0:lmax,0:lmax) :: xlm
+  !opt4py :: fratio = ''
+  !opt4py :: verbose = False
+  double precision, intent(in), dimension(n,0:lmax) :: cl
+  double precision, intent(in), dimension(0:lmax) :: bl
+  double precision, intent(in), dimension(n,0:npix-1) :: iNcov, maps
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
-  integer :: ni, l
-  double precision :: clh(1:1,0:lmax,0:lmax), ninv(1:1,0:npix-1)
-  double complex :: b(1:1,0:lmax,0:lmax), nalm(1:1,0:lmax,0:lmax), nxlm(1:1,0:lmax,0:lmax)
+  type(mg_chain) :: mgc
+  integer :: c, mi, mn, ilmaxs(chn), insides(chn,1)
+  integer :: t1, t2, t_rate, t_max
+  double precision, dimension(n,1,0:lmax,0:lmax) :: clh
+  double precision, dimension(1,0:lmax) :: ibl
+  double complex :: b(n,0:lmax,0:lmax), alm(n,0:lmax,0:lmax)
+  double precision :: ratio(itns(1))
 
-  clh = 0d0
-  do l = 1, lmax
-    clh(1,l,0:l) = dsqrt(cl(l))
+  mn = 1
+
+  !compute beam-convolved half signal spectrum
+  ibl(1,:) = bl
+  call clhalf(n,mn,lmax,cl,ibl,clh)
+
+  !set multigrid parameters
+  if (chn==1) then
+    ilmaxs  = (/lmax/)
+    insides = reshape((/int(dsqrt(npix/12d0))/),(/chn,1/))
+  else
+    call check_error(lmax/=lmaxs(1),'input lmax is wrong',str(lmax)//','//str(lmaxs(1)))
+    call check_error(npix/=12*nsides(1)**2,'input npix is wrong',str(npix)//','//str(12*nsides(1)**2))
+    ilmaxs  = lmaxs
+    insides = reshape(nsides,(/chn,1/))
+  end if
+  call set_mgchain(mgc,chn,mn,ilmaxs,insides,itns,eps,verbose)
+
+  !inverse noise covariance
+  allocate(mgc%cv(mgc%n,mn))
+  do mi = 1, mn
+    do c = 1, mgc%n
+      allocate(mgc%cv(c,mi)%nij(n,mgc%npix(c,mi)))
+    end do
+    if (size(iNcov,dim=2)/=mgc%npix(1,mi)) stop 'incov size is strange'
+    mgc%cv(1,mi)%nij = iNcov*maps
   end do
 
   !first compute b = C^1/2 N^-1 X
-  ninv(1,:)   = nij
-  nalm(1,:,:) = alm
-  call mat_multi(1,npix,lmax,clh,ninv,nalm,b,'rhs')
-  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
-  call cg_algorithm(1,npix,lmax,clh,ninv,b,nxlm,itern,eps)
+  call matmul_rhs(n,mn,mgc%npix(1,:),lmax,clh,mgc%cv(1,:),b)
 
-  xlm = 0d0
-  do l = 1, lmax
-      if (filter=='')   xlm(l,0:l) = nxlm(1,l,0:l)/clh(1,l,0:l)
-      if (filter=='W')  xlm(l,0:l) = nxlm(1,l,0:l)*clh(1,l,0:l)
+  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
+  do mi = 1, mn
+    mgc%cv(1,mi)%nij = iNcov
   end do
+
+  call system_clock(t1)
+  call cg_algorithm(n,mn,lmax,clh,b,alm,mgc,1,ratio)
+  call system_clock(t2, t_rate, t_max) 
+  write(*,*) "real time:", (t2-t1)/dble(t_rate)
+  
+  if (fratio/='')  call savetxt(fratio,ratio,ow=.true.)
+  call free_mgchain(mgc)
+
+  call correct_filtering(n,lmax,cl,filter,alm)
+  xlm = alm
 
 end subroutine cnfilter
 
 
-subroutine cnfilterpol(n,npix,lmax,cl,nij,alm,itern,xlm,eps,filter)
-!* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
-!* This code assumes
-!*   1) The signal power spectrum is isotropic Gaussian. 
-!*   2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*   3) The data model is bxS+N
+subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,fratio,filter,verbose)
+!* Same as cnfilter but combining multiple frequency maps which have a same nside. 
 !*
 !* Args:
-!*    :n (int) : Number of maps
-!*    :npix (int) : Number of pixel
-!*    :lmax (int) : Maximum multipole of alm
-!*    :cl[n,l] (double) : Angular power spectrum of alm, with bounds (0:n-1,0:lmax)
-!*    :nij[n,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
-!*    :alm[n,l,m] (dcmplx) : Input alm, with bouds (0:n-1,0:lmax,0:lmax)
-!*    :itern (int) : Number of interation
+!*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
+!*    :mn (int) : Number of frequencies
+!*    :npix (int) : Number of pixels of input map(s)
+!*    :lmax (int) : Maximum multipole of the input cl
+!*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
+!*    :bl[mn,l] (double) : Beam spectrum, with bounds (0:n-1,0:lmax)
+!*    :iNcov[n,mn,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
+!*    :maps[n,mn,pix] (double) : Input T, Q, U maps, with bouds (0:n-1,0:npix-1)
 !*
-!* Args(optional): 
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!* Args(optional):
+!*    :chn (int) : number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
+!*    :lmaxs[chain] (int) : Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
+!*    :nsides[chain] (int) : Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside. 
+!*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
+!*    :fratio (str): Output filename of |r|^2/|b^2|
+!*    :verbose (bool): Check the matrix at the coarsest grid. 
 !*
 !* Returns:
 !*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 !*
   implicit none
   !I/O
+  logical, intent(in) :: verbose
   character(1), intent(in) :: filter
-  integer, intent(in) :: n, npix, lmax, itern
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
+  character(100), intent(in) :: fratio
+  integer, intent(in) :: n, mn, npix, lmax, chn
+  integer, intent(in), dimension(1:chn) :: lmaxs, nsides, itns
+  double precision, intent(in), dimension(1:chn) :: eps
+  !opt4py :: chn = 1
+  !opt4py :: lmaxs = [0]
+  !opt4py :: nsides = [0]
+  !opt4py :: itns = [1]
+  !opt4py :: eps = [1e-6]
   !opt4py :: filter = ''
+  !opt4py :: fratio = ''
+  !opt4py :: verbose = False
   double precision, intent(in), dimension(n,0:lmax) :: cl
-  double precision, intent(in), dimension(n,0:npix-1) :: nij
-  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: alm
+  double precision, intent(in), dimension(mn,0:lmax) :: bl
+  double precision, intent(in), dimension(n,mn,0:npix-1) :: iNcov, maps
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
-  integer :: ni, l
-  double precision, dimension(n,0:lmax,0:lmax) :: clh
+  type(mg_chain) :: mgc
+  integer :: c, mi, ilmaxs(chn), insides(chn,mn)
+  integer(8) :: t1, t2, t_rate, t_max
+  double precision, dimension(n,mn,0:lmax,0:lmax) :: clh
+  double complex :: b(n,0:lmax,0:lmax)
+  double precision :: ratio(itns(1))
+
+  !compute beam-convolved half signal spectrum
+  call clhalf(n,mn,lmax,cl,bl,clh)
+
+  !set multigrid parameters
+  if (chn==1) then
+    ilmaxs  = (/lmax/)
+    insides(1,:) = int(dsqrt(npix/12d0))
+  else
+    call check_error(lmax/=lmaxs(1),'input lmax is wrong',str(lmax)//','//str(lmaxs(1)))
+    call check_error(npix/=12*nsides(1)**2,'input npix is wrong',str(npix)//','//str(12*nsides(1)**2))
+    ilmaxs  = lmaxs
+    do c = 1, chn
+      insides(c,:) = nsides(c) !use same nside for all frequencies
+    end do
+  end if
+  call set_mgchain(mgc,chn,mn,ilmaxs,insides,itns,eps,verbose)
+
+  !inverse noise covariance
+  allocate(mgc%cv(mgc%n,mn))
+  do mi = 1, mn
+    do c = 1, mgc%n
+      allocate(mgc%cv(c,mi)%nij(n,mgc%npix(c,mi)))
+    end do
+    call check_error(size(iNcov,dim=3)/=mgc%npix(1,mi),'iNcov size is strange',str(size(iNcov,dim=3))//','//str(mgc%npix(1,mi)))
+    mgc%cv(1,mi)%nij = iNcov(:,mi,:)*maps(:,mi,:)
+  end do
+
+  !first compute b = C^1/2 N^-1 X
+  call matmul_rhs(n,mn,mgc%npix(1,:),lmax,clh,mgc%cv(1,:),b)
+
+  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
+  do mi = 1, mn
+    mgc%cv(1,mi)%nij = iNcov(:,mi,:)
+  end do
+
+  call system_clock(t1)
+  call cg_algorithm(n,mn,lmax,clh,b,xlm,mgc,1,ratio)
+  call system_clock(t2, t_rate, t_max) 
+  write(*,*) "real time:", (t2-t1)/dble(t_rate)
+
+  if (fratio/='')  call savetxt(fratio,ratio,ow=.true.)
+  call free_mgchain(mgc)
+
+  call correct_filtering(n,lmax,cl,filter,xlm)
+
+end subroutine cnfilter_freq
+
+
+subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,xlm,chn,lmaxs,nsides0,nsides1,itns,eps,fratio,filter,verbose)
+!* Same as cnfilter but combining multiple frequency maps and these maps are divided into two different nside groups. 
+!*
+!* Args:
+!*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
+!*    :mn0/1 (int) : Number of frequencies
+!*    :npix0/1 (int) : Number of pixels of input map(s)
+!*    :lmax (int) : Maximum multipole of the input cl
+!*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
+!*    :bl0/1[mn,l] (double) : Beam spectrum, with bounds (0:n-1,0:lmax)
+!*    :iNcov0/1[n,mn,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
+!*    :maps0/1[n,mn,pix] (double) : Input T, Q, U maps, with bouds (0:n-1,0:npix-1)
+!*
+!* Args(optional):
+!*    :chn (int) : number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
+!*    :lmaxs[chain] (int) : Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
+!*    :nsides0/1[chain] (int) : Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside. 
+!*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!*    :itns[chain] (int) : Number of interation(s)
+!*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
+!*    :fratio (str): Output filename of |r|^2/|b^2|
+!*    :verbose (bool): Check the matrix at the coarsest grid. 
+!*
+!* Returns:
+!*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  logical, intent(in) :: verbose
+  character(1), intent(in) :: filter
+  character(100), intent(in) :: fratio
+  integer, intent(in) :: n, mn0, mn1, npix0, npix1, lmax, chn
+  integer, intent(in), dimension(1:chn) :: lmaxs, nsides0, nsides1, itns
+  double precision, intent(in), dimension(1:chn) :: eps
+  !opt4py :: chn = 1
+  !opt4py :: lmaxs = [0]
+  !opt4py :: nsides0 = [0]
+  !opt4py :: nsides1 = [0]
+  !opt4py :: itns = [1]
+  !opt4py :: eps = [1e-6]
+  !opt4py :: filter = ''
+  !opt4py :: fratio = ''
+  !opt4py :: verbose = False
+  double precision, intent(in), dimension(n,0:lmax) :: cl
+  double precision, intent(in), dimension(mn0,0:lmax) :: bl0
+  double precision, intent(in), dimension(mn1,0:lmax) :: bl1
+  double precision, intent(in), dimension(n,mn0,0:npix0-1) :: iNcov0, maps0
+  double precision, intent(in), dimension(n,mn1,0:npix1-1) :: iNcov1, maps1
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
+  !internal
+  type(mg_chain) :: mgc
+  integer :: c, mi, mn, ilmaxs(chn), insides(chn,mn0+mn1)
+  integer :: t1, t2, t_rate, t_max
+  double precision :: clh(n,mn0+mn1,0:lmax,0:lmax), bl(mn0+mn1,0:lmax)
+  double precision :: ratio(itns(1))
   double complex :: b(n,0:lmax,0:lmax)
 
-  clh = 0d0
-  do ni = 1, n
-    do l = 1, lmax
-      clh(ni,l,0:l) = dsqrt(cl(ni,l))
+  mn = mn0 + mn1
+
+  !compute beam-convolved half signal spectrum
+  bl(:mn0,:)   = bl0
+  bl(mn0+1:,:) = bl1
+  call clhalf(n,mn,lmax,cl,bl,clh)
+
+  !set multigrid parameters
+  if (chn==1) then
+    ilmaxs  = (/lmax/)
+    insides(1,:mn0)   = int(dsqrt(npix0/12d0))
+    insides(1,mn0+1:) = int(dsqrt(npix1/12d0))
+  else
+    call check_error(lmax/=lmaxs(1),'input lmax is wrong',str(lmax)//','//str(lmaxs(1)))
+    call check_error(npix0/=12*nsides0(1)**2,'input npix0 is wrong',str(npix0)//','//str(12*nsides0(1)**2))
+    call check_error(npix1/=12*nsides1(1)**2,'input npix0 is wrong',str(npix1)//','//str(12*nsides1(1)**2))
+    ilmaxs  = lmaxs
+    do c = 1, chn
+      insides(c,:mn0)   = nsides0(c) 
+      insides(c,mn0+1:) = nsides1(c) 
     end do
+  end if
+  call set_mgchain(mgc,chn,mn,ilmaxs,insides,itns,eps,verbose)
+
+  !inverse noise covariance
+  allocate(mgc%cv(mgc%n,mn))
+  do mi = 1, mn
+    do c = 1, mgc%n
+      allocate(mgc%cv(c,mi)%nij(n,mgc%npix(c,mi)))
+    end do
+    if (mi<=mn0) then
+      if (size(iNcov0,dim=3)/=mgc%npix(1,mi)) stop 'iNcov size is strange'
+      mgc%cv(1,mi)%nij = iNcov0(:,mi,:)*maps0(:,mi,:)
+    else
+      if (size(iNcov1,dim=3)/=mgc%npix(1,mi)) stop 'iNcov size is strange'
+      mgc%cv(1,mi)%nij = iNcov1(:,mi-mn0,:)*maps1(:,mi-mn0,:)
+    end if
   end do
 
   !first compute b = C^1/2 N^-1 X
-  call mat_multi(n,npix,lmax,clh,nij,alm,b,'rhs')
+  call matmul_rhs(n,mn,mgc%npix(1,:),lmax,clh,mgc%cv(1,:),b)
+
   !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
-  call cg_algorithm(n,npix,lmax,clh,nij,b,xlm,itern,eps)
-
-  do l = 1, lmax
-    if (filter=='')   xlm(:,l,0:l) = xlm(:,l,0:l)/clh(:,l,0:l)
-    if (filter=='W')  xlm(:,l,0:l) = xlm(:,l,0:l)*clh(:,l,0:l)
-  end do
-
-end subroutine cnfilterpol
-
-
-subroutine cg_algorithm(n,npix,lmax,clh,nij,b,x,itern,eps)
-!* Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
-!* The code assumes
-!*    1) A = [1 + C^1/2 N^-1 C^1/2]
-!*    2) C^1/2 is diagonal
-!*    3) N is diagonal in pixel space (statistically isotropic noise)
-!*
-!* Args:
-!*    :n (int) : Number of maps
-!*    :npix (int) : Number of pixel
-!*    :lmax (int) : Maximum multipole of alm
-!*    :clh[n,l] (double) : Square root of angular spectrum (C^1/2), with bounds (0:n-1,0:lmax)
-!*    :nij[n,pix] (double) : Inverse of the noise variance (N^-1) at each pixel, with bounds (0:n-1,0:npix-1)
-!*    :b[n,l,m] (dcmplx) : RHS, with bounds (0:n-1,0:lmax,0:lmax)
-!*    :itern (int) : Number of interation
-!*    
-!* Args(optional): 
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
-!*
-!* Returns:
-!*    :x[n,l,m] (dcmplx) : C-inverse filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
-!* 
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: n, npix, lmax, itern
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
-  double precision, intent(in), dimension(n,0:lmax,0:lmax) :: clh
-  double precision, intent(in), dimension(n,0:npix-1) :: nij
-  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
-  !internal
-  integer :: ni, i, l, ro=50
-  double precision :: absb, absr, d, d0, td, alpha, ndiag, M(1:n,0:lmax,0:lmax)
-  double complex, dimension(1:n,0:lmax,0:lmax) :: r, z, p, Ap
-
-  !preconditioning matrix (M) which makes MA ~ I
-  do ni = 1, n
-    ndiag = sum(nij(ni,:))*4d0*pi/size(nij)
-    M(ni,:,:) = 1d0/(1d0+ndiag*clh(ni,:,:)**2)
-  end do
-  absb = dsqrt(sum(abs(b)**2))
-
-  !initial value (this is the solution if MA=I)
-  x = M*b
-
-  !residual
-  call mat_multi(n,npix,lmax,clh,nij,x,r,'lhs')
-  r = b - r
-
-  !set other values
-  z = M*r 
-  p = z
-
-  !initial distance
-  d0 = sum(conjg(r)*z)
-  d  = d0
-
-  do i = 1, itern
-
-    call mat_multi(n,npix,lmax,clh,nij,p,Ap,'lhs')
-    alpha = d/sum(conjg(p)*Ap)
-    x = x + alpha*p
-    r = r - alpha*Ap
-
-    absr = dsqrt(sum(abs(r)**2))
-    if (i-int(dble(i)/dble(ro))*ro==0)  write(*,*) absr/absb, d/d0
-
-    z = M*r
-    td = sum(conjg(r)*z)
-    p  = z + (td/d)*p
-    d  = td
-
-    ! check exit condition
-    if (absr<eps*absb) then 
-      !exit loop if |r|/|b| becomes very small
-      write(*,*) i, absr/absb
-      exit !Norm of r is sufficiently small
+  do mi = 1, mn
+    if (mi<=mn0) then
+      mgc%cv(1,mi)%nij = iNcov0(:,mi,:)
+    else
+      mgc%cv(1,mi)%nij = iNcov1(:,mi-mn0,:)
     end if
-
   end do
 
+  call system_clock(t1)
+  call cg_algorithm(n,mn,lmax,clh,b,xlm,mgc,1,ratio)
+  call system_clock(t2, t_rate, t_max) 
+  write(*,*) "real time:", (t2-t1)/dble(t_rate)
 
-end subroutine cg_algorithm
+  if (fratio/='')  call savetxt(fratio,ratio,ow=.true.)
+  call free_mgchain(mgc)
 
+  call correct_filtering(n,lmax,cl,filter,xlm)
 
-
-subroutine cnfilter_lat(n,k1,lmax,cl,bl1,npix1,nij1,map1,itern,xlm,eps,filter)
-!* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
-!* This code assumes
-!*   1) The signal power spectrum is isotropic Gaussian. 
-!*   2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*   3) The data model is bxS+N
-!*
-!* Args:
-!*    :n (int) : T(1), Q/U(2) or T/Q/U(3)
-!*    :k1 (int) : Number of frequencies
-!*    :npix1 (int) : Number of pixels for each input maps and inv noise covariance
-!*    :lmax (int) : Maximum multipole of alm
-!*    :cl[n,l] (double) : Angular power spectrum of alm, with bounds (0:n-1,0:lmax)
-!*    :bl1[k,l] (double) : Beam spectrum, with bounds (0:k1-1,0:lmax)
-!*    :nij1[n,k,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:k1-1,0:npix1-1)
-!*    :map1[n,k,pix] (double) : Input maps, with bouds (0:n-1,0:k1-1,0:npix1-1)
-!*    :itern (int) : Number of interation
-!*
-!* Args(optional): 
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
-!*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
-!*
-!* Returns:
-!*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
-!*
-  implicit none
-  !I/O
-  character(1), intent(in) :: filter
-  integer, intent(in) :: n, k1, npix1, lmax, itern
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
-  !opt4py :: filter = ''
-  double precision, intent(in), dimension(n,0:lmax) :: cl
-  double precision, intent(in), dimension(k1,0:lmax) :: bl1
-  double precision, intent(in), dimension(n,k1,0:npix1-1) :: nij1, map1
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
-  !internal
-  integer :: ni, l, ki
-  double precision, dimension(n,k1,0:lmax,0:lmax) :: clh1
-  double complex, dimension(n,0:lmax,0:lmax) :: b1
-
-  clh1 = 0d0
-  do ni = 1, n
-    do l = 1, lmax
-      do ki = 1, k1
-        clh1(ni,ki,l,0:l) = dsqrt(cl(ni,l))*bl1(ki,l)
-      end do
-    end do
-  end do
-
-  !first compute b = C^1/2 N^-1 X
-  call mat_multi_freq_rhs(n,k1,npix1,lmax,clh1,nij1,map1,b1)
-  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
-  call cg_algorithm_lat(n,k1,lmax,clh1,npix1,nij1,b1,xlm,itern,eps)
-
-  do l = 1, lmax
-    do ni = 1, n
-      if (filter=='')   xlm(ni,l,0:l) = xlm(ni,l,0:l)/dsqrt(cl(ni,l))
-      if (filter=='W')  xlm(ni,l,0:l) = xlm(ni,l,0:l)*dsqrt(cl(ni,l))
-    end do
-  end do
-
-end subroutine cnfilter_lat
-
-
-subroutine cg_algorithm_lat(n,k1,lmax,clh1,npix1,nij1,b,x,itern,eps)
-!* Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
-!* The code assumes 
-!*    1) A = [1 + C^1/2 N^-1 C^1/2]
-!*    2) C^1/2 is diagonal
-!*    3) N is diagonal in pixel space (statistically isotropic noise)
-!*
-!* Args:
-!*    :n (int) : T(1), Q/U(2), or T/Q/U(3)
-!*    :k1 (int) : Number of freq
-!*    :npix1 (int) : Number of pixels
-!*    :lmax (int) : Maximum multipole of alm
-!*    :clh1[n,k,l] (double) : Square root of angular spectrum (C^1/2), with bounds (0:n-1,0:lmax)
-!*    :nij1[n,k,pix] (double) : Inverse of the noise variance (N^-1) at each pixel, with bounds (0:n-1,0:npix-1)
-!*    :b[n,l,m] (dcmplx) : RHS, with bounds (0:n-1,0:lmax,0:lmax)
-!*    :itern (int) : Number of interation
-!*    
-!* Args(optional):
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
-!*
-!* Returns:
-!*    :x[n,l,m] (dcmplx) : C-inverse filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
-!* 
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: n, k1, lmax, itern, npix1
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
-  double precision, intent(in), dimension(n,k1,0:lmax,0:lmax) :: clh1
-  double precision, intent(in), dimension(n,k1,0:npix1-1) :: nij1
-  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
-  !internal
-  integer :: ni, ki, i, l, ro=50
-  double precision :: absb, absr, d, d0, td, alpha, M(1:n,0:lmax,0:lmax), mm(0:lmax,0:lmax)
-  double complex, dimension(1:n,0:lmax,0:lmax) :: r, z, p, Ap
-
-  !preconditioning matrix (M) which makes MA ~ I
-  do ni = 1, n
-    mm = 0d0
-    do ki = 1, k1
-      mm = mm + clh1(ni,ki,:,:)**2 * sum(nij1(ni,ki,:))*4d0*pi/size(nij1(:,ki,:))
-    end do
-    M(ni,:,:) = 1d0/(1d0+mm)
-  end do
-  absb = dsqrt(sum(abs(b)**2))
-
-  !initial value (this is the solution if MA=I)
-  x = M*b
-
-  !residual
-  call mat_multi_freq_lhs(n,k1,npix1,lmax,clh1,nij1,x,r)
-  r = b - r
-
-  !set other values
-  z = M*r
-  p = z
-
-  !initial distance
-  d0 = sum(conjg(r)*z)
-  d  = d0
-
-  do i = 1, itern
-
-    call mat_multi_freq_lhs(n,k1,npix1,lmax,clh1,nij1,p,Ap)
-    alpha = d/sum(conjg(p)*Ap)
-    x = x + alpha*p
-    r = r - alpha*Ap
-
-    absr = dsqrt(sum(abs(r)**2))
-    if (i-int(dble(i)/dble(ro))*ro==0)  write(*,*) absr/absb, d/d0
-
-    z = M*r
-    td = sum(conjg(r)*z)
-    p  = z + (td/d)*p
-    d  = td
-
-    ! check exit condition
-    if (absr<eps*absb) then 
-      !exit loop if |r|/|b| becomes very small
-      write(*,*) i, absr/absb
-      exit !Norm of r is sufficiently small
-    end if
-
-  end do
-
-end subroutine cg_algorithm_lat
-
-
-subroutine cnfilter_so(n,k1,k2,lmax,cl,bl1,bl2,npix1,npix2,nij1,nij2,map1,map2,itern,xlm,eps,filter)
-!* Computing inverse-variance (default) or Wiener filtered multipoles: C^-1d
-!* This code assumes
-!*   1) The signal power spectrum is isotropic Gaussian. 
-!*   2) Inverse noise covariance is given in pixel space and diagonal (nij = sigma x delta_ij).
-!*   3) The data model is bxS+N
-!*
-!* Args:
-!*    :n (int) : T(1), Q/U(2) or T/Q/U(3)
-!*    :k1 (int) : Number of frequencies
-!*    :k2 (int) : Number of frequencies
-!*    :npix1 (int) : Number of pixels for each input maps and inv noise covariance
-!*    :npix2 (int) : Number of pixels for each input maps and inv noise covariance
-!*    :lmax (int) : Maximum multipole of alm
-!*    :cl[n,l] (double) : Angular power spectrum of alm, with bounds (0:n-1,0:lmax)
-!*    :bl1[k,l] (double) : Beam spectrum, with bounds (0:k1-1,0:lmax)
-!*    :bl2[k,l] (double) : Beam spectrum, with bounds (0:k2-1,0:lmax)
-!*    :nij1[n,k,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:k1-1,0:npix1-1)
-!*    :nij2[n,k,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:k2-1,0:npix2-1)
-!*    :map1[n,k,pix] (double) : Input maps, with bouds (0:n-1,0:k1-1,0:npix1-1)
-!*    :map2[n,k,pix] (double) : Input maps, with bouds (0:n-1,0:k2-1,0:npix2-1)
-!*    :itern (int) : Number of interation
-!*
-!* Args(optional): 
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
-!*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
-!*
-!* Returns:
-!*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
-!*
-  implicit none
-  !I/O
-  character(1), intent(in) :: filter
-  integer, intent(in) :: n, k1, k2, npix1, npix2, lmax, itern
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
-  !opt4py :: filter = ''
-  double precision, intent(in), dimension(n,0:lmax) :: cl
-  double precision, intent(in), dimension(k1,0:lmax) :: bl1
-  double precision, intent(in), dimension(k2,0:lmax) :: bl2
-  double precision, intent(in), dimension(n,k1,0:npix1-1) :: nij1, map1
-  double precision, intent(in), dimension(n,k2,0:npix2-1) :: nij2, map2
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
-  !internal
-  integer :: ni, l, ki
-  double precision, dimension(n,k1,0:lmax,0:lmax) :: clh1
-  double precision, dimension(n,k2,0:lmax,0:lmax) :: clh2
-  double complex, dimension(n,0:lmax,0:lmax) :: b1, b2
-
-  clh1 = 0d0
-  clh2 = 0d0
-  do ni = 1, n
-    do l = 1, lmax
-      do ki = 1, k1
-        clh1(ni,ki,l,0:l) = dsqrt(cl(ni,l))*bl1(ki,l)
-      end do
-      do ki = 1, k2
-        clh2(ni,ki,l,0:l) = dsqrt(cl(ni,l))*bl2(ki,l)
-      end do
-    end do
-  end do
-
-  !first compute b = C^1/2 N^-1 X
-  call mat_multi_freq_rhs(n,k1,npix1,lmax,clh1,nij1,map1,b1)
-  call mat_multi_freq_rhs(n,k2,npix2,lmax,clh2,nij2,map2,b2)
-  !solve x where [1 + C^1/2 N^-1 C^1/2] x = b
-  call cg_algorithm_so(n,k1,k2,lmax,clh1,clh2,npix1,npix2,nij1,nij2,b1+b2,xlm,itern,eps)
-
-  do l = 1, lmax
-    do ni = 1, n
-      if (filter=='')   xlm(ni,l,0:l) = xlm(ni,l,0:l)/dsqrt(cl(ni,l))
-      if (filter=='W')  xlm(ni,l,0:l) = xlm(ni,l,0:l)*dsqrt(cl(ni,l))
-    end do
-  end do
-
-end subroutine cnfilter_so
-
-
-subroutine cg_algorithm_so(n,k1,k2,lmax,clh1,clh2,npix1,npix2,nij1,nij2,b,x,itern,eps)
-!* Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
-!* The code assumes 
-!*    1) A = [1 + C^1/2 N^-1 C^1/2]
-!*    2) C^1/2 is diagonal
-!*    3) N is diagonal in pixel space (statistically isotropic noise)
-!*
-!* Args:
-!*    :n (int) : T(1), Q/U(2), or T/Q/U(3)
-!*    :k1 (int) : Number of freq
-!*    :k2 (int) : Number of freq
-!*    :npix1 (int) : Number of pixels
-!*    :npix2 (int) : Number of pixels
-!*    :lmax (int) : Maximum multipole of alm
-!*    :clh1[n,k,l] (double) : Square root of angular spectrum (C^1/2), with bounds (0:n-1,0:lmax)
-!*    :clh2[n,k,l] (double) : Square root of angular spectrum (C^1/2), with bounds (0:n-1,0:lmax)
-!*    :nij1[n,k,pix] (double) : Inverse of the noise variance (N^-1) at each pixel, with bounds (0:n-1,0:npix-1)
-!*    :nij2[n,k,pix] (double) : Inverse of the noise variance (N^-1) at each pixel, with bounds (0:n-1,0:npix-1)
-!*    :b[n,l,m] (dcmplx) : RHS, with bounds (0:n-1,0:lmax,0:lmax)
-!*    :itern (int) : Number of interation
-!*    
-!* Args(optional):
-!*    :eps (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
-!*
-!* Returns:
-!*    :x[n,l,m] (dcmplx) : C-inverse filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
-!* 
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: n, k1, k2, lmax, itern, npix1, npix2
-  double precision, intent(in) :: eps
-  !opt4py :: eps = 1e-6
-  double precision, intent(in), dimension(n,k1,0:lmax,0:lmax) :: clh1
-  double precision, intent(in), dimension(n,k2,0:lmax,0:lmax) :: clh2
-  double precision, intent(in), dimension(n,k1,0:npix1-1) :: nij1
-  double precision, intent(in), dimension(n,k2,0:npix2-1) :: nij2
-  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
-  !internal
-  integer :: ni, ki, i, l, ro=50
-  double precision :: absb, absr, d, d0, td, alpha, M(1:n,0:lmax,0:lmax), mm(0:lmax,0:lmax)
-  double complex, dimension(1:n,0:lmax,0:lmax) :: r, r1, r2, z, p, Ap, Ap1, Ap2
-
-  !preconditioning matrix (M) which makes MA ~ I
-  do ni = 1, n
-    mm = 0d0
-    do ki = 1, k1
-      mm = mm + clh1(ni,ki,:,:)**2 * sum(nij1(ni,ki,:))*4d0*pi/size(nij1(:,ki,:))
-    end do
-    do ki = 1, k2
-      mm = mm + clh2(ni,ki,:,:)**2 * sum(nij2(ni,ki,:))*4d0*pi/size(nij2(:,ki,:))
-    end do
-    M(ni,:,:) = 1d0/(1d0+mm)
-  end do
-  absb = dsqrt(sum(abs(b)**2))
-
-  !initial value (this is the solution if MA=I)
-  x = M*b
-
-  !residual
-  call mat_multi_freq_lhs(n,k1,npix1,lmax,clh1,nij1,x,r1)
-  call mat_multi_freq_lhs(n,k2,npix2,lmax,clh2,nij2,x,r2)
-  r = r1+r2-x
-  r = b - r
-
-  !set other values
-  z = M*r
-  p = z
-
-  !initial distance
-  d0 = sum(conjg(r)*z)
-  d  = d0
-
-  do i = 1, itern
-
-    call mat_multi_freq_lhs(n,k1,npix1,lmax,clh1,nij1,p,Ap1)
-    call mat_multi_freq_lhs(n,k2,npix2,lmax,clh2,nij2,p,Ap2)
-    Ap = Ap1+Ap2-p
-    alpha = d/sum(conjg(p)*Ap)
-    x = x + alpha*p
-    r = r - alpha*Ap
-
-    absr = dsqrt(sum(abs(r)**2))
-    if (i-int(dble(i)/dble(ro))*ro==0)  write(*,*) absr/absb, d/d0
-
-    z = M*r
-    td = sum(conjg(r)*z)
-    p  = z + (td/d)*p
-    d  = td
-
-    ! check exit condition
-    if (absr<eps*absb) then 
-      !exit loop if |r|/|b| becomes very small
-      write(*,*) i, absr/absb
-      exit !Norm of r is sufficiently small
-    end if
-
-  end do
-
-end subroutine cg_algorithm_so
+end subroutine cnfilter_freq_nside
 
 
 end module cninv
-
 

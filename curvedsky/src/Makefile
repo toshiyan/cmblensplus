@@ -16,10 +16,11 @@ flibutl = ../../utils/
 healpix = ${flibutl}/pub/Healpix
 cfitsio = ${flibutl}/pub/cfitsio
 lenspix = ${flibutl}/pub/lenspix
+LAPACK  = ${flib}/pub/LAPACK95/
 
-MODD= -I${lenspix}/mod -I${healpix}/include -I${flibutl}/mod
-LIBD= -L${lenspix}/lib -L${healpix}/lib -L${cfitsio} -L${flibutl}/lib
-LINK= -llenspix -lutils -lhealpix -lcfitsio -liomp5 -lpthread
+MODD= -I${lenspix}/mod -I${healpix}/include -I$(LAPACK)/mod -I${flibutl}/mod
+LIBD= -L${lenspix}/lib -L${healpix}/lib -L${cfitsio} -L$(LAPACK)/lib -L${flibutl}/lib
+LINK= -llenspix -lutils -lhealpix -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas
 
 OPTION = $(MODD) $(LIBD) $(LINK)
 
