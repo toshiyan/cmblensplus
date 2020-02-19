@@ -37,7 +37,7 @@ install:
 	mv *.mod ${flibloc}/mod; mv $(target) ${flibloc}/lib/
 
 clean:
-	rm -f *.o* *.mod *.a
+	rm -f *.o *.mod *.a
 
 remove:
 	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC)) ${flib}/lib/${target}
