@@ -7,7 +7,7 @@ target = libhp.a
 
 ## Complier and options ##
 FC = ifort
-FLAG = -O3 -fpp -fPIC
+FLAG = -O3 -fpp -fPIC -qopenmp
 #DBAG = -check all -std -gen_interfaces -fpe0 -ftrapuv -traceback
 FLAGS = $(FLAG) $(DBAG)
 
@@ -15,14 +15,18 @@ FLAGS = $(FLAG) $(DBAG)
 flib = ../
 healpix = ${flib}/pub/Healpix
 cfitsio = ${flib}/pub/cfitsio
+LAPACK  = ${flib}/pub/LAPACK95/
 
-MODD= -I${healpix}/include -I${flib}/mod
-LIBD= -L${healpix}/lib -L${cfitsio} -L${flib}/lib
-LINK= -lutils -lhealpix -lcfitsio -liomp5 -lpthread
+MODD= -I${healpix}/include -I$(LAPACK)/mod -I${flib}/mod
+LIBD= -L${healpix}/lib -L${cfitsio} -L$(LAPACK)/lib -L${flib}/lib
+LINK= -lutils -lhealpix -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas
 
 OPTION = $(MODD) $(LIBD) $(LINK)
 
-OBJ = spht.o hp_bsp.o
+SRC=$(wildcard *.f90)
+OBJ=$(patsubst %.f90, %.o, $(SRC))
+
+#OBJ = hp_utils.o hp_udgrade.o hp_spht.o hp_bsp.o hp_cgd.o
 
 $(target): $(OBJ)
 	ar cr $@ $^
@@ -35,4 +39,8 @@ install:
 
 clean:
 	rm -f *.o* *.mod *.a
+
+remove:
+	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC))
+
 
