@@ -63,6 +63,21 @@ contains
 ! File status/read/write
 !//////////////////////////////////////////////////////////////////////////////!
 
+subroutine check_error(condition,msg0,msg1)
+  implicit none
+  logical, intent(in) :: condition
+  character(len=*), intent(in) :: msg0
+  character(len=*), intent(in), optional :: msg1
+  
+  if (condition) then
+    write(*,*) 'error: ', trim(msg0)
+    if (present(msg1)) write(*,*), trim(msg1)
+    stop
+  end if
+
+end subroutine check_error
+
+
 function file_exist(fname) result(f)
   implicit none
   character(*), intent(in) :: fname
