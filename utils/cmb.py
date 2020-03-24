@@ -3,6 +3,7 @@ import sys
 import constants as c
 import basic
 import curvedsky
+import misctools
 
 if sys.version_info[:3] > (3,0):
   import pickle
@@ -64,14 +65,14 @@ def nl_white(sigma,theta,lmax,Tcmb=2.72e6):
 
 #////////// Angular power spectrum /////////#
 
-def aps(snmin,snmax,lmax,falm,odd=True,verbose=True):
+def aps(snmin,snmax,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fname=None,overwrite=False):
     '''
     Compute CMB aps (TT,EE,BB,TE,TB,EB)
     '''
 
     if verbose: print('aps')
 
-    if odd: 
+    if odd:
         cn = 6
     else:
         cn = 4
@@ -81,22 +82,69 @@ def aps(snmin,snmax,lmax,falm,odd=True,verbose=True):
 
     for i in range(snmin,snmax+1):
 
-        if verbose: print(i, end=' ')
+        if verbose: print(i)
+
+        ii = i - snmin
+
+        if fname is not None and misctools.check_path(fname[i],verbose=verbose,overwrite=overwrite):
+            cls[ii,:,:] = np.loadtxt(fname[i],unpack=True)[1:,:]
+
+        else:
+        
+            # load cmb alms
+            if 'T' in mtype:  Talm = pickle.load(open(falm['T'][i],"rb"))
+            if 'E' in mtype:  Ealm = pickle.load(open(falm['E'][i],"rb"))
+            if 'B' in mtype:  Balm = pickle.load(open(falm['B'][i],"rb"))
+
+            # compute cls
+            if 'T' in mtype:  cls[ii,0,:] = curvedsky.utils.alm2cl(lmax,Talm)
+            if 'E' in mtype:  cls[ii,1,:] = curvedsky.utils.alm2cl(lmax,Ealm)
+            if 'B' in mtype:  cls[ii,2,:] = curvedsky.utils.alm2cl(lmax,Balm)
+            if 'T' in mtype and 'E' in mtype:  cls[ii,3,:] = curvedsky.utils.alm2cl(lmax,Talm,Ealm)
+            if odd and 'T' in mtype and 'B' in mtype:
+                cls[ii,4,:] = curvedsky.utils.alm2cl(lmax,Talm,Balm)
+            if odd and 'E' in mtype and 'B' in mtype:
+                cls[ii,5,:] = curvedsky.utils.alm2cl(lmax,Ealm,Balm)
+
+            # correct normalization
+            if w2 != 1.:
+                cls[ii,:,:] /= w2
+
+        # save to file
+        if fname is not None and overwrite:
+            L = np.linspace(0,lmax,lmax+1)
+            np.savetxt(fname[i],np.concatenate((L[None,:],cls[ii,:,:])).T)
+
+    return cls
+
+
+def apsx(snmin,snmax,lmax,falm,galm,verbose=True,mtype=['T','E','B']):
+    '''
+    Compute CMB aps (T0T1,E0E1,B0B1)
+    '''
+
+    if verbose: print('apsx')
+
+    sn  = snmax - snmin + 1
+    cls = np.zeros((sn,3,lmax+1))
+
+    for i in range(snmin,snmax+1):
+
+        if verbose: print(i)
         ii = i - snmin
 
         # load cmb alms
-        Talm = pickle.load(open(falm['T'][i],"rb"))
-        Ealm = pickle.load(open(falm['E'][i],"rb"))
-        Balm = pickle.load(open(falm['B'][i],"rb"))
+        if 'T' in mtype:  Talm = pickle.load(open(falm['T'][i],"rb"))
+        if 'E' in mtype:  Ealm = pickle.load(open(falm['E'][i],"rb"))
+        if 'B' in mtype:  Balm = pickle.load(open(falm['B'][i],"rb"))
+        if 'T' in mtype:  talm = pickle.load(open(galm['T'][i],"rb"))
+        if 'E' in mtype:  ealm = pickle.load(open(galm['E'][i],"rb"))
+        if 'B' in mtype:  balm = pickle.load(open(galm['B'][i],"rb"))
 
         # compute cls
-        cls[ii,0,:] = curvedsky.utils.alm2cl(lmax,Talm)
-        cls[ii,1,:] = curvedsky.utils.alm2cl(lmax,Ealm)
-        cls[ii,2,:] = curvedsky.utils.alm2cl(lmax,Balm)
-        cls[ii,3,:] = curvedsky.utils.alm2cl(lmax,Talm,Ealm)
-        if odd:
-            cls[ii,4,:] = curvedsky.utils.alm2cl(lmax,Talm,Balm)
-            cls[ii,5,:] = curvedsky.utils.alm2cl(lmax,Ealm,Balm)
+        if 'T' in mtype:  cls[ii,0,:] = curvedsky.utils.alm2cl(lmax,Talm,talm)
+        if 'E' in mtype:  cls[ii,1,:] = curvedsky.utils.alm2cl(lmax,Ealm,ealm)
+        if 'B' in mtype:  cls[ii,2,:] = curvedsky.utils.alm2cl(lmax,Balm,balm)
 
     return cls
 
