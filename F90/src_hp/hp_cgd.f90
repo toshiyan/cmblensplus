@@ -5,7 +5,7 @@
 module hp_cgd
   ! from src_utils
   use constants, only: pi, iu
-  use general, only: ave
+  use general, only: ave, str
   ! from src_matrix
   use lapack95, only: inv_matrix_c
   ! from modules in this directory
@@ -16,14 +16,14 @@ module hp_cgd
 
   ! for multi-grid method
   type mg_covmat
-    double precision, allocatable :: nij(:,:)
+    double precision, allocatable :: nij(:,:), clh(:,:,:)
   end type mg_covmat
 
   type mg_chain
     type(mg_covmat), allocatable :: cv(:,:)
     logical :: verbose
-    integer :: n, lsp, matn
-    integer, allocatable :: npix(:,:), nside(:,:), lmax(:), itn(:)
+    integer :: n, lsp, matn, ro
+    integer, allocatable :: mnmax(:), npix(:,:), nside(:,:), lmax(:), itn(:)
     double precision, allocatable :: eps(:), pmat(:,:,:)
     double complex, allocatable :: mat(:,:), imat(:,:)
   end type mg_chain
@@ -36,15 +36,15 @@ module hp_cgd
 contains
 
 
-subroutine set_mgchain(mgc,chn,mn,lmaxs,nsides,itns,eps,verbose)
+subroutine set_mgchain(mgc,chn,mn,mnmaxs,lmaxs,nsides,itns,eps,verbose,ro)
   implicit none
   type(mg_chain), intent(out) :: mgc
   logical :: verbose
-  integer, intent(in) :: chn, mn, itns(chn), lmaxs(chn), nsides(chn,mn)
+  integer, intent(in) :: chn, mn, ro, mnmaxs(chn), itns(chn), lmaxs(chn), nsides(chn,mn)
   double precision, intent(in) :: eps(chn)
 
   mgc%n = chn
-  allocate(mgc%nside(chn,mn),mgc%lmax(chn),mgc%itn(chn),mgc%eps(chn),mgc%npix(chn,mn))
+  allocate(mgc%mnmax(chn),mgc%nside(chn,mn),mgc%lmax(chn),mgc%itn(chn),mgc%eps(chn),mgc%npix(chn,mn))
 
   mgc%nside = nsides
   mgc%lmax  = lmaxs
@@ -53,14 +53,17 @@ subroutine set_mgchain(mgc,chn,mn,lmaxs,nsides,itns,eps,verbose)
   mgc%npix  = 12*nsides**2
   mgc%verbose = verbose
   mgc%lsp   = lmaxs(chn)
+  mgc%mnmax = mnmaxs
+  mgc%ro    = ro
 
-  write(*,*) mgc%nside
-  write(*,*) mgc%lmax
-  write(*,*) mgc%npix
-  write(*,*) mgc%itn
-  write(*,*) mgc%eps
-  write(*,*) mgc%verbose
+  write(*,'('//str(chn)//'(I4,X))') mgc%nside
+  write(*,'('//str(chn)//'(I4,X))') mgc%mnmax
+  write(*,'('//str(chn)//'(I4,X))') mgc%lmax
+  write(*,'('//str(chn)//'(I4,X))') mgc%itn
+  write(*,'('//str(chn)//'(E14.7,X))') mgc%eps
   write(*,*) mgc%lsp
+  if (mgc%verbose) write(*,*) mgc%verbose
+  if (mgc%ro/=50)  write(*,*) mgc%ro
 
 end subroutine set_mgchain
 
@@ -88,7 +91,8 @@ subroutine clhalf(n,mn,lmax,cl,bl,clh)
   do ni = 1, n
     do l = 1, lmax
       do mi = 1, mn
-        clh(ni,mi,l,0:l) = dsqrt(cl(mi,l))*bl(mi,l)
+        if (cl(ni,l)<=0d0) cycle
+        clh(ni,mi,l,0:l) = dsqrt(cl(ni,l))*bl(mi,l)
       end do
     end do
   end do
@@ -106,6 +110,10 @@ subroutine correct_filtering(n,lmax,cl,filter,xlm)
   
   do l = 1, lmax
     do ni = 1, n
+      if (cl(ni,l)<=0d0)  then
+        xlm(ni,l,0:l) = 0d0
+        cycle
+      end if
       if (filter=='')   xlm(ni,l,0:l) = xlm(ni,l,0:l)/dsqrt(cl(ni,l))
       if (filter=='W')  xlm(ni,l,0:l) = xlm(ni,l,0:l)*dsqrt(cl(ni,l))
     end do
@@ -147,16 +155,17 @@ subroutine densemat_multi(n,lmax,arrn,r,imat,x)
 end subroutine densemat_multi
 
 
-subroutine coarse_invmatrix(n,mn,lmax,clh,mgc)
+subroutine coarse_invmatrix(n,lmax,mgc)
   implicit none
   !I/O
   type(mg_chain), intent(inout) :: mgc
-  integer, intent(in) :: n, mn, lmax
-  double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
+  integer, intent(in) :: n, lmax
+  !double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
   !internal
-  integer :: i, l, m, ni
+  integer :: i, l, m, ni, mn
   double complex, allocatable :: x(:,:,:), Mx(:,:,:), A0(:,:), A1(:,:), y(:,:,:)
 
+  mn = mgc%mnmax(mgc%n)
   mgc%matn = n*(lmax+1)*(lmax+2)/2
 
   ! prepare diagonal preconditioner
@@ -170,12 +179,12 @@ subroutine coarse_invmatrix(n,mn,lmax,clh,mgc)
         i = i + 1
         x = 0d0
         x(ni,l,m) = 1d0
-        call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,clh,mgc%cv(mgc%n,:),x,Mx)
+        call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,mgc%cv(mgc%n,:),x,Mx)
         call trans_alm2array_1d(n,lmax,mgc%matn,Mx,A0(:,i))
         if (m/=0) then
           x = 0d0
           x(ni,l,m) = iu
-          call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,clh,mgc%cv(mgc%n,:),x,Mx)
+          call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,mgc%cv(mgc%n,:),x,Mx)
           call trans_alm2array_1d(n,lmax,mgc%matn,Mx,A1(:,i))
           A0(:,i) = (A0(:,i)+A1(:,i)/iu)/2d0
         end if
@@ -202,7 +211,7 @@ subroutine coarse_invmatrix(n,mn,lmax,clh,mgc)
     allocate(y(1:n,0:lmax,0:lmax)); y = 0d0
     y(1,3,2) = 1d0
     call densemat_multi(n,lmax,mgc%matn,y,mgc%imat,x)
-    call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,clh,mgc%cv(mgc%n,:),x,Mx)
+    call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,mgc%cv(mgc%n,:),x,Mx)
     write(*,*) '---'
     write(*,*) Mx(1,3,0:4), Mx(1,4,0:4)
     deallocate(y)
@@ -215,7 +224,7 @@ subroutine coarse_invmatrix(n,mn,lmax,clh,mgc)
 end subroutine coarse_invmatrix
 
 
-subroutine cg_algorithm(n,mn,lmax,clh,b,x,mgc,chain,ratio)
+subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
 !* Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
 !* The code assumes 
 !*    1) A = [1 + C^1/2 N^-1 C^1/2]
@@ -225,13 +234,13 @@ subroutine cg_algorithm(n,mn,lmax,clh,b,x,mgc,chain,ratio)
   implicit none
   !I/O
   type(mg_chain), intent(inout) :: mgc
-  integer, intent(in) :: n, mn, lmax, chain
-  double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
+  integer, intent(in) :: n, lmax, chain
+  !double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
   double precision, intent(out), optional :: ratio(mgc%itn(chain))
   !internal
-  integer :: c, ni, mi, i, l, ro=50
+  integer :: c, ni, mi, i, l
   double precision :: absb, absr, d, d0, td, alpha
   double precision :: mm(0:lmax,0:lmax)
   double complex, dimension(1:n,0:mgc%lmax(chain),0:mgc%lmax(chain)) :: r, z, p, Ap
@@ -246,47 +255,25 @@ subroutine cg_algorithm(n,mn,lmax,clh,b,x,mgc,chain,ratio)
     allocate(mgc%pmat(n,0:lmax,0:lmax))
     do ni = 1, n
       mm = 0d0
-      do mi = 1, mn
+      do mi = 1, mgc%mnmax(1)
         !derived by averaging over m for int Ylm^* N^-1 Ylm
-        mm = mm + clh(ni,mi,:,:)**2 * ave(mgc%cv(1,mi)%nij(ni,:)) 
+        mm = mm + mgc%cv(1,mi)%clh(ni,:,:)**2 * ave(mgc%cv(1,mi)%nij(ni,:)) 
       end do
       mgc%pmat(ni,:,:) = 1d0/(1d0+mm)
     end do
   end if
 
-
-  if (chain==1.and.mgc%n>1) then
-
-    write(*,*) 'degrade inv noise cov'
-    do c = 2, mgc%n
-      do mi = 1, mn
-        !store noise covariance
-        if (mgc%nside(1,mi)==mgc%nside(mgc%n,mi)) then
-          mgc%cv(c,mi)%nij = mgc%cv(1,mi)%nij
-        else
-          do ni = 1, n
-            call udgrade_ring_1d_d(mgc%cv(1,mi)%nij(ni,:),mgc%nside(1,mi),mgc%cv(c,mi)%nij(ni,:),mgc%nside(c,mi))
-          end do
-        end if
-      end do
-    end do
-
-    write(*,*) 'compute inverse matrix'
-    call coarse_invmatrix(n,mn,mgc%lmax(mgc%n),clh(:,:,0:mgc%lmax(mgc%n),0:mgc%lmax(mgc%n)),mgc)
-    write(*,*) 'finish to compute inverse matrix'
-
-  end if
-
   !initial value (this is the solution if MA=I)
-  call precondition(n,mn,lmax,clh,b,x,mgc,chain)
+  call precondition(n,lmax,b,x,mgc,chain)
 
   !residual
-  call matmul_lhs(n,mn,mgc%npix(chain,:),lmax,clh,mgc%cv(chain,:),x,r)
+  call matmul_lhs(n,mgc%mnmax(chain),mgc%npix(chain,:),lmax,mgc%cv(chain,:),x,r)
   r = b - r
   if (chain==1)  write(*,*) 'initial residual', dsqrt(sum(abs(r)**2)), '|b|^2', dsqrt(sum(abs(b)**2))
+  !if (chain==1)  stop
 
   !set other values
-  call precondition(n,mn,lmax,clh,r,z,mgc,chain)
+  call precondition(n,lmax,r,z,mgc,chain)
   p = z
 
   !initial distance
@@ -295,16 +282,16 @@ subroutine cg_algorithm(n,mn,lmax,clh,b,x,mgc,chain,ratio)
 
   do i = 1, mgc%itn(chain)
 
-    call matmul_lhs(n,mn,mgc%npix(chain,:),lmax,clh,mgc%cv(chain,:),p,Ap)
+    call matmul_lhs(n,mgc%mnmax(chain),mgc%npix(chain,:),lmax,mgc%cv(chain,:),p,Ap)
     alpha = d/sum(conjg(p)*Ap)
     x = x + alpha*p
     r = r - alpha*Ap
 
     absr = dsqrt(sum(abs(r)**2))
-    if (chain==1.and.i-int(dble(i)/dble(ro))*ro==0)  write(*,*) i, absr/absb, d/d0
+    if (chain==1.and.mod(i,mgc%ro)==0)  write(*,*) i, absr/absb, d/d0
     if (chain==1.and.present(ratio))  ratio(i) = absr/absb
 
-    call precondition(n,mn,lmax,clh,r,z,mgc,chain)
+    call precondition(n,lmax,r,z,mgc,chain)
     td = sum(conjg(r)*z)
     p  = z + (td/d)*p
     d  = td
@@ -321,12 +308,12 @@ subroutine cg_algorithm(n,mn,lmax,clh,b,x,mgc,chain,ratio)
 end subroutine cg_algorithm
 
 
-subroutine precondition(n,mn,lmax,clh,r,x,mgc,chain)
+subroutine precondition(n,lmax,r,x,mgc,chain)
   implicit none
   !I/O
   type(mg_chain), intent(inout) :: mgc
-  integer, intent(in) :: n, mn, lmax, chain
-  double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
+  integer, intent(in) :: n, lmax, chain
+  !double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: r
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
   ! internal
@@ -342,7 +329,7 @@ subroutine precondition(n,mn,lmax,clh,r,x,mgc,chain)
     if (chain+1==mgc%n) then ! multiply dense matrix at the coarsest gird
       call densemat_multi(n,lmax0,mgc%matn,r(:,0:lmax0,0:lmax0),mgc%imat,x(:,0:lmax0,0:lmax0))
     else
-      call cg_algorithm(n,mn,lmax0,clh(:,:,0:lmax0,0:lmax0),r(:,0:lmax0,0:lmax0),x(:,0:lmax0,0:lmax0),mgc,chain+1) 
+      call cg_algorithm(n,lmax0,r(:,0:lmax0,0:lmax0),x(:,0:lmax0,0:lmax0),mgc,chain+1) 
     end if
     if (lmax0+1<=mgc%lmax(chain))  x(:,lmax0+1:lmax,:) = mgc%pmat(:,lmax0+1:lmax,:)*r(:,lmax0+1:lmax,:)
   end if
@@ -371,22 +358,23 @@ subroutine matmul_rhs(n,mn,npix,lmax,clh,cv,v)
 end subroutine matmul_rhs
 
 
-subroutine matmul_lhs(n,mn,npix,lmax,clh,cv,x,v)
+subroutine matmul_lhs(n,mn,npix2,lmax,cv,x,v)
   implicit none
   !I/O
   type(mg_covmat), intent(in) :: cv(mn)
-  integer, intent(in) :: n, mn, npix(mn), lmax
-  double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
+  integer, intent(in) :: n, mn, npix2(mn), lmax
+  !double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: x
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
   !internal
-  integer :: mi
+  integer :: mi, npix
   double complex :: alm(n,0:lmax,0:lmax)
 
   !make 1+C^{1/2}N^{-1}C^{1/2}
   v = x
   do mi = 1, mn
-    call matmul_cninv(n,npix(mi),lmax,clh(:,mi,:,:),cv(mi)%nij,x,alm)
+    npix = size(cv(mi)%nij,dim=2)
+    call matmul_cninv(n,npix,lmax,cv(mi)%clh,cv(mi)%nij,x,alm)
     v = v + alm
   end do
 
