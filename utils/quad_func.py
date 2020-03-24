@@ -127,15 +127,19 @@ class quad:
         self.f = f
 
 
-    def diagcinv(self,ocl):
+    def cinvfilter(self,ocl=None):
 
         for m in ['T','E','B']:
-            self.Fl[m] = np.zeros((self.rlmax+1,self.rlmax+1))
+            self.Fl[m] = np.zeros(self.rlmax+1)
 
-        for l in range(self.rlmin,self.rlmax+1):
-            self.Fl['T'][l,0:l+1] = 1./ocl[0,l]
-            self.Fl['E'][l,0:l+1] = 1./ocl[1,l]
-            self.Fl['B'][l,0:l+1] = 1./ocl[2,l]
+        if ocl is None:
+            for m in ['T','E','B']:
+                self.Fl[m][self.rlmin:self.rlmax+1] = 1.
+        else:
+            for l in range(self.rlmin,self.rlmax+1):
+                self.Fl['T'][l] = 1./ocl[0,l]
+                self.Fl['E'][l] = 1./ocl[1,l]
+                self.Fl['B'][l] = 1./ocl[2,l]
 
 
     # compute normalization
@@ -209,7 +213,7 @@ class quad:
         return Ag, Ac, Wg, Wc
 
 
-    def qrec(self,snmin,snmax,falm,lcl,qout=None,diagcinv=True,overwrite=True):
+    def qrec(self,snmin,snmax,falm,lcl,qout=None,overwrite=True):
         '''
         Return quadratic estimators
         '''
@@ -235,14 +239,9 @@ class quad:
                     print('File exist:',qout.f[q].alm[i])
                     continue
 
-                if diagcinv:
-                    if 'T' in q:  Talm = self.Fl['T'] * pickle.load(open(falm['T'][i],"rb"))[:rlmax+1,:rlmax+1]
-                    if 'E' in q:  Ealm = self.Fl['E'] * pickle.load(open(falm['E'][i],"rb"))[:rlmax+1,:rlmax+1]
-                    if 'B' in q:  Balm = self.Fl['B'] * pickle.load(open(falm['B'][i],"rb"))[:rlmax+1,:rlmax+1]
-                else:
-                    if 'T' in q:  Talm = pickle.load(open(falm['T'][i],"rb"))[:rlmax+1,:rlmax+1]
-                    if 'E' in q:  Ealm = pickle.load(open(falm['E'][i],"rb"))[:rlmax+1,:rlmax+1]
-                    if 'B' in q:  Balm = pickle.load(open(falm['B'][i],"rb"))[:rlmax+1,:rlmax+1]
+                if 'T' in q:  Talm = self.Fl['T'][:,None] * pickle.load(open(falm['T'][i],"rb"))[:rlmax+1,:rlmax+1]
+                if 'E' in q:  Ealm = self.Fl['E'][:,None] * pickle.load(open(falm['E'][i],"rb"))[:rlmax+1,:rlmax+1]
+                if 'B' in q:  Balm = self.Fl['B'][:,None] * pickle.load(open(falm['B'][i],"rb"))[:rlmax+1,:rlmax+1]
 
                 if qtype=='lens':
                     if q=='TT':  glm, clm = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],Talm,Talm,gtype='k',nside=nside)
@@ -315,14 +314,15 @@ class quad:
                 else:
                     q1, q2 = q[0], q[1]
                     print(q1,q2)
-                    alm1 = self.Fl[q1] * pickle.load(open(falm[q1][id0],"rb"))[:rlmax+1,:rlmax+1]
-                    alm2 = self.Fl[q1] * pickle.load(open(falm[q1][id1],"rb"))[:rlmax+1,:rlmax+1]
+                    alm1 = self.Fl[q1][:,None] * pickle.load(open(falm[q1][id0],"rb"))[:rlmax+1,:rlmax+1]
+                    alm2 = self.Fl[q1][:,None] * pickle.load(open(falm[q1][id1],"rb"))[:rlmax+1,:rlmax+1]
+
                     if q1 == q2:
                         blm1 = alm1
                         blm2 = alm2
                     else:
-                        blm1 = self.Fl[q2] * pickle.load(open(falm[q2][id0],"rb"))[:rlmax+1,:rlmax+1]
-                        blm2 = self.Fl[q2] * pickle.load(open(falm[q2][id1],"rb"))[:rlmax+1,:rlmax+1]
+                        blm1 = self.Fl[q2][:,None] * pickle.load(open(falm[q2][id0],"rb"))[:rlmax+1,:rlmax+1]
+                        blm2 = self.Fl[q2][:,None] * pickle.load(open(falm[q2][id1],"rb"))[:rlmax+1,:rlmax+1]
                     glm, clm = qXY(qtype,q,Lmax,rlmin,rlmax,nside,lcl,alm1,alm2,blm1,blm2)
 
                 glm *= Ag[q][:,None]
@@ -419,7 +419,7 @@ class quad:
             # load alm
             almr = {}
             for cmb in self.mtype:
-                almr[cmb] = self.Fl[cmb]*pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
+                almr[cmb] = self.Fl[cmb][:,None]*pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
 
 
             # loop for I
@@ -430,7 +430,7 @@ class quad:
                 # load alm
                 alms = {}
                 for cmb in self.mtype:
-                    alms[cmb] = self.Fl[cmb]*pickle.load(open(falms[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
+                    alms[cmb] = self.Fl[cmb][:,None]*pickle.load(open(falms[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
 
                 for q in qlist:
 
@@ -630,14 +630,14 @@ def n0x(qx,qd0,qd1,falm,fblm,w4,lcl):
             else:
                 q1, q2 = q[0], q[1]
                 print(q1,q2)
-                alm1 = qd0.Fl[q1] * pickle.load(open(falm[q1][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
-                alm2 = qd1.Fl[q1] * pickle.load(open(fblm[q1][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
+                alm1 = qd0.Fl[q1][:,None] * pickle.load(open(falm[q1][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
+                alm2 = qd1.Fl[q1][:,None] * pickle.load(open(fblm[q1][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
                 if q1 == q2:
                     blm1 = alm1
                     blm2 = alm2
                 else:
-                    blm1 = qd0.Fl[q2] * pickle.load(open(falm[q2][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
-                    blm2 = qd1.Fl[q2] * pickle.load(open(fblm[q2][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
+                    blm1 = qd0.Fl[q2][:,None] * pickle.load(open(falm[q2][2*i+1],"rb"))[:rlmax+1,:rlmax+1]
+                    blm2 = qd1.Fl[q2][:,None] * pickle.load(open(fblm[q2][2*i+2],"rb"))[:rlmax+1,:rlmax+1]
                 glm, clm = qXY(qtype,q,Lmax,rlmin,rlmax,nside,lcl,alm1,alm2,blm1,blm2)
 
             cl[q][0,:] += Ag0[q]*Ag1[q]*curvedsky.utils.alm2cl(Lmax,glm)/(2*w4*qx.snn0)
@@ -691,8 +691,8 @@ def rdn0x(qx,qd0,qd1,snmin,snmax,falm,fblm,w4,lcl):
         almr = {}
         blmr = {}
         for cmb in qx.mtype:
-            almr[cmb] = qd0.Fl[cmb]*pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
-            blmr[cmb] = qd1.Fl[cmb]*pickle.load(open(fblm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
+            almr[cmb] = qd0.Fl[cmb][:,None]*pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
+            blmr[cmb] = qd1.Fl[cmb][:,None]*pickle.load(open(fblm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
 
         # loop for I
         for I in range(1,qx.snrd+1):
@@ -703,8 +703,8 @@ def rdn0x(qx,qd0,qd1,snmin,snmax,falm,fblm,w4,lcl):
             alms = {}
             blms = {}
             for cmb in qx.mtype:
-                alms[cmb] = qd0.Fl[cmb]*pickle.load(open(falm[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
-                blms[cmb] = qd1.Fl[cmb]*pickle.load(open(fblm[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
+                alms[cmb] = qd0.Fl[cmb][:,None]*pickle.load(open(falm[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
+                blms[cmb] = qd1.Fl[cmb][:,None]*pickle.load(open(fblm[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
 
             for q in qlist:
 
