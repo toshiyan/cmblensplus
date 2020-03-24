@@ -9,21 +9,23 @@ module utils
   use pix_tools, only: pix2ang_ring, ang2pix_ring, convert_ring2nest, convert_nest2ring
   use mask_tools, only: fill_holes_nest, dist2holes_nest
   !from F90/src_utils
-  use random,    only: InitRandom, Gaussian1
+  use random,    only: InitRandom, poisson, gaussian1
   use constants, only: pi, iu
   use general,   only: str
   use pstool,    only: binned_ells, power_binning
+  use utilsgal,  only: nz_SF_scal, pz_SF_scal, gbias
   implicit none
 
   private alm2map, alm2map_spin, map2alm, map2alm_spin, alm2map_der
   private input_map, output_map
   private pix2ang_ring, ang2pix_ring
-  private initrandom, gaussian1
+  private initrandom, gaussian1, poisson
   private pi, iu
   private str
   private binned_ells, power_binning
   private fill_holes_nest, dist2holes_nest
   private convert_ring2nest, convert_nest2ring
+  private nz_SF_scal, pz_SF_scal, gbias
 
 contains
 
@@ -851,6 +853,118 @@ subroutine cosin_healpix(npix,lmax,cosin)
 end subroutine cosin_healpix
 
 
+subroutine load_defangle_takahashi(fname,npix,theta,phi,verbose)
+  implicit none
+  character(*), intent(in) :: fname
+  integer, intent(in) :: npix
+  logical, intent(in) :: verbose
+  double precision, intent(out), dimension(0:npix-1) :: theta, phi
+  !opt4py :: verbose = False
+  !internal
+  integer :: nside, rnpix, n
+
+  if (verbose) write(*,*) 'read deflection map'
+  
+  open(12,file=fname,status='old',form='unformatted')
+  read(12) nside, rnpix
+  
+  if (verbose) write(*,*) nside, rnpix
+  if (npix/=rnpix) stop 'input npix is inconsistent with data file'
+
+  if (verbose) write(*,*) 'read data'
+  
+  read(12) (theta(n),n=0,npix-1)
+  read(12) (phi(n),n=0,npix-1)
+  
+  close(12)
+
+end subroutine load_defangle_takahashi
+
+
+subroutine polcoord2angle(npix,theta,phi,angle,verbose)
+  implicit none
+  integer, intent(in) :: npix
+  logical, intent(in) :: verbose
+  double precision, intent(in), dimension(:) :: theta, phi
+  double precision, intent(out), dimension(0:npix-1,2) :: angle
+  !opt4py :: verbose = False
+  !internal
+  integer :: nside, n
+  double precision :: theta0, phi0, deltaphi, cosalp, sinalp, alpha, cosdelta, sindelta
+  double precision, dimension(0:npix-1) :: theta_i, phi_i
+
+  if (verbose) write(*,*) 'nside', nside
+  if (verbose) write(*,*) 'size:', size(theta), size(phi)
+  nside = int(dsqrt(npix/12d0))
+
+  !healpix location
+  if (verbose) write(*,*) 'obtain image plane theta/phi'
+  do n = 0, npix-1
+      call pix2ang_ring(nside,n,theta0,phi0)
+      theta_i(n) = theta0
+      phi_i(n)   = phi0
+  end do
+
+  if (verbose) write(*,*) 'theta/phi to angle'
+  do n = 0, npix-1
+      deltaphi = phi(n) - phi_i(n)
+      cosalp   = dcos(theta_i(n))*dcos(theta(n)) + dsin(theta_i(n))*dsin(theta(n))*dcos(deltaphi)
+      if (cosalp.gt.1d0) then
+          alpha = 0d0
+      else
+          alpha = dacos(cosalp)
+      end if
+      sinalp = dsin(alpha)
+      if (sinalp.eq.0d0) then
+          angle(n,1) = 0d0
+          angle(n,2) = 0d0
+      else
+          cosdelta = (dcos(theta(n))-dcos(theta_i(n))*cosalp)/(dsin(theta_i(n))*sinalp)
+          sindelta = dsin(deltaphi)*dsin(theta(n))/sinalp
+          angle(n,1) = -alpha*cosdelta
+          angle(n,2) = alpha*sindelta
+      end if
+  end do
+
+end subroutine polcoord2angle
+
+
+subroutine polcoord2angle_alm(nside,lmax,theta,phi,glm,clm,verbose)
+  implicit none
+  logical, intent(in) :: verbose
+  integer, intent(in) :: nside, lmax
+  double precision, intent(in), dimension(:) :: theta, phi
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
+  !opt4py :: verbose = False
+  !internal
+  integer :: npix, l
+  double precision, dimension(0:12*nside**2-1,2) :: angle
+  double complex, dimension(2,0:lmax,0:lmax) :: dlm
+
+  npix = 12*nside**2
+
+  if (verbose) then
+    if (size(theta)/=npix) stop 'size of theta is not npix'
+    if (size(phi)/=npix)   stop 'size of phi is not npix'
+  end if
+
+  if (verbose) write(*,*) 'convert to angle'
+  call polcoord2angle(npix,theta,phi,angle,verbose)
+
+  if (verbose) write(*,*) 'deflection angle to its alms'
+  call map2alm_spin(nside,lmax,lmax,1,angle,dlm)
+
+  if (verbose) write(*,*) 'convert to glm and clm'
+  glm = 0d0
+  clm = 0d0
+  do l = 1, lmax
+      glm(l,0:l) = dlm(1,l,0:l)/dsqrt(dble(l**2+l))
+      clm(l,0:l) = dlm(2,l,0:l)/dsqrt(dble(l**2+l))
+  end do
+
+end subroutine polcoord2angle_alm
+
+
 subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
 !*  Compute 2D Minkowski functionals
 !*
@@ -920,8 +1034,80 @@ subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
 end subroutine calc_mfs
 
 
+subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,z0,sz,zbias,gmap)
+  implicit none
+  character(*), intent(in) :: fname, btype
+  integer, intent(in) :: zn
+  double precision, intent(in), dimension(1:zn) :: ngz
+  double precision, intent(in), dimension(1:zn+1) :: zi
+  double precision, intent(in) :: b0, a, b, z0, sz, zbias
+  double precision, intent(out), dimension(0:201326591,zn) :: gmap
+  !opt4py :: a = 2.0
+  !opt4py :: b = 1.0
+  !opt4py :: z0 = 1.0
+  !opt4py :: sz = 0.0
+  !opt4py :: zbias = 0.0
+  !opt4py :: b0 = 1.0
+  !opt4py :: btype = 'sqrtz'
+  integer :: npix, nside, kplane, ngal
+  integer :: ipix, i, j, k
+  real(4) :: zk
+  real(4), allocatable :: deltam(:)
+  double precision :: z(42), dn(42), omegam, norm, mu, mu_mean
+ 
+  ! simulation parameters
+  nside  = 4096
+  npix   = 12*nside**2
+  omegam = 0.279d0
+
+  dn     = 0d0
+  gmap   = 0d0
+
+  do j = 1, zn
+
+      write(*,*) 'zi =', j
+
+      ! normalization
+      open(12,file=fname,status='old',form='unformatted')
+      do k = 1, 42
+        read(12) kplane, zk !index of lens plane and redshift
+        z(k)  = zk
+        if (z(k)<6d0) dn(k) = 5.004d-2*dsqrt(omegam*(1d0+z(k))**3+(1d0-omegam))*nz_SF_scal(z(k),a,b,z0)*pz_SF_scal(z(k),zi(j:j+1),sz,zbias)
+      end do
+      norm = ngz(j)/sum(dn)
+
+      allocate(deltam(0:npix-1))
+
+      do k = 1, 42
+
+        write(*,*) k
+        read(12) kplane
+        read(12) deltam(0:npix-1) ! delta^m at the lens plane
+
+        if (z(k)>=6d0) cycle
+
+        mu_mean = norm*dn(k)/dble(npix) ! mean number density of galaxies at kth plane
+
+        do ipix = 0, npix-1
+          mu = mu_mean * ( 1d0 + b0*gbias(z(k),btype)*deltam(ipix) )
+          if (mu>0.) then
+            call poisson(mu,ngal)
+          else
+            ngal = 0
+          end if
+          gmap(ipix,j) = gmap(ipix,j) + real(ngal)
+        end do
+
+      end do
+
+      close(12)
+
+      deallocate(deltam)
+
+  end do
+
+end subroutine mock_galaxy_takahashi
+
 
 end module utils
-
-
 
