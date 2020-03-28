@@ -10,6 +10,26 @@ module random
 
 contains
 
+
+subroutine poisson(mu,f)
+! generate random number along with the Poisson distribution
+  implicit none
+  double precision, intent(in) :: mu
+  integer, intent(out) :: f
+  double precision :: p, rnd
+
+  p = mu
+  f = -1
+  do while (p.ge.0d0)
+    call random_number(rnd)
+    if (rnd.le.0d0)  call random_number(rnd)
+    p = p + dlog(rnd)
+    f = f + 1 
+  end do
+
+end subroutine poisson
+
+
 subroutine initRandom(i,i2)
   implicit none
   integer, optional, intent(IN) :: i
@@ -239,25 +259,6 @@ double precision function RANMAR()
   RANMAR = UNI
       
 end function RANMAR
-
-
-function random_poisson(mu)  result(f)
-! generate random number along with the Poisson distribution
-  implicit none
-  double precision, intent(in) :: mu
-  integer :: f
-  double precision :: p, rnd
-
-  p = mu
-  f = -1
-  do while (p.ge.0d0)
-    call random_number(rnd)
-    if(rnd.le.0.d0) call random_number(rnd)
-    p = p + log(rnd)
-    f = f + 1 
-  end do
-
-end function random_poisson
 
 
 end module random

@@ -50,9 +50,7 @@ subroutine alxy_flat_integ(q,qtype,eL,rL,Alg,Alc,fC,W1,W2,AA,BB,AB,gln,gle,lxcut
     do L1 = rL(1), rL(2)
 
       !integral of angle
-      allocate(intg(GL%n),intc(GL%n))
-      intg = 0d0
-      intc = 0d0
+      allocate(intg(GL%n),intc(GL%n)); intg=0d0; intc=0d0
 
       do i = 1, GL%n
 
@@ -93,6 +91,102 @@ subroutine alxy_flat_integ(q,qtype,eL,rL,Alg,Alc,fC,W1,W2,AA,BB,AB,gln,gle,lxcut
   call gl_finalize(GL)
 
 end subroutine alxy_flat_integ
+
+
+subroutine n1xy_flat_integ(q,eL,rL,N1,fC,W1,W2,Clpp,gln,gle)
+! integrating fXY*gXY fZW*gZW
+  implicit none
+  !I/O
+  character(*), intent(in) :: q
+  integer, intent(in) :: el(2), rL(2)
+  integer, intent(in), optional :: gln
+  double precision, intent(in) :: fC(:), W1(:), W2(:), Clpp(:)
+  double precision, intent(in), optional :: gle
+  double precision, intent(out) :: N1(:)
+  !internal
+  type(gauss_legendre_params) :: GL
+  integer :: l, L1, L2, i, j, n, L1p, L2p, LL
+  double precision :: eps, phi2, phi2p, gTT, gTTp, fTT, fTTp
+  double precision, dimension(:), allocatable :: phi
+
+  !prepare GL quadrature
+  n   = rL(2)
+  eps = 1d-14
+  if (present(gln)) n = gln
+  if (present(gle)) eps = gle
+  call gl_initialize(GL,n,eps)
+
+  allocate(phi(GL%n));  phi=0d0
+  phi = pi + pi*GL%z
+
+  !calculate normalization
+  N1 = 0d0
+  do l = eL(1), eL(2) ! for lensing multipoles
+    !integral of ell1
+    do L1 = rL(1), rL(2)
+      !integral of ell1 angle
+      do i = 1, GL%n
+        !L2 = l - L1
+        L2 = int(dsqrt(dble(l)**2+dble(L1)**2-2*l*L1*dcos(phi(i))))
+        phi2 = atan(L1*l*dsin(phi(i)+pi)/(l**2-L1*l*dcos(phi(i))))
+        if (rL(1)>L2.or.L2>rL(2)) cycle !outside of reconstruction multipole range
+
+        !integral of ellp
+        do L1p = rL(1), rL(2)
+          !integral of ellp angle
+          do j = 1, GL%n
+            !L2p = l - L1p
+            L2p = int(dsqrt(dble(l)**2+dble(L1p)**2-2*l*L1p*dcos(phi(j))))
+            phi2p = atan(L1p*l*dsin(phi(j)+pi)/(l**2-L1p*l*dcos(phi(j))))
+            if (rL(1)>L2p.or.L2p>rL(2)) cycle !outside of reconstruction multipole range
+
+            select case(q)
+            case ('TT')
+              call gl1l2_TT(L1,phi(i),L2,phi2,fC(L1),fC(L2),W1(L1),W2(L2),gTT)
+              call gl1l2_TT(L1p,phi(j),L2p,phi2p,fC(L1),fC(L2),W1(L1),W2(L2),gTTp)
+              call fl1l2_TT(L1,phi(i)+pi,L1p,phi(j),fC(L1),fC(L1p),fTT)
+              call fl1l2_TT(L2,phi2+pi,L2p,phi2p,fC(L2),fC(L2p),fTTp)
+            end select
+        
+            LL = int(dsqrt(dble(L1)**2+dble(L1p)**2-2*L1*L1p*dcos(phi(i)-phi(j))))
+            N1(l) = N1(l) + 2d0*dble(L1)*dble(L1p)*GL%w(i)/(4*pi)*GL%w(j)/(4*pi) * gTT*gTTp*fTT*fTTp*Clpp(LL)
+
+          end do
+        end do
+      end do
+    end do
+  end do
+
+  deallocate(phi)
+  call gl_finalize(GL)
+
+end subroutine n1xy_flat_integ
+
+
+subroutine fl1l2_TT(l1,phi1,l2,phi2,fC1,fC2,f)
+  implicit none
+  !I/O
+  integer, intent(in) :: l1, l2
+  double precision, intent(in) :: phi1, phi2, fC1, fC2
+  double precision, intent(out) :: f
+
+  f = fC1*(l1**2+l1*l2*dcos(phi1-phi2))+fC2*(l2**2+l1*l2*dcos(phi1-phi2))
+
+end subroutine fl1l2_TT
+
+
+subroutine gl1l2_TT(l1,phi1,l2,phi2,fC1,fC2,Wl1,Wl2,g)
+  implicit none
+  !I/O
+  integer, intent(in) :: l1, l2
+  double precision, intent(in) :: phi1, phi2, fC1, fC2, Wl1, Wl2
+  double precision, intent(out) :: g
+  double precision :: f
+
+  call fl1l2_TT(l1,phi1,l2,phi2,fC1,fC2,f)
+  g = f*Wl1*Wl2
+
+end subroutine gl1l2_TT
 
 
 subroutine KTT(rL,l,L1,phi,fC1,fC2,W1,W2,Kg,Kc,qtype)
