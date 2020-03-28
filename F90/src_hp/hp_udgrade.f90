@@ -41,6 +41,7 @@ contains
 
 
 subroutine sub_udgrade_nest(map_in, nside_in, map_out, nside_out, fmissval, pessimistic)
+  implicit none
     !=======================================================================
     !
     !     SUB_UDGRADE_NEST(map_in, nside_in, map_out, nside_out)
@@ -139,14 +140,18 @@ end subroutine sub_udgrade_nest
 
 
 subroutine udgrade_ring_1d_d(map_in, nside_in, map_out, nside_out, fmissval, pessimistic)
-    integer, INTENT(IN) :: nside_in, nside_out
-    double precision, INTENT(IN), dimension(0:), target :: map_in
-    double precision, INTENT(OUT), dimension(0:),   target :: map_out
-    double precision, INTENT(IN), OPTIONAL :: fmissval
-    logical , INTENT(IN), OPTIONAL :: pessimistic
-    INTEGER(I8B) :: npix_in, npix_out
-    double precision :: map_tmp(0:12*nside_in**2-1)
+  implicit none
+  integer, INTENT(IN) :: nside_in, nside_out
+  double precision, INTENT(IN), dimension(0:), target :: map_in
+  double precision, INTENT(OUT), dimension(0:),   target :: map_out
+  double precision, INTENT(IN), OPTIONAL :: fmissval
+  logical , INTENT(IN), OPTIONAL :: pessimistic
+  INTEGER(I8B) :: npix_in, npix_out
+  double precision :: map_tmp(0:12*nside_in**2-1)
 
+  if (nside_in==nside_out) then
+    map_out = map_in
+  else
     map_tmp = map_in
     !     checks that the 2 nside are valid
     npix_out = nside2npix(nside_out)
@@ -159,15 +164,16 @@ subroutine udgrade_ring_1d_d(map_in, nside_in, map_out, nside_out, fmissval, pes
        print*,"wrong nside_in  in udgrade_ring : ", nside_in
        call fatal_error
     endif
-
     call convert_ring2nest(nside_in, map_tmp)
     call sub_udgrade_nest(map_tmp, nside_in, map_out, nside_out, fmissval, pessimistic)
     call convert_nest2ring(nside_out, map_out)
+  end if
 
 end subroutine udgrade_ring_1d_d
 
 
 subroutine udgrade_ring_nd_d(map_in, nside_in, map_out, nside_out, fmissval, pessimistic)
+  implicit none
     !=======================================================================
     !    N dim implementation
     !=======================================================================
@@ -238,6 +244,7 @@ subroutine udgrade_ring_nd_d(map_in, nside_in, map_out, nside_out, fmissval, pes
   !     version 2.0 : Dec 2004-March 2005: SP/DP and 1D/ND overload
   !=======================================================================
   subroutine udgrade_nest_1d_d(map_in, nside_in, map_out, nside_out, fmissval, pessimistic)
+  implicit none
     !=======================================================================
     !  1 dim. implementation
     !=======================================================================
@@ -268,6 +275,7 @@ subroutine udgrade_ring_nd_d(map_in, nside_in, map_out, nside_out, fmissval, pes
   end subroutine udgrade_nest_1d_d
   !=======================================================================
   subroutine udgrade_nest_nd_d(map_in, nside_in, map_out, nside_out, fmissval, pessimistic)
+  implicit none
     !=======================================================================
     !  N dim. implementation
     !=======================================================================
