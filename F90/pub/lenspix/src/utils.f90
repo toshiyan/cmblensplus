@@ -2555,7 +2555,7 @@ END MODULE ziggurat
 
   
 
-module Random
+module Random_lenspix
  integer :: rand_inst = 0 
  logical, parameter :: use_ziggurat = .false.
   !Ziggurat is significantly (3-4x) faster, see Wikipedia for details
@@ -2873,7 +2873,7 @@ contains
       end function RANMAR
 
 
-end module Random
+end module Random_lenspix
 
 
  
