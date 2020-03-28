@@ -5,6 +5,7 @@ import os
 import numpy as np
 import basic
 import curvedsky
+import misctools
 
 if sys.version_info[:3] > (3,0):
     import pickle
@@ -143,7 +144,7 @@ class quad:
 
 
     # compute normalization
-    def al(self,lcl,ocl,output=True,overwrite=False):
+    def al(self,lcl,ocl,output=True,verbose=True,overwrite=False):
         '''
         Return normalization of the quadratic estimators
         '''
@@ -163,10 +164,7 @@ class quad:
         Acs = {}
         for q in qlist:
 
-            if not overwrite and os.path.exists(self.f[q].al): 
-                print('File exist:',self.f[q].al)
-                return
-
+            if misctools.check_path(self.f[q].al,overwrite=overwrite,verbose=verbose): continue
 
             if qtype=='lens':
                 if q=='TT': Ag, Ac = curvedsky.norm_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype='k')
@@ -205,39 +203,43 @@ class quad:
 
         Ag, Ac, Wg, Wc = {}, {}, {}, {}
 
+        # load normalization
         for q in self.qlist:
             Ag[q], Ac[q] = np.loadtxt(self.f[q].al,unpack=True,usecols=(1,2))
+
+        # load optimal weights
         if 'MV' in self.qlist and self.qtype=='lens':
             for qi, qq in enumerate(['TT','TE','EE','TB','EB']):  Wg[qq], Wc[qq] = np.loadtxt(self.f[qq].wl,unpack=True,usecols=(1,2))
 
         return Ag, Ac, Wg, Wc
 
 
-    def qrec(self,snmin,snmax,falm,lcl,qout=None,overwrite=True):
+    def qrec(self,snmin,snmax,falm,LCl,qout=None,overwrite=False,verbose=True):
         '''
         Return quadratic estimators
         '''
-        lcl = lcl[:,:self.rlmax+1]
+        lcl = LCl[:,:self.rlmax+1]
         Lmax  = self.oLmax
         rlmin = self.rlmin
         rlmax = self.rlmax
         nside = self.nside
         qtype = self.qtype
         if qout==None:  qout = self
+        rlz   = np.linspace(snmin,snmax,snmax-snmin+1,dtype=np.int)
 
         # load normalization and weights
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
         # loop for realizations
-        for i in range(snmin,snmax+1):
-            print(i)
+        for i in rlz:
+            
             gmv, cmv = 0., 0.
 
             for q in self.qlist:
 
-                if not overwrite and os.path.exists(qout.f[q].alm[i]): 
-                    print('File exist:',qout.f[q].alm[i])
-                    continue
+                if misctools.check_path(qout.f[q].alm[i],overwrite=overwrite,verbose=verbose): continue
+
+                if verbose:  misctools.progress(i,rlz,addtext='(qrec, '+q+')')
 
                 if 'T' in q:  Talm = self.Fl['T'][:,None] * pickle.load(open(falm['T'][i],"rb"))[:rlmax+1,:rlmax+1]
                 if 'E' in q:  Ealm = self.Fl['E'][:,None] * pickle.load(open(falm['E'][i],"rb"))[:rlmax+1,:rlmax+1]
@@ -271,21 +273,19 @@ class quad:
                     cmv += Wc[q][:,None]*clm
 
 
-    def n0(self,falm,w4,lcl,overwrite=True):
+    def n0(self,falm,w4,LCl,overwrite=False,verbose=True):
         '''
         The N0 bias calculation
         '''
 
         for q in self.qlist:
-            if not overwrite and os.path.exists(self.f[q].n0bs): 
-                print('File exist:',self.f[q].n0bs)
-                return
+            if misctools.check_path(self.f[q].n0bs,overwrite=overwrite,verbose=verbose): return
 
         # load normalization and weights
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
         # maximum multipole of output
-        lcl = lcl[:,:self.rlmax+1]
+        lcl = LCl[:,:self.rlmax+1]
         Lmax  = self.oLmax
         rlmin = self.rlmin
         rlmax = self.rlmax
@@ -293,6 +293,7 @@ class quad:
         qlist = self.qlist
         qtype = self.qtype
         oL = np.linspace(0,Lmax,Lmax+1)
+        rlz   = np.linspace(self.n0min,self.n0max,self.n0max-self.n0min+1,dtype=np.int)
 
         # power spectrum
         cl ={}
@@ -300,20 +301,22 @@ class quad:
             cl[q] = np.zeros((2,Lmax+1))
 
         # loop for realizations
-        for i in range(self.n0min,self.n0max+1):
+        for i in rlz:
+
             id0 = 2*i-1
             id1 = 2*i
-            print (id0, id1)
 
             gmv, cmv = 0., 0.
 
             for q in qlist:
 
+                if verbose:  misctools.progress(i,rlz,addtext='(n0 bias, '+q+')')
+
                 if q == 'MV':
                     glm, clm = gmv, cmv
                 else:
                     q1, q2 = q[0], q[1]
-                    print(q1,q2)
+                    if verbose:  print(q1,q2)
                     alm1 = self.Fl[q1][:,None] * pickle.load(open(falm[q1][id0],"rb"))[:rlmax+1,:rlmax+1]
                     alm2 = self.Fl[q1][:,None] * pickle.load(open(falm[q1][id1],"rb"))[:rlmax+1,:rlmax+1]
 
@@ -338,27 +341,32 @@ class quad:
 
         for q in qlist:
             if self.n0sim > 0:
-                print ('save N0 data')
+                if verbose:  print ('save N0 data')
                 np.savetxt(self.f[q].n0bs,np.concatenate((oL[None,:],cl[q])).T)
 
 
-    def diagrdn0(self,snmax,lcl,ocl,frcl):
+    def diagrdn0(self,snmax,lcl,ocl,frcl,verbose=True):
         
         oL = np.linspace(0,self.oLmax,self.oLmax+1)
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
         for i in range(snmax+1):
-            print ('Diag-RDN0',i)
+
+            if verbose:  print ('Diag-RDN0',i)
+
             rcl = np.loadtxt(frcl[i],unpack=True,usecols=(1,2,3,4))
             rcl[np.where(rcl==0)] = 1e30 # a large number
+
             # data x data
             cl = ocl**2/rcl
             Ags0, Acs0 = quad.al(self,lcl,cl,output=False)
+
             # (data-sim) x (data-sim)
             cl = ocl**2/(ocl-rcl)
             Ags1, Acs1 = quad.al(self,lcl,cl,output=False)
 
             for q in self.qlist:
+
                 Ags0[q][np.where(Ags0[q]==0)] = 1e30
                 Ags1[q][np.where(Ags1[q]==0)] = 1e30
                 Acs0[q][np.where(Acs0[q]==0)] = 1e30
@@ -368,7 +376,7 @@ class quad:
                 np.savetxt(self.f[q].drdn0[i],np.array((oL,n0g,n0c)).T)
 
 
-    def rdn0(self,snmin,snmax,falm,w4,lcl,qout=None,overwrite=True,falms=None):
+    def rdn0(self,snmin,snmax,falm,w4,LCl,qout=None,overwrite=False,falms=None,verbose=True):
         '''
         The sim-data-mixed term of the RDN0 bias calculation
         '''
@@ -377,7 +385,7 @@ class quad:
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
         # maximum multipole of output
-        lcl = lcl[:,:self.rlmax+1]
+        lcl = LCl[:,:self.rlmax+1]
         Lmax  = self.oLmax
         rlmin = self.rlmin
         rlmax = self.rlmax
@@ -387,6 +395,7 @@ class quad:
         oL = np.linspace(0,Lmax,Lmax+1)
         if falms is None: falms = falm
         if qout is None:  qout = self
+        rlz   = np.linspace(snmin,snmax,snmax-snmin+1,dtype=np.int)
 
         # load N0
         N0 = {}
@@ -394,20 +403,18 @@ class quad:
             N0[q] = np.loadtxt(self.f[q].n0bs,unpack=True,usecols=(1,2))
 
         # compute RDN0
-        for i in range(snmin,snmax+1):
+        for i in rlz:
 
             # skip sim
             if not self.rd4sim and i!=0: 
                 continue
 
-            print(i)
+            if verbose:  misctools.progress(i,rlz,addtext='(rdn0 bias)')
 
             # avoid overwriting
             Qlist = []
             for q in qlist:
-                if not overwrite and os.path.exists(qout.f[q].rdn0[i]):
-                    print('File exist:',qout.f[q].rdn0[i])
-                    Qlist.append(q)
+                if misctools.check_path(qout.f[q].rdn0[i],overwrite=overwrite,verbose=verbose):  Qlist.append(q)
             if Qlist != []: 
                 continue
 
@@ -437,7 +444,7 @@ class quad:
                     q1, q2 = q[0], q[1]
 
                     if I==i: continue
-                    print(I)
+                    if verbose:  print(I)
 
                     if q=='MV':
                         glm, clm = gmv, cmv
@@ -452,19 +459,22 @@ class quad:
 
                     # T+P
                     if q in self.qMV and 'MV' in qlist:
-                        gmv += Wg[q][:,None]*glm
-                        cmv += Wc[q][:,None]*clm
+                        gmv += Wg[q][:,None] * glm
+                        cmv += Wc[q][:,None] * clm
 
             if self.rdsim>0:
+                
                 sn = self.rdsim
                 if self.rdmin<=i and i<=self.rdmax:  sn = self.rdsim-1
+                
                 for q in qlist:
                     cl[q] = cl[q]/(w4*sn) - N0[q]
-                    print ('save RDN0')
+                    if verbose:  print ('save RDN0')
                     np.savetxt(qout.f[q].rdn0[i],np.concatenate((oL[None,:],cl[q])).T)
 
 
-    def mean(self,w4,overwrite=True):
+
+    def mean(self,w4,overwrite=False,verbose=True):
 
         Lmax  = self.oLmax
         rlmin = self.rlmin
@@ -473,34 +483,34 @@ class quad:
         qlist = self.qlist
         qtype = self.qtype
         oL = np.linspace(0,Lmax,Lmax+1)
+        rlz   = np.linspace(self.mfmin,self.mfmax,self.mfmax-self.mfmin+1,dtype=np.int)
 
         for q in qlist:
 
-            if not overwrite and os.path.exists(self.f[q].mf): 
-                print('File exist:',self.f[q].mf)
-                continue
+            if misctools.check_path(self.f[q].mf,overwrite=overwrite,verbose=verbose): continue
 
-            print('compute mean field')
+            if verbose:  print('compute mean field')
             mfg = 0.
             mfc = 0.
-            for I in range(self.mfmin,self.mfmax+1):
-                print(I)
+            for I in rlz:
+                if verbose:  misctools.progress(I,rlz,addtext='(mean)')
                 mfgi, mfci = pickle.load(open(self.f[q].alm[I],"rb"))
                 mfg += mfgi/self.mfsim
                 mfc += mfci/self.mfsim
 
-            print('save to file')
+            if verbose:  print('save to file')
             pickle.dump((mfg,mfc),open(self.f[q].mf,"wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
             # compute mf cls
-            print('cl')
+            if verbose:  print('cl for mean field bias')
             cl = np.zeros((2,Lmax+1))
             cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg)/w4
             cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc)/w4
             np.savetxt(self.f[q].mfcl,np.concatenate((oL[None,:],cl)).T)
 
 
-    def mean_rlz(self,snmin,snmax,w4,overwrite=True):
+
+    def mean_rlz(self,snmin,snmax,w4,overwrite=False,verbose=True):
 
         Lmax  = self.oLmax
         rlmin = self.rlmin
@@ -509,26 +519,22 @@ class quad:
         qlist = self.qlist
         qtype = self.qtype
         oL = np.linspace(0,Lmax,Lmax+1)
+        rlz   = np.linspace(snmin,snmax,snmax-snmin+1,dtype=np.int)
 
         for q in qlist:
 
-            print('load data first',q)
             glm = np.zeros((self.snmf,Lmax+1,Lmax+1),dtype=np.complex)
             clm = np.zeros((self.snmf,Lmax+1,Lmax+1),dtype=np.complex)
 
             for I in range(1,self.snmf+1):
-                print(I)
+                if verbose:  misctools.progress(I,np.linspace(1,self.snmf,self.snmf),addtext='(load reconstructed alms, '+q+')')
                 glm[I-1,:,:], clm[I-1,:,:] = pickle.load(open(self.f[q].alm[I],"rb"))
 
-            print('compute mean field')
+            for i in rlz:
 
-            for i in range(snmin,snmax):
+                if misctools.check_path(self.f[q].mfb[i],overwrite=overwrite,verbose=verbose): continue
 
-                if not overwrite and os.path.exists(self.f[q].mfb[i]): 
-                    print('File exist:',self.f[q].mfb[i])
-                    continue
-
-                print(i)
+                if verbose:  misctools.progress(i,rlz,addtext='(compute mean field for each rlz)')
                 mfg = np.average(glm,axis=0)
                 mfc = np.average(clm,axis=0)
                 if i!=0: 
@@ -537,14 +543,22 @@ class quad:
                     mfg *= self.snmf/(self.snmf-1.)
                     mfc *= self.snmf/(self.snmf-1.)
 
-                print('save to file')
+                if verbose:  print('save to file')
                 pickle.dump((mfg,mfc),open(self.f[q].mfb[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
-                # compute mf cls
-                print('cl')
+
+            # compute mf cls
+            if verbose:  print('cl for mean field bias')
+
+            for i in rlz:
+
+                if misctools.check_path(self.f[q].ml[i],overwrite=overwrite,verbose=verbose): continue
+
+                mfg, mfc = pickle.load(open(self.f[q].mfb[i],"rb"))
+
                 cl = np.zeros((2,Lmax+1))
-                cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg)/w4
-                cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc)/w4
+                cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg) / w4
+                cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc) / w4
                 np.savetxt(self.f[q].ml[i],np.concatenate((oL[None,:],cl)).T)
 
 
@@ -723,8 +737,8 @@ def rdn0x(qx,qd0,qd1,snmin,snmax,falm,fblm,w4,lcl):
 
                 # T+P
                 if q in qx.qMV and 'MV' in qlist:
-                    gmv += (Wg0[q][:,None]*Wg1[q][:,None])**0.5*glm
-                    #cmv += (Wc0[q][:,None]*Wc1[q][:,None])**0.5*clm
+                    gmv += (Wg0[q][:,None]*Wg1[q][:,None])**0.5 * glm
+                    #cmv += (Wc0[q][:,None]*Wc1[q][:,None])**0.5 * clm
 
         if qx.snrd>0:
             if i==0:  sn = qx.snrd

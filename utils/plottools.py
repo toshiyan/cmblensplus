@@ -78,7 +78,7 @@ def plot_1dstyle(spc='',frac=False,xlab='$L$',ylab='$C_L$',xmin=20,xmax=2048,ymi
         plt.xlim(np.sqrt(xmin),np.sqrt(xmax))
         xs = np.array([20,50,100,200,500,1000,2000])
         plt.xticks(np.sqrt(xs),xs)
-    
+
 
 def hist_errorbars( data, ymin=None, ymax=None, divbymax=True, xerrs=False, *args, **kwargs) :
     """Plot a histogram with error bars. Accepts any kwarg accepted by either numpy.histogram or pyplot.errorbar"""
