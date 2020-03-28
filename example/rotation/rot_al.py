@@ -5,9 +5,10 @@ import basic
 
 Tcmb  = 2.726e6    # CMB temperature
 lmax  = 3000       # maximum multipole of output normalization
-rlmin = 300        # reconstruction multipole range
-rlmax = 3000
+rlmin = 200        # reconstruction multipole range
+rlmax = 2048
 sig   = 10.
+sig   = 21.
 ac2rad = np.pi/180./60.
 L = np.linspace(0,lmax,lmax+1)
 
@@ -23,14 +24,14 @@ ocl = lcl + nl
 eb = (L**(-5)/80.)
 
 # calculate normalizations
-Al = np.zeros((5,lmax+1))
-Al[4,:] = curvedsky.norm_rot.qtb(lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:])
-Al[0,:] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
+Al = np.zeros((2,lmax+1))
+Al[1,:] = curvedsky.norm_rot.qtb(lmax,rlmin,rlmax,lcl[3,:rlmax+1],ocl[0,:rlmax+1],ocl[2,:rlmax+1])
+Al[0,:] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,lcl[1,:rlmax+1],ocl[1,:rlmax+1],ocl[2,:rlmax+1])
 #Al[1,:] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],lcl[2,:])
-Al[1,:] = curvedsky.norm_tau.oeb(lmax,rlmin,rlmax,eb,ocl[1,:],ocl[2,:])
-Al[2,:] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,eb,ocl[1,:],ocl[2,:],-eb) #mask MF
-Rl = curvedsky.norm_rot.teb(lmax,rlmin,rlmax,lcl[1,:],eb,ocl[1,:],ocl[2,:]) #alpha x mask
-Al[3,:] = Al[0,:]/(1.-Rl**2*Al[0,:]*Al[1,:])
+#Al[1,:] = curvedsky.norm_tau.oeb(lmax,rlmin,rlmax,eb,ocl[1,:],ocl[2,:])
+#Al[2,:] = curvedsky.norm_rot.qeb(lmax,rlmin,rlmax,eb,ocl[1,:],ocl[2,:],-eb) #mask MF
+#Rl = curvedsky.norm_rot.teb(lmax,rlmin,rlmax,lcl[1,:],eb,ocl[1,:],ocl[2,:]) #alpha x mask
+#Al[3,:] = Al[0,:]/(1.-Rl**2*Al[0,:]*Al[1,:])
 
 # save
 np.savetxt('al.dat',np.concatenate((L[None,:],Al)).T,fmt='%4.6e')
