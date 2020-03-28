@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 option="${modd} ${libd} ${link}"
 obj="${target}.pyf ${scan}"
