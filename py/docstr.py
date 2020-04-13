@@ -107,6 +107,14 @@ def ext_docstring(f,slines):
             f.write(line)
 
 
+# add code to function
+def add_code(f,slines):
+    for l in slines:
+        if '!add ::' in l:
+            code = l[l.find('::')+3:]
+            f.write('  '+code)
+
+
 # read libname and modulename
 parser = argparse.ArgumentParser(description='scan f90 file and create the signature file for f2py')
 parser.add_argument('-libname',default='')
@@ -184,6 +192,8 @@ for mod in modname:
       f.write('  """\n')
       for p in pops:
           f.write('  if '+p[0]+' is None: '+p[0]+'='+p[1]+'\n')
+      # additional
+      add_code(f,slines)
       f.write('  return '+gunc+'\n')
       f.write('\n')
       f.close()
