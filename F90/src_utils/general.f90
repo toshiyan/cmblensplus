@@ -63,14 +63,18 @@ contains
 ! File status/read/write
 !//////////////////////////////////////////////////////////////////////////////!
 
-subroutine check_error(condition,msg0,msg1)
+subroutine check_error(condition,msg0,msg1,ou)
   implicit none
   logical, intent(in) :: condition
   character(len=*), intent(in) :: msg0
   character(len=*), intent(in), optional :: msg1
+  integer, intent(in), optional :: ou
+  integer :: u
   
   if (condition) then
-    write(*,*) 'error: ', trim(msg0)
+    u = 6
+    if (present(ou))  u = ou
+    write(u,*) 'error: ', trim(msg0)
     if (present(msg1)) write(*,*), trim(msg1)
     stop
   end if

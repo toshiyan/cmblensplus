@@ -224,7 +224,7 @@ subroutine coarse_invmatrix(n,lmax,mgc)
 end subroutine coarse_invmatrix
 
 
-subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
+subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
 !* Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
 !* The code assumes 
 !*    1) A = [1 + C^1/2 N^-1 C^1/2]
@@ -234,8 +234,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
   implicit none
   !I/O
   type(mg_chain), intent(inout) :: mgc
-  integer, intent(in) :: n, lmax, chain
-  !double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
+  integer, intent(in) :: n, lmax, chain, ou
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
   double precision, intent(out), optional :: ratio(mgc%itn(chain))
@@ -251,7 +250,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
 
   if (chain==1) then
     !diagonal preconditioner
-    write(*,*) 'precompute diagonal preconditioner'
+    write(ou,*) 'precompute diagonal preconditioner'
     allocate(mgc%pmat(n,0:lmax,0:lmax))
     do ni = 1, n
       mm = 0d0
@@ -264,16 +263,16 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
   end if
 
   !initial value (this is the solution if MA=I)
-  call precondition(n,lmax,b,x,mgc,chain)
+  call precondition(n,lmax,b,x,mgc,chain,ou)
 
   !residual
   call matmul_lhs(n,mgc%mnmax(chain),mgc%npix(chain,:),lmax,mgc%cv(chain,:),x,r)
   r = b - r
-  if (chain==1)  write(*,*) 'initial residual', dsqrt(sum(abs(r)**2)), '|b|^2', dsqrt(sum(abs(b)**2))
+  if (chain==1)  write(ou,*) 'initial residual', dsqrt(sum(abs(r)**2)), '|b|^2', dsqrt(sum(abs(b)**2))
   !if (chain==1)  stop
 
   !set other values
-  call precondition(n,lmax,r,z,mgc,chain)
+  call precondition(n,lmax,r,z,mgc,chain,ou)
   p = z
 
   !initial distance
@@ -288,10 +287,10 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
     r = r - alpha*Ap
 
     absr = dsqrt(sum(abs(r)**2))
-    if (chain==1.and.mod(i,mgc%ro)==0)  write(*,*) i, absr/absb, d/d0
+    if (chain==1.and.mod(i,mgc%ro)==0)  write(ou,*) i, absr/absb, d/d0
     if (chain==1.and.present(ratio))  ratio(i) = absr/absb
 
-    call precondition(n,lmax,r,z,mgc,chain)
+    call precondition(n,lmax,r,z,mgc,chain,ou)
     td = sum(conjg(r)*z)
     p  = z + (td/d)*p
     d  = td
@@ -299,7 +298,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
     ! check exit condition
     if (absr<mgc%eps(chain)*absb) then 
       !exit loop if |r|/|b| becomes very small
-      if (chain==1) write(*,*) i, absr/absb
+      if (chain==1) write(ou,*) i, absr/absb
       exit
     end if
 
@@ -308,11 +307,11 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ratio)
 end subroutine cg_algorithm
 
 
-subroutine precondition(n,lmax,r,x,mgc,chain)
+subroutine precondition(n,lmax,r,x,mgc,chain,ou)
   implicit none
   !I/O
   type(mg_chain), intent(inout) :: mgc
-  integer, intent(in) :: n, lmax, chain
+  integer, intent(in) :: n, lmax, chain, ou
   !double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: r
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
@@ -329,7 +328,7 @@ subroutine precondition(n,lmax,r,x,mgc,chain)
     if (chain+1==mgc%n) then ! multiply dense matrix at the coarsest gird
       call densemat_multi(n,lmax0,mgc%matn,r(:,0:lmax0,0:lmax0),mgc%imat,x(:,0:lmax0,0:lmax0))
     else
-      call cg_algorithm(n,lmax0,r(:,0:lmax0,0:lmax0),x(:,0:lmax0,0:lmax0),mgc,chain+1) 
+      call cg_algorithm(n,lmax0,r(:,0:lmax0,0:lmax0),x(:,0:lmax0,0:lmax0),mgc,chain+1,ou) 
     end if
     if (lmax0+1<=mgc%lmax(chain))  x(:,lmax0+1:lmax,:) = mgc%pmat(:,lmax0+1:lmax,:)*r(:,lmax0+1:lmax,:)
   end if
