@@ -665,10 +665,10 @@ subroutine hp_alm2map(npix,lmax,mmax,alm,map)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
 !*  Args:
-!*    :npix (int)         : Pixel number of the input map
+!*    :npix (int)         : Pixel number of the output map
 !*    :lmax (int)         : Maximum multipole of the input alm
 !*    :mmax (int)         : Maximum m of the input alm
-!*    :alm [l,m] (dcmplx) : Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+!*    :alm [l,m] (dcmplx) : Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
 !*
 !*  Returns:
 !*    :map [pix] (double) : Transformed map, with bounds (0:npix-1)
@@ -694,12 +694,12 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
 !*  Args:
-!*    :npix (int)         : Pixel number of the input map
+!*    :npix (int)         : Pixel number of the output map
 !*    :lmax (int)         : Maximum multipole of the input alm
 !*    :mmax (int)         : Maximum m of the input alm
 !*    :spin (int)         : Spin of the transform
-!*    :elm [l,m] (dcmplx) : Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
-!*    :blm [l,m] (dcmplx) : Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:lmax)
+!*    :elm [l,m] (dcmplx) : Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
+!*    :blm [l,m] (dcmplx) : Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
 !*
 !*  Returns:
 !*    :map0 [pix] (double): Real part of the transformed map (Q-like map), with bounds (0:npix-1)
@@ -713,7 +713,7 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
   !internal
   integer :: nside
   double precision :: map(0:npix-1,2)
-  double complex :: alm(2,0:lmax,0:lmax)
+  double complex :: alm(2,0:lmax,0:mmax)
 
   nside = int(dsqrt(npix/12d0))
 
@@ -726,7 +726,6 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
 end subroutine hp_alm2map_spin
 
 
-
 subroutine hp_map2alm(nside,lmax,mmax,map,alm)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
@@ -737,7 +736,7 @@ subroutine hp_map2alm(nside,lmax,mmax,map,alm)
 !*    :map [pix] (double)  : Input map, with bounds (0:npix-1)
 !*
 !*  Returns:
-!*    :alm1 [l,m] (dcmplx): Harmonic coefficient obtained from the input map, with bounds (0:lmax,0:mmax)
+!*    :alm [l,m] (dcmplx): Harmonic coefficient obtained from the input map, with bounds (0:lmax,0:mmax)
 !*
   implicit none
   !I/O
@@ -753,7 +752,7 @@ subroutine hp_map2alm(nside,lmax,mmax,map,alm)
   if (size(map)/=npix) stop 'error (utils.hp_map2alm): size of map array is not 12*nside**2'
 
   tlm = 0d0
-  call map2alm(nside,lmax,lmax,map,tlm)
+  call map2alm(nside,lmax,mmax,map,tlm)
   alm = tlm(1,:,:)
 
 end subroutine hp_map2alm
@@ -790,9 +789,116 @@ subroutine hp_map2alm_spin(nside,lmax,mmax,spin,map0,map1,alm)
   S(:,1) = map0
   S(:,2) = map1
   alm = 0d0
-  call map2alm_spin(nside,lmax,lmax,spin,S,alm)
+  call map2alm_spin(nside,lmax,mmax,spin,S,alm)
 
 end subroutine hp_map2alm_spin
+
+
+subroutine map_mul_lfunc(nside,imap,lmax,lfunc,omap)
+!*  Calculate xlm[l,m] = alm[l,m] x cl[l]
+!*
+!*  Args:
+!*    :nside (Int)          : Nside of map
+!*    :imap [pix] (double)  : Input map, with bounds (0:npix-1)
+!*    :lmax (int)           : Maximum multipole of the input alm
+!*    :lfunc [l] (double)   : 1D spectrum to be multiplied to alm, with bounds (0:lmax)
+!*
+!*  Returns:
+!*    :omap [pix] (double)  : Output map, with bounds (0:npix-1)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, nside
+  double precision, intent(in), dimension(:) :: imap
+  double precision, intent(in), dimension(0:lmax) :: lfunc
+  double precision, intent(out), dimension(0:size(imap)-1) :: omap
+  !internal
+  integer :: l, npix
+  double complex :: alm(1,0:lmax,0:lmax)
+
+  npix = 12*nside**2
+  if (npix/=size(imap))  stop 'size of input map is inconsistent with input nside'
+
+  call map2alm(nside,lmax,lmax,imap,alm)
+  do l = 0, lmax
+    alm(1,l,:) = alm(1,l,:) * lfunc(l)
+  end do
+  call alm2map(nside,lmax,lmax,alm,omap)
+
+end subroutine map_mul_lfunc
+
+
+subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
+!*  Multiply window to a map obtained from alm
+!*
+!*  Args:
+!*    :npix (int)         : Pixel number of the window
+!*    :lmax (int)         : Maximum multipole of the input alm
+!*    :mmax (int)         : Maximum m of the input alm
+!*    :alm [l,m] (dcmplx) : Harmonic coefficient to be multiplied at window, with bounds (0:lmax,0:mmax)
+!*    :win [pix] (double) : Transformed map, with bounds (0:npix-1)
+!*
+!*  Returns:
+!*    :wlm [l,m] (dcmplx) : Harmonic coefficient of the window-multiplied map, with bounds (0:lmax,0:mmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax, mmax
+  double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
+  double precision, intent(in), dimension(0:npix-1) :: win
+  double complex, intent(out), dimension(0:lmax,0:mmax) :: wlm
+  !internal
+  integer :: nside
+  double precision :: map(0:npix-1)
+  double complex :: tlm(1,0:lmax,0:mmax)
+
+  nside = int(dsqrt(npix/12d0))
+
+  tlm(1,:,:) = alm
+  call alm2map(nside,lmax,mmax,tlm,map)
+  map = win*map
+  call map2alm(nside,lmax,mmax,map,tlm)
+  wlm = tlm(1,:,:)
+
+end subroutine mulwin
+
+
+subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
+!*  Ylm transform of the map to alm with the healpix (l,m) order
+!*
+!*  Args:
+!*    :npix (int)         : Pixel number of the window
+!*    :lmax (int)         : Maximum multipole of the input alm
+!*    :mmax (int)         : Maximum m of the input alm
+!*    :spin (int)         : Spin of the transform
+!*    :elm [l,m] (dcmplx) : Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
+!*    :blm [l,m] (dcmplx) : Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
+!*    :win [pix] (double) : Transformed map, with bounds (0:npix-1)
+!*
+!*  Returns:
+!*    :wlm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the window-multiplied map, with bounds (2,0:lmax,0:mmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax, mmax, spin
+  double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
+  double precision, intent(in), dimension(0:npix-1) :: win
+  double complex, intent(out), dimension(2,0:lmax,0:mmax) :: wlm
+  !internal
+  integer :: nside
+  double precision :: map(0:npix-1,2)
+  double complex :: alm(2,0:lmax,0:mmax)
+
+  nside = int(dsqrt(npix/12d0))
+
+  alm(1,:,:) = elm
+  alm(2,:,:) = blm
+  call alm2map_spin(nside,lmax,mmax,spin,alm,map)
+  map(:,1) = win*map(:,1)
+  map(:,2) = win*map(:,2)
+  call map2alm_spin(nside,lmax,mmax,spin,map,wlm)
+
+end subroutine mulwin_spin
 
 
 subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
