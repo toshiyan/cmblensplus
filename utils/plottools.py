@@ -24,7 +24,7 @@ def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. 
     plt.show()
 
 
-def plot_1dstyle(spc='',frac=False,xlab='$L$',ylab='$C_L$',xmin=20,xmax=2048,ymin=None,ymax=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=14,ylabsize=14,xlabloc=None,ylabloc=None):
+def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=20,xmax=2048,ymin=None,ymax=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=14,ylabsize=14,xlabloc=None,ylabloc=None):
     """
     Start to define plot environment for 1D function
     frac --- for fractional difference (add y=0,-1,1 lines)
@@ -35,7 +35,7 @@ def plot_1dstyle(spc='',frac=False,xlab='$L$',ylab='$C_L$',xmin=20,xmax=2048,ymi
         'legend.fontsize': 10,
         'xtick.labelsize': 10,
         'ytick.labelsize': 10,
-        'text.usetex': False,
+        'text.usetex': usetex,
         }
     plt.rcParams.update(params)
 

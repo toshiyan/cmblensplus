@@ -65,7 +65,7 @@ def nl_white(sigma,theta,lmax,Tcmb=2.72e6):
 
 #////////// Angular power spectrum /////////#
 
-def aps(snmin,snmax,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fname=None,overwrite=False):
+def aps(snmin,snmax,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fname=None,loadcls=True,overwrite=False):
     '''
     Compute CMB aps (TT,EE,BB,TE,TB,EB)
     '''
@@ -87,7 +87,9 @@ def aps(snmin,snmax,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fn
         ii = i - snmin
 
         if fname is not None and misctools.check_path(fname[i],verbose=verbose,overwrite=overwrite):
-            cls[ii,:,:] = np.loadtxt(fname[i],unpack=True)[1:,:]
+
+            if loadcls:
+                cls[ii,:,:] = np.loadtxt(fname[i],unpack=True)[1:,:]
 
         else:
         
