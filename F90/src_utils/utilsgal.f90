@@ -13,26 +13,69 @@ module utilsgal
 contains
 
 
-function nz_SF_scal(z,a,b,z0)  result(f)
+subroutine z02zm(a,b,z0,zm)
+!*  Transform z0 to zm for Shechter-like galaxy distribution
+!*  
+!*  Args:
+!*    :a, b (double) : shape parameters of Schechter-like galaxy distribution
+!*    :z0 (double)   : a characteristic redshift of Schechter-like galaxy distribution
+!*
+!*  Returns:
+!*    :zm (double) : mean redshift
+!*
   implicit none
-  double precision, intent(in) :: z,a,b,z0
-  double precision :: f, N
+  double precision, intent(in) :: a, b, z0
+  double precision, intent(out) :: zm
 
+  zm = z0*dexp(lnGamma((a+2d0)/b)-lnGamma((a+1d0)/b))
+
+end subroutine z02zm
+
+
+subroutine zm2z0(a,b,zm,z0)
+!*  Transform zm to z0 for Shechter-like galaxy distribution
+!*  
+!*  Args:
+!*    :a, b (double) : shape parameters of Schechter-like galaxy distribution
+!*    :zm (double)   : a characteristic redshift of Schechter-like galaxy distribution
+!*
+!*  Returns:
+!*    :z0 (double) : mean redshift
+!*
+  implicit none
+  double precision, intent(in) :: a, b, zm
+  double precision, intent(out) :: z0
+
+  z0 = zm*dexp(lnGamma((a+1d0)/b)-lnGamma((a+2d0)/b))
+
+end subroutine zm2z0
+
+
+function nz_SF_scal(z,a,b,zm)  result(f)
+  implicit none
+  double precision, intent(in) :: z, a, b, zm
+  double precision :: N, z0, f
+
+  call zm2z0(a,b,zm,z0)
   N = b / (z0*dexp(lnGamma((a+1d0)/b)))
+  
   f = N*(z/z0)**a*dexp(-(z/z0)**b)
 
 end function nz_SF_scal
 
 
-function nz_SF_arr(z,a,b,z0) result(f)
+function nz_SF_arr(z,a,b,zm) result(f)
   implicit none
-  double precision, intent(in) :: z(:),a,b,z0
+  double precision, intent(in) :: z(:), a, b, zm
   integer :: i
-  double precision :: N, f(size(z))
+  double precision :: N, z0, f(size(z))
 
-  N = b / (z0*dexp(lnGamma((a+1d0)/b)))
+  !call zm2z0(a,b,zm,z0)
+  !N = b / (z0*dexp(lnGamma((a+1d0)/b)))
+
   do i = 1, size(z)
-    f(i) = N*(z(i)/z0)**a*dexp(-(z(i)/z0)**b)
+    f(i) = nz_SF_scal(z(i),a,b,zm)
+    !f(i) = N*(z(i)/z0)**a*dexp(-(z(i)/z0)**b)
   end do
 
 end function nz_SF_arr
@@ -115,10 +158,10 @@ function pz_SF_arr(z,zi,sigma,zbias)  result(f)
 end function pz_SF_arr
 
 
-subroutine zbin_SF(a,b,z0,zb)
+subroutine zbin_SF(a,b,zm,zb)
 !* divide total galaxy distribution (ns) into z-bins
   implicit none
-  double precision, intent(in) :: a, b, z0
+  double precision, intent(in) :: a, b, zm
   double precision, intent(out) :: zb(:)
   integer :: i, j, n, nz
   integer, parameter :: jn = 5000
@@ -128,10 +171,10 @@ subroutine zbin_SF(a,b,z0,zb)
   z = linspace(0d0,zmax,jn)
   nz = size(zb)-1
 
-  gmax = sum(nz_SF_arr(z,a,b,z0))*(z(2)-z(1))
+  gmax = sum(nz_SF_arr(z,a,b,zm))*(z(2)-z(1))
   do j = 1, jn
     z = linspace(0d0,j*zmax/dble(jn),jn)
-    g(j) = sum(nz_SF_arr(z,a,b,z0))*(z(2)-z(1))
+    g(j) = sum(nz_SF_arr(z,a,b,zm))*(z(2)-z(1))
     do n = 1, nz
       if(g(j) < n*gmax/dble(nz)) zz(n) = j*zmax/dble(jn)
     end do
@@ -139,15 +182,14 @@ subroutine zbin_SF(a,b,z0,zb)
 
   zb(1) = 0d0
   zb(2:nz+1) = zz(1:nz)
-  write(*,*) 'zbin =', zb
 
 end subroutine zbin_SF
 
 
-function integ_SF(zb,a,b,z0,sigma,zbias)  result(f)
+function integ_SF(zb,a,b,zm,sigma,zbias)  result(f)
   implicit none
   !I/O
-  double precision, intent(in) :: zb(1:2), a, b, z0, sigma, zbias
+  double precision, intent(in) :: zb(1:2), a, b, zm, sigma, zbias
   !internal
   integer :: i
   double precision :: f, z(1:100000)
@@ -155,17 +197,17 @@ function integ_SF(zb,a,b,z0,sigma,zbias)  result(f)
   z = linspace([0d0,10d0],100000)
   f = 0d0
   do i = 1, 100000
-    f = f + nz_SF_scal(z(i),a,b,z0) * pz_SF_scal(z(i),zb,sigma,zbias)
+    f = f + nz_SF_scal(z(i),a,b,zm) * pz_SF_scal(z(i),zb,sigma,zbias)
   end do
   f = f * (z(2)-z(1))  !multiply dz
 
 end function integ_SF
 
 
-subroutine ngal_SF(frac,zb,a,b,z0,sigma,zbias)
+subroutine ngal_SF(frac,zb,a,b,zm,sigma,zbias)
   implicit none
   !I/O
-  double precision, intent(in) :: zb(:), a,b,z0,sigma,zbias
+  double precision, intent(in) :: zb(:), a, b, zm, sigma, zbias
   double precision, intent(out) :: frac(:)
   !internal
   integer :: n, i, num
@@ -175,10 +217,9 @@ subroutine ngal_SF(frac,zb,a,b,z0,sigma,zbias)
   if (size(zb)/=num+1) stop 'error (ngal_SF): size of zb is strange'
 
   do n = 1, num
-    frac(n) = integ_SF(zb(n:n+1),a,b,z0,sigma,zbias)
+    frac(n) = integ_SF(zb(n:n+1),a,b,zm,sigma,zbias)
   end do
   frac = frac/sum(frac)
-  write(*,*) 'frac ngal = ', frac
 
 end subroutine ngal_SF
 
