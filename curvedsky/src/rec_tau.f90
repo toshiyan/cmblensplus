@@ -53,7 +53,7 @@ subroutine qtt_sym(lmax,rlmin,rlmax,fC,Tlm,alm,nside)
   npix = 12*ns**2
 
   ! alm to map 
-  allocate(zlm(2,0:rlmax,0:rlmax)); alm = 0d0
+  allocate(zlm(2,0:rlmax,0:rlmax)); zlm = 0d0
   do l = rlmin, rlmax
     zlm(1,l,0:l) = Tlm(l,0:l)
     zlm(2,l,0:l) = fC(l)*Tlm(l,0:l)
@@ -112,7 +112,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,alm,nside)
   npix = 12*ns**2
 
   ! alm to map 
-  allocate(zlm(2,0:rlmax,0:rlmax)); alm = 0d0
+  allocate(zlm(2,0:rlmax,0:rlmax)); zlm = 0d0
   do l = rlmin, rlmax
     zlm(1,l,0:l) = Tlm1(l,0:l)
     zlm(2,l,0:l) = fC(l)*Tlm2(l,0:l)
