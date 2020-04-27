@@ -8,11 +8,14 @@ import argparse
 
 
 def extract_declare(slines):
+    # extract declaration part of f90 code
     declare = []
     for line in slines:
+        # extract lines which contain both "::" and "intent"
         if '::' in line and 'intent' in line:
             dec = line.replace('\n','').split('::')
             declare.append(dec)
+
     return declare
 
 
@@ -24,12 +27,26 @@ def ext_params(declare,argtype='intent(out)'):
             p = dec[1].replace(',',' ').split()
             pset.extend(p)
 
-    #if pset: print(argtype+':',pset)
+    return pset
+
+
+def ext_charg(slines):
+    # extract arguments replaced for python
+    # such argument is specified by charg
+    pset = []
+    for l in slines:
+        if '!chargs' in l and '::' in l:
+            p0, p1 = l[l.find('::')+3:].replace('\n','').split('->')
+            p0 = p0.replace(' ','')
+            p1 = p1.replace(' ','')
+            pset.append([p0,p1])
+
     return pset
 
 
 def ext_opt4py(slines):
-    # extract opt4py arguments
+    # extract optional arguments for python but not for f90 
+    # such argument is specified by opt4py
     pset = []
     for l in slines:
         if '!opt4py ::' in l:
@@ -38,11 +55,10 @@ def ext_opt4py(slines):
             v = v.replace(' ','')
             pset.append([p,v])
 
-    #if pset: print('extra optional args:',pset)
     return pset
 
 
-def ext_optional(pset,declare,slines):
+def ext_optional(pset,declare,slines):  # !!! This function should be removed in the future
     popt = []
     pops = [] #optional arguments whose default value depends on the input arguments
     for p in pset:
@@ -61,20 +77,18 @@ def ext_optional(pset,declare,slines):
         else:
             popt.append([p,defval])
 
-    #if popt: print('optional args:',popt)
-    #if pops: print('output args with special defval:',pops)
-
     return popt, pops
 
 
-def funcopt(func,pset,ispops=False):
-    # remove optional args
+def func_rm_args(func,pset,ispops=False):
+    # remove args contained in pset
+    # decompose elements first and rejoin to avoid confusion e.g. "abc" and "abctype"
     for p in pset:
         subf = []
         # loop for argments in the function definition
         for f in func.replace(')','').split(','): 
-            # decompose elements and rejoin to avoid confusion e.g. "abc" and "abctype"
             if p[0] in f and len(p[0])==len(f): #only for exact match
+            #if p[0] == f: #only for exact match
                 if ispops:
                     subf.append(p[0]+'=None')
                 else:
@@ -85,6 +99,19 @@ def funcopt(func,pset,ispops=False):
         func = ','.join(subf)+')'
 
     return func
+
+
+def func_ch_args(args,pset):
+    # remove args contained in pset
+    # first seperate func name and args
+    chargs = args.copy()
+    for p in pset:
+        # loop for argments in the function definition
+        if p[0] in args: #only for exact match
+            chargs.insert(chargs.index(p[0]),p[1])
+            chargs.remove(p[0])
+
+    return chargs
 
 
 def ext_docstring(f,slines):
@@ -110,7 +137,7 @@ def ext_docstring(f,slines):
 # add code to function
 def add_code(f,slines):
     for l in slines:
-        if '!add ::' in l:
+        if '!add2py' in l and '::' in l:
             code = l[l.find('::')+3:]
             f.write('  '+code)
 
@@ -125,6 +152,7 @@ libname = Args.libname
 modname = Args.list
 
 for mod in modname:
+    
     mod = mod.replace('.f90','')
     f90name = mod+'.f90'
     pyname  = mod+'.py'
@@ -149,52 +177,61 @@ for mod in modname:
     # separate lines into sublines and obtain output strings
     for ns in range(nsub):
 
-      slines = lines[int(ln[2*ns])-1:int(ln[2*ns+1])]
+        slines = lines[int(ln[2*ns])-1:int(ln[2*ns+1])]
 
-      # extract declaration part
-      declare = extract_declare(slines)
+        # extract declaration part
+        declare = extract_declare(slines)
 
-      # check argument type
-      pout = ext_params(declare)
-      popt = ext_params(declare,'optional')
-      pext = ext_opt4py(slines)
-      popt, pops = ext_optional(popt,declare,slines)
+        # check argument type
+        pout = ext_params(declare)
+        popt = ext_params(declare,'optional')
+        pext = ext_opt4py(slines)
+        charg = ext_charg(slines)
+        popt, pops = ext_optional(popt,declare,slines)
 
-      # extract function
-      func = slines[0].replace('\n','').replace('subroutine ','')
+        # extract function
+        func = slines[0].replace('\n','').replace('subroutine ','')
 
-      # remove output args from "func"
-      for p in pout:
-          func = func.replace(','+p+',',',')
-          func = func.replace(','+p+')',')')
+        # remove output args from "func"
+        for p in pout:
+            func = func.replace(','+p+',',',')
+            func = func.replace(','+p+')',')')
 
-      # original function
-      gunc = libname+'.'+mod+'.'+func
-      hunc = libname.replace('lib','')+'.'+mod+'.'+func
+        # call lib (should not place after chargs)
+        libfunc = libname+'.'+mod+'.'+func
 
-      # set value for optional arguments in "func"
-      func = funcopt(func,popt)
-      func = funcopt(func,pext)
-      func = funcopt(func,pops,True)
-      #print('create',mod+'.'+func)
+        # change arguments
+        name = func[:func.find('(')]
+        args = func[func.find('(')+1:].replace(')','').split(',')
+        args = func_ch_args(args,charg)
+        func = name + '(' + ','.join(args) + ')'
 
-      # add to pyname
-      f = open(pyname,'a+')
-      f.write('def '+func+':\n')
-      f.write('  """\n')
+        # func for example usage
+        hunc = libname.replace('lib','')+'.'+mod+'.'+func
 
-      # extract comments and write to file
-      ext_docstring(f,slines)
+        # set value for optional arguments in "func"
+        func = func_rm_args(func,popt)
+        func = func_rm_args(func,pext)
+        func = func_rm_args(func,pops,True)
+        #print('create',mod+'.'+func)
 
-      # add example
-      f.write('  Usage:\n')
-      f.write('    :'+','.join(pout)+' = '+hunc+':\n')
-      f.write('  """\n')
-      for p in pops:
-          f.write('  if '+p[0]+' is None: '+p[0]+'='+p[1]+'\n')
-      # additional
-      add_code(f,slines)
-      f.write('  return '+gunc+'\n')
-      f.write('\n')
-      f.close()
+        # add to pyname
+        f = open(pyname,'a+')
+        f.write('def '+func+':\n')
+        f.write('  """\n')
+
+        # extract comments and write to file
+        ext_docstring(f,slines)
+
+        # add example
+        f.write('  Usage:\n')
+        f.write('    :'+','.join(pout)+' = '+hunc+':\n')
+        f.write('  """\n')
+        for p in pops:
+            f.write('  if '+p[0]+' is None: '+p[0]+'='+p[1]+'\n')
+        # additional
+        add_code(f,slines)
+        f.write('  return '+libfunc+'\n')
+        f.write('\n')
+        f.close()
 
