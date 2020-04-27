@@ -22,7 +22,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !* Args:
 !*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
 !*    :mn (int) : Number of frequencies
-!*    :npix (int) : Number of pixels of input map
+!*    :nside (int) : Nside of input map
 !*    :lmax (int) : Maximum multipole of the input cl
 !*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
 !*    :bl[mn,l] (double) : Beam spectrum, with bounds (0:mn-1,0:lmax)
@@ -33,10 +33,10 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !*    :chn (int) : number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
 !*    :lmaxs[chain] (int) : Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
 !*    :nsides[chain] (int) : Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside. 
-!*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(\|Ax-b\|)<eps, default to 1e-6
 !*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
-!*    :fratio (str): Output filename of |r|^2/|b^2|
+!*    :fratio (str): Output filename of \|r\|^2/\|b^2\|
 !*    :verbose (bool): Check the matrix at the coarsest grid. 
 !*    :stat (str): Realtime status filename
 !*
@@ -72,6 +72,9 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   double precision :: clh(n,mn,0:lmax,0:lmax), ratio(itns(1))
   double precision, allocatable :: nij(:,:)
   double complex :: b(n,0:lmax,0:lmax)
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   mnmaxs = mn
 
@@ -160,7 +163,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !* Args:
 !*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
 !*    :mn0/1 (int) : Number of frequencies
-!*    :npix0/1 (int) : Number of pixels of input map(s)
+!*    :nside0/1 (int) : Nsides of input map(s)
 !*    :lmax (int) : Maximum multipole of the input cl
 !*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
 !*    :bl0/1[mn,l] (double) : Beam spectrum, with bounds (0:n-1,0:lmax)
@@ -171,10 +174,10 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !*    :chn (int) : number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
 !*    :lmaxs[chain] (int) : Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
 !*    :nsides0/1[chain] (int) : Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside. 
-!*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(|Ax-b|)<eps, default to 1e-6
+!*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(\|Ax-b\|)<eps, default to 1e-6
 !*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
-!*    :fratio (str): Output status filename of |r|^2/|b^2|
+!*    :fratio (str): Output status filename of \|r\|^2/\|b^2\|
 !*    :verbose (bool): Check the matrix at the coarsest grid. 
 !*
 !* Returns:
@@ -213,6 +216,10 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   double precision :: clh(n,mn0+mn1,0:lmax,0:lmax), bl(mn0+mn1,0:lmax), ratio(itns(1))
   double precision, allocatable :: nij(:,:)
   double complex :: b(n,0:lmax,0:lmax)
+
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   mn = mn0 + mn1
   mnmaxs = mn

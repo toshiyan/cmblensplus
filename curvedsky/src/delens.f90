@@ -14,7 +14,7 @@ module delens
 contains 
 
 
-subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
+subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside,gtype)
 !*  Computing lensing B mode as a convolution of wiener-filtered E-mode and lensing potential
 !*
 !*  Args:
@@ -24,10 +24,11 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
 !*    :plmin (int)        : Minimum multipole of wiener-filtered lensing potential alm
 !*    :plmax (int)        : Maximum multipole of wiener-filtered lensing potential alm
 !*    :wElm [l,m] (dcmplx): Wiener-filtered E-mode alm, with bounds (0:elmax,0:elmax)
-!*    :wplm [l,m] (dcmplx): Wiener-filtered lensing potential alm, with bounds (0:plmax,0:plmax)
+!*    :wplm [l,m] (dcmplx): Wiener-filtered lensing potential (or kappa) alm, with bounds (0:plmax,0:plmax)
 !*
 !*  Args(optional):
 !*    :nside (int)        : Nside for the convolution calculation, default to lmax
+!*    :gtype (str)        : Type of input wplm ('p'=phi or 'k'=kappa), default to 'p' (phi). 
 !*
 !*  Returns:
 !*    :lBlm [l,m] (dcmplx): Lensing B-mode alm, with bounds (0:lmax,0:lmax)
@@ -38,17 +39,26 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
   double complex, intent(in), dimension(0:elmax,0:elmax)  :: wElm
   double complex, intent(in), dimension(0:plmax,0:plmax)  :: wplm !wiener filtered phi alm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: lBlm
-  integer, intent(in), optional :: nside
-  !f2py integer :: nside = lmax
-  !docstr :: nside = lmax
+  !optional
+  integer, intent(in) :: nside
+  character(1), intent(in) :: gtype
+  !opt4py :: nside = 0
+  !add2py :: if nside == 0:  nside = lmax
+  !opt4py :: gtype = 'p'
   !internal
-  integer :: l, m, npix, ns
+  integer :: l, m, npix
+  double precision, dimension(:), allocatable :: ilk
   double precision, dimension(:,:), allocatable :: A1,A3,A,map
   double complex, dimension(:,:,:), allocatable :: alm
 
-  ns = lmax
-  if (present(nside)) ns = nside
-  npix = 12*ns**2
+  npix = 12*nside**2
+
+  allocate(ilk(plmax)); ilk = 1d0
+  if (gtype=='k') then
+    do l = 1, plmax
+      ilk(l) = 2d0/dble(l*(l+1))
+    end do
+  end if
 
   allocate(A1(0:npix-1,2),A3(0:npix-1,2),A(0:npix-1,2))
 
@@ -68,7 +78,7 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside)
   allocate(alm(2,0:plmax,0:plmax)); alm=0d0
   alm = 0d0
   do l = plmin, plmax
-    alm(1,l,:) = wplm(l,:)*dsqrt(dble(l*(l+1))*0.5)
+    alm(1,l,:) = wplm(l,:)*dsqrt(dble(l*(l+1))*0.5)*ilk(l)
   end do 
   call alm2map_spin(nside,plmax,plmax,1,alm,A)
   deallocate(alm)
@@ -100,7 +110,7 @@ subroutine shiftvec(npix,lmax,plm,beta,nremap)
 !*  and alphaw is the filtered lensing deflection vector (see arXiv:1701.01712).
 !*
 !*  Args:
-!*    :npix (int)           : Pixel number of output shift vector
+!*    :nside (int)          : Nside of output shift vector
 !*    :lmax (int)           : Maximum multipole of the input plm
 !*    :plm [l,m] (dcmplx)   : Wiener-filtered lensing potential alm, with bounds (0:lmax,0:lmax)
 !*
@@ -113,16 +123,19 @@ subroutine shiftvec(npix,lmax,plm,beta,nremap)
   implicit none
   !I/O
   integer, intent(in) :: npix, lmax
-  integer, intent(in), optional :: nremap
   double complex, intent(in), dimension(0:lmax,0:lmax) :: plm
   double precision, intent(out), dimension(0:npix-1,2) :: beta
-!f2py integer :: nremap = 3
+  !optional
+  integer, intent(in) :: nremap
+  !optfpy :: nremap = 3
   !internal
   integer :: nside, j
   double precision, allocatable :: map(:), alpha(:,:), dalpha(:,:)
   double complex, allocatable :: plm0(:,:,:)
-
-  !npix = 12*nside**2
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
+ 
   nside = int(dsqrt(npix/12d0))
   write(*,*) 'Nside =', nside
 
@@ -148,7 +161,7 @@ subroutine phi2grad(npix,lmax,plm,grad)
 !*  Return the deflection vector, grad, at the Healpix pixel
 !*
 !*  Args:
-!*    :npix (int)           : Pixel number of output deflection vector
+!*    :nside (int)          : Nside of output deflection vector
 !*    :lmax (int)           : Maximum multipole of the input plm/clm
 !*    :plm [l,m] (dcmplx)   : Lensing potential alm, with bounds (0:lmax,0:lmax)
 !*
@@ -164,6 +177,9 @@ subroutine phi2grad(npix,lmax,plm,grad)
   integer :: nside
   double precision, allocatable :: map(:)
   double complex, allocatable :: plm0(:,:,:)
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   nside = int(dsqrt(npix/12d0))
   write(*,*) 'Nside =', nside
@@ -177,12 +193,12 @@ end subroutine phi2grad
 
 
 subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
-!*  Remapping CMB temperaure and polarization with a given shift vector, beta, based on a simple implementation of LensPix;
-!*    X(n+beta)
-!*  alm[0,:,:] is temperature, alm[1,:,:] is E mode, and alm[2,:,:] is B mode.
+!*  Remapping CMB temperaure and polarization with a given shift vector based on a simple implementation of LensPix
+!*  This function returs X(n+beta) where n is the original direction and beta is the shift vector
+!*  The output is given by alms where alm[0,l,m] is temperature, alm[1,l,m] is E mode, and alm[2,l,m] is B mode.
 !*
 !*  Args:
-!*    :npix (int)                : Pixel number of output shift vector
+!*    :nside (int)               : Nside of input shift vector
 !*    :lmax (int)                : Maximum multipole of the input plm
 !*    :beta [pix,2] (double)     : 2D shift vector, with bounds (0:npix-1,1:2)
 !*    :alm_in [TEB,l,m] (dcmplx) : Input T/E/B alms to be remapped, with bounds (1:3,0:lmax,0:lmax).
@@ -201,12 +217,12 @@ subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
   real, allocatable :: tqu(:,:)
   complex, allocatable :: alm0(:,:,:), dvec(:)
   double precision, allocatable :: S(:,:)
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
-  !npix = 12*nside**2
   nside = int(dsqrt(npix/12d0))
   write(*,*) 'Nside =', nside
-
-  !if (12*nside**2/=npix) stop 'error (remaptp): inconsistency in nside and npix'
 
   allocate(alm0(3,0:lmax,0:lmax),dvec(0:npix-1),tqu(0:npix-1,3))
   alm0 = alm_in !double to single

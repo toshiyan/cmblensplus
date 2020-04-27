@@ -12,7 +12,7 @@ module rec_lens
 contains 
 
 
-subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype)
+subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype,verbose)
 !*  Reconstructing CMB lensing potential and its curl mode from the temperature quadratic estimator
 !*
 !*  Args:
@@ -23,8 +23,9 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype)
 !*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int) : Nside for the convolution calculation, default to lmax
-!*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*    :nside (int)    : Nside for the convolution calculation, default to lmax
+!*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*    :verbose (bool) : Output messages, default to True
 !*
 !*  Returns:
 !*    :glm [l,m] (dcmplx) : CMB lensing potential alm, with bounds (0:lmax,0:lmax)
@@ -32,12 +33,13 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype)
 !*
   implicit none
   !I/O
+  logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax
-  integer, intent(in), optional :: nside
-  character(1), intent(in), optional :: gtype
-  !f2py integer :: nside = lmax
-  !docstr :: nside = lmax
-  !f2py character(1) :: gtype = ''
+  integer, intent(in) :: nside
+  character(1), intent(in) :: gtype
+  !opt4py :: nside = 0
+  !opt4py :: gtype = ''
+  !opt4py :: verbose = True
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm1, Tlm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
@@ -46,18 +48,17 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype)
   double precision, allocatable :: at(:), map(:,:), ilk(:)
   double complex, allocatable :: alm1(:,:,:), blm(:,:,:)
 
-  ns = lmax
-  if (present(nside)) ns = nside
+  ns = nside
+  if (nside==0) ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc qTT lens estimator with nside=', ns
+  npix = 12*ns**2
 
   allocate(ilk(lmax)); ilk = 1d0
-  if (present(gtype).and.gtype=='k') then
+  if (gtype=='k') then
     do l = 1, lmax
       ilk(l) = 2d0/dble(l*(l+1))
     end do
   end if
-
-  write(*,*) 'calc qTT lens estimator with nside=', ns
-  npix = 12*ns**2
 
   ! compute convolution
   allocate(alm1(1,0:rlmax,0:rlmax))

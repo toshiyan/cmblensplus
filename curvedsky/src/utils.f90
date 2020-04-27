@@ -392,11 +392,16 @@ subroutine eb_separate(npix,lmax,W,Q,U,Elm,Blm)
   integer, intent(in) :: npix, lmax
   double precision, intent(in), dimension(0:npix-1) :: W, Q, U
   double complex, intent(out), dimension(0:lmax,0:lmax) :: Elm, Blm
+  
   !internal
   integer :: i, n, l, nside
   double precision :: al, n1(lmax), n2(lmax)
   double precision, allocatable, dimension(:,:) :: W1, W2, P2, P1, P0
   double complex, allocatable, dimension(:,:,:) :: alm0, alm1, alm2, wlm, tlm
+
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   nside = int(sqrt(npix/12d0))
 
@@ -487,23 +492,17 @@ subroutine alm2cl(lmax,cl,alm1,alm2)
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
   double precision, intent(out), dimension(0:lmax) :: cl
   !optional
-  double complex, intent(in), optional, dimension(0:lmax,0:lmax) :: alm2
-  !f2py double complex :: alm2 = 0
-  !docstr :: alm2 = alm1
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm2
+  !opt4py :: alm2 = None
+  !add2py :: if alm2 is None:  alm2 = alm1
 
   !intenral
   integer :: l
 
   cl = 0d0
-  if (present(alm2).and.sum(abs(alm2))/=0) then
-    do l = 1, lmax
-      cl(l) = ( dble(alm1(l,0)*alm2(l,0)) + 2.*sum(alm1(l,1:l)*conjg(alm2(l,1:l))))/(2.*l+1.)
-    end do
-  else
-    do l = 1, lmax
-      cl(l) = ( dble(alm1(l,0)*alm1(l,0)) + 2.*sum(alm1(l,1:l)*conjg(alm1(l,1:l))))/(2.*l+1.)
-    end do
-  end if
+  do l = 1, lmax
+    cl(l) = ( dble(alm1(l,0)*alm2(l,0)) + 2.*sum(alm1(l,1:l)*conjg(alm2(l,1:l))))/(2.*l+1.)
+  end do
 
 end subroutine alm2cl
 
@@ -527,31 +526,25 @@ subroutine alm2bcl(bn,lmax,cb,alm1,alm2,spc)
   integer, intent(in) :: bn, lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
   double precision, intent(out), dimension(bn) :: cb
+
   !optional
-  character(4), intent(in), optional :: spc
-  double complex, intent(in), optional, dimension(0:lmax,0:lmax) :: alm2
-  !f2py character(4) :: spc = ''
-  !f2py double complex :: alm2 = 0
-  !docstr :: alm2 = alm1
+  character(4), intent(in) :: spc
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm2
+  !opt4py :: spc = ''
+  !opt4py :: alm2 = None
+  !add2py :: if alm2 is None:  alm2 = alm1
+  
   !internal
   integer :: npix, eL(2)
-  double precision, allocatable :: Cl(:), bp(:), bc0(:)
-  character(4) :: sp
-
-  sp = ''
-  if (present(spc)) sp = spc
+  double precision, allocatable :: Cl(:), bp(:)
 
   eL = (/1,lmax/)
 
   allocate(cl(0:lmax))
-  if (present(alm2).and.sum(abs(alm2))/=0) then
-    call alm2cl(lmax,cl,alm1,alm2)
-  else
-    call alm2cl(lmax,cl,alm1)
-  end if
+  call alm2cl(lmax,cl,alm1,alm2)
 
   allocate(bp(bn+1))
-  call binned_ells(eL,bp,spc=sp)
+  call binned_ells(eL,bp,spc=spc)
   call power_binning(bp,eL,cl(1:lmax),Cb)
   deallocate(bp,Cl)
 
@@ -562,27 +555,29 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 !*  Compute apodized window function. Partially use Healpix's process_mask code.
 !*
 !*  Args:
-!*   :npix (int)         : Number of pixel
-!*   :rmask[pix] (double): Input window function, with bounds (0:pix-1). Pixels at rmask=0 is considered as masked pixels. 
-!*   :ascale (double)    : Apodization length [deg] from the closest masked pixel
+!*    :nside (int)        : Nside of the input map
+!*    :rmask[pix] (double): Input window function, with bounds (0:pix-1). Pixels at rmask=0 is considered as masked pixels. 
+!*    :ascale (double)    : Apodization length [deg] from the closest masked pixel
 !*
 !*  Args(optional):
-!*   :order (int)         : Pixel order, 1 for RING (default), otherwize NESTED
-!*   :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size is filled), default to 0
+!*    :order (int)         : Pixel order, 1 for RING (default), otherwize NESTED
+!*    :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size is filled), default to 0
 !*
 !*  Returns:
-!*   :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
+!*    :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
 !*
   implicit none
+  !I/O
   integer, intent(in) :: npix
   double precision, intent(in) :: ascale
   double precision, intent(in), dimension(0:npix-1) :: rmask
   double precision, intent(out), dimension(0:npix-1) :: amask
+
   !optional
-  integer, intent(in), optional :: order
-  double precision, intent(in), optional :: holeminsize
-  !f2py integer :: order = 1
-  !f2py double precision :: holeminsize = 0
+  integer, intent(in) :: order
+  double precision, intent(in) :: holeminsize
+  !opt4py :: order = 1
+  !opt4py :: holeminsize = 0
 
   !internal
   integer :: n, nside, hsize
@@ -590,12 +585,16 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
   double precision :: x, y
   double precision, allocatable :: map(:,:)
 
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
+
   nside = int(sqrt(npix/12d0))
 
   allocate(map(0:npix-1,1)); map=0d0
   map(:,1) = rmask
 
-  if (present(order).and.order == 1) then
+  if (order == 1) then
      write(*,*) 'converting RING -> NESTED'
      call convert_ring2nest(nside, map)
   end if
@@ -614,7 +613,7 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
   call dist2holes_nest(nside, mask, map(:,1))
   deallocate(mask)
 
-  if (present(order).and.order == 1) then
+  if (order == 1) then
      write(*,*) 'converting NESTED - > RING'
      call convert_nest2ring(nside, map)
   end if
@@ -665,7 +664,7 @@ subroutine hp_alm2map(npix,lmax,mmax,alm,map)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
 !*  Args:
-!*    :npix (int)         : Pixel number of the output map
+!*    :nside (int)        : Nside of the input map
 !*    :lmax (int)         : Maximum multipole of the input alm
 !*    :mmax (int)         : Maximum m of the input alm
 !*    :alm [l,m] (dcmplx) : Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
@@ -678,9 +677,14 @@ subroutine hp_alm2map(npix,lmax,mmax,alm,map)
   integer, intent(in) :: npix, lmax, mmax
   double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
   double precision, intent(out), dimension(0:npix-1) :: map
+ 
   !internal
   integer :: nside
   double complex :: tlm(1,0:lmax,0:mmax)
+  
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   nside = int(dsqrt(npix/12d0))
 
@@ -694,7 +698,7 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
 !*  Args:
-!*    :npix (int)         : Pixel number of the output map
+!*    :nside (int)         : Nside of the input map
 !*    :lmax (int)         : Maximum multipole of the input alm
 !*    :mmax (int)         : Maximum m of the input alm
 !*    :spin (int)         : Spin of the transform
@@ -710,10 +714,15 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
   integer, intent(in) :: npix, lmax, mmax, spin
   double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
   double precision, intent(out), dimension(0:npix-1) :: map0, map1
+
   !internal
   integer :: nside
   double precision :: map(0:npix-1,2)
   double complex :: alm(2,0:lmax,0:mmax)
+
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   nside = int(dsqrt(npix/12d0))
 
@@ -726,7 +735,7 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
 end subroutine hp_alm2map_spin
 
 
-subroutine hp_map2alm(nside,lmax,mmax,map,alm)
+subroutine hp_map2alm(npix,lmax,mmax,map,alm)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
 !*  Args:
@@ -739,15 +748,21 @@ subroutine hp_map2alm(nside,lmax,mmax,map,alm)
 !*    :alm [l,m] (dcmplx): Harmonic coefficient obtained from the input map, with bounds (0:lmax,0:mmax)
 !*
   implicit none
+
   !I/O
-  integer, intent(in) :: nside, lmax, mmax
-  double precision, intent(in), dimension(:) :: map
+  integer, intent(in) :: npix, lmax, mmax
+  double precision, intent(in), dimension(0:npix-1) :: map
   double complex, intent(out), dimension(0:lmax,0:mmax) :: alm
+
   !internal
-  integer :: npix
+  integer :: nside
   double complex :: tlm(1,0:lmax,0:mmax)
 
-  npix = 12*nside**2
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
+
+  nside = int(dsqrt(npix/12d0))
 
   if (size(map)/=npix) stop 'error (utils.hp_map2alm): size of map array is not 12*nside**2'
 
@@ -758,7 +773,7 @@ subroutine hp_map2alm(nside,lmax,mmax,map,alm)
 end subroutine hp_map2alm
 
 
-subroutine hp_map2alm_spin(nside,lmax,mmax,spin,map0,map1,alm)
+subroutine hp_map2alm_spin(npix,lmax,mmax,spin,map0,map1,alm)
 !*  Spin Ylm transform of the map ( = map0 + i map1 ) to alm with the healpix (l,m) order. For example, if map0=Q, map1=U and spin=2, 
 !*  the alm contains E-mode and B-mode. 
 !*
@@ -775,14 +790,20 @@ subroutine hp_map2alm_spin(nside,lmax,mmax,spin,map0,map1,alm)
 !*
   implicit none
   !I/O
-  integer, intent(in) :: nside, lmax, mmax, spin
-  double precision, intent(in), dimension(:) :: map0, map1
+  integer, intent(in) :: npix, lmax, mmax, spin
+  double precision, intent(in), dimension(0:npix-1) :: map0, map1
   double complex, intent(out), dimension(2,0:lmax,0:mmax) :: alm
-  !internal
-  integer :: npix
-  double precision :: S(0:12*nside**2-1,2)
 
-  npix = 12*nside**2
+  !internal
+  integer :: nside
+  double precision :: S(0:npix-1,2)
+
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
+
+  nside = int(dsqrt(npix/12d0))
+
   if (size(map0)/=npix) stop 'error (utils.hp_map2alm_spin): size of map0 array is not 12*nside**2'
   if (size(map1)/=npix) stop 'error (utils.hp_map2alm_spin): size of map1 array is not 12*nside**2'
 
@@ -795,16 +816,16 @@ end subroutine hp_map2alm_spin
 
 
 subroutine map_mul_lfunc(nside,imap,lmax,lfunc,omap)
-!*  Calculate xlm[l,m] = alm[l,m] x cl[l]
+!*  Convert map to alm, multiply a function to alm and convert back again to map
 !*
 !*  Args:
-!*    :nside (Int)          : Nside of map
-!*    :imap [pix] (double)  : Input map, with bounds (0:npix-1)
+!*    :nside (int)          : Nside of input map
+!*    :imap [pix] (double)  : Input map, with bounds (0:12*nside**2-1)
 !*    :lmax (int)           : Maximum multipole of the input alm
 !*    :lfunc [l] (double)   : 1D spectrum to be multiplied to alm, with bounds (0:lmax)
 !*
 !*  Returns:
-!*    :omap [pix] (double)  : Output map, with bounds (0:npix-1)
+!*    :omap [pix] (double)  : Output map, with bounds (0:12*nside**2-1)
 !*
   implicit none
   !I/O
@@ -812,6 +833,7 @@ subroutine map_mul_lfunc(nside,imap,lmax,lfunc,omap)
   double precision, intent(in), dimension(:) :: imap
   double precision, intent(in), dimension(0:lmax) :: lfunc
   double precision, intent(out), dimension(0:size(imap)-1) :: omap
+  
   !internal
   integer :: l, npix
   double complex :: alm(1,0:lmax,0:lmax)
@@ -832,7 +854,7 @@ subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
 !*  Multiply window to a map obtained from alm
 !*
 !*  Args:
-!*    :npix (int)         : Pixel number of the window
+!*    :nside (int)        : Nside of input map
 !*    :lmax (int)         : Maximum multipole of the input alm
 !*    :mmax (int)         : Maximum m of the input alm
 !*    :alm [l,m] (dcmplx) : Harmonic coefficient to be multiplied at window, with bounds (0:lmax,0:mmax)
@@ -847,10 +869,15 @@ subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
   double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
   double precision, intent(in), dimension(0:npix-1) :: win
   double complex, intent(out), dimension(0:lmax,0:mmax) :: wlm
+  
   !internal
   integer :: nside
   double precision :: map(0:npix-1)
   double complex :: tlm(1,0:lmax,0:mmax)
+
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   nside = int(dsqrt(npix/12d0))
 
@@ -867,7 +894,7 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
 !*  Args:
-!*    :npix (int)         : Pixel number of the window
+!*    :nside (int)        : Nside of input map
 !*    :lmax (int)         : Maximum multipole of the input alm
 !*    :mmax (int)         : Maximum m of the input alm
 !*    :spin (int)         : Spin of the transform
@@ -884,10 +911,15 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
   double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
   double precision, intent(in), dimension(0:npix-1) :: win
   double complex, intent(out), dimension(2,0:lmax,0:mmax) :: wlm
+
   !internal
   integer :: nside
   double precision :: map(0:npix-1,2)
   double complex :: alm(2,0:lmax,0:mmax)
+
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   nside = int(dsqrt(npix/12d0))
 
@@ -906,7 +938,7 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 !*
 !*  Args:
 !*    :lmpy (int)           : Length of healpy alm
-!*    :lmax (int)           : Maximum multipole of the output alm
+!*    :lmax (int)           : Maximum multipole of the input/output alm satisfying 2 x lmpy = (lmax+1) x (lmax+2)
 !*    :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
 !*
 !*  Returns:
@@ -931,30 +963,37 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 end subroutine lm_healpy2healpix
 
 
-subroutine cosin_healpix(npix,lmax,cosin)
+subroutine cosin_healpix(npix,cosin)
 !*  Return cos(theta) as a function of the Healpix pixel index
 !*
 !*  Args:
-!*    :npix (int) : Pixel number of the desired map
-!*    :lmax (int) : Maximum multipole
+!*    :nside (int) : Nside of the desired map
 !*
 !*  Returns:
 !*    :cosin [pix] (double) : cosin(theta), with bounds (0:npix-1)
 !*
   !I/O
   implicit none
-  integer, intent(in) :: npix, lmax
+  integer, intent(in) :: npix
   double precision, intent(out), dimension(0:npix-1) :: cosin
+
   !internal
-  integer :: nside
-  double complex :: alm(1,0:lmax,0:lmax)
+  integer :: nside, lmax
+  double complex, allocatable :: alm(:,:,:)
+  
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
 
   nside = int(sqrt(npix/12d0))
-  alm = 0d0
+  lmax = 2*nside
+
+  allocate(alm(1,0:lmax,0:lmax));  alm=0d0
   alm(1,1,0) = 1d0
   cosin = 0d0
   call alm2map(nside,lmax,lmax,alm,cosin)
   cosin = cosin*dsqrt(pi/0.75d0)
+  deallocate(alm)
 
 end subroutine cosin_healpix
 
@@ -1092,10 +1131,12 @@ subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
   double precision, intent(in), dimension(bn) :: nu
   double complex, intent(in), dimension(0:lmax,0:lmax) :: walm
   double precision, intent(out), dimension(bn,0:2) :: V
+  
   !optional
-  integer, intent(in), optional :: nside
-  !f2py integer :: nside = lmax
-  !docstr :: nside = lmax
+  integer, intent(in) :: nside
+  !opt4py :: nside = 0
+  !add2py :: if nside == 0:  nside = lmax
+
   !internal
   integer :: n, i, l, npix
   double precision :: dnu, dtt, dtp, dpp, atant, mcV(0:2)
@@ -1113,7 +1154,7 @@ subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
 
   ! cosine
   allocate(cost(0:npix-1))
-  call cosin_healpix(npix,lmax,cost) 
+  call cosin_healpix(npix,cost) 
 
   !loop for nu
   do i = 1, bn
@@ -1140,17 +1181,34 @@ subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
 end subroutine calc_mfs
 
 
-subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,z0,sz,zbias,gmap)
+subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
+!*  Compute galaxy overdensity map from dark matter density map
+!*
+!*  Args:
+!*    :fname (str)         : Filename of density map
+!*    :zn (int)            : Number of tomographic bins
+!*    :ngz[zn] (double)    : Total number of galaxies at each z-bin
+!*    :zi[zn+1] (double)   : Redshift intervals of the tomographic bins
+!*
+!*  Args(optional): 
+!*    :a (double)          : galaxy distribution shape parameter
+!*    :b (double)          : galaxy distribution shape parameter
+!*    :zm (double)         : mean redshift of galaxy distribution
+!*    :b0 (double)         : constant galaxy bias at z=0
+!*
+!*  Returns:
+!*    :V [bin,type] (double): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
+!*
   implicit none
   character(*), intent(in) :: fname, btype
   integer, intent(in) :: zn
   double precision, intent(in), dimension(1:zn) :: ngz
   double precision, intent(in), dimension(1:zn+1) :: zi
-  double precision, intent(in) :: b0, a, b, z0, sz, zbias
+  double precision, intent(in) :: b0, a, b, zm, sz, zbias
   double precision, intent(out), dimension(0:201326591,zn) :: gmap
   !opt4py :: a = 2.0
   !opt4py :: b = 1.0
-  !opt4py :: z0 = 1.0
+  !opt4py :: zm = 1.0
   !opt4py :: sz = 0.0
   !opt4py :: zbias = 0.0
   !opt4py :: b0 = 1.0
@@ -1178,7 +1236,7 @@ subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,z0,sz,zbias,gmap)
       do k = 1, 42
         read(12) kplane, zk !index of lens plane and redshift
         z(k)  = zk
-        if (z(k)<6d0) dn(k) = 5.004d-2*dsqrt(omegam*(1d0+z(k))**3+(1d0-omegam))*nz_SF_scal(z(k),a,b,z0)*pz_SF_scal(z(k),zi(j:j+1),sz,zbias)
+        if (z(k)<6d0) dn(k) = 5.004d-2*dsqrt(omegam*(1d0+z(k))**3+(1d0-omegam))*nz_SF_scal(z(k),a,b,zm)*pz_SF_scal(z(k),zi(j:j+1),sz,zbias)
       end do
       norm = ngz(j)/sum(dn)
 
