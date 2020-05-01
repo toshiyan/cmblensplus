@@ -1,5 +1,8 @@
 import numpy as np
+import healpy as hp
 import matplotlib.pyplot as plt
+
+import ipywidgets as widgets
 
 
 def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. coeff.'):
@@ -140,5 +143,32 @@ def hist_errorbars( data, ymin=None, ymax=None, divbymax=True, xerrs=False, *arg
 
 
 
+def view_maps(maps,min=-0.1,max=0.1,M=1.):
+    # plot multiple mollview with tab switch
+
+    mlist = list(maps.keys())
+    print('map key list:',mlist)
+    
+    N = len(mlist)
+    out = []
+    for n in range(N):
+        out.append(widgets.Output())
+
+    tab = widgets.Tab(children = out)
+    for n in range(N):
+        tab.set_title(n,mlist[n])
+
+    # setup Tab
+    display(tab)
+    
+    # start plot
+    fig, ax = {}, {}
+    for mi, m in enumerate(mlist):
+        #kap = M * curvedsky.utils.hp_alm2map(12*nside**2,lmax,lmax,klms[q][:lmax+1,:lmax+1])
+        with out[mi]:
+            fig[m], ax[m] = plt.subplots(figsize=[10,7])
+            plt.sca(ax[m])
+            hp.mollview(maps[m],min=min,max=max,hold=True)
+            plt.show(fig[m])
 
 

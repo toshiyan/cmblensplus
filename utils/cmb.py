@@ -65,7 +65,7 @@ def nl_white(sigma,theta,lmax,Tcmb=2.72e6):
 
 #////////// Angular power spectrum /////////#
 
-def aps(snmin,snmax,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fname=None,loadcls=True,overwrite=False):
+def aps(rlz,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fname=None,loadcls=True,overwrite=False):
     '''
     Compute CMB aps (TT,EE,BB,TE,TB,EB)
     '''
@@ -77,14 +77,13 @@ def aps(snmin,snmax,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fn
     else:
         cn = 4
 
-    sn  = snmax - snmin + 1
-    cls = np.zeros((sn,cn,lmax+1))
+    cls = np.zeros((len(rlz),cn,lmax+1))
 
-    for i in range(snmin,snmax+1):
+    for i in rlz:
 
         if verbose: print(i)
 
-        ii = i - snmin
+        ii = i - np.min(rlz)
 
         if fname is not None and misctools.check_path(fname[i],verbose=verbose,overwrite=overwrite):
 
@@ -120,20 +119,19 @@ def aps(snmin,snmax,lmax,falm,odd=True,verbose=True,w2=1.,mtype=['T','E','B'],fn
     return cls
 
 
-def apsx(snmin,snmax,lmax,falm,galm,verbose=True,mtype=['T','E','B']):
+def apsx(rlz,lmax,falm,galm,verbose=True,mtype=['T','E','B']):
     '''
     Compute CMB aps (T0T1,E0E1,B0B1)
     '''
 
     if verbose: print('apsx')
 
-    sn  = snmax - snmin + 1
-    cls = np.zeros((sn,3,lmax+1))
+    cls = np.zeros((len(rlz),3,lmax+1))
 
-    for i in range(snmin,snmax+1):
+    for i in rlz:
 
         if verbose: print(i)
-        ii = i - snmin
+        ii = i - np.min(rlz)
 
         # load cmb alms
         if 'T' in mtype:  Talm = pickle.load(open(falm['T'][i],"rb"))

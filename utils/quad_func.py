@@ -3,15 +3,14 @@ import configparser
 import sys
 import os
 import numpy as np
+import pickle
+
+# cmblensplus/wrap/
 import basic
 import curvedsky
-import misctools
 
-if sys.version_info[:3] > (3,0):
-    import pickle
-elif sys.version_info[:3] > (2,5,2):
-    print('use cPickle')
-    import cPickle as pickle
+# local
+import misctools
 
 
 # Define quad estimator names
@@ -61,9 +60,24 @@ class quad_fname:
 
 class quad:
 
-    def __init__(self,conf,lcl=None,ocl=None,ifl=None,falm='',oLmax=2048,rlmin=500,rlmax=3000,nside=2048,n0min=1,n0max=50,rdmin=1,rdmax=100,mfmin=1,mfmax=100,qDO=None,qMV=None,qlist=None,qtype=''):
+    def __init__(self,lcl=None,ocl=None,ifl=None,falm='',olmax=2048,rlmin=500,rlmax=3000,nside=2048,n0min=1,n0max=50,rdmin=1,rdmax=100,mfmin=1,mfmax=100,qDO=None,qMV=None,qlist=None,qtype='',wn=None):
 
-        # Define parameters for quadratic estimator computations
+        #//// load config file ////#
+        #config = configparser.ConfigParser()
+        
+        # read variables in a section "QUADREC" if a parameter file is specified
+        # otherwise just a black section is added
+        #if np.size(sys.argv) > 1 and '.ini' in sys.argv[1]:
+        #    print('reading '+sys.argv[1])
+        #    config.read(sys.argv[1])
+        #else: 
+        #    config.add_section('QUADREC')
+
+        #//// get parameters ////#
+        #conf = config['QUADREC']
+        conf = misctools.load_config('QUADREC')
+
+        # define parameters for quadratic estimator computations
         self.qtype = conf.get('qtype','lens')
         if qtype!='':  self.qtype = qtype
 
@@ -71,26 +85,35 @@ class quad:
         self.rlmin  = conf.getint('rlmin',rlmin)
         self.rlmax  = conf.getint('rlmax',rlmax)
 
-        if 2*self.nside < self.rlmax:  print('Warning: nside^rec would be too small for reconstruction')
+        if 3*self.nside < self.rlmax:  print('Warning: nside^rec would be too small for reconstruction')
 
-        self.oLmin  = conf.getint('oLmin',1)
-        self.oLmax  = conf.getint('oLmax',oLmax)
+        self.olmin  = conf.getint('olmin',1)
+        self.olmax  = conf.getint('olmax',olmax)
         self.bn     = conf.getint('bn',30) 
         self.binspc = conf.get('binspc','')
+
+        # iteration
+        # start, stop rlz of N0 bias
         self.n0min  = conf.getint('n0min',n0min)
         self.n0max  = conf.getint('n0max',n0max)
+        self.n0sim  = self.n0max - self.n0min + 1
+        # start, stop rlz of RDN0 bias
         self.rdmin  = conf.getint('rdmin',rdmin)
         self.rdmax  = conf.getint('rdmax',rdmax)
+        self.rdsim  = self.rdmax - self.rdmin + 1
+        self.rd4sim = conf.getboolean('rd4sim',False)  # whether RD calculation for sim
+        # start, stop rlz of mean-field
         self.mfmin  = conf.getint('mfmin',mfmin)
         self.mfmax  = conf.getint('mfmax',mfmax)
+        self.mfsim  = self.mfmax - self.mfmin + 1
+
+        # external tag
         self.qtagext = conf.get('qtagext','')
 
-        self.oL     = [self.oLmin,self.oLmax]
-        self.n0sim  = self.n0max - self.n0min + 1
-        self.rdsim  = self.rdmax - self.rdmin + 1
-        self.mfsim  = self.mfmax - self.mfmin + 1
-        self.rd4sim = conf.getboolean('rd4sim',True)  # whether RD calculation for sim
+        self.oL     = [self.olmin,self.olmax]
 
+        # rlz
+        self.mfrlz = np.linspace(self.mfmin,self.mfmax,self.mfsim,dtype=np.int)
 
         # Cl for filter, obs Cl and alm files
         if lcl is not None:  self.lcl  = lcl[:,:self.rlmax+1]
@@ -99,38 +122,48 @@ class quad:
         self.falm = falm
 
         #definition of T+P
-        if qDO==None:
+        if qDO == None:
             self.qDO = [True,True,True,False,False,False]
-        if qMV==None:
+        if qMV == None:
             self.qMV = ['TT','TE','EE']
 
         #definition of qlist
-        if qlist==None:
+        if qlist == None:
             self.qlist = ['TT','TE','EE','TB','EB','MV']
             if self.qtype=='rot':
                 self.qlist = ['EB']
         else:
             self.qlist = qlist.copy()
 
+        # window normalization correction
+        if wn is None:
+            self.wn = np.ones(5)
+        else:
+            self.wn = wn
+
         #cinv diag filter
         self.Fl = {}
 
         #multipole bins
-        self.eL = np.linspace(0,self.oLmax,self.oLmax+1)
+        self.l = np.linspace(0,self.olmax,self.olmax+1)
         self.bp, self.bc = basic.aps.binning(self.bn,self.oL,spc=self.binspc)
 
         #kappa
-        self.kL = self.eL*(self.eL+1.)*.5
+        self.kL = self.l*(self.l+1.)*.5
 
         #filename tags
         self.ltag = '_l'+str(self.rlmin)+'-'+str(self.rlmax)
-        self.otag = '_oL'+str(self.oLmin)+'-'+str(self.oLmax)+'_b'+str(self.bn)+self.binspc
+        self.otag = '_oL'+str(self.olmin)+'-'+str(self.olmax)+'_b'+str(self.bn)+self.binspc
 
         # cmb alm mtype
         self.mtype = []
         for q in self.qlist:
             if not q[0] in self.mtype: self.mtype.append(q[0])
             if not q[1] in self.mtype: self.mtype.append(q[1])
+
+
+    def __copy__(self):
+        return quad(lcl=self.lcl,ocl=self.ocl,ifl=self.ifl,falm=self.falm,olmax=self.olmax,rlmin=self.rlmin,rlmax=self.rlmax,nside=self.nside,n0min=self.n0min,n0max=self.n0max,rdmin=self.rdmin,rdmax=self.rdmax,mfmin=self.mfmin,mfmax=self.mfmax,qDO=self.qDO,qMV=self.qMV,qlist=self.qlist,qtype=self.qtype,wn=self.wn)
 
 
     def fname(self,root,ids,cmbtag):
@@ -153,28 +186,29 @@ class quad:
                 self.Fl[m][self.rlmin:self.rlmax+1] = 1.
         else:
             ocl = self.ifl.copy()
+            mids = {'T':0,'E':1,'B':2}
             for l in range(self.rlmin,self.rlmax+1):
-                self.Fl['T'][l] = 1./ocl[0,l]
-                self.Fl['E'][l] = 1./ocl[1,l]
-                self.Fl['B'][l] = 1./ocl[2,l]
+                for m in self.mtype:
+                    i = mids[m]
+                    self.Fl[m][l] = 1./ocl[i,l]
+                    if ocl[i,l] <=0.:  sys.exit(m+' inverse-filter is zero: ocl='+str(ocl[i,l])+' at l='+str(l))
 
 
     # compute normalization
-    #def al(self,LCl,OCl,output=True,verbose=True,overwrite=False):
-    def al(self,output=True,verbose=True,overwrite=False):
+    def al(self,ocls=None,output=True,verbose=True,overwrite=False):
         '''
         Return normalization of the quadratic estimators
         '''
 
         ocl = self.ocl
         lcl = self.lcl
+        if ocls is not None:  ocl = ocls
 
-        Lmax  = self.oLmax
+        Lmax  = self.olmax
         rlmin = self.rlmin
         rlmax = self.rlmax
         qlist = self.qlist
         qtype = self.qtype
-        qDO   = self.qDO
         oL    = np.linspace(0,Lmax,Lmax+1)
 
         Ags, Acs = {}, {}
@@ -189,7 +223,7 @@ class quad:
                 if q=='TB': Ag, Ac = curvedsky.norm_lens.qtb(Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:],gtype='k')
                 if q=='EB': Ag, Ac = curvedsky.norm_lens.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],gtype='k')
                 if q=='MV':
-                    ag, ac, Wg, Wc = curvedsky.norm_lens.qall(qDO,Lmax,rlmin,rlmax,lcl,ocl,gtype='k')
+                    ag, ac, Wg, Wc = curvedsky.norm_lens.qall(self.qDO,Lmax,rlmin,rlmax,lcl,ocl,gtype='k')
                     Ag, Ac = ag[5,:], ac[5,:]
 
             elif qtype=='rot':
@@ -233,24 +267,18 @@ class quad:
         return Ag, Ac, Wg, Wc
 
 
-    #def qrec(self,snmin,snmax,Falm,LCl,qout=None,overwrite=False,verbose=True):
-    def qrec(self,snmin,snmax,qout=None,overwrite=False,verbose=True):
+    def qrec(self,rlz,qout=None,overwrite=False,verbose=True):
         '''
         Return quadratic estimators
         '''
 
-        #if self.lcl is not None:
-        lcl = self.lcl
-
-        #if self.falm is not None:
-        falm = self.falm
-
-        Lmax  = self.oLmax
+        Lmax  = self.olmax
         rlmin = self.rlmin
         rlmax = self.rlmax
         nside = self.nside
-        qtype = self.qtype
-        rlz   = np.linspace(snmin,snmax,snmax-snmin+1,dtype=np.int)
+
+        lcl   = self.lcl
+        falm  = self.falm
 
         if qout == None:  qout = self
 
@@ -258,6 +286,7 @@ class quad:
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
         # loop for realizations
+        #cl = np.zeros((len(rlz),Lmax+1))
         for i in rlz:
             
             gmv, cmv = 0., 0.
@@ -276,11 +305,9 @@ class quad:
 
             for q in qlist:
 
-                #if misctools.check_path(qout.f[q].alm[i],overwrite=overwrite,verbose=verbose): continue
-
                 if verbose:  misctools.progress(i,rlz,addtext='(qrec, '+q+')')
 
-                if qtype=='lens':
+                if self.qtype=='lens':
                     if q=='TT':  glm, clm = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm['T'],alm['T'],gtype='k',nside=nside)
                     if q=='TE':  glm, clm = curvedsky.rec_lens.qte(Lmax,rlmin,rlmax,lcl[3,:],alm['T'],alm['E'],gtype='k',nside=nside)
                     if q=='TB':  glm, clm = curvedsky.rec_lens.qtb(Lmax,rlmin,rlmax,lcl[3,:],alm['T'],alm['B'],gtype='k',nside=nside)
@@ -288,12 +315,12 @@ class quad:
                     if q=='EB':  glm, clm = curvedsky.rec_lens.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm['E'],alm['B'],gtype='k',nside=nside)
                     if q=='MV':  glm, clm = gmv.copy(), cmv.copy()
 
-                elif qtype=='rot':
+                elif self.qtype=='rot':
                     if q=='TB':  glm = curvedsky.rec_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],alm['T'],alm['B'],nside=nside)
                     if q=='EB':  glm = curvedsky.rec_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm['E'],alm['B'],nside=nside)
                     clm = glm*0.
 
-                elif qtype=='tau':
+                elif self.qtype=='tau':
                     if q=='TT':  glm = curvedsky.rec_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm['T'],alm['T'],nside=nside)
                     if q=='EB':  glm = curvedsky.rec_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm['E'],alm['B'],nside=nside)
                     clm = glm*0.
@@ -301,6 +328,7 @@ class quad:
                 else: 
                     if verbose:  print('do nothing')
 
+                #cl[i,:] = curvedsky.utils.alm2cl(Lmax,glm)
 
                 glm *= Ag[q][:,None]
                 clm *= Ac[q][:,None]
@@ -311,9 +339,10 @@ class quad:
                     gmv += Wg[q][:,None]*glm
                     cmv += Wc[q][:,None]*clm
 
+        #np.savetxt('test.dat',np.array((cl[0,:],np.mean(cl[1:,:],axis=0))).T)
 
-    #def n0(self,Falm,w4,LCl,overwrite=False,verbose=True):
-    def n0(self,w4=1.,overwrite=False,verbose=True):
+
+    def n0(self,overwrite=False,verbose=True):
         '''
         The N0 bias calculation
         '''
@@ -324,15 +353,10 @@ class quad:
         # load normalization and weights
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
-        lcl = self.lcl
         falm = self.falm
 
-        Lmax  = self.oLmax
-        rlmin = self.rlmin
-        rlmax = self.rlmax
-        nside = self.nside
+        Lmax  = self.olmax
         qlist = self.qlist
-        qtype = self.qtype
         rlz   = np.linspace(self.n0min,self.n0max,self.n0max-self.n0min+1,dtype=np.int)
 
         # power spectrum
@@ -348,8 +372,8 @@ class quad:
 
             alm0, alm1 = {}, {}
             for cmb in self.mtype:
-                alm0[cmb] = self.Fl[cmb][:,None] * pickle.load(open(falm[cmb][id0],"rb"))[:rlmax+1,:rlmax+1]
-                alm1[cmb] = self.Fl[cmb][:,None] * pickle.load(open(falm[cmb][id1],"rb"))[:rlmax+1,:rlmax+1]
+                alm0[cmb] = self.Fl[cmb][:,None] * pickle.load(open(falm[cmb][id0],"rb"))[:self.rlmax+1,:self.rlmax+1]
+                alm1[cmb] = self.Fl[cmb][:,None] * pickle.load(open(falm[cmb][id1],"rb"))[:self.rlmax+1,:self.rlmax+1]
 
             for q in qlist:
 
@@ -360,13 +384,13 @@ class quad:
                 else:
                     X, Y = q[0], q[1]
                     if verbose:  print(X,Y)
-                    glm, clm = qXY(qtype,q,Lmax,rlmin,rlmax,nside,lcl,alm0[X],alm1[X],alm0[Y],alm1[Y])
+                    glm, clm = qXY(self.qtype,q,Lmax,self.rlmin,self.rlmax,self.nside,self.lcl,alm0[X],alm1[X],alm0[Y],alm1[Y])
 
                 glm *= Ag[q][:,None]
                 clm *= Ac[q][:,None]
 
-                cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm)/(2*w4*self.n0sim)
-                cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm)/(2*w4*self.n0sim)
+                cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm)/(2*self.wn[4]*self.n0sim)
+                cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm)/(2*self.wn[4]*self.n0sim)
 
                 # MV
                 if q in self.qMV and 'MV' in qlist:
@@ -380,12 +404,12 @@ class quad:
                 np.savetxt(self.f[q].n0bs,np.concatenate((oL[None,:],cl[q])).T)
 
 
-    def diagrdn0(self,snmax,lcl,ocl,frcl,verbose=True):
+    def diagrdn0(self,rlz,ocl,frcl,verbose=True):
         
-        oL = np.linspace(0,self.oLmax,self.oLmax+1)
+        oL = np.linspace(0,self.olmax,self.olmax+1)
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
-        for i in range(snmax+1):
+        for i in rlz:
 
             if verbose:  print ('Diag-RDN0',i)
 
@@ -394,11 +418,11 @@ class quad:
 
             # data x data
             cl = ocl**2/rcl
-            Ags0, Acs0 = quad.al(self,lcl,cl,output=False)
+            Ags0, Acs0 = quad.al(self,ocls=cl,output=False)
 
             # (data-sim) x (data-sim)
             cl = ocl**2/(ocl-rcl)
-            Ags1, Acs1 = quad.al(self,lcl,cl,output=False)
+            Ags1, Acs1 = quad.al(self,ocls=cl,output=False)
 
             for q in self.qlist:
 
@@ -406,13 +430,14 @@ class quad:
                 Ags1[q][np.where(Ags1[q]==0)] = 1e30
                 Acs0[q][np.where(Acs0[q]==0)] = 1e30
                 Acs1[q][np.where(Acs1[q]==0)] = 1e30
+
                 n0g = Ag[q]**2*(1./Ags0[q]-1./Ags1[q])
                 n0c = Ac[q]**2*(1./Acs0[q]-1./Acs1[q])
+                
                 np.savetxt(self.f[q].drdn0[i],np.array((oL,n0g,n0c)).T)
 
 
-    #def rdn0(self,snmin,snmax,Falm,w4,LCl,qout=None,overwrite=False,falms=None,verbose=True):
-    def rdn0(self,snmin,snmax,w4=1.,qout=None,overwrite=False,falms=None,verbose=True):
+    def rdn0(self,rlz,qout=None,overwrite=False,falms=None,verbose=True):
         '''
         The sim-data-mixed term of the RDN0 bias calculation
         '''
@@ -420,26 +445,12 @@ class quad:
         # load normalization and weights
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
-        # maximum multipole of output
-        #if self.lcl is not None:
-        lcl = self.lcl
-        #else:
-        #    lcl = LCl[:,:self.rlmax+1]
-
-        #if self.falm is not None:
-        falm = self.falm
-        #else:
-        #    falm = Falm
-
-        Lmax  = self.oLmax
-        rlmin = self.rlmin
-        rlmax = self.rlmax
-        nside = self.nside
+        falm  = self.falm
+        Lmax  = self.olmax
         qlist = self.qlist
-        qtype = self.qtype
-        if falms is None: falms = falm
-        if qout is None:  qout = self
-        rlz   = np.linspace(snmin,snmax,snmax-snmin+1,dtype=np.int)
+
+        if falms is None: falms = self.falm
+        if qout  is None:  qout = self
 
         # load N0
         N0 = {}
@@ -470,7 +481,7 @@ class quad:
             # load alm
             almr = {}
             for cmb in self.mtype:
-                almr[cmb] = self.Fl[cmb][:,None]*pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
+                almr[cmb] = self.Fl[cmb][:,None]*pickle.load(open(falm[cmb][i],"rb"))[:self.rlmax+1,:self.rlmax+1]
 
             # loop for I
             for I in range(self.rdmin,self.rdmax+1):
@@ -480,7 +491,7 @@ class quad:
                 # load alm
                 alms = {}
                 for cmb in self.mtype:
-                    alms[cmb] = self.Fl[cmb][:,None]*pickle.load(open(falms[cmb][I],"rb"))[:rlmax+1,:rlmax+1]
+                    alms[cmb] = self.Fl[cmb][:,None]*pickle.load(open(falms[cmb][I],"rb"))[:self.rlmax+1,:self.rlmax+1]
 
                 for q in qlist:
 
@@ -492,7 +503,7 @@ class quad:
                     if q=='MV':
                         glm, clm = gmv.copy(), cmv.copy()
                     else:
-                        glm, clm = qXY(qtype,q,Lmax,rlmin,rlmax,nside,lcl,almr[X],alms[X],almr[Y],alms[Y])
+                        glm, clm = qXY(self.qtype,q,Lmax,self.rlmin,self.rlmax,self.nside,self.lcl,almr[X],alms[X],almr[Y],alms[Y])
 
                     glm *= Ag[q][:,None]
                     clm *= Ac[q][:,None]
@@ -511,24 +522,19 @@ class quad:
                 if self.rdmin<=i and i<=self.rdmax:  sn = self.rdsim-1
                 
                 for q in qlist:
-                    cl[q] = cl[q]/(w4*sn) - N0[q]
+                    cl[q] = cl[q]/(self.wn[4]*sn) - N0[q]
                     if verbose:  print ('save RDN0')
                     oL = np.linspace(0,Lmax,Lmax+1)
                     np.savetxt(qout.f[q].rdn0[i],np.concatenate((oL[None,:],cl[q])).T)
 
 
-    def mean(self,w4=1.,overwrite=False,verbose=True):
+    def mean(self,overwrite=False,verbose=True):
 
-        Lmax  = self.oLmax
-        rlmin = self.rlmin
-        rlmax = self.rlmax
-        nside = self.nside
-        qlist = self.qlist
-        qtype = self.qtype
-        oL = np.linspace(0,Lmax,Lmax+1)
-        rlz   = np.linspace(self.mfmin,self.mfmax,self.mfmax-self.mfmin+1,dtype=np.int)
+        Lmax = self.olmax
+        oL   = np.linspace(0,Lmax,Lmax+1)
+        rlz  = np.linspace(self.mfmin,self.mfmax,self.mfmax-self.mfmin+1,dtype=np.int)
 
-        for q in qlist:
+        for q in self.qlist:
 
             if misctools.check_path(self.f[q].mf,overwrite=overwrite,verbose=verbose): continue
 
@@ -546,44 +552,42 @@ class quad:
             # compute mf cls
             if verbose:  print('cl for mean field bias')
             cl = np.zeros((2,Lmax+1))
-            cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg)/w4
-            cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc)/w4
+            cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg)/self.wn[4]
+            cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc)/self.wn[4]
             np.savetxt(self.f[q].mfcl,np.concatenate((oL[None,:],cl)).T)
 
 
 
-    def mean_rlz(self,snmin,snmax,w4=1.,overwrite=False,verbose=True):
+    def mean_rlz(self,rlz,overwrite=False,verbose=True):
 
-        Lmax  = self.oLmax
-        rlmin = self.rlmin
-        rlmax = self.rlmax
-        nside = self.nside
-        qlist = self.qlist
-        qtype = self.qtype
-        oL = np.linspace(0,Lmax,Lmax+1)
-        rlz   = np.linspace(snmin,snmax,snmax-snmin+1,dtype=np.int)
+        Lmax = self.olmax
+        oL   = np.linspace(0,Lmax,Lmax+1)
 
-        for q in qlist:
+        for q in self.qlist:
 
-            glm = np.zeros((self.mfsim,Lmax+1,Lmax+1),dtype=np.complex)
-            clm = np.zeros((self.mfsim,Lmax+1,Lmax+1),dtype=np.complex)
+            mglm = np.zeros((Lmax+1,Lmax+1),dtype=np.complex)
+            mclm = np.zeros((Lmax+1,Lmax+1),dtype=np.complex)
 
-            for I in range(self.mfmin,self.mfmax+1):
-                if verbose:  misctools.progress(I,np.linspace(self.mfmin,self.mfmax,self.mfsim),addtext='(load reconstructed alms, '+q+')')
-                glm[I-self.mfmin,:,:], clm[I-self.mfmin,:,:] = pickle.load(open(self.f[q].alm[I],"rb"))
+            for I in self.mfrlz:
+                if verbose:  misctools.progress(I,self.mfrlz,addtext='(load reconstructed alms, '+q+')')
+                glm, clm = pickle.load(open(self.f[q].alm[I],"rb"))
+                mglm += glm/self.mfsim
+                mclm += clm/self.mfsim
 
             for i in rlz:
 
                 if misctools.check_path(self.f[q].mfb[i],overwrite=overwrite,verbose=verbose): continue
 
                 if verbose:  misctools.progress(i,rlz,addtext='(compute mean field for each rlz)')
-                mfg = np.average(glm,axis=0)
-                mfc = np.average(clm,axis=0)
                 if i>=self.mfmin and i<=self.mfmax: 
-                    mfg -= glm[i-self.mfmin,:,:]/self.mfsim
-                    mfc -= clm[i-self.mfmin,:,:]/self.mfsim
+                    glm, clm = pickle.load(open(self.f[q].alm[i],"rb"))
+                    mfg = mglm - glm/self.mfsim
+                    mfc = mclm - clm/self.mfsim
                     mfg *= self.mfsim/(self.mfsim-1.)
                     mfc *= self.mfsim/(self.mfsim-1.)
+                else:
+                    mfg = 1.*mglm
+                    mfc = 1.*mclm
 
                 if verbose:  print('save to file')
                 pickle.dump((mfg,mfc),open(self.f[q].mfb[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
@@ -599,15 +603,80 @@ class quad:
                 mfg, mfc = pickle.load(open(self.f[q].mfb[i],"rb"))
 
                 cl = np.zeros((2,Lmax+1))
-                cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg) / w4
-                cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc) / w4
+                cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg) / self.wn[4]
+                cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc) / self.wn[4]
                 np.savetxt(self.f[q].ml[i],np.concatenate((oL[None,:],cl)).T)
 
 
-def qXY(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,Xlm1,Xlm2,Ylm1,Ylm2):
-        # for N0 and RDN0 estimates
 
-        if qtype=='lens':
+# ////////////////////// #
+# Some useful functions  #
+# ////////////////////// #
+
+def reconstruction(droot,ids,rlz=[],stag='',getobj=True,run=[],overwrite=False,verbose=True,**kwargs):
+
+    """
+    Reconstructing CMB lensing potential and its curl mode
+
+    Args:
+        :droot (*str*): Root directory of files to be saved
+        :ids[] (*str*): 1D array of strings identifying rlz, e.g. 0001, 0002, ...
+
+    Args(optional):
+        :rlz[] (*int*): 1D array of integers identifying rlz to be computed
+        :stag (*str*): An optional string in order to specify which type of input CMB is used
+        :getobj (*bool*): Retrun objects of reconstruction class, containing parameters, filenames
+        :run (*str*): Running reconstruction codes
+        :**kwargs : Other optional parameters for quad object
+    """
+
+    # read parameters
+    qobj = quad(**kwargs)
+    
+    # define filenames from qobj
+    quad.fname(qobj,droot,ids,stag)
+
+    # Main calculation
+    qrec_flow(qobj,rlz,run=run,overwrite=overwrite,verbose=verbose)
+
+    # Return parameters, filenames
+    if getobj:
+        return qobj
+
+
+def qrec_flow(qobj,rlz,run=[],overwrite=False,verbose=True):
+    
+    # set filtering
+    if run:
+        quad.cinvfilter(qobj)
+
+    # normalization
+    if 'norm' in run:
+        quad.al(qobj,overwrite=overwrite,verbose=verbose)
+
+        # quadratic estimators
+    if 'qrec' in run:
+        quad.qrec(qobj,rlz,overwrite=overwrite,verbose=verbose)
+
+    # Realization-independent part of RDN0
+    if 'n0' in run:
+        quad.n0(qobj,overwrite=overwrite,verbose=verbose)
+
+    # Realization-dependent part of RDN0
+    if 'rdn0' in run:
+        quad.rdn0(qobj,rlz,overwrite=overwrite,verbose=verbose)
+
+    # mean-field bias
+    if 'mean' in run:
+        quad.mean_rlz(qobj,rlz,overwrite=overwrite,verbose=verbose)
+
+
+
+def qXY(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,Xlm1,Xlm2,Ylm1,Ylm2):
+    
+    # for N0 and RDN0 estimates
+
+    if qtype=='lens':
             if qcomb=='TT':
                 glm1, clm1 = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],Xlm1,Ylm2,gtype='k',nside=nside)
                 glm2, clm2 = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],Xlm2,Ylm1,gtype='k',nside=nside)
@@ -626,7 +695,7 @@ def qXY(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,Xlm1,Xlm2,Ylm1,Ylm2):
 
             return glm1+glm2, clm1+clm2
 
-        if qtype=='rot':
+    if qtype=='rot':
             if qcomb=='TB':
                 rlm1 = curvedsky.rec_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],Xlm1,Ylm2,nside=nside)
                 rlm2 = curvedsky.rec_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],Xlm2,Ylm1,nside=nside)
@@ -636,7 +705,7 @@ def qXY(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,Xlm1,Xlm2,Ylm1,Ylm2):
 
             return rlm1+rlm2, (rlm1+rlm2)*0.
 
-        if qtype=='tau':
+    if qtype=='tau':
             if qcomb=='TT':
                 rlm1 = curvedsky.rec_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],Xlm1,Ylm2,nside=nside)
                 rlm2 = curvedsky.rec_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],Xlm2,Ylm1,nside=nside)
@@ -645,6 +714,25 @@ def qXY(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,Xlm1,Xlm2,Ylm1,Ylm2):
                 rlm2 = curvedsky.rec_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],Xlm2,Ylm1,nside=nside)
 
             return rlm1+rlm2, (rlm1+rlm2)*0.
+
+
+def cinvfilter_correct(cl,ol,xl):
+
+    m, lsize = np.shape(cl)
+
+    alp = np.zeros((min(m,3),lsize))
+    ocl = np.zeros((m,lsize))
+    ifl = np.zeros((min(m,3),lsize))
+
+    for mi in range(m):
+        if mi>=3:
+            ocl[mi,2:] = ol[mi,2:]/alp[0,2:]/alp[1,2:]  # corrected observed cl for TE
+        else:
+            alp[mi,2:] = xl[mi,2:]/cl[mi,2:]      # signal transfer function
+            ocl[mi,2:] = ol[mi,2:]/alp[mi,2:]**2  # corrected observed cl
+            ifl[mi,2:] = ol[mi,2:]/alp[mi,2:]     # inverse filter
+
+    return ocl, ifl
 
 
 
@@ -659,7 +747,7 @@ def n0x(qx,qd0,qd1,falm,fblm,w4,lcl):
 
     # maximum multipole of output
     lcl = lcl[:,:qx.rlmax+1]
-    Lmax  = qx.oLmax
+    Lmax  = qx.olmax
     rlmin = qx.rlmin
     rlmax = qx.rlmax
     nside = qx.nside
@@ -710,7 +798,7 @@ def n0x(qx,qd0,qd1,falm,fblm,w4,lcl):
 
 
 
-def rdn0x(qx,qd0,qd1,snmin,snmax,falm,fblm,w4,lcl):
+def rdn0x(qx,qd0,qd1,rlz,falm,fblm,w4,lcl):
     '''
     The sim-data-mixed term of the RDN0 bias calculation
     '''
@@ -720,7 +808,7 @@ def rdn0x(qx,qd0,qd1,snmin,snmax,falm,fblm,w4,lcl):
 
     # maximum multipole of output
     lcl = lcl[:,:qx.rlmax+1]
-    Lmax  = qx.oLmax
+    Lmax  = qx.olmax
     rlmin = qx.rlmin
     rlmax = qx.rlmax
     nside = qx.nside
@@ -734,7 +822,7 @@ def rdn0x(qx,qd0,qd1,snmin,snmax,falm,fblm,w4,lcl):
         N0[q] = np.loadtxt(qx.f[q].n0bl,unpack=True,usecols=(1,2))
 
     # compute RDN0
-    for i in range(snmin,snmax+1):
+    for i in rlz:
         print(i)
 
         # power spectrum
