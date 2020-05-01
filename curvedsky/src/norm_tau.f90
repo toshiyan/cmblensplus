@@ -126,7 +126,7 @@ end subroutine qeb
 
 subroutine oeb(lmax,rlmin,rlmax,EB,OCE,OCB,At)
 !*  Normalization of reconstructed amplitude from the EB quadratic estimator
-!*  The kernels are the same as the rotation normalization but with a factor 4. 
+!*  The kernels are the same as the rotation normalization but with a factor of 4. 
 !*
 !*  Args:
 !*    :lmax (int)       : Maximum multipole of output normalization spectrum
@@ -176,6 +176,53 @@ subroutine oeb(lmax,rlmin,rlmax,EB,OCE,OCB,At)
   end do
 
 end subroutine oeb
+
+
+subroutine stt(lmax,rlmin,rlmax,fC,OCT,At)
+!*  Unnormalized response between patchy tau and poisson sources/inhomogeneous noise with the temperature quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)        : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int) : Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)   : Theory TT spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double)  : Observed TT spectrum, with bounds (0:rlmax)
+!*
+!*  Returns:
+!*    :At [l] (double) : tau normalization, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, rlmin, rlmax
+  double precision, intent(in), dimension(0:rlmax) :: fC, OCT
+  double precision, intent(out), dimension(0:lmax) :: At
+  !internal
+  integer :: rL(2), l
+  double precision, dimension(rlmin:rlmax) :: W1, W2
+  double precision, dimension(min(2*rlmax,lmax)) :: S0, G0
+
+  write(*,*) 'cross norm TT (tau x src)'
+  rL = (/rlmin,rlmax/)
+
+  do l = rlmin, rlmax
+    if (OCT(l)==0d0) stop 'error (norm_tau.qtt): observed cltt is zero'
+  end do
+
+  !filtering functions
+  W1 = 1d0 / OCT(rlmin:rlmax)
+
+  !main calculation
+  W2 = W1 * fC(rlmin:rlmax)
+  S0 = 0d0
+  call Kernels_tau(rL,W1,W2,S0,'S0')
+  G0 = 0d0
+  call Kernels_tau(rL,W2,W2,G0,'G0')
+
+  At = 0d0
+  do l = 1, lmax
+    At(l) = (S0(l)+G0(l))/2d0
+  end do
+
+end subroutine stt
 
 
 

@@ -958,7 +958,7 @@ end subroutine qeb_iter
 
 
 subroutine ttt(lmax,rlmin,rlmax,fC,OCT,Ag,gtype)
-!*  Cross normalization between lensing potential and amplitude modulation from the temperature quadratic estimator
+!*  Unnormalized response between lensing potential and amplitude modulation from the temperature quadratic estimator
 !*
 !*  Args:
 !*    :lmax (int)        : Maximum multipole of output normalization spectrum
@@ -986,7 +986,7 @@ subroutine ttt(lmax,rlmin,rlmax,fC,OCT,Ag,gtype)
   double precision, dimension(rlmin:rlmax) :: W1, W2
   double precision, dimension(2,lmax) :: S0, G0
 
-  write(*,*) 'norm tTT (lens)'
+  write(*,*) 'cross norm TT (lens x tau)'
   rL = (/rlmin,rlmax/)
 
   lk2 = 1d0
@@ -1015,6 +1015,64 @@ subroutine ttt(lmax,rlmin,rlmax,fC,OCT,Ag,gtype)
   end do
 
 end subroutine ttt
+
+
+subroutine stt(lmax,rlmin,rlmax,fC,OCT,Ag,gtype)
+!*  Unnormalized response between lensing potential and poisson sources/inhomogeneous nosie with the temperature quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)        : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int) : Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)   : Theory TT spectrum, with bounds (0:rlmax)
+!*    :OCT [l] (double)  : Observed TT spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str)       : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+!*
+!*  Returns:
+!*    :Ag [l] (double)   : Cross normalization, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, rlmin, rlmax
+  double precision, intent(in), dimension(0:rlmax) :: fC, OCT
+  double precision, intent(out), dimension(0:lmax) :: Ag
+  !optional
+  character(1), intent(in), optional :: gtype
+  !f2py character(1) :: gtype = ''
+  !internal
+  integer :: l, rL(2)
+  double precision, dimension(lmax) :: lk2
+  double precision, dimension(rlmin:rlmax) :: W1, W2
+  double precision, dimension(2,lmax) :: S0, G0
+
+  write(*,*) 'cross norm TT (lens x src)'
+  rL = (/rlmin,rlmax/)
+
+  lk2 = 1d0
+  if (present(gtype).and.gtype=='k') then
+    do l = 1, lmax
+      lk2(l) = (dble(l*(l+1))/2d0)
+    end do
+  end if
+
+  do l = rlmin, rlmax
+    if (OCT(l)==0d0) stop 'error (norm_lens.stt): observed cltt is zero'
+  end do
+
+  W1 = 1d0 / OCT(rlmin:rlmax)
+  W2 = W1 * fC(rlmin:rlmax)
+  S0 = 0d0
+  call kernels_lenstau(rL,W1,W2,S0,'S0')
+  G0 = 0d0
+  call kernels_lenstau(rL,W1,W2,G0,'G0')
+
+  Ag = 0d0
+  do l = 1, lmax
+    Ag(l) = (S0(1,l)+G0(1,l))/lk2(l)/2d0
+  end do
+
+end subroutine stt
 
 
 end module norm_lens

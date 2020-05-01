@@ -63,7 +63,7 @@ subroutine qtt_sym(lmax,rlmin,rlmax,Tlm,slm,nside)
   call map2alm(nside,lmax,lmax,map**2,alm)
   slm = 0d0
   do l = 1, lmax
-    slm(l,0:l) = alm(1,l,0:l)
+    slm(l,0:l) = 0.5d0*alm(1,l,0:l)
   end do
   deallocate(map,alm)
 
@@ -120,7 +120,7 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside)
   call map2alm(nside,lmax,lmax,map(1,:)*map(2,:),alm)
   slm = 0d0
   do l = 1, lmax
-    slm(l,0:l) = alm(1,l,0:l)
+    slm(l,0:l) = 0.5d0*alm(1,l,0:l)
   end do
   deallocate(map,alm)
 
