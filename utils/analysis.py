@@ -76,16 +76,22 @@ class statistics:
             - fcl: fiducial cl used to define amplitude array like [bin]
         """
 
-        # mean
-        if fcl is None: fcl = np.mean(self.scl,axis=0)*scale
-        amp = self.scl/fcl
+        # baseline cl (A=1)
+        if fcl is None: 
+            Fcl = np.mean(self.scl,axis=0)*scale
+        else:
+            Fcl = fcl
+
+        # relative amplitude
+        amp = self.scl/Fcl
 
         # covariance
         cov = np.cov(amp,rowvar=0)
         cov[np.isnan(cov)] = 0.
-        if diag: cov = np.diag(np.diag(cov))
+        if diag: 
+            cov = np.diag(np.diag(cov))
 
-        if cor!='':
+        if cor!='': #(this was used for pbxhsc as one of tests)
             # replace |Cor|<0.5 elements with random numbers
             Cor = np.corrcoef(amp,rowvar=0)
             c   = (np.kron(np.diag(cov),np.diag(cov).T)).reshape((len(fcl),len(fcl)))
@@ -95,19 +101,32 @@ class statistics:
             xy  = np.where(np.abs(Cor)<.5)
             cov[xy] += (.2*ran[xy]-.1)*c[xy]**0.5
 
-        # coefficients
-        wb = np.sum(np.linalg.inv(cov),axis=0)
-        wt = np.sum(wb)
+        #//// observed amplitude ////#
+        wb = np.sum( np.linalg.inv(cov), axis=0 )
+        oA = np.sum( wb * self.ocl / fcl ) / np.sum( wb )
 
-        # amplitude estimator
-        A  = np.sum(wb*amp,axis=1)/wt
+        #//// amplitude estimator for sims ////#
+        n = len(self.scl[:,0])
+
+        # baseline cl
+        if fcl is None:
+            Fcl = np.array( [ np.mean(np.delete(self.scl,i,0),axis=0) for i in range(n) ] ) * scale
+        else:
+            Fcl = fcl
+
+        # relative amplitude
+        amp = self.scl/Fcl
+
+        # coefficients
+        wbi = np.array( [ np.sum(np.linalg.inv(np.cov(np.delete(amp,i,0),rowvar=0)),axis=0) for i in range(n) ] )
+        wti = np.array( [ np.sum(wbi[i,:]) for i in range(n)] )
+
+        # amplitude estimates
+        A  = np.array( [np.sum(wbi[i,:]*amp[i,:])/wti[i] for i in range(n)] )
         mA = np.mean(A)
         sA = np.sqrt(np.var(A))
 
-        # observed amplitude
-        oA = np.sum(wb*self.ocl/fcl)/wt
-        #print 'obs/sim amp', oA, mA, 'sigma amp', sA, 'ratio', oA/sA
-
+        # output
         self.A  = A
         self.mA = mA
         self.sA = sA
