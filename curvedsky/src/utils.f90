@@ -63,7 +63,7 @@ subroutine gauss1alm(lmax,Cl,alm)
 end subroutine gauss1alm
 
 
-subroutine gauss2alm(lmax,cl1,cl2,xl,alm)
+subroutine gauss2alm(lmax,cl1,cl2,xl,flm,alm)
 !*  Generating two alms as random Gaussian fields whose power spectra are cl1, cl2 and the cross spectrum is xl.
 !*
 !*  Args:
@@ -72,6 +72,9 @@ subroutine gauss2alm(lmax,cl1,cl2,xl,alm)
 !*    :cl2 [l] (double) : Angular power spectrum of the 2nd alm, with bounds (0:lmax)
 !*    :xl [l] (double)  : Cross-power spectrum between alm1 and alm2, with bounds (0:lmax)
 !*
+!*  Args(optional):
+!*    :flm [l,m] (dcmplx)  : pre-computed Gaussian fields whose spectrum is cl1, with bounds (0:lmax,0:lmax), default to None
+!*
 !*  Returns:
 !*    :alm [2,l,m] (dcmplx): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
 !*
@@ -79,23 +82,32 @@ subroutine gauss2alm(lmax,cl1,cl2,xl,alm)
   !I/O
   integer, intent(in) :: lmax
   double precision, intent(in), dimension(0:lmax) :: cl1, cl2, xl
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: flm
   double complex, intent(out), dimension(2,0:lmax,0:lmax) :: alm
   !internal
   integer :: l, m
   double precision :: tamp, corr, xamp
+  !opt4py :: flm = None
+  !add2py :: if flm is None:  flm = 0
 
   alm = 0
-  call gauss1alm(lmax,cl1,alm(1,:,:))
+
+  if (sum(abs(flm))==0) then
+    call gauss1alm(lmax,cl1,alm(1,:,:))
+  else
+    alm(1,:,:) = flm
+  end if
 
   call initrandom(-1)
   do l = 2, lmax
     if (cl1(l)<=0d0)  stop 'error (gauss2alm): negative input cl1'
     corr = xl(l)/cl1(l)
+    if (cl2(l)<=corr*xl(l))  stop 'error (gauss2alm): correlation coefficient > 1 at specific multipole'
     xamp = sqrt(cl2(l) - corr*xl(l))
     !m=0
     alm(2,l,0) = corr*alm(1,l,0) + Gaussian1()*xamp
     !m/=0
-    do m =1, l
+    do m = 1, l
       alm(2,l,m) = corr*alm(1,l,m) + cmplx(Gaussian1(),Gaussian1())*xamp/sqrt(2d0)
     end do
   end do
@@ -121,8 +133,10 @@ subroutine gaussTEB(lmax,TT,EE,BB,TE,alm)
   integer, intent(in) :: lmax
   double precision, intent(in), dimension(0:lmax) :: TT, EE, BB, TE
   double complex, intent(out), dimension(3,0:lmax,0:lmax) :: alm
+  double complex :: flm(0:lmax,0:lmax)
 
-  call gauss2alm(lmax,TT,EE,TE,alm(1:2,:,:))
+  flm = 0d0
+  call gauss2alm(lmax,TT,EE,TE,flm,alm(1:2,:,:))
   call gauss1alm(lmax,BB,alm(3,:,:))
 
 end subroutine gaussTEB

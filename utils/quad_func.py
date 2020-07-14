@@ -4,6 +4,7 @@ import sys
 import os
 import numpy as np
 import pickle
+import tqdm
 
 # cmblensplus/wrap/
 import basic
@@ -62,19 +63,7 @@ class quad:
 
     def __init__(self,lcl=None,ocl=None,ifl=None,falm='',olmax=2048,rlmin=500,rlmax=3000,nside=2048,n0min=1,n0max=50,rdmin=1,rdmax=100,mfmin=1,mfmax=100,qDO=None,qMV=None,qlist=None,qtype='',wn=None):
 
-        #//// load config file ////#
-        #config = configparser.ConfigParser()
-        
-        # read variables in a section "QUADREC" if a parameter file is specified
-        # otherwise just a black section is added
-        #if np.size(sys.argv) > 1 and '.ini' in sys.argv[1]:
-        #    print('reading '+sys.argv[1])
-        #    config.read(sys.argv[1])
-        #else: 
-        #    config.add_section('QUADREC')
-
         #//// get parameters ////#
-        #conf = config['QUADREC']
         conf = misctools.load_config('QUADREC')
 
         # define parameters for quadratic estimator computations
@@ -162,10 +151,6 @@ class quad:
             if not q[1] in self.mtype: self.mtype.append(q[1])
 
 
-    def __copy__(self):
-        return quad(lcl=self.lcl,ocl=self.ocl,ifl=self.ifl,falm=self.falm,olmax=self.olmax,rlmin=self.rlmin,rlmax=self.rlmax,nside=self.nside,n0min=self.n0min,n0max=self.n0max,rdmin=self.rdmin,rdmax=self.rdmax,mfmin=self.mfmin,mfmax=self.mfmax,qDO=self.qDO,qMV=self.qMV,qlist=self.qlist,qtype=self.qtype,wn=self.wn)
-
-
     def fname(self,root,ids,cmbtag):
         #setup filename
 
@@ -236,6 +221,10 @@ class quad:
                 if q=='TT': Ag = curvedsky.norm_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
                 if q=='EB': Ag = curvedsky.norm_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
 
+            elif qtype=='src':
+                Ac = np.zeros(Lmax+1)
+                if q=='TT': Ag = curvedsky.norm_src.qtt(Lmax,rlmin,rlmax,ocl[0,:])
+
             else: 
                 if verbose:  print('do nothing')
 
@@ -250,6 +239,60 @@ class quad:
 
         if not output:
             return Ags, Acs
+
+
+    def coeff_bhe(self,est=['lens','tau','src'],qcomb='TT',gtype='k'):
+        # return coefficients for bias-hardened estimator
+
+        ocl = self.ocl
+        lcl = self.lcl
+
+        Lmax  = self.olmax
+        rlmin = self.rlmin
+        rlmax = self.rlmax
+
+        if qcomb == 'TT':
+
+            if 'lens' in est:
+                Ag, __ = curvedsky.norm_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
+            else:
+                Ag = 0.
+
+            if 'tau' in est:
+                At = curvedsky.norm_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
+            else:
+                At = 0.
+
+            if 'src' in est:
+                As = curvedsky.norm_src.qtt(Lmax,rlmin,rlmax,ocl[0,:])
+            else:
+                As = 0.
+            
+            if 'lens' in est and 'tau' in est:  
+                Rgt = curvedsky.norm_lens.ttt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
+            else:
+                Rgt = 0.
+
+            if 'lens' in est and 'src' in est:  
+                Rgs = curvedsky.norm_lens.stt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
+            else:
+                Rgs = 0.
+
+            if 'tau' in est and 'src' in est:  
+                Rts = curvedsky.norm_tau.stt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
+            else:
+                Rts = 0.
+        
+            DetR = 1 - Ag*As*Rgs**2 - Ag*At*Rgt**2 - At*As*Rts**2 + 2.*Ag*At*As*Rgt*Rgs*Rts
+        
+            if self.qtype == 'tau':
+            
+                Btt = ( 1. - Ag*As*Rgs**2 ) / DetR
+                Btg = ( Rts*As*Rgs - Rgt ) / DetR * At
+                Bts = ( Rgt*Ag*Rgs - Rts ) / DetR * At
+
+                return Btt, Btg, Bts
+ 
 
 
     def loadnorm(self):
@@ -287,7 +330,7 @@ class quad:
 
         # loop for realizations
         #cl = np.zeros((len(rlz),Lmax+1))
-        for i in rlz:
+        for i in tqdm.tqdm(rlz,ncols=100,desc='reconstruction:'):
             
             gmv, cmv = 0., 0.
 
@@ -303,9 +346,7 @@ class quad:
             for cmb in self.mtype:
                 alm[cmb] = self.Fl[cmb][:,None] * pickle.load(open(falm[cmb][i],"rb"))[:rlmax+1,:rlmax+1]
 
-            for q in qlist:
-
-                if verbose:  misctools.progress(i,rlz,addtext='(qrec, '+q+')')
+            for q in tqdm.tqdm(qlist,ncols=100,desc='each quad-comb:',leave=False):
 
                 if self.qtype=='lens':
                     if q=='TT':  glm, clm = curvedsky.rec_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm['T'],alm['T'],gtype='k',nside=nside)
@@ -323,6 +364,10 @@ class quad:
                 elif self.qtype=='tau':
                     if q=='TT':  glm = curvedsky.rec_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],alm['T'],alm['T'],nside=nside)
                     if q=='EB':  glm = curvedsky.rec_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],alm['E'],alm['B'],nside=nside)
+                    clm = glm*0.
+
+                elif self.qtype=='src':
+                    if q=='TT':  glm = curvedsky.rec_src.qtt(Lmax,rlmin,rlmax,alm['T'],alm['T'],nside=nside)
                     clm = glm*0.
 
                 else: 
@@ -365,7 +410,7 @@ class quad:
             cl[q] = np.zeros((2,Lmax+1))
 
         # loop for realizations
-        for i in rlz:
+        for i in tqdm.tqdm(rlz,ncols=100,desc='N0 bias:'):
 
             id0, id1 = 2*i-1, 2*i
             gmv, cmv = 0., 0.
@@ -375,15 +420,12 @@ class quad:
                 alm0[cmb] = self.Fl[cmb][:,None] * pickle.load(open(falm[cmb][id0],"rb"))[:self.rlmax+1,:self.rlmax+1]
                 alm1[cmb] = self.Fl[cmb][:,None] * pickle.load(open(falm[cmb][id1],"rb"))[:self.rlmax+1,:self.rlmax+1]
 
-            for q in qlist:
-
-                if verbose:  misctools.progress(i,rlz,addtext='(n0 bias, '+q+')')
+            for q in tqdm.tqdm(qlist,ncols=100,desc='each quad-comb:',leave=False):
 
                 if q == 'MV':
                     glm, clm = gmv.copy(), cmv.copy()
                 else:
                     X, Y = q[0], q[1]
-                    if verbose:  print(X,Y)
                     glm, clm = qXY(self.qtype,q,Lmax,self.rlmin,self.rlmax,self.nside,self.lcl,alm0[X],alm1[X],alm0[Y],alm1[Y])
 
                 glm *= Ag[q][:,None]
@@ -399,7 +441,6 @@ class quad:
 
         for q in qlist:
             if self.n0sim > 0:
-                if verbose:  print ('save N0 data')
                 oL = np.linspace(0,Lmax,Lmax+1)
                 np.savetxt(self.f[q].n0bs,np.concatenate((oL[None,:],cl[q])).T)
 
@@ -409,9 +450,7 @@ class quad:
         oL = np.linspace(0,self.olmax,self.olmax+1)
         Ag, Ac, Wg, Wc = quad.loadnorm(self)
 
-        for i in rlz:
-
-            if verbose:  print ('Diag-RDN0',i)
+        for i in tqdm.tqdm(rlz,ncols=100,desc='Diag-RDN0:'):
 
             rcl = np.loadtxt(frcl[i],unpack=True,usecols=(1,2,3,4))  # cmb aps for ith realization
             rcl[np.where(rcl==0)] = 1e30 # a large number
@@ -458,13 +497,11 @@ class quad:
             N0[q] = np.loadtxt(self.f[q].n0bs,unpack=True,usecols=(1,2))
 
         # compute RDN0
-        for i in rlz:
+        for i in tqdm.tqdm(rlz,ncols=100,desc='RDN0:'):
 
             # skip sim
             if not self.rd4sim and i!=0: 
                 continue
-
-            if verbose:  misctools.progress(i,rlz,addtext='(rdn0 bias)')
 
             # avoid overwriting
             Qlist = []
@@ -484,7 +521,8 @@ class quad:
                 almr[cmb] = self.Fl[cmb][:,None]*pickle.load(open(falm[cmb][i],"rb"))[:self.rlmax+1,:self.rlmax+1]
 
             # loop for I
-            for I in range(self.rdmin,self.rdmax+1):
+            for I in tqdm.tqdm(range(self.rdmin,self.rdmax+1),ncols=100,desc='inside loop:',leave=False):
+            #for I in range(self.rdmin,self.rdmax+1):
 
                 gmv, cmv = 0., 0.
 
@@ -498,7 +536,6 @@ class quad:
                     X, Y = q[0], q[1]
 
                     if I==i: continue
-                    if verbose:  print(I)
 
                     if q=='MV':
                         glm, clm = gmv.copy(), cmv.copy()
@@ -523,7 +560,6 @@ class quad:
                 
                 for q in qlist:
                     cl[q] = cl[q]/(self.wn[4]*sn) - N0[q]
-                    if verbose:  print ('save RDN0')
                     oL = np.linspace(0,Lmax,Lmax+1)
                     np.savetxt(qout.f[q].rdn0[i],np.concatenate((oL[None,:],cl[q])).T)
 
@@ -538,15 +574,12 @@ class quad:
 
             if misctools.check_path(self.f[q].mf,overwrite=overwrite,verbose=verbose): continue
 
-            if verbose:  print('compute mean field')
             mfg, mfc = 0., 0.
-            for I in rlz:
-                if verbose:  misctools.progress(I,rlz,addtext='(mean)')
+            for I in tqdm.tqdm(rlz,ncols=100,desc='mean-field (all sim average): ('+q+')'):
                 mfgi, mfci = pickle.load(open(self.f[q].alm[I],"rb"))
                 mfg += mfgi/self.mfsim
                 mfc += mfci/self.mfsim
 
-            if verbose:  print('save to file')
             pickle.dump((mfg,mfc),open(self.f[q].mf,"wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
             # compute mf cls
@@ -565,20 +598,28 @@ class quad:
 
         for q in self.qlist:
 
+            # counting missing files
+            filen = 0
+            for i in rlz:
+                if misctools.check_path(self.f[q].mfb[i],overwrite=overwrite,verbose=verbose): continue
+                filen += 1
+            if filen == 0: 
+                continue  # do nothing below
+
             mglm = np.zeros((Lmax+1,Lmax+1),dtype=np.complex)
             mclm = np.zeros((Lmax+1,Lmax+1),dtype=np.complex)
 
-            for I in self.mfrlz:
-                if verbose:  misctools.progress(I,self.mfrlz,addtext='(load reconstructed alms, '+q+')')
+            for I in tqdm.tqdm(self.mfrlz,ncols=100,desc='mean-field: load reconstructed alms ('+q+')'):
+                #if verbose:  misctools.progress(I,self.mfrlz,addtext='(load reconstructed alms, '+q+')')
                 glm, clm = pickle.load(open(self.f[q].alm[I],"rb"))
                 mglm += glm/self.mfsim
                 mclm += clm/self.mfsim
 
-            for i in rlz:
+            for i in tqdm.tqdm(rlz,ncols=100,desc='mean-field: alm for each rlz ('+q+')'):
 
                 if misctools.check_path(self.f[q].mfb[i],overwrite=overwrite,verbose=verbose): continue
-
-                if verbose:  misctools.progress(i,rlz,addtext='(compute mean field for each rlz)')
+        
+                #if verbose:  misctools.progress(i,rlz,addtext='(compute mean field for each rlz)')
                 if i>=self.mfmin and i<=self.mfmax: 
                     glm, clm = pickle.load(open(self.f[q].alm[i],"rb"))
                     mfg = mglm - glm/self.mfsim
@@ -589,14 +630,10 @@ class quad:
                     mfg = 1.*mglm
                     mfc = 1.*mclm
 
-                if verbose:  print('save to file')
                 pickle.dump((mfg,mfc),open(self.f[q].mfb[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
-
             # compute mf cls
-            if verbose:  print('cl for mean field bias')
-
-            for i in rlz:
+            for i in tqdm.tqdm(rlz,ncols=100,desc='mean-field: aps for each rlz ('+q+')'):
 
                 if misctools.check_path(self.f[q].ml[i],overwrite=overwrite,verbose=verbose): continue
 
@@ -715,24 +752,13 @@ def qXY(qtype,qcomb,Lmax,rlmin,rlmax,nside,lcl,Xlm1,Xlm2,Ylm1,Ylm2):
 
             return rlm1+rlm2, (rlm1+rlm2)*0.
 
+    if qtype=='src':
+            if qcomb=='TT':
+                rlm1 = curvedsky.rec_src.qtt(Lmax,rlmin,rlmax,Xlm1,Ylm2,nside=nside)
+                rlm2 = curvedsky.rec_src.qtt(Lmax,rlmin,rlmax,Xlm2,Ylm1,nside=nside)
 
-def cinvfilter_correct(cl,ol,xl):
 
-    m, lsize = np.shape(cl)
-
-    alp = np.zeros((min(m,3),lsize))
-    ocl = np.zeros((m,lsize))
-    ifl = np.zeros((min(m,3),lsize))
-
-    for mi in range(m):
-        if mi>=3:
-            ocl[mi,2:] = ol[mi,2:]/alp[0,2:]/alp[1,2:]  # corrected observed cl for TE
-        else:
-            alp[mi,2:] = xl[mi,2:]/cl[mi,2:]      # signal transfer function
-            ocl[mi,2:] = ol[mi,2:]/alp[mi,2:]**2  # corrected observed cl
-            ifl[mi,2:] = ol[mi,2:]/alp[mi,2:]     # inverse filter
-
-    return ocl, ifl
+            return rlm1+rlm2, (rlm1+rlm2)*0.
 
 
 

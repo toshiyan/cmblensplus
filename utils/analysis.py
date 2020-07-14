@@ -103,7 +103,7 @@ class statistics:
 
         #//// observed amplitude ////#
         wb = np.sum( np.linalg.inv(cov), axis=0 )
-        oA = np.sum( wb * self.ocl / fcl ) / np.sum( wb )
+        oA = np.sum( wb * self.ocl / Fcl ) / np.sum( wb )
 
         #//// amplitude estimator for sims ////#
         n = len(self.scl[:,0])

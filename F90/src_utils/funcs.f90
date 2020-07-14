@@ -189,7 +189,31 @@ function w3j_sec(L,L1,M1,M2)
 end function w3j_sec
 
 
+subroutine w3j_recursion_000(iL0,iL1,iL2,W3j)
+!The recursion relation of the Wigner 3j for M0=M1=M2=0
+! W(L0,L1,L2) = w3j_c_000 * W(L0,L1,L2+2)
+  implicit none
+  !I/O
+  integer, intent(in) :: iL0, iL1, iL2
+  double precision, intent(inout) :: W3j(1:3)
+  !internal
+  double precision :: L0, L1, L2, a, b1, b2, c
+
+  L0 = dble(iL0)
+  L1 = dble(iL1)
+  L2 = dble(iL2)
+
+  a  = (L2+1) * (L2+2)*dsqrt((-L2+L1+L0)*(L2-L1+L0+1)*(L2+L1-L0+1)*(L2+L1+L0+2))
+  c  = -(L2+2) * (L2+1)*dsqrt((-L2+L1+L0-1)*(L2-L1+L0+2)*(L2+L1-L0+2)*(L2+L1+L0+3))
+
+  W3j(3) = (c/a) * W3j(1)
+
+end subroutine w3j_recursion_000
+
+
 subroutine w3j_recursion(iL0,iL1,iL2,iM1,iM2,W3j)
+!The recursion relation of the Wigner 3j for L2 is given as
+! W(L0,L1,L2,M0,M1,M2) = w3j_b * W(L0,L1,L2+1,M0,M1,M2) + w3j_c * W(L0,L1,L2+2,M0,M1,M2)
   implicit none
   !I/O
   integer, intent(in) :: iL0, iL1, iL2, iM1, iM2
@@ -203,10 +227,10 @@ subroutine w3j_recursion(iL0,iL1,iL2,iM1,iM2,W3j)
   M1 = dble(iM1)
   M2 = dble(iM2)
 
-  a  = (L2+2)*dsqrt((-L2+L0+L1)*(L2-L0+L1+1)*(L2+L0-L1+1)*(L2+L0+L1+2))
+  a  = (L2+2)*dsqrt((-L2+L1+L0)*(L2-L1+L0+1)*(L2+L1-L0+1)*(L2+L1+L0+2))
   b1 = 2*(L2+1)*(L2+2)*(2*L2+3)
-  b2 = (2*L2+3)*((L2+1)*(L2+2)+L0*(L0+1)-L1*(L1+1))
-  c  = (L2+1)*dsqrt((-L2+L0+L1-1)*(L2-L0+L1+2)*(L2+L0-L1+2)*(L2+L0+L1+3))
+  b2 = (2*L2+3)*((L2+1)*(L2+2)+L1*(L1+1)-L0*(L0-1))
+  c  = (L2+1)*dsqrt((-L2+L1+L0-1)*(L2-L1+L0+2)*(L2+L1-L0+2)*(L2+L1+L0+3))
 
   if (L2>=M1+M2) then
     W3j(3) = w3j_b(M1,M2,L2,a,b1,b2)*W3j(2) + w3j_c(M1,M2,L2,a,c)*W3j(1)

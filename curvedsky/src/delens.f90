@@ -137,7 +137,6 @@ subroutine shiftvec(npix,lmax,plm,beta,nremap)
   !add2py :: npix = 12*nside**2
  
   nside = int(dsqrt(npix/12d0))
-  write(*,*) 'Nside =', nside
 
   allocate(plm0(1,0:lmax,0:lmax),map(0:npix-1),alpha(0:npix-1,2),dalpha(0:npix-1,3))
 
@@ -182,7 +181,6 @@ subroutine phi2grad(npix,lmax,plm,grad)
   !add2py :: npix = 12*nside**2
 
   nside = int(dsqrt(npix/12d0))
-  write(*,*) 'Nside =', nside
 
   allocate(plm0(1,0:lmax,0:lmax),map(0:npix-1))
   plm0(1,:,:) = plm(:,:)
@@ -222,7 +220,6 @@ subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
   !add2py :: npix = 12*nside**2
 
   nside = int(dsqrt(npix/12d0))
-  write(*,*) 'Nside =', nside
 
   allocate(alm0(3,0:lmax,0:lmax),dvec(0:npix-1),tqu(0:npix-1,3))
   alm0 = alm_in !double to single

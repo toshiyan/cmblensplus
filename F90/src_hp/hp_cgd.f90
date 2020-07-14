@@ -51,19 +51,20 @@ subroutine set_mgchain(mgc,chn,mn,mnmaxs,lmaxs,nsides,itns,eps,verbose,ro)
   mgc%itn   = itns
   mgc%eps   = eps
   mgc%npix  = 12*nsides**2
-  mgc%verbose = verbose
   mgc%lsp   = lmaxs(chn)
   mgc%mnmax = mnmaxs
   mgc%ro    = ro
+  mgc%verbose = verbose
 
-  write(*,'('//str(chn)//'(I4,X))') mgc%nside
-  write(*,'('//str(chn)//'(I4,X))') mgc%mnmax
-  write(*,'('//str(chn)//'(I4,X))') mgc%lmax
-  write(*,'('//str(chn)//'(I4,X))') mgc%itn
-  write(*,'('//str(chn)//'(E14.7,X))') mgc%eps
-  write(*,*) mgc%lsp
-  if (mgc%verbose) write(*,*) mgc%verbose
-  if (mgc%ro/=50)  write(*,*) mgc%ro
+  if (verbose) then
+    write(*,'('//str(chn)//'(I4,X))') mgc%nside
+    write(*,'('//str(chn)//'(I4,X))') mgc%mnmax
+    write(*,'('//str(chn)//'(I4,X))') mgc%lmax
+    write(*,'('//str(chn)//'(I4,X))') mgc%itn
+    write(*,'('//str(chn)//'(E14.7,X))') mgc%eps
+    write(*,*) mgc%lsp
+    if (mgc%ro/=50)  write(*,*) mgc%ro
+  end if
 
 end subroutine set_mgchain
 
@@ -192,31 +193,31 @@ subroutine coarse_invmatrix(n,lmax,mgc)
     end do
   end do
 
-  if (mgc%verbose) then
-    i = 3*(3+1)/2
-    write(*,*) '---'
-    write(*,*) A0(i,i+1:i+5)
-    write(*,*) '---'
-    write(*,*) A0(i+1:i+5,i)
-    write(*,*) '---'
-    write(*,*) A0(i-1,i), A0(i,i-1)
-    write(*,*) '---'
-    write(*,*) A0(i-1,i+1), A0(i+1,i-1)
-  end if
+  !if (mgc%verbose) then
+  !  i = 3*(3+1)/2
+  !  write(*,*) '---'
+  !  write(*,*) A0(i,i+1:i+5)
+  !  write(*,*) '---'
+  !  write(*,*) A0(i+1:i+5,i)
+  !  write(*,*) '---'
+  !  write(*,*) A0(i-1,i), A0(i,i-1)
+  !  write(*,*) '---'
+  !  write(*,*) A0(i-1,i+1), A0(i+1,i-1)
+  !end if
 
   call inv_matrix_c(A0,mgc%imat)
 
   !check
-  if (mgc%verbose) then
-    allocate(y(1:n,0:lmax,0:lmax)); y = 0d0
-    y(1,3,2) = 1d0
-    call densemat_multi(n,lmax,mgc%matn,y,mgc%imat,x)
-    call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,mgc%cv(mgc%n,:),x,Mx)
-    write(*,*) '---'
-    write(*,*) Mx(1,3,0:4), Mx(1,4,0:4)
-    deallocate(y)
-    stop
-  end if
+  !if (mgc%verbose) then
+  !  allocate(y(1:n,0:lmax,0:lmax)); y = 0d0
+  !  y(1,3,2) = 1d0
+  !  call densemat_multi(n,lmax,mgc%matn,y,mgc%imat,x)
+  !  call matmul_lhs(n,mn,mgc%npix(mgc%n,:),lmax,mgc%cv(mgc%n,:),x,Mx)
+  !  write(*,*) '---'
+  !  write(*,*) Mx(1,3,0:4), Mx(1,4,0:4)
+  !  deallocate(y)
+  !  stop
+  !end if
 
   deallocate(Mx,x,A0,A1)
 
@@ -239,6 +240,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
   double precision, intent(out), optional :: ratio(mgc%itn(chain))
   !internal
+  logical :: message
   integer :: c, ni, mi, i, l
   double precision :: absb, absr, d, d0, td, alpha
   double precision :: mm(0:lmax,0:lmax)
@@ -247,10 +249,11 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   if (lmax/=mgc%lmax(chain)) stop 'error: lmax is inconsistent'
   absb = dsqrt(sum(abs(b)**2))
 
+  message = ou==7.or.mgc%verbose
 
   if (chain==1) then
     !diagonal preconditioner
-    write(ou,*) 'precompute diagonal preconditioner'
+    if (message)  write(ou,*) 'precompute diagonal preconditioner'
     allocate(mgc%pmat(n,0:lmax,0:lmax))
     do ni = 1, n
       mm = 0d0
@@ -268,7 +271,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   !residual
   call matmul_lhs(n,mgc%mnmax(chain),mgc%npix(chain,:),lmax,mgc%cv(chain,:),x,r)
   r = b - r
-  if (chain==1)  write(ou,*) 'initial residual', dsqrt(sum(abs(r)**2)), '|b|^2', dsqrt(sum(abs(b)**2))
+  if (chain==1.and.message)  write(ou,*) 'initial residual', dsqrt(sum(abs(r)**2)), '|b|^2', dsqrt(sum(abs(b)**2))
   !if (chain==1)  stop
 
   !set other values
@@ -287,7 +290,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
     r = r - alpha*Ap
 
     absr = dsqrt(sum(abs(r)**2))
-    if (chain==1.and.mod(i,mgc%ro)==0)  write(ou,*) i, absr/absb, d/d0
+    if (chain==1.and.message.and.mod(i,mgc%ro)==0)  write(ou,*) i, absr/absb, d/d0
     if (chain==1.and.present(ratio))  ratio(i) = absr/absb
 
     call precondition(n,lmax,r,z,mgc,chain,ou)
@@ -298,7 +301,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
     ! check exit condition
     if (absr<mgc%eps(chain)*absb) then 
       !exit loop if |r|/|b| becomes very small
-      if (chain==1) write(ou,*) i, absr/absb
+      if (chain==1.and.message) write(ou,*) i, absr/absb
       exit
     end if
 

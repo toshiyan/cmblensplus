@@ -20,7 +20,7 @@ OPTION = $(MODD)
 
 #//// files to be compiled ////#
 # independent modules
-OBJ = constants.o funcs.o random.o io.o general.o cosmofunc.o pstool.o bstool.o grid2d.o alkernel.o delensing.o alflat.o bbflat.o utilsgal.o
+OBJ = constants.o wigner_f90.o funcs.o random.o io.o general.o cosmofunc.o pstool.o bstool.o grid2d.o alkernel.o delensing.o alflat.o bbflat.o utilsgal.o utilsgw.o
 
 $(target): $(OBJ)
 	ar crs $@ $^

@@ -835,7 +835,7 @@ subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,ck,model,theta,skew,pb)
   logical, intent(in) :: pb
   !internal
   integer :: l2, l3, a1, a2, a3
-  double precision :: bisp(2), blll, hlll, del, Wl(eL(2))
+  double precision :: bisp(2), blll, w3j, hlll, del, Wl(eL(2))
 
   skew = 0d0
 
@@ -858,23 +858,25 @@ subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,ck,model,theta,skew,pb)
         bisp = 0d0
         call bispec_lens_lss_kernel(cp,b,l1,l2,l3,bisp(1),model)
         if (pb)  call bispec_lens_pb_kernel(l1,l2,l3,wp,ck,bisp(2))
-        hlll = W3j_approx(dble(l1),dble(l2),dble(l3))*dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
+        
+        !if (w3japprox) then
+          w3j = W3j_approx(dble(l1),dble(l2),dble(l3))
+        !end if
+        hlll = w3j*dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
+        
         blll = del * sum(bisp) * hlll**2
         blll = blll * Wl(l1)*Wl(l2)*Wl(l3)
         a1 = dble(l1*(l1+1))
         a2 = dble(l2*(l2+1))
         a3 = dble(l3*(l3+1))
         skew(1) = skew(1) + blll
-        skew(2) = skew(2) + blll * (a1+a2+a3)
-        skew(3) = skew(3) + blll * ((a1+a2-a3)*a3+(a2+a3-a1)*a1+(a3+a1-a2)*a2)
+        skew(2) = skew(2) + blll * 3d0 * a1
+        skew(3) = skew(3) + blll * 3d0 * a1 * (a2+a3-a1)
 
       end do
   end do
   skew = skew/(2d0*l1+1d0)
 
-  !skew(1,:) = skew(1,:)/(12d0*pi*sigma(0)**4)
-  !skew(2,:) = skew(2,:)/(16d0*pi*sigma(0)**2*sigma(1)**2)
-  !skew(3,:) = skew(3,:)/(8d0*pi*sigma(1)**4)
 
 end subroutine skewspec_lens
 

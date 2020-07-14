@@ -39,6 +39,9 @@ fi
 if [ ${1} = "F90" -o ${1} = "all" -o ${1} = "flatsky" ]; then
   makeF90 src_dft
 fi
+if [ ${1} = "F90" -o ${1} = "all" -o ${1} = "curvedsky" ]; then
+  makeF90 src_hp
+fi
 
 # create python modules
 if [ ${1} = "f2py" -o ${1} = "all" -o ${1} = "basic" ]; then

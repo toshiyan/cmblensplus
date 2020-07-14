@@ -61,21 +61,27 @@ def binning2(cl,b0,b1):
         return np.concatenate((cb0,cb1),axis=1)
 
 
-def binned_spec(mb,fcl,cn=1):
+def binned_spec(mb,fcl,cn=1,doreal=True):
     # for a given array of files, fcl, which containes real (fcl[0]) and sims (fcl[1:]), return realization mean and std of binned spectrum
     
-    snmax = len(fcl) - 1
+    snmax = len(fcl)
 
-    ocl = np.loadtxt(fcl[0],unpack=True)[cn]
-    scl = np.array([np.loadtxt(fcl[i],unpack=True)[cn] for i in range(snmax)])
-
-    ocb = binning(ocl,mb)
+    scl = np.array([np.loadtxt(fcl[i],unpack=True)[cn] for i in range(1,snmax)])
     scb = binning(scl,mb)
 
     mcb = np.mean(scb,axis=0)
     vcb = np.std(scb,axis=0)
 
-    return ocb, mcb, vcb, scb
+    if doreal:
+
+        ocl = np.loadtxt(fcl[0],unpack=True)[cn]
+        ocb = binning(ocl,mb)
+
+        return mcb, vcb, scb, ocb
+
+    else:
+   
+        return mcb, vcb, scb
 
 
 

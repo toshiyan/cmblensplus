@@ -15,7 +15,7 @@ module cninv
 contains
 
 
-subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,fratio,filter,verbose,ro,stat)
+subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,filter,verbose,ro,stat)
 !* Same as cnfilter but combining multiple frequency maps and these maps are divided into two different nside groups. 
 !* The filtering would work if the noise variance is not significantly varied with scale (multipole). 
 !*
@@ -36,9 +36,8 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(\|Ax-b\|)<eps, default to 1e-6
 !*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
-!*    :fratio (str): Output filename of \|r\|^2/\|b^2\|
-!*    :verbose (bool): Check the matrix at the coarsest grid. 
-!*    :stat (str): Realtime status filename
+!*    :verbose (bool): Output messages, default to False
+!*    :stat (str): Realtime status filename, default to no output file
 !*
 !* Returns:
 !*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
@@ -47,7 +46,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !I/O
   logical, intent(in) :: verbose
   character(1), intent(in) :: filter
-  character(100), intent(in) :: fratio, stat
+  character(100), intent(in) :: stat
   integer, intent(in) :: n, mn, npix, lmax, chn, ro
   integer, intent(in), dimension(1:chn) :: lmaxs, nsides, itns
   double precision, intent(in), dimension(1:chn) :: eps
@@ -57,7 +56,6 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !opt4py :: itns = [1]
   !opt4py :: eps = [1e-6]
   !opt4py :: filter = ''
-  !opt4py :: fratio = ''
   !opt4py :: verbose = False
   !opt4py :: ro = 50
   !opt4py :: stat = ''
@@ -69,7 +67,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   type(mg_chain)  :: mgc
   integer :: ou=6, c, ni, mi, rn, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn)
   integer(8) :: t1, t2, t_rate, t_max
-  double precision :: clh(n,mn,0:lmax,0:lmax), ratio(itns(1))
+  double precision :: clh(n,mn,0:lmax,0:lmax)
   double precision, allocatable :: nij(:,:)
   double complex :: b(n,0:lmax,0:lmax)
   !replace
@@ -80,7 +78,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 
   if (stat/='')  then 
     ou = 7
-    open(unit=ou,file=stat,status='replace')
+    open(unit=7,file=stat,status='replace')
   end if
 
   !compute beam-convolved half signal spectrum
@@ -125,7 +123,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 
   !setup for multigrid preconditioner
   if (mgc%n>1) then
-    write(ou,*) 'degrade inv noise cov'
+    if (stat/=''.or.verbose)  write(ou,*) 'degrade inv noise cov'
     do c = 2, mgc%n
       do mi = 1, mn
         do ni = 1, n
@@ -142,13 +140,12 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 
   !run kernel
   call system_clock(t1)
-  call cg_algorithm(n,lmax,b,xlm,mgc,1,ou,ratio)
+  call cg_algorithm(n,lmax,b,xlm,mgc,1,ou)
   call system_clock(t2, t_rate, t_max) 
-  write(ou,*) "real time:", (t2-t1)/dble(t_rate)
+
+  if (stat/=''.or.verbose)  write(ou,*) "real time:", (t2-t1)/dble(t_rate)
 
   if (stat/='')  close(ou)
-
-  if (fratio/='')  call savetxt(fratio,ratio,ow=.true.)
 
   call free_mgchain(mgc)
 
@@ -157,7 +154,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 end subroutine cnfilter_freq
 
 
-subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,xlm,chn,lmaxs,nsides0,nsides1,itns,eps,fratio,filter,verbose,reducmn,ro,stat)
+subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,xlm,chn,lmaxs,nsides0,nsides1,itns,eps,filter,verbose,reducmn,ro,stat)
 !* Same as cnfilter but combining multiple frequency maps and these maps are divided into two different nside groups. 
 !*
 !* Args:
@@ -177,8 +174,8 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(\|Ax-b\|)<eps, default to 1e-6
 !*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
-!*    :fratio (str): Output status filename of \|r\|^2/\|b^2\|
-!*    :verbose (bool): Check the matrix at the coarsest grid. 
+!*    :verbose (bool): Output messages
+!*    :stat (str): Realtime status filename
 !*
 !* Returns:
 !*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
@@ -187,7 +184,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !I/O
   logical, intent(in) :: verbose
   character(1), intent(in) :: filter
-  character(100), intent(in) :: fratio, stat
+  character(100), intent(in) :: stat
   integer, intent(in) :: n, mn0, mn1, npix0, npix1, lmax, chn, ro, reducmn
   integer, intent(in), dimension(1:chn) :: lmaxs, nsides0, nsides1, itns
   double precision, intent(in), dimension(1:chn) :: eps
@@ -198,7 +195,6 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !opt4py :: itns = [1]
   !opt4py :: eps = [1e-6]
   !opt4py :: filter = ''
-  !opt4py :: fratio = ''
   !opt4py :: verbose = False
   !opt4py :: reducmn = 0
   !opt4py :: ro = 50
@@ -211,15 +207,17 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
   type(mg_chain)  :: mgc
-  integer :: ou, c, ni, mi, mn, rn, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn0+mn1)
+  integer :: ou=6, c, ni, mi, mn, rn, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn0+mn1)
   integer(8) :: t1, t2, t_rate, t_max
-  double precision :: clh(n,mn0+mn1,0:lmax,0:lmax), bl(mn0+mn1,0:lmax), ratio(itns(1))
+  double precision :: clh(n,mn0+mn1,0:lmax,0:lmax), bl(mn0+mn1,0:lmax)
   double precision, allocatable :: nij(:,:)
   double complex :: b(n,0:lmax,0:lmax)
 
   !replace
-  !chargs :: npix -> nside
-  !add2py :: npix = 12*nside**2
+  !chargs :: npix0 -> nside0
+  !chargs :: npix1 -> nside1
+  !add2py :: npix0 = 12*nside0**2
+  !add2py :: npix1 = 12*nside1**2
 
   mn = mn0 + mn1
   mnmaxs = mn
@@ -291,7 +289,9 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 
   !setup for multigrid preconditioner
   if (mgc%n>1) then
-    write(ou,*) 'degrade inv noise cov'
+
+    if (stat/='' .or. verbose) write(ou,*) 'degrade inv noise cov'
+    
     do c = 2, mgc%n
 
       select case(mgc%mnmax(c))
@@ -327,7 +327,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
           end do
         end do
         do mi = 2, mn
-          if (size(mgc%cv(c,mi)%nij,dim=2)/=mgc%npix(c,1)) stop 'Nij size is inconsistent'
+          call check_error(size(mgc%cv(c,mi)%nij,dim=2)/=mgc%npix(c,mi),'Nij is inconsistent',str(size(mgc%cv(c,mi)%nij,dim=2))//','//str(mgc%npix(c,mi)),ou)
           mgc%cv(c,1)%nij = mgc%cv(c,1)%nij + mgc%cv(c,mi)%nij
         end do
         mgc%cv(c,1)%clh = sum(clh(:,:,0:mgc%lmax(c),0:mgc%lmax(c)),dim=2)/dble(mn)
@@ -339,14 +339,13 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 
   !run kernel
   call system_clock(t1)
-  call cg_algorithm(n,lmax,b,xlm,mgc,1,ou,ratio)
+  call cg_algorithm(n,lmax,b,xlm,mgc,1,ou)
   call system_clock(t2, t_rate, t_max) 
-  write(ou,*) "real time:", (t2-t1)/dble(t_rate)
+  
+  if (stat/='' .or. verbose)  write(ou,*) "real time:", (t2-t1)/dble(t_rate)
 
   if (stat/='')  close(ou)
 
-  if (fratio/='')  call savetxt(fratio,ratio,ow=.true.)
-  
   call free_mgchain(mgc)
 
   call correct_filtering(n,lmax,cl,filter,xlm)

@@ -25,7 +25,7 @@ module cosmofunc
 
   !* cosmological parameters
   type cosmoparams !nu=On/Om
-    double precision :: H0=70d0, h=0.7d0, Ov=0.7d0, Om=0.3d0, Ok=0d0, w0=-1d0, wa=0d0, nu=4.38225537d-2, ns=0.9645d0
+    double precision :: H0=70d0, h=0.7d0, Ov=0.7d0, Om=0.3d0, w0=-1d0, wa=0d0, nu=4.38225537d-2, ns=0.9645d0
   end type cosmoparams
 
   !* local parameters
@@ -90,10 +90,11 @@ function omega_m(a,cp)
   implicit none
   type(cosmoparams), intent(in) :: cp
   double precision, intent(in) :: a
-  double precision :: omega_m, omega_t, Qa2
+  double precision :: omega_m, omega_t, Qa2, Ok
 
+  Ok = 1d0-cp%Om-cp%Ov
   Qa2     = a**(-1d0-3d0*(cp%w0+cp%wa))*dexp(-3d0*(1d0-a)*cp%wa)
-  omega_t = 1d0 - cp%Ok/(cp%Ok+cp%Ov*Qa2+cp%Om/a)
+  omega_t = 1d0 - Ok/(Ok+cp%Ov*Qa2+cp%Om/a)
   omega_m = omega_t*cp%Om/(cp%Om+cp%Ov*a*Qa2)
 
 end function omega_m
@@ -104,10 +105,11 @@ function omega_v(a,cp)
   implicit none
   type(cosmoparams), intent(in) :: cp
   double precision, intent(in) :: a
-  double precision :: omega_v, omega_t, Qa2
+  double precision :: omega_v, omega_t, Qa2, Ok
 
+  Ok = 1d0-cp%Om-cp%Ov
   Qa2     = a**(-1d0-3d0*(cp%w0+cp%wa))*dexp(-3d0*(1d0-a)*cp%wa)
-  omega_t = 1d0 - cp%Ok/(cp%Ok+cp%Ov*Qa2+cp%Om/a)
+  omega_t = 1d0 - Ok/(Ok+cp%Ov*Qa2+cp%Om/a)
   omega_v = omega_t*cp%Ov*Qa2/(cp%Ov*Qa2+cp%Om/a)
 
 end function omega_v
@@ -216,6 +218,40 @@ function g_factor_array(z,cp,n)  result(f)
 end function g_factor_array
 
 
+function g_rate(z,cp)
+! Growth rate at linear perturbation. 
+! f(a) = 1 in the Einstein de Sitter universe. 
+! See Eq.(A.9) of arXiv:1105.4825 for the algorithm
+  implicit none
+!
+! [inputs]
+! z  --- redshift
+  type(cosmoparams), intent(in) :: cp
+  double precision, intent(in) :: z
+!
+! [internal]
+  double precision :: g_rate
+  double precision :: wz, a, b, c, zz, gz0, gz1, Omp
+
+  !g_rate = dlog(g_factor(z,Om,Ov,wz))/dlog(a)
+
+  wz = cp%w0 + (z/(1d0+z))*cp%wa 
+
+  a = -1d0 / (3d0 * wz)
+  b = (wz - 1d0)/ (2d0 * wz)
+  c = 1d0 - 5d0 / (6d0 * wz)
+  zz = (-cp%Ov/cp%Om) * (1d0+z)**(3d0*wz)
+  call HYGFX(a,b,c,zz,gz0)
+  call HYGFX(a+1,b+1,c+1,zz,gz1)
+
+  ! If F(a) = a^-f(a), dF(a)/da = - F(a) [ f(a)/a + ln(a)*df/da ]
+  ! Here, f(a) = 3w(a)
+  Omp = -zz * ( 3d0*wz*(1d0+z) + 3d0*dlog(1d0+z)*cp%wa ) ! dOm/da / Om^2 = du/da
+  g_rate = 1 + a*b/(1+z)/c * Omp * gz1/gz0
+
+end function g_rate
+
+
 function D_z_single(z,cp)  result(f)
 ! Linear growth factor, normalized to the current value
   implicit none
@@ -245,27 +281,6 @@ function D_z_array(z,cp,n)  result(f)
   end do
 
 end function D_z_array
-
-
-function g_rate(z,Om,Ov,wz)
-! Growth rate at linear perturbation. 
-! f(a) = 1 in the Einstein de Sitter universe. 
-  implicit none
-!
-! [inputs]
-! z  --- redshift
-! Om --- Omega_m at z=0
-! Ov --- Omega_v at z=0
-! wz --- w(a) at input z
-  double precision, intent(in) :: z, Om, Ov, wz
-!
-! [internal]
-  double precision :: g_rate, a
-
-  a = 1d0/(1d0+z)
-  g_rate = dlog(g_factor(z,Om,Ov,wz))/dlog(a)
-
-end function g_rate
 
 
 !//// Cosmological Distance ////!
@@ -391,13 +406,14 @@ function H_z_single(z,cp)  result(f)
   implicit none
   type(cosmoparams), intent(in) :: cp
   double precision, intent(in) :: z
-  double precision :: f, a
+  double precision :: f, a, Ok
 
   a  = 1d0/(1d0+z)
+  Ok = 1d0-cp%Om-cp%Ov
   if (cp%w0==-1d0.and.cp%wa==0d0) then
-    f = dsqrt(cp%Ok/a**2+cp%Om/a**3+cp%Ov)
+    f = dsqrt(Ok/a**2+cp%Om/a**3+cp%Ov)
   else
-    f = dsqrt(cp%Ok/a**2+cp%Om/a**3+rho_de(a,cp))
+    f = dsqrt(Ok/a**2+cp%Om/a**3+rho_de(a,cp))
   end if
   f = (cp%H0/c)*f
 
@@ -423,13 +439,14 @@ function dH_dz(z,cp)  result(f)
   implicit none
   type(cosmoparams), intent(in) :: cp
   double precision, intent(in) :: z
-  double precision :: f, a
+  double precision :: f, a, Ok
 
+  Ok = 1d0 - cp%Om - cp%Ov
   a  = 1d0/(1d0+z)
   if (cp%w0==-1d0.and.cp%wa==0d0) then
-    f = (cp%H0/c)*(cp%Ok/a+1.5d0*cp%Om/a**2)/dsqrt(cp%Om/a**3+cp%Ov)
+    f = (cp%H0/c)**2 * ( Ok*(1d0+z) + 1.5d0*cp%Om*(1d0+z)**2 ) / H_z(z,cp)
   else
-    f = (cp%H0/c)**2*(cp%Ok/a+1.5d0*cp%Om/a**2-0.5d0*a**2*drho_da_de(a,cp))/H_z(z,cp)
+    f = (cp%H0/c)**2 * ( Ok*(1d0+z) + 1.5d0*cp%Om*(1d0+z)**2 - 0.5d0*(1d0+z)**2*drho_da_de(a,cp) ) / H_z(z,cp)
   end if
 
 end function dH_dz
