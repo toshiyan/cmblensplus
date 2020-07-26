@@ -24,7 +24,7 @@ subroutine equi(lmin,lmax,alm,bispec,bst)
   double precision, allocatable :: kmap(:)
   double complex, allocatable :: klm(:,:,:)
 
-  nside = bst*lmax
+  nside = bst*2**(int(dlog(dble(lmax))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1),klm(1,0:lmax,0:lmax))
 
@@ -53,7 +53,7 @@ subroutine fold(lmin,lmax,alm,bispec,bst)
   double precision, allocatable :: kmap(:,:)
   double complex, allocatable :: klm(:,:,:)
 
-  nside = bst*lmax
+  nside = bst*2**(int(dlog(dble(lmax))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1,2),klm(2,0:lmax,0:lmax))
 
@@ -89,7 +89,7 @@ subroutine sque(eL,sL,l1,alm,bispec,bst)
 
   if (max(sL(2),eL(2))>l1) stop 'error (sque): l1 is too small'
 
-  nside = bst*l1
+  nside = bst*2**(int(dlog(dble(l1))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1,2),klm(2,0:l1,0:l1))
 
@@ -125,7 +125,7 @@ subroutine isos(eL,aL,l1,alm,bispec,bst)
 
   if (max(aL(2),eL(2))>l1) stop 'error (isos): l1 is too small'
 
-  nside = bst*l1
+  nside = bst*2**(int(dlog(dble(l1))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1,2),klm(2,0:l1,0:l1))
 
@@ -159,7 +159,7 @@ subroutine xequi(lmin,lmax,n,alm,bispec,bst)
   double precision, allocatable :: kmap(:,:)
   double complex, allocatable :: klm(:,:,:)
 
-  nside = bst*lmax
+  nside = bst*2**(int(dlog(dble(lmax))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1,n),klm(n,0:lmax,0:lmax))
 
@@ -203,7 +203,7 @@ subroutine xfold(lmin,lmax,n,alm,bispec,bst)
   double complex, allocatable :: klm(:,:,:)
 
   nn = max(n,2)
-  nside = bst*lmax
+  nside = bst*2**(int(dlog(dble(lmax))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1,nn),klm(nn,0:lmax,0:lmax))
 
@@ -253,7 +253,7 @@ subroutine xsque(eL,sL,l1,n,alm,bispec,bst)
   double complex, allocatable :: klm(:,:,:)
 
   nn = max(n,2)
-  nside = bst*l1
+  nside = bst*2**(int(dlog(dble(l1))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1,nn),klm(nn,0:l1,0:l1))
 
@@ -305,7 +305,7 @@ subroutine xisos(eL,aL,l1,n,alm,bispec,bst)
   if (max(aL(2),eL(2))>l1) stop 'error (isos): l1 is too small'
 
   nn = max(n,2)
-  nside = bst*l1
+  nside = bst*2**(int(dlog(dble(l1))/dlog(2d0)))
 
   allocate(kmap(0:12*nside**2-1,nn),klm(nn,0:l1,0:l1))
 
