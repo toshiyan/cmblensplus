@@ -31,10 +31,10 @@ def pk2corrfunc(k,pk,r,h=0.001):
     return spline(r,XI)
 
 
-def IntegPJ0(k,pk0,h=.001):
+def IntegPJ0(k,pk0,h=.001,verbose=False):
     # construct a function: F(r) = int[kP(k)*J_0(kr)/2pi]
     r = basic.cosmofuncs.dist_comoving( np.linspace(1e-4,5.,2000) ) * .05
-    print('compute for r between',min(r),max(r),r[1]-r[0])
+    if verbose: print('compute using r between',min(r),max(r),r[1]-r[0])
     # setup hankel transform
     ht = hankel.HankelTransform(nu=0.,h=h)
     # not use Hankel transform for r = 0 due to numerical accuracy
