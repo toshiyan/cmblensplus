@@ -12,7 +12,7 @@ module rec_rot
 contains 
 
 
-subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside,verbose)
+subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside_t,verbose)
 !*  Reconstructing pol rotation angle from the EB quadratic estimator
 !*
 !*  Args:
@@ -23,7 +23,7 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside,verbose)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)        : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)      : Nside for the convolution calculation
 !*    :verbose (bool)     : Output messages, default to False
 !*
 !*  Returns:
@@ -32,21 +32,21 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside,verbose)
   implicit none
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   double precision, intent(in), dimension(0:rlmax) :: fCE
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: alm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, allocatable :: map(:), A(:,:), A2(:,:)
   double complex, allocatable :: xlm(:,:,:)
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: verbose = False
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
-  if (verbose)   write(*,*) 'calc rot-EB estimator with nside=', ns
-  npix = 12*ns**2
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)   write(*,*) 'calc rot-EB estimator with nside=', nside
+  npix = 12*nside**2
 
   ! convolution
   allocate(xlm(2,0:rlmax,0:rlmax),A(0:npix-1,2),A2(0:npix-1,2))

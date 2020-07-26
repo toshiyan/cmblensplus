@@ -12,7 +12,7 @@ module rec_src
 contains 
 
 
-subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside,verbose)
+subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside_t,verbose)
 !*  Reconstructing point sources from the temperature quadratic estimator
 !*
 !*  Args:
@@ -22,7 +22,7 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside,verbose)
 !*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)        : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)      : Nside for the convolution calculation
 !*    :verbose (bool)     : Output messages, default to False
 !*
 !*  Returns:
@@ -31,20 +31,20 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside,verbose)
   implicit none
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm1, Tlm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: slm
   !internal
-  integer :: l, npix, ns
+  integer :: l, npix, nside
   double precision, allocatable :: map(:,:)
   double complex, allocatable :: alm(:,:,:)
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: verbose = False
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
-  if (verbose)  write(*,*) 'calc src-TT estimator, nside = ', ns
-  npix = 12*ns**2
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc src-TT estimator, nside = ', nside
+  npix = 12*nside**2
 
   ! alm to map 
   allocate(alm(2,0:rlmax,0:rlmax)); alm = 0d0

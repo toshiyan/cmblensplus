@@ -12,7 +12,7 @@ module rec_lens
 contains 
 
 
-subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype,verbose)
+subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside_t,gtype,verbose)
 !*  Reconstructing CMB lensing potential and its curl mode from the temperature quadratic estimator
 !*
 !*  Args:
@@ -23,7 +23,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype,verbose)
 !*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)    : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)  : Nside for the convolution calculation
 !*    :gtype (str)    : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*    :verbose (bool) : Output messages, default to False
 !*
@@ -35,23 +35,23 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype,verbose)
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax
-  integer, intent(in) :: nside
+  integer, intent(in) :: nside_t
   character(1), intent(in) :: gtype
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: gtype = ''
   !opt4py :: verbose = False
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm1, Tlm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, allocatable :: at(:), map(:,:), ilk(:)
   double complex, allocatable :: alm1(:,:,:), blm(:,:,:)
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
-  if (verbose)   write(*,*) 'calc qTT lens estimator with nside=', ns
-  npix = 12*ns**2
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)   write(*,*) 'calc qTT lens estimator with nside=', nside
+  npix = 12*nside**2
 
   allocate(ilk(lmax)); ilk = 1d0
   if (gtype=='k') then
@@ -98,7 +98,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,glm,clm,nside,gtype,verbose)
 end subroutine qtt
 
 
-subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside,gtype,verbose)
+subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside_t,gtype,verbose)
 !*  Reconstructing CMB lensing potential and its curl mode from the TE quadratic estimator
 !*
 !*  Args:
@@ -109,7 +109,7 @@ subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside,gtype,verbose)
 !*    :Elm [l,m] (dcmplx) : Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int) : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int) : Nside for the convolution calculation
 !*    :gtype (str) : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*    :verbose (bool) : Output messages, default to False
 !*
@@ -120,22 +120,24 @@ subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside,gtype,verbose)
   implicit none 
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   character(1), intent(in) :: gtype
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: gtype = ''
   !opt4py :: verbose = False
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in),  dimension(0:rlmax,0:rlmax) :: Tlm, Elm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, dimension(:), allocatable :: AT, ilk
   double precision, dimension(:,:), allocatable :: A, A1, A3, AE, map
   double complex, dimension(:,:,:), allocatable :: alm1, alm3, blm
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc qTE lens estimator with nside=', nside
+  npix = 12*nside**2
 
   allocate(ilk(lmax)); ilk = 1d0
   if (gtype=='k') then
@@ -143,10 +145,6 @@ subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside,gtype,verbose)
       ilk(l) = 2d0/dble(l*(l+1))
     end do
   end if
-
-  if (verbose)  write(*,*) 'calc qTE lens estimator with nside=', ns
-
-  npix = 12*ns**2
 
   ! convolution
   allocate(alm1(2,0:rlmax,0:rlmax),alm3(2,0:rlmax,0:rlmax),A(0:npix-1,2),A1(0:npix-1,2),A3(0:npix-1,2))
@@ -202,7 +200,7 @@ subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside,gtype,verbose)
 end subroutine qte
 
 
-subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside,gtype,verbose)
+subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside_t,gtype,verbose)
 !*  Reconstructing CMB lensing potential and its curl mode from the TB quadratic estimator
 !*
 !*  Args:
@@ -213,7 +211,7 @@ subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside,gtype,verbose)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)  : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)  : Nside for the convolution calculation
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*    :verbose (bool) : Output messages, default to False
 !*
@@ -224,22 +222,24 @@ subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside,gtype,verbose)
   implicit none 
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   character(1), intent(in) :: gtype
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: gtype = ''
   !opt4py :: verbose = False
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, dimension(:), allocatable :: ilk
   double precision, dimension(:,:), allocatable :: A, A1, A3, map
   double complex, dimension(:,:,:), allocatable :: alm1, alm3, zlm
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc qTB lens estimator with nside=', nside
+  npix = 12*nside**2
 
   allocate(ilk(lmax)); ilk = 1d0
   if (gtype=='k') then
@@ -247,9 +247,6 @@ subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside,gtype,verbose)
       ilk(l) = 2d0/dble(l*(l+1))
     end do
   end if
-
-  if (verbose)  write(*,*) 'calc qTB lens estimator with nside=', ns
-  npix = 12*ns**2
 
   ! convolution
   allocate(alm1(2,0:rlmax,0:rlmax))
@@ -296,7 +293,7 @@ subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside,gtype,verbose)
 end subroutine qtb
 
 
-subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside,gtype,verbose)
+subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside_t,gtype,verbose)
 !*  Reconstructing CMB lensing potential and its curl mode from the EE quadratic estimator
 !*
 !*  Args:
@@ -307,7 +304,7 @@ subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside,gtype,verbose)
 !*    :Elm2 [l,m] (dcmplx): 2nd inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)  : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)  : Nside for the convolution calculation
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*    :verbose (bool) : Output messages, default to False
 !*
@@ -318,22 +315,24 @@ subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside,gtype,verbose)
   implicit none 
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   character(1), intent(in) :: gtype
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: gtype = ''
   !opt4py :: verbose = False
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm1, Elm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, dimension(:), allocatable :: ilk
   double precision, dimension(:,:), allocatable :: A, A1, A3, map
   double complex, dimension(:,:,:), allocatable :: alm, blm
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc qEE lens estimator with nside=', nside
+  npix = 12*nside**2
 
   allocate(ilk(lmax)); ilk = 1d0
   if (gtype=='k') then
@@ -341,9 +340,6 @@ subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside,gtype,verbose)
       ilk(l) = 2d0/dble(l*(l+1))
     end do
   end if
-
-  if (verbose)  write(*,*) 'calc qEE lens estimator with nside=', ns
-  npix = 12*ns**2
 
   ! convolution
   allocate(A(0:npix-1,2),alm(2,0:rlmax,0:rlmax))
@@ -389,7 +385,7 @@ subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside,gtype,verbose)
 end subroutine qee
 
 
-subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside,gtype,verbose)
+subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside_t,gtype,verbose)
 !*  Reconstructing CMB lensing potential and its curl mode from the EB quadratic estimator
 !*
 !*  Args:
@@ -400,7 +396,7 @@ subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside,gtype,verbose)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)  : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)  : Nside for the convolution calculation
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*    :verbose (bool) : Output messages, default to False
 !*
@@ -411,22 +407,24 @@ subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside,gtype,verbose)
   implicit none
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   character(1), intent(in) :: gtype
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: gtype = ''
   !opt4py :: verbose = False
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, dimension(:), allocatable :: ilk
   double precision, dimension(:,:), allocatable :: A,A1,A3,map
   double complex, dimension(:,:,:), allocatable :: alm1,alm3,tlm
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc qEB lens estimator with nside=', nside
+  npix = 12*nside**2
 
   allocate(ilk(lmax)); ilk = 1d0
   if (gtype=='k') then
@@ -434,9 +432,6 @@ subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside,gtype,verbose)
       ilk(l) = 2d0/dble(l*(l+1))
     end do
   end if
-
-  if (verbose)  write(*,*) 'calc qEB lens estimator with nside=', ns
-  npix = 12*ns**2
 
   ! convolution
   allocate(alm1(2,0:rlmax,0:rlmax),A(0:npix-1,2))
@@ -519,7 +514,7 @@ subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside,gtype,verbose)
 end subroutine qeb
 
 
-subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside,gtype,verbose)
+subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside_t,gtype,verbose)
 !*  Reconstructing CMB lensing potential and its curl mode from the BB quadratic estimator
 !*
 !*  Args:
@@ -530,7 +525,7 @@ subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside,gtype,verbose)
 !*    :Blm2 [l,m] (dcmplx) : 2nd inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)  : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)  : Nside for the convolution calculation
 !*    :gtype (str)  : Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
 !*    :verbose (bool) : Output messages, default to False
 !*
@@ -541,22 +536,24 @@ subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside,gtype,verbose)
   implicit none
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   character(1), intent(in) :: gtype
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: gtype = ''
   !opt4py :: verbose = False
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Blm1, Blm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, dimension(:), allocatable :: ilk
   double precision, dimension(:,:), allocatable :: A, A1, A3, map
   double complex, dimension(:,:,:), allocatable :: alm1, alm3, tlm
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc qBB lens estimator with nside=', nside
+  npix = 12*nside**2
 
   allocate(ilk(lmax)); ilk = 1d0
   if (gtype=='k') then
@@ -564,9 +561,6 @@ subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside,gtype,verbose)
       ilk(l) = 2d0/dble(l*(l+1))
     end do
   end if
-
-  if (verbose)  write(*,*) 'calc qBB lens estimator with nside=', ns
-  npix = 12*ns**2
 
   ! convolution
   allocate(alm1(2,0:rlmax,0:rlmax))

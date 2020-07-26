@@ -12,7 +12,7 @@ module rec_tau
 contains 
 
 
-subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,alm,nside,verbose)
+subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,alm,nside_t,verbose)
 !*  Reconstructing inhomogeneous tau from the temperature quadratic estimator
 !*
 !*  Args:
@@ -23,7 +23,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,alm,nside,verbose)
 !*    :Tlm2 [l,m] (dcmplx): 2nd inverse-variance filtered temperature alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)        : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)      : Nside for the convolution calculation
 !*    :verbose (bool)     : Output messages, default to False
 !*
 !*  Returns:
@@ -32,21 +32,21 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,alm,nside,verbose)
   implicit none
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   double precision, intent(in), dimension(0:rlmax) :: fC
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Tlm1, Tlm2
   double complex, intent(out), dimension(0:lmax,0:lmax) :: alm
   !internal
-  integer :: l, npix, ns
+  integer :: l, npix, nside
   double precision, allocatable :: map(:,:)
   double complex, allocatable :: zlm(:,:,:)
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: verbose = False
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
-  if (verbose)   write(*,*) 'calc tau-TT estimator with nside=', ns
-  npix = 12*ns**2
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)   write(*,*) 'calc tau-TT estimator with nside=', nside
+  npix = 12*nside**2
 
   ! alm to map 
   allocate(zlm(2,0:rlmax,0:rlmax)); zlm = 0d0
@@ -71,7 +71,7 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,alm,nside,verbose)
 end subroutine qtt
 
 
-subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside,verbose)
+subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside_t,verbose)
 !*  Reconstructing amplitude modulation from the EB quadratic estimator
 !*
 !*  Args:
@@ -82,7 +82,7 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside,verbose)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)        : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)      : Nside for the convolution calculation
 !*    :verbose (bool)     : Output messages, default to False
 !*
 !*  Returns:
@@ -91,21 +91,21 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside,verbose)
   implicit none
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
-  !opt4py :: nside = 0
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
+  !opt4py :: nside_t = 0
   !opt4py :: verbose = False
   double precision, intent(in), dimension(0:rlmax) :: fCE
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: alm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, allocatable :: map(:), A(:,:), A2(:,:)
   double complex, allocatable :: zlm(:,:,:)
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
-  if (verbose)   write(*,*) 'calc tau-EB estimator with nside=', ns
-  npix = 12*ns**2
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)   write(*,*) 'calc tau-EB estimator with nside=', nside
+  npix = 12*nside**2
 
   ! convolution
   allocate(zlm(2,0:rlmax,0:rlmax),A(0:npix-1,2),A2(0:npix-1,2))
@@ -139,7 +139,7 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside,verbose)
 end subroutine qeb
 
 
-subroutine oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,alm,nside,verbose)
+subroutine oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,alm,nside_t,verbose)
 !*  Reconstructing amplitude modulation by the odd EB quadratic estimator
 !*
 !*  Args:
@@ -150,7 +150,7 @@ subroutine oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,alm,nside,verbose)
 !*    :Blm [l,m] (dcmplx) : Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
 !*
 !*  Args(optional):
-!*    :nside (int)  : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)      : Nside for the convolution calculation
 !*    :verbose (bool)     : Output messages, default to False
 !*
 !*  Returns:
@@ -159,21 +159,21 @@ subroutine oeb(lmax,rlmin,rlmax,fEB,Elm,Blm,alm,nside,verbose)
   implicit none
   !I/O
   logical, intent(in) :: verbose
-  integer, intent(in) :: lmax, rlmin, rlmax, nside
+  integer, intent(in) :: lmax, rlmin, rlmax, nside_t
   double precision, intent(in), dimension(0:rlmax) :: fEB
   double complex, intent(in), dimension(0:rlmax,0:rlmax) :: Elm, Blm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: alm
   !internal
-  integer :: l, ns, npix
+  integer :: l, nside, npix
   double precision, allocatable :: map(:), A(:,:), A2(:,:)
   double complex, allocatable :: xlm(:,:,:)
-  !opt4py :: nside = 0
+  !opt4py :: nside_t = 0
   !opt4py :: verbose = False
 
-  ns = nside
-  if (nside==0)  ns = 2**(int(dlog(dble(lmax))/dlog(2d0)))
-  if (verbose)  write(*,*) 'calc tau-EB odd estimator with nside=', ns
-  npix = 12*ns**2
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (verbose)  write(*,*) 'calc tau-EB odd estimator with nside=', nside
+  npix = 12*nside**2
 
   ! convolution 1
   allocate(xlm(2,0:rlmax,0:rlmax),A(0:npix-1,2),A2(0:npix-1,2))
