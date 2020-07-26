@@ -31,20 +31,21 @@ subroutine make_quad_gauss(lmax,alm,qlm)
   implicit none
   !I/O
   integer, intent(in) :: lmax
-  double complex, intent(in), dimension(1,0:lmax,0:lmax) :: alm
-  double complex, intent(out), dimension(1,0:lmax,0:lmax) :: qlm
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: qlm
   !internal
   integer :: nside
   double precision, allocatable :: map(:)
+  double complex :: alm_in(1,0:lmax,0:lmax), alm_out(1,0:lmax,0:lmax)
 
-  nside = int(lmax/2)
+  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
 
   allocate(map(0:12*nside**2-1))
-
-  call alm2map(nside,lmax,lmax,alm,map)
+  alm_in(1,:,:) = alm
+  call alm2map(nside,lmax,lmax,alm_in,map)
   map = map + map**2
-  call map2alm(nside,lmax,lmax,map,qlm)
-
+  call map2alm(nside,lmax,lmax,map,alm_out)
+  qlm = alm_out(1,:,:)
   deallocate(map)
 
 end subroutine make_quad_gauss
@@ -71,28 +72,19 @@ subroutine bispec_norm(bn,bp,norm,bstype,bst,sL)
   double precision, intent(in), dimension(bn+1) :: bp
   double precision, intent(out), dimension(bn) :: norm
   !optional
-  character(4), intent(in), optional :: bstype
-  integer, intent(in), optional :: bst
-  integer, intent(in), optional, dimension(2) :: sL
-  !f2py character(4) :: bstype = 'equi'
-  !f2py integer :: bst = 2
-  !f2py integer :: sL = 0
-  !docstr :: sL = [int(bp[0]),int(bp[1])]
+  character(4), intent(in) :: bstype
+  integer, intent(in) :: bst
+  integer, intent(in), dimension(2) :: sL
+  !opt4py :: bstype = 'equi'
+  !opt4py :: bst = 2
+  !opt4py :: sL = [0,0]
   !internal
-  character(4) :: btype
-  integer :: l1, l, lmax, b, bst0, aL(2), sL0(2), eL(2)
+  integer :: l1, l, lmax, b, aL(2), sL0(2), eL(2)
   double complex, allocatable :: klm(:,:)
 
-  btype = bstype
-  if (present(bstype))  btype = bstype
-
-  bst0 = 2
-  if (present(bst)) bst0 = bst
-
   !sque
-  sL0  = int(bp(1:2))
-  if (present(sL).and.sum(sL)/=0) sL0 = sL
-  if (btype=='sque'.and..not.present(sL)) write(*,*) 'warning (bispec): sL is set to the lowest multipole bin'
+  sL0  = sL
+  if (sum(sL)==0)  sL0 = int(bp(1:2))
 
   !isos
   aL = int(bp(bn/2:bn/2+1)) !middle bin
@@ -101,31 +93,26 @@ subroutine bispec_norm(bn,bp,norm,bstype,bst,sL)
   lmax = bp(bn+1)
   allocate(klm(0:lmax,0:lmax)); klm=0d0
 
-  !if (present(alm).or.sum(abs(alm))/=0) then
-  !  if (size(alm,dim=1)/=lmax+1.or.size(alm,dim=2)/=lmax+1) stop 'error (bispec): size of alm is not strange'
-  !  klm = alm
-  !else
-    do l = 1, lmax
-      klm(l,0) = dsqrt(2d0*l+1d0)
-    end do
-  !end if
+  do l = 1, lmax
+    klm(l,0) = dsqrt(2d0*l+1d0)
+  end do
 
   !compute binned bispectrum
   do b = 1, bn
 
     eL = int(bp(b:b+1))
 
-    select case(btype)
+    select case(bstype)
     case('equi')
-      call equi(eL(1),eL(2),klm(0:eL(2),0:eL(2)),norm(b),bst0)
+      call equi(eL(1),eL(2),klm(0:eL(2),0:eL(2)),norm(b),bst)
     case('fold')
-      call fold(eL(1),eL(2),klm(0:eL(2),0:eL(2)),norm(b),bst0)
+      call fold(eL(1),eL(2),klm(0:eL(2),0:eL(2)),norm(b),bst)
     case('sque')
       l1 = max(eL(2),sL(2))
-      call sque(eL,sL,l1,klm(0:l1,0:l1),norm(b),bst0)
+      call sque(eL,sL,l1,klm(0:l1,0:l1),norm(b),bst)
     case('isos')
       l1 = max(eL(2),aL(2))
-      call isos(eL,aL,l1,klm(0:l1,0:l1),norm(b),bst0)
+      call isos(eL,aL,l1,klm(0:l1,0:l1),norm(b),bst)
     end select
 
   end do
@@ -159,22 +146,19 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
   double precision, intent(out), dimension(bn) :: bis
   !optional
-  character(4), intent(in), optional :: bstype
-  integer, intent(in), optional :: bst
-  integer, intent(in), optional, dimension(2) :: sL
-  !f2py integer :: bst = 2
-  !f2py character :: bstype = 'equi'
-  !f2py integer :: sL = 0
-  !docstr :: sL = [int(bp[0]),int(bp[1])]
+  character(4), intent(in) :: bstype
+  integer, intent(in) :: bst
+  integer, intent(in), dimension(2) :: sL
+  !opt4py :: bst = 2
+  !opt4py :: bstype = 'equi'
+  !opt4py :: sL = [0,0]
   !internal
-  integer :: aL(2), b, eL(2), bst0, sL0(2), l1
+  integer :: aL(2), b, eL(2), sL0(2), l1
 
-  bst0 = 2
-  if (present(bst)) bst0 = bst
   if (bp(bn+1)>lmax) stop 'error (equi_bin): not enough size of alm'
 
-  sL0  = int(bp(1:2))
-  if (present(sL).and.sum(sL)/=0) sL0 = sL
+  sL0  = sL
+  if (sum(sL)==0)  sL0 = int(bp(1:2))
 
   aL = int(bp(bn/2:bn/2+1)) !middle bin
 
@@ -182,15 +166,15 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
     eL = int(bp(b:b+1))
     select case (bstype)
     case ('equi')
-      call equi(eL(1),eL(2),alm(0:eL(2),0:eL(2)),bis(b),bst0)
+      call equi(eL(1),eL(2),alm(0:eL(2),0:eL(2)),bis(b),bst)
     case ('fold')
-      call fold(eL(1),eL(2),alm(0:eL(2),0:eL(2)),bis(b),bst0)
+      call fold(eL(1),eL(2),alm(0:eL(2),0:eL(2)),bis(b),bst)
     case ('sque')
       l1 = max(eL(2),sL(2))
-      call sque(eL,sL0,l1,alm(0:l1,0:l1),bis(b),bst0)
+      call sque(eL,sL0,l1,alm(0:l1,0:l1),bis(b),bst)
     case ('isos')
       l1 = max(eL(2),aL(2))
-      call isos(eL,aL,l1,alm(0:l1,0:l1),bis(b),bst0)
+      call isos(eL,aL,l1,alm(0:l1,0:l1),bis(b),bst)
     end select
   end do
 
@@ -227,9 +211,12 @@ subroutine xbispec_bin(bn,bp,lmax,n,alm,bis,bstype,bst,sL)
   !opt4py :: bstype = 'equi'
   !opt4py :: sL = [0,0]
   !internal
-  integer :: aL(2), b, eL(2), l1
+  integer :: aL(2), b, eL(2), l1, sL0(2)
 
   if (bp(bn+1)>lmax) stop 'error (xbispec_bin): not enough size of alm'
+
+  sL0  = sL
+  if (sum(sL)==0)  sL0 = int(bp(1:2))
 
   aL = int(bp(bn/2:bn/2+1)) !middle bin
 
@@ -241,8 +228,8 @@ subroutine xbispec_bin(bn,bp,lmax,n,alm,bis,bstype,bst,sL)
     case ('fold')
       call xfold(eL(1),eL(2),n,alm(:,0:eL(2),0:eL(2)),bis(b),bst)
     case ('sque')
-      l1 = max(eL(2),sL(2))
-      call xsque(eL,sL,l1,n,alm(:,0:l1,0:l1),bis(b),bst)
+      l1 = max(eL(2),sL0(2))
+      call xsque(eL,sL0,l1,n,alm(:,0:l1,0:l1),bis(b),bst)
     case ('isos')
       l1 = max(eL(2),aL(2))
       call xisos(eL,aL,l1,n,alm(:,0:l1,0:l1),bis(b),bst)
