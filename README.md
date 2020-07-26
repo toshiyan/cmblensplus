@@ -45,20 +45,22 @@ You can find the example codes at "example" directory.
 
 # References
 
-In flat sky, the source code has been used for
+The reference paper list for each module is as follows:
 
-  - https://arxiv.org/abs/1209.0091 : the temperature lensing reconstruction, 
-  - https://arxiv.org/abs/1310.2372 : the polarization lensing reconstruction, 
-  - https://arxiv.org/abs/1612.07855 : the cosmic bi-refringence reconstruction, 
-  - https://arxiv.org/abs/1703.00169 : the CMB delensing
-  - https://arxiv.org/abs/1706.05133 : the bi-spectrum
+Curved sky modules:
 
-The curvedsky analysis tools are also tested as follows for the lensing reconstruction, patchy reionization reconstruction, bi-spectrum and delensing
+  - https://arxiv.org/abs/1405.6568 : Temperature / Polarization Lensing Reconstruction, Delensing
+  - https://arxiv.org/abs/2001.10465 : Cosmic Birefringence
+  - https://arxiv.org/abs/1711.00058 : Patchy Reionization
+  - https://arxiv.org/abs/1812.10635 : Bi-spectrum
 
-  - https://arxiv.org/abs/1405.6568 : the temperature/polarization lensing reconstruction, and delensing
-  - https://arxiv.org/abs/1711.00058 : the patchy reionization reconstruction
-  - https://arxiv.org/abs/1812.10635 : the bi-spectrum
+Flat sky modules:
 
+  - https://arxiv.org/abs/1209.0091 : Temperature Lensing Reconstruction, Bias-Hardening
+  - https://arxiv.org/abs/1310.2372 : Temperature / Polarization Lensing Reconstruction
+  - https://arxiv.org/abs/1612.07855 : Cosmic Bi-refringence
+  - https://arxiv.org/abs/1703.00169 : CMB Delensing
+  - https://arxiv.org/abs/1706.05133 : Bi-spectrum
 
 # Acknowledgement
 
