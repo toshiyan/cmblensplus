@@ -14,7 +14,7 @@ module delens
 contains 
 
 
-subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside,gtype)
+subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside_t,gtype)
 !*  Computing lensing B mode as a convolution of wiener-filtered E-mode and lensing potential
 !*
 !*  Args:
@@ -27,7 +27,7 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside,gtype)
 !*    :wplm [l,m] (dcmplx): Wiener-filtered lensing potential (or kappa) alm, with bounds (0:plmax,0:plmax)
 !*
 !*  Args(optional):
-!*    :nside (int)        : Nside for the convolution calculation, default to lmax
+!*    :nside_t (int)      : Nside for the convolution calculation
 !*    :gtype (str)        : Type of input wplm ('p'=phi or 'k'=kappa), default to 'p' (phi). 
 !*
 !*  Returns:
@@ -40,17 +40,18 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside,gtype)
   double complex, intent(in), dimension(0:plmax,0:plmax)  :: wplm !wiener filtered phi alm
   double complex, intent(out), dimension(0:lmax,0:lmax) :: lBlm
   !optional
-  integer, intent(in) :: nside
+  integer, intent(in) :: nside_t
   character(1), intent(in) :: gtype
-  !opt4py :: nside = 0
-  !add2py :: if nside == 0:  nside = lmax
+  !opt4py :: nside_t = 0
   !opt4py :: gtype = 'p'
   !internal
-  integer :: l, m, npix
+  integer :: l, m, npix, nside
   double precision, dimension(:), allocatable :: ilk
   double precision, dimension(:,:), allocatable :: A1,A3,A,map
   double complex, dimension(:,:,:), allocatable :: alm
 
+  nside = nside_t
+  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
   npix = 12*nside**2
 
   allocate(ilk(plmax)); ilk = 1d0
