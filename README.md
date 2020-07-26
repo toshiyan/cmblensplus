@@ -30,10 +30,12 @@ The additional simple python sctipts are stored at
   [2] Create Fortran wrapper
 
   Go to the root directory and type one of the following command:
+
     - ./MAKEALL.sh all       (for generating all modules)
     - ./MAKEALL.sh basic     (for basic module)
     - ./MAKEALL.sh curvedsky (for curvedsky module)
     - ./MAKEALL.sh flatsky   (for flatsky module)
+  
   You will find modules under "wrap/" for python 3 and "wrap_py2" for python 2, depending on your f2py version.
 
 # Examples
