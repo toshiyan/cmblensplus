@@ -1,6 +1,6 @@
 import libcurvedsky
 
-def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside=0,gtype='p'):
+def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t=0,gtype='p'):
   """
   Computing lensing B mode as a convolution of wiener-filtered E-mode and lensing potential
 
@@ -14,17 +14,16 @@ def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside=0,gtype='p'):
     :wplm [*l,m*] (*dcmplx*): Wiener-filtered lensing potential (or kappa) alm, with bounds (0:plmax,0:plmax)
 
   Args(optional):
-    :nside (*int*): Nside for the convolution calculation, default to lmax
+    :nside_t (*int*): Nside for the convolution calculation
     :gtype (*str*): Type of input wplm ('p'=phi or 'k'=kappa), default to 'p' (phi).
 
   Returns:
     :lBlm [*l,m*] (*dcmplx*): Lensing B-mode alm, with bounds (0:lmax,0:lmax)
 
   Usage:
-    :lBlm = curvedsky.delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside,gtype):
+    :lBlm = curvedsky.delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t,gtype):
   """
-  if nside == 0:  nside = lmax
-  return libcurvedsky.delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside,gtype)
+  return libcurvedsky.delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t,gtype)
 
 def shiftvec(nside,lmax,plm,nremap):
   """

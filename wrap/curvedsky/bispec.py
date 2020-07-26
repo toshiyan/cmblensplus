@@ -20,7 +20,7 @@ def make_quad_gauss(lmax,alm):
   """
   return libcurvedsky.bispec.make_quad_gauss(lmax,alm)
 
-def bispec_norm(bn,bp,bstype= 'equi',bst= 2,sL=None):
+def bispec_norm(bn,bp,bstype='equi',bst=2,sL=[0,0]):
   """
   Return normalization of the binned reduced bispectrum for a given multipole bin
 
@@ -39,10 +39,9 @@ def bispec_norm(bn,bp,bstype= 'equi',bst= 2,sL=None):
   Usage:
     :norm = curvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL):
   """
-  if sL is None: sL= [int(bp[0]),int(bp[1])]
   return libcurvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL)
 
-def bispec_bin(bn,bp,lmax,alm,bstype= 'equi',bst= 'equi',sL=None):
+def bispec_bin(bn,bp,lmax,alm,bstype='equi',bst=2,sL=[0,0]):
   """
   Return the unnormalized binned reduced bispectrum for a given multipole bin
 
@@ -63,7 +62,6 @@ def bispec_bin(bn,bp,lmax,alm,bstype= 'equi',bst= 'equi',sL=None):
   Usage:
     :bis = curvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL):
   """
-  if sL is None: sL= [int(bp[0]),int(bp[1])]
   return libcurvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
 
 def xbispec_bin(bn,bp,lmax,n,alm,bstype='equi',bst=2,sL=[0,0]):
