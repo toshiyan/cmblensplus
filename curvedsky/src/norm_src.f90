@@ -40,7 +40,7 @@ subroutine qtt(lmax,rlmin,rlmax,OCT,As)
     if (OCT(l)==0d0) stop 'error (norm_src.qtt): observed cltt is zero'
   end do
 
-  W1 = 1d0 / OCT(rlmin:rlmax)
+  W1 = 0.5d0 / OCT(rlmin:rlmax)
   S0 = 0d0
   call kernels_tau(rL,W1,W1,S0,'S0')
 
