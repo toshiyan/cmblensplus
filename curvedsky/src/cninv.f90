@@ -155,15 +155,15 @@ end subroutine cnfilter_freq
 
 
 subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,xlm,chn,lmaxs,nsides0,nsides1,itns,eps,filter,verbose,reducmn,ro,stat)
-!* Same as cnfilter but combining multiple frequency maps and these maps are divided into two different nside groups. 
+!* Same as cnfilter_freq but for the maps with two different Nsides. 
 !*
 !* Args:
 !*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
 !*    :mn0/1 (int) : Number of frequencies
-!*    :nside0/1 (int) : Nsides of input map(s)
+!*    :nside0/1 (int) : Nsides of input maps
 !*    :lmax (int) : Maximum multipole of the input cl
 !*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
-!*    :bl0/1[mn,l] (double) : Beam spectrum, with bounds (0:n-1,0:lmax)
+!*    :bl0/1[mn,l] (double) : Beam function, with bounds (0:n-1,0:lmax)
 !*    :iNcov0/1[n,mn,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
 !*    :maps0/1[n,mn,pix] (double) : Input T, Q, U maps, with bouds (0:n-1,0:npix-1)
 !*
@@ -175,6 +175,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
 !*    :verbose (bool): Output messages
+!*    :reducmn (int): Reducing number of maps per chain (1,2) or not (0, default). If 1, the maps are combined for the same nside inside the multigrid chain. If 2, in addition to the procedure of 1, the each nside maprs are further combined into a single map inside the second chain (chain>=3).
 !*    :stat (str): Realtime status filename
 !*
 !* Returns:
@@ -213,6 +214,8 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   double precision, allocatable :: nij(:,:)
   double complex :: b(n,0:lmax,0:lmax)
 
+  integer :: nn
+
   !replace
   !chargs :: npix0 -> nside0
   !chargs :: npix1 -> nside1
@@ -226,7 +229,6 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
     ou = 7
     open(unit=ou,file=stat,status='replace')
   end if
-
 
   !compute beam-convolved half signal spectrum
   bl(:mn0,:)   = bl0
@@ -243,10 +245,12 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
     call check_error(npix0/=12*nsides0(1)**2,'input npix0 is wrong',str(npix0)//','//str(12*nsides0(1)**2),ou)
     call check_error(npix1/=12*nsides1(1)**2,'input npix1 is wrong',str(npix1)//','//str(12*nsides1(1)**2),ou)
     ilmaxs  = lmaxs
+    ! set nsides for each freq map at each multigrid layer
     do c = 1, chn
       insides(c,:mn0)   = nsides0(c) 
       insides(c,mn0+1:) = nsides1(c) 
     end do
+    ! change nsides for reduc freq and maps
     select case(reducmn)
     case (1)
       mnmaxs(2:) = 2
@@ -281,6 +285,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   call matmul_rhs(n,mn,mgc%npix(1,:),lmax,clh,mgc%cv(1,:),b)
 
   !setup signal and noise covariance
+  ! for chain=1
   do mi = 1, mn
     mgc%cv(1,mi)%clh = clh(:,mi,:,:)
     if (mi<=mn0)  mgc%cv(1,mi)%nij = iNcov0(:,mi,:)
@@ -288,6 +293,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   end do
 
   !setup for multigrid preconditioner
+  ! for chain>=2
   if (mgc%n>1) then
 
     if (stat/='' .or. verbose) write(ou,*) 'degrade inv noise cov'
@@ -295,7 +301,11 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
     do c = 2, mgc%n
 
       select case(mgc%mnmax(c))
-      case (4)
+      
+      case (4:)
+
+        if (mgc%mnmax(c)/=mn)  stop 'Inconsistency in the number of maps in the multigrid chain.'
+      
         do mi = 1, mn
           mgc%cv(c,mi)%clh = clh(:,mi,0:mgc%lmax(c),0:mgc%lmax(c))
           !store noise covariance for each sub-chain
@@ -303,16 +313,17 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
             call udgrade_ring_1d_d(mgc%cv(1,mi)%nij(ni,:),mgc%nside(1,mi),mgc%cv(c,mi)%nij(ni,:),mgc%nside(c,mi))
           end do
         end do
-      case (2)
-        !for reduced number of mn
+      
+      case (2)  !for the case combining frequency maps
+
         do rn = 1, 2
             if (rn==1) nside = nsides0(c)
             if (rn==2) nside = nsides1(c)
             mgc%cv(c,rn)%nij = 0d0
-            do mi = 1+(rn-1)*mn0, mn1 + (rn-1)*mn0
+            do mi = 1+(rn-1)*mn0, mn0+(rn-1)*mn1 !lopp for freqs
               allocate(nij(n,0:12*nside**2-1)); nij = 0d0
-              do ni = 1, n
-                call udgrade_ring_1d_d(mgc%cv(1,mi)%nij(ni,:),mgc%nside(1,mi),nij(ni,:),nside)
+              do ni = 1, n !loop for tqu
+                call udgrade_ring_1d_d(mgc%cv(1,mi)%nij(ni,0:),mgc%nside(1,mi),nij(ni,0:),nside)
               end do
               mgc%cv(c,rn)%nij = mgc%cv(c,rn)%nij + nij
               deallocate(nij)
@@ -320,21 +331,44 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
         end do
         mgc%cv(c,1)%clh = sum(clh(:,:mn0,0:mgc%lmax(c),0:mgc%lmax(c)),dim=2)/dble(mn0)
         mgc%cv(c,2)%clh = sum(clh(:,mn0+1:,0:mgc%lmax(c),0:mgc%lmax(c)),dim=2)/dble(mn1)
-      case (1)
-        do mi = 1, mn
-          do ni = 1, n
-            call udgrade_ring_1d_d(mgc%cv(1,mi)%nij(ni,:),mgc%nside(1,mi),mgc%cv(c,mi)%nij(ni,:),mgc%nside(c,mi))
-          end do
+
+      case (1)  ! for the case combining frequency and Nside maps to a single map
+        
+        ! downgrade resolution from the original to inside chain
+        nside = mgc%nside(c,1)
+
+        ! sum inverse noise covariance for freqs and Nsides
+        mgc%cv(c,1)%nij = 0d0
+        do mi = 1, mn !lopp for freqs
+           allocate(nij(n,0:12*nside**2-1)); nij = 0d0
+           do ni = 1, n !loop for tqu
+              call udgrade_ring_1d_d(mgc%cv(1,mi)%nij(ni,0:),mgc%nside(1,mi),nij(ni,0:),nside)
+           end do
+           mgc%cv(c,1)%nij = mgc%cv(c,1)%nij + nij
+           deallocate(nij)
         end do
-        do mi = 2, mn
-          call check_error(size(mgc%cv(c,mi)%nij,dim=2)/=mgc%npix(c,mi),'Nij is inconsistent',str(size(mgc%cv(c,mi)%nij,dim=2))//','//str(mgc%npix(c,mi)),ou)
-          mgc%cv(c,1)%nij = mgc%cv(c,1)%nij + mgc%cv(c,mi)%nij
-        end do
+        !do mi = 1, mn
+        !  do ni = 1, n
+        !    call udgrade_ring_1d_d(mgc%cv(1,mi)%nij(ni,0:),mgc%nside(1,mi),mgc%cv(c,mi)%nij(ni,0:),mgc%nside(c,mi))
+        !  end do
+        !end do
+        !do mi = 2, mn
+        !  call check_error(size(mgc%cv(c,mi)%nij,dim=2)/=mgc%npix(c,mi),'Nij is inconsistent',str(size(mgc%cv(c,mi)%nij,dim=2))//','//str(mgc%npix(c,mi)),ou)
+        !  mgc%cv(c,1)%nij = mgc%cv(c,1)%nij + mgc%cv(c,mi)%nij
+        !end do
+
         mgc%cv(c,1)%clh = sum(clh(:,:,0:mgc%lmax(c),0:mgc%lmax(c)),dim=2)/dble(mn)
+      
+      case default
+
+        stop 'Specified multigrid chain is not supported. Please change the reducmn.'
+
       end select
 
     end do
+    
     call coarse_invmatrix(n,mgc%lmax(mgc%n),mgc)
+  
   end if
 
   !run kernel

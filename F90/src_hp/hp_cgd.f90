@@ -242,12 +242,13 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   !internal
   logical :: message
   integer :: c, ni, mi, i, l
-  double precision :: absb, absr, d, d0, td, alpha
+  double precision :: absb, absr, absx, d, d0, td, alpha
   double precision :: mm(0:lmax,0:lmax)
   double complex, dimension(1:n,0:mgc%lmax(chain),0:mgc%lmax(chain)) :: r, z, p, Ap
 
   if (lmax/=mgc%lmax(chain)) stop 'error: lmax is inconsistent'
   absb = dsqrt(sum(abs(b)**2))
+  if (isnan(absb)) stop '|b|^2 is Nan'
 
   message = ou==7.or.mgc%verbose
 
@@ -267,12 +268,24 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
 
   !initial value (this is the solution if MA=I)
   call precondition(n,lmax,b,x,mgc,chain,ou)
+  absx = dsqrt(sum(abs(x)**2))
+  if (chain==1.and.message)  write(ou,*) '|Mb|^2', absx, '|b|^2', absb
+  if ( isnan( absx ) ) then
+    write(ou,*) x
+    write(ou,*) chain
+    stop 'Mb is Nan'
+  end if
 
   !residual
   call matmul_lhs(n,mgc%mnmax(chain),mgc%npix(chain,:),lmax,mgc%cv(chain,:),x,r)
   r = b - r
-  if (chain==1.and.message)  write(ou,*) 'initial residual', dsqrt(sum(abs(r)**2)), '|b|^2', dsqrt(sum(abs(b)**2))
-  !if (chain==1)  stop
+  absr = dsqrt(sum(abs(r)**2))
+  if (chain==1.and.message)  write(ou,*) 'initial residual', absr
+  if (isnan(absr)) then
+    write(ou,*) r
+    write(ou,*) chain
+    stop 'residusl is Nan'
+  end if
 
   !set other values
   call precondition(n,lmax,r,z,mgc,chain,ou)
@@ -325,7 +338,7 @@ subroutine precondition(n,lmax,r,x,mgc,chain,ou)
   if (mgc%n==1) then !diagonal preconditioning
     x = mgc%pmat(:,0:lmax,0:lmax)*r
   else
-    !downgrade nij
+    !downgrade maps
     x = 0d0
     lmax0 = mgc%lmax(chain+1)
     if (chain+1==mgc%n) then ! multiply dense matrix at the coarsest gird
@@ -395,10 +408,15 @@ subroutine matmul_cninv(n,npix,lmax,clh,nij,x,v)
   double precision :: map(n,0:npix-1)
   double complex :: alm(n,0:lmax,0:lmax)
 
+  integer :: nn, i
+
   alm = clh*x
+
   !multiply noise covariance in pixel space
   call spht_alm2map(n,npix,lmax,lmax,alm,map)
+
   map = map*nij
+
   call spht_map2alm(n,npix,lmax,lmax,map,alm)
   !multiply C^{1/2}
   v = clh*alm
