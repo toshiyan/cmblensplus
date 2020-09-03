@@ -215,7 +215,7 @@ subroutine stt(lmax,rlmin,rlmax,fC,OCT,At)
   S0 = 0d0
   call Kernels_tau(rL,W1,W2,S0,'S0')
   G0 = 0d0
-  call Kernels_tau(rL,W2,W2,G0,'G0')
+  call Kernels_tau(rL,W1,W2,G0,'G0')
 
   At = 0d0
   do l = 1, lmax
