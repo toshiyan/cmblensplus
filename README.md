@@ -10,7 +10,7 @@ The reference paper for each module is as follows:
 
 Curved sky modules:
 
-  - Temperature / Polarization Lensing Reconstruction, Delensing
+  - Lensing Reconstruction, Delensing \
    developed in Namikawa & Nagata JCAP 09 (2014) 009, https://arxiv.org/abs/1405.6568
   - https://arxiv.org/abs/2001.10465 : Cosmic Birefringence
   - https://arxiv.org/abs/1711.00058 : Patchy Reionization
