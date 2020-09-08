@@ -16,7 +16,7 @@ module hp_cgd
 
   ! for multi-grid method
   type mg_covmat
-    double precision, allocatable :: nij(:,:), clh(:,:,:)
+    double precision, allocatable :: nij(:,:), clh(:,:,:), nl(:,:,:), imap(:,:)
   end type mg_covmat
 
   type mg_chain
@@ -124,6 +124,7 @@ end subroutine
 
 
 subroutine densemat_multi(n,lmax,arrn,r,imat,x)
+  ! multiply a matrix exactly
   implicit none
   integer, intent(in) :: n, lmax, arrn
   double complex, intent(in) :: r(1:n,0:lmax,0:lmax)
@@ -161,7 +162,6 @@ subroutine coarse_invmatrix(n,lmax,mgc)
   !I/O
   type(mg_chain), intent(inout) :: mgc
   integer, intent(in) :: n, lmax
-  !double precision, intent(in), dimension(n,mn,0:lmax,0:lmax) :: clh
   !internal
   integer :: i, l, m, ni, mn
   double complex, allocatable :: x(:,:,:), Mx(:,:,:), A0(:,:), A1(:,:), y(:,:,:)
@@ -259,8 +259,12 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
     do ni = 1, n
       mm = 0d0
       do mi = 1, mgc%mnmax(1)
-        !derived by averaging over m for int Ylm^* N^-1 Ylm
-        mm = mm + mgc%cv(1,mi)%clh(ni,:,:)**2 * ave(mgc%cv(1,mi)%nij(ni,:)) 
+        if (allocated(mgc%cv(1,mi)%nl)) then
+          mm = mm + mgc%cv(1,mi)%clh(ni,:,:)**2 * ave(mgc%cv(1,mi)%nij(ni,:)) * ave(mgc%cv(1,mi)%nl(ni,:,0))
+        else
+          !derived by averaging over m for int Ylm^* N^-1 Ylm
+          mm = mm + mgc%cv(1,mi)%clh(ni,:,:)**2 * ave(mgc%cv(1,mi)%nij(ni,:)) 
+        end if
       end do
       mgc%pmat(ni,:,:) = 1d0/(1d0+mm)
     end do
@@ -269,7 +273,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   !initial value (this is the solution if MA=I)
   call precondition(n,lmax,b,x,mgc,chain,ou)
   absx = dsqrt(sum(abs(x)**2))
-  if (chain==1.and.message)  write(ou,*) '|Mb|^2', absx, '|b|^2', absb
+  if ( chain==1 .and. message )  write(ou,*) '|Mb|^2', absx, '|b|^2', absb
   if ( isnan( absx ) ) then
     write(ou,*) x
     write(ou,*) chain
@@ -280,8 +284,8 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   call matmul_lhs(n,mgc%mnmax(chain),mgc%npix(chain,:),lmax,mgc%cv(chain,:),x,r)
   r = b - r
   absr = dsqrt(sum(abs(r)**2))
-  if (chain==1.and.message)  write(ou,*) 'initial residual', absr
-  if (isnan(absr)) then
+  if ( chain==1 .and. message )  write(ou,*) 'initial ratio, |b-Ax|^2/|b|^2', absr/absb
+  if ( isnan( absr ) ) then
     write(ou,*) r
     write(ou,*) chain
     stop 'residusl is Nan'
@@ -362,12 +366,29 @@ subroutine matmul_rhs(n,mn,npix,lmax,clh,cv,v)
   !internal
   integer :: mi
   double complex :: alm(n,0:lmax,0:lmax)
+  double precision, allocatable :: map(:,:)
 
   v = 0d0
   do mi = 1, mn
-    !nij = input map x N^-1
-    call spht_map2alm(n,npix(mi),lmax,lmax,cv(mi)%nij,alm)
+
+    allocate(map(n,0:npix(mi)-1))
+    map = cv(mi)%imap*cv(mi)%nij  !data map x invN
+
+    !for non-white noise
+    if (allocated(cv(mi)%nl)) then
+      call spht_map2alm(n,npix(mi),lmax,lmax,map,alm)
+      alm = alm*cv(mi)%nl
+      call spht_alm2map(n,npix(mi),lmax,lmax,alm,map)
+      map = map*cv(mi)%nij
+    end if
+
+    call spht_map2alm(n,npix(mi),lmax,lmax,map,alm)
+    !call spht_map2alm(n,npix(mi),lmax,lmax,cv(mi)%nij,alm)
+    
     v = v + clh(:,mi,:,:)*alm
+
+    deallocate(map)
+  
   end do
 
 end subroutine matmul_rhs
@@ -389,19 +410,23 @@ subroutine matmul_lhs(n,mn,npix2,lmax,cv,x,v)
   v = x
   do mi = 1, mn
     npix = size(cv(mi)%nij,dim=2)
-    call matmul_cninv(n,npix,lmax,cv(mi)%clh,cv(mi)%nij,x,alm)
+    !call matmul_cninv(n,npix,lmax,cv(mi)%clh,cv(mi)%nij,cv(mi)%nl,x,alm)
+    call matmul_cninv(n,npix,lmax,cv(mi),x,alm)
     v = v + alm
   end do
 
 end subroutine matmul_lhs
 
 
-subroutine matmul_cninv(n,npix,lmax,clh,nij,x,v)
+!subroutine matmul_cninv(n,npix,lmax,clh,nij,nl,x,v)
+subroutine matmul_cninv(n,npix,lmax,cv,x,v)
   implicit none
   !I/O
+  type(mg_covmat), intent(in) :: cv
   integer, intent(in) :: n, npix, lmax
-  double precision, intent(in), dimension(n,0:lmax,0:lmax) :: clh
-  double precision, intent(in), dimension(n,0:npix-1) :: nij
+  !double precision, intent(in), dimension(n,0:lmax,0:lmax) :: clh
+  !double precision, intent(in), dimension(n,0:lmax,0:lmax) :: nl
+  !double precision, intent(in), dimension(n,0:npix-1) :: nij
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: x
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
   !internal
@@ -410,16 +435,24 @@ subroutine matmul_cninv(n,npix,lmax,clh,nij,x,v)
 
   integer :: nn, i
 
-  alm = clh*x
+  alm = cv%clh*x
 
   !multiply noise covariance in pixel space
   call spht_alm2map(n,npix,lmax,lmax,alm,map)
 
-  map = map*nij
+  map = map*cv%nij
+
+  !for non-white noise
+  if (allocated(cv%nl)) then
+    call spht_map2alm(n,npix,lmax,lmax,map,alm)
+    alm = alm*cv%nl
+    call spht_alm2map(n,npix,lmax,lmax,alm,map)
+    map = map*cv%nij
+  end if
 
   call spht_map2alm(n,npix,lmax,lmax,map,alm)
   !multiply C^{1/2}
-  v = clh*alm
+  v = cv%clh*alm
 
 end subroutine matmul_cninv
 
