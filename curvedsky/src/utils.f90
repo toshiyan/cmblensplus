@@ -565,6 +565,75 @@ subroutine alm2bcl(bn,lmax,cb,alm1,alm2,spc)
 end subroutine alm2bcl
 
 
+subroutine alm2rho(lmax,rho,alm1,alm2)
+!*  Compute correlation coefficients between two alms
+!*
+!*  Args:
+!*    :lmax (int)           : Maximum multipole of the input alm
+!*    :alm1 [l,m] (dcmplx)  : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*    :alm2 [l,m] (dcmplx)  : 2nd harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :rho [l] (double) : Auto or cross angular power spectrum, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm2
+  double precision, intent(out), dimension(0:lmax) :: rho
+
+  !intenral
+  integer :: l
+  double precision :: cl(3,0:lmax)
+
+  call alm2cl(lmax,cl(1,:),alm1,alm1)
+  call alm2cl(lmax,cl(2,:),alm2,alm2)
+  call alm2cl(lmax,cl(3,:),alm1,alm2)
+  
+  rho = 0d0
+  do l = 0, lmax
+    if (cl(1,l)*cl(2,l)==0d0)  cycle
+    rho(l) = cl(3,l)**2/(cl(1,l)*cl(2,l))
+  end do
+
+end subroutine alm2rho
+
+
+subroutine alm2cov(n,lmax,cov,alm)
+!*  Compute correlation coefficients between two alms
+!*
+!*  Args:
+!*    :lmax (int)           : Maximum multipole of the input alms
+!*    :alm [n,l,m] (dcmplx) : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :cov [n,n,l] (double) : Auto and cross angular power spectra between alm[i] and alm[j]
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, n
+  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: alm
+  double precision, intent(out), dimension(n,n,0:lmax) :: cov
+
+  !intenral
+  integer :: i1, i2
+
+  !opt4py :: n = 0
+  !opt4py :: lmax = 0
+  !add2py :: n = len(alm[:,0,0])
+  !add2py :: lmax = len(alm[0,:,0]) - 1
+
+  do i1 = 1, n
+    do i2 = i1, n
+      call alm2cl(lmax,cov(i1,i2,:),alm(i1,:,:),alm(i2,:,:))
+      cov(i2,i1,:) = cov(i1,i2,:)
+    end do
+  end do
+
+end subroutine alm2cov
+
+
 subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 !*  Compute apodized window function. Partially use Healpix's process_mask code.
 !*
@@ -868,9 +937,6 @@ subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
 !*  Multiply window to a map obtained from alm
 !*
 !*  Args:
-!*    :nside (int)        : Nside of input map
-!*    :lmax (int)         : Maximum multipole of the input alm
-!*    :mmax (int)         : Maximum m of the input alm
 !*    :alm [l,m] (dcmplx) : Harmonic coefficient to be multiplied at window, with bounds (0:lmax,0:mmax)
 !*    :win [pix] (double) : Transformed map, with bounds (0:npix-1)
 !*
@@ -891,7 +957,12 @@ subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
 
   !replace
   !chargs :: npix -> nside
-  !add2py :: npix = 12*nside**2
+  !opt4py :: nside = 0
+  !opt4py :: lmax = 0
+  !opt4py :: mmax = 0
+  !add2py :: npix = len(win)
+  !add2py :: lmax = len(alm[:,0]) - 1
+  !add2py :: mmax = len(alm[0,:]) - 1
 
   nside = int(dsqrt(npix/12d0))
 
@@ -908,13 +979,12 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
 !*  Ylm transform of the map to alm with the healpix (l,m) order
 !*
 !*  Args:
-!*    :nside (int)        : Nside of input map
-!*    :lmax (int)         : Maximum multipole of the input alm
-!*    :mmax (int)         : Maximum m of the input alm
-!*    :spin (int)         : Spin of the transform
 !*    :elm [l,m] (dcmplx) : Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
 !*    :blm [l,m] (dcmplx) : Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
 !*    :win [pix] (double) : Transformed map, with bounds (0:npix-1)
+!*
+!*  Args (Optional):
+!*    :spin (int)         : Spin of the transform, default to 2
 !*
 !*  Returns:
 !*    :wlm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the window-multiplied map, with bounds (2,0:lmax,0:mmax)
@@ -933,7 +1003,13 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
 
   !replace
   !chargs :: npix -> nside
-  !add2py :: npix = 12*nside**2
+  !opt4py :: nside = 0
+  !opt4py :: lmax = 0
+  !opt4py :: mmax = 0
+  !opt4py :: spin = 2
+  !add2py :: npix = len(win)
+  !add2py :: lmax = len(elm[:,0]) - 1
+  !add2py :: mmax = len(elm[0,:]) - 1
 
   nside = int(dsqrt(npix/12d0))
 
@@ -951,7 +1027,6 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 !*  Transform healpy alm to healpix alm
 !*
 !*  Args:
-!*    :lmpy (int)           : Length of healpy alm
 !*    :lmax (int)           : Maximum multipole of the input/output alm satisfying 2 x lmpy = (lmax+1) x (lmax+2)
 !*    :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
 !*
@@ -963,6 +1038,9 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
   double complex, intent(in), dimension(0:lmpy-1) :: almpy
   double complex, intent(out), dimension(0:lmax,0:lmax) :: almpix
   integer :: l, m, i
+
+  !opt4py :: lmpy = 0
+  !add2py :: lmpy = len(almpy)
 
   !i = m*(lmax+1) - m(m-1)/2 + (l-m)
   almpix = 0d0
