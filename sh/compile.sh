@@ -22,7 +22,7 @@ fi
 
 # create python interface
 if [ ${1} = "docs" -o ${1} = "all" ]; then
-  python ${pylibloc}/docstr.py -libname ${target} -modname ${scan}
+  python ${pylibloc}/docstr.py -libname ${target} -modname ${scan} ${2}
   mv *.py ${wrapdir}/${pylib}/
 fi
 
