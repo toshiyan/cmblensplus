@@ -2,22 +2,43 @@
 
 This package contains a Fortran wrapper for Python, to reconstruct lensing potential, cosmic bi-refrimgence, and patchy reionization from cosmic microwave background anisotropies (CMB) in full and flat sky. This package also includes modules for delensing, some bi-spectrum calculation, and so on. Installing this library at NERSC is straightforward. 
 
-# Documents
+# Documents and Reference
 
-Please go to the following link for details:
-https://toshiyan.github.io/clpdoc/html/
+Please go to the following link for details of how to use each module:
+https://toshiyan.github.io/clpdoc/html/. 
+The reference paper for each module is as follows:
+
+Curved sky modules:
+
+  - Temperature / Polarization Lensing Reconstruction, Delensing
+   developed in Namikawa & Nagata JCAP 09 (2014) 009, https://arxiv.org/abs/1405.6568
+  - https://arxiv.org/abs/2001.10465 : Cosmic Birefringence
+  - https://arxiv.org/abs/1711.00058 : Patchy Reionization
+  - https://arxiv.org/abs/1812.10635 : Lensing bi-spectrum
+
+Flat sky modules:
+
+  - https://arxiv.org/abs/1209.0091 : Temperature Lensing Reconstruction, Bias-Hardening
+  - https://arxiv.org/abs/1310.2372 : Temperature / Polarization Lensing Reconstruction
+  - https://arxiv.org/abs/1612.07855 : Cosmic Bi-refringence
+  - https://arxiv.org/abs/1703.00169 : CMB Delensing
+  - https://arxiv.org/abs/1706.05133 : Lensing bi-spectrum
+
 
 # This Package
 
 This package contains three main python modules based on Fourtran 90 sources: 
   
   - basic     --- basic routines such as analytic calculation of delensed B-mode spectrum and lensing bispectrum.
+
   - curvedsky --- analysis package to measure lensing, birefringence, patchy tau, bias-hardening, bispectrum, delensing and analytic reconstruction normalization.
+  
   - flatsky   --- the same as curvedsky code but for flatsky analysis.
 
 The additional simple python sctipts are stored at
 
   - example   --- several example scripts for demonstration
+  
   - utils     --- python scripts to compute noise biase, RDN0, diagonal RDN0, etc. 
 
 
@@ -42,25 +63,6 @@ The additional simple python sctipts are stored at
 
 You can find the example codes at "example" directory. 
 
-
-# References
-
-The reference paper list for each module is as follows:
-
-Curved sky modules:
-
-  - https://arxiv.org/abs/1405.6568 : Temperature / Polarization Lensing Reconstruction, Delensing
-  - https://arxiv.org/abs/2001.10465 : Cosmic Birefringence
-  - https://arxiv.org/abs/1711.00058 : Patchy Reionization
-  - https://arxiv.org/abs/1812.10635 : Bi-spectrum
-
-Flat sky modules:
-
-  - https://arxiv.org/abs/1209.0091 : Temperature Lensing Reconstruction, Bias-Hardening
-  - https://arxiv.org/abs/1310.2372 : Temperature / Polarization Lensing Reconstruction
-  - https://arxiv.org/abs/1612.07855 : Cosmic Bi-refringence
-  - https://arxiv.org/abs/1703.00169 : CMB Delensing
-  - https://arxiv.org/abs/1706.05133 : Bi-spectrum
 
 # Acknowledgement
 
