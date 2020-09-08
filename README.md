@@ -11,18 +11,20 @@ The reference paper for each module is as follows:
 Curved sky modules:
 
   - Lensing Reconstruction, Delensing \
-   developed in Namikawa & Nagata JCAP 09 (2014) 009, https://arxiv.org/abs/1405.6568
-  - https://arxiv.org/abs/2001.10465 : Cosmic Birefringence
-  - https://arxiv.org/abs/1711.00058 : Patchy Reionization
-  - https://arxiv.org/abs/1812.10635 : Lensing bi-spectrum
+   Developed in Namikawa & Nagata JCAP 09 (2014) 009, https://arxiv.org/abs/1405.6568
+  - Cosmic Birefringence \
+   Developed in Namikawa et al. PRD 101 (2020) 083527, https://arxiv.org/abs/2001.10465
+  - Patchy Reionization \
+   Developed in Namikawa PRD, 97 (2018) 063505, https://arxiv.org/abs/1711.00058
+  - Lensing Bi-Spectrum \
+   Developed in Namikawa et al. PRD 99 (2019) 063511, https://arxiv.org/abs/1812.10635
 
 Flat sky modules:
 
-  - https://arxiv.org/abs/1209.0091 : Temperature Lensing Reconstruction, Bias-Hardening
-  - https://arxiv.org/abs/1310.2372 : Temperature / Polarization Lensing Reconstruction
-  - https://arxiv.org/abs/1612.07855 : Cosmic Bi-refringence
-  - https://arxiv.org/abs/1703.00169 : CMB Delensing
-  - https://arxiv.org/abs/1706.05133 : Lensing bi-spectrum
+  - Lensing Reconstruction, Delensing \ 
+   Namikawa PRD 95 (2017) 103514, https://arxiv.org/abs/1703.00169
+  - Cosmic Birefringence \
+   Namikawa PRD 95 (2017) 043523, https://arxiv.org/abs/1612.07855
 
 
 # This Package
