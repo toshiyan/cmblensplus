@@ -15,8 +15,8 @@ module cninv
 contains
 
 
-subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,filter,verbose,ro,stat)
-!* Same as cnfilter but combining multiple frequency maps and these maps are divided into two different nside groups. 
+subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,filter,inl,verbose,ro,stat)
+!* Combining multiple frequency maps optimally. 
 !* The filtering would work if the noise variance is not significantly varied with scale (multipole). 
 !*
 !* Args:
@@ -36,6 +36,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !*    :eps[chain] (double): Numerical parameter to finish the iteration if ave(\|Ax-b\|)<eps, default to 1e-6
 !*    :itns[chain] (int) : Number of interation(s)
 !*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
+!*    :inl[n,mn,l] (double) : inverse noise spectrum for non white noise case.
 !*    :verbose (bool): Output messages, default to False
 !*    :stat (str): Realtime status filename, default to no output file
 !*
@@ -59,13 +60,15 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !opt4py :: verbose = False
   !opt4py :: ro = 50
   !opt4py :: stat = ''
+  !opt4py :: inl = 0
   double precision, intent(in), dimension(n,0:lmax) :: cl
   double precision, intent(in), dimension(mn,0:lmax) :: bl
+  double precision, intent(in), dimension(n,mn,0:lmax) :: inl
   double precision, intent(in), dimension(n,mn,0:npix-1) :: iNcov, maps
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
   type(mg_chain)  :: mgc
-  integer :: ou=6, c, ni, mi, rn, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn)
+  integer :: ou=6, c, ni, mi, rn, l, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn)
   integer(8) :: t1, t2, t_rate, t_max
   double precision :: clh(n,mn,0:lmax,0:lmax)
   double precision, allocatable :: nij(:,:)
@@ -99,26 +102,49 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   end if
   call set_mgchain(mgc,chn,mn,mnmaxs,ilmaxs,insides,itns,eps,verbose,ro)
 
-  !inverse noise covariance x map
+  !initialize arrays for cinv
   allocate(mgc%cv(mgc%n,mn))
   do mi = 1, mn
+    allocate( mgc%cv(1,mi)%imap(n,0:mgc%npix(1,mi)-1) )
+    mgc%cv(1,mi)%imap = maps(:,mi,:)
     do c = 1, mgc%n
       allocate(mgc%cv(c,mi)%nij(n,0:mgc%npix(c,mi)-1),mgc%cv(c,mi)%clh(n,0:mgc%lmax(c),0:mgc%lmax(c)))
-      mgc%cv(c,mi)%nij = 0d0
       mgc%cv(c,mi)%clh = 0d0
+      mgc%cv(c,mi)%nij = 0d0
     end do
     ! check Nij size for chain = 1
     call check_error(size(iNcov,dim=3)/=mgc%npix(1,mi),'iNcov size is wrong',str(size(iNcov,dim=3))//','//str(mgc%npix(1,mi)),ou=ou)
-    mgc%cv(1,mi)%nij = iNcov(:,mi,:)*maps(:,mi,:)
+    !setup signal and noise covariance
+    mgc%cv(1,mi)%clh = clh(:,mi,:,:)
+    mgc%cv(1,mi)%nij = iNcov(:,mi,:)
   end do
+
+  !setup inverse noise spectrum if necessary
+  if (sum(inl)/=0) then
+    do mi = 1, mn
+      do c = 1, mgc%n
+        allocate(mgc%cv(c,mi)%nl(n,0:mgc%lmax(c),0:mgc%lmax(c)))
+        mgc%cv(c,mi)%nl = 0d0
+        do ni = 1, n
+          do l = 2, mgc%lmax(c)
+            mgc%cv(c,mi)%nl(ni,l,0:l)  = inl(ni,mi,l)
+          end do
+        end do
+      end do
+    end do
+  end if
+
+  !inverse noise covariance x map for computing b in rhs
+  !do mi = 1, mn
+    !mgc%cv(1,mi)%nij = iNcov(:,mi,:)*maps(:,mi,:)
+  !end do
 
   !first compute b = C^1/2 N^-1 X
   call matmul_rhs(n,mn,mgc%npix(1,:),lmax,clh,mgc%cv(1,:),b)
+  !call matmul_rhs(n,mn,mgc%npix(1,:),lmax,clh,mgc%cv(1,:),b)
 
-  !setup signal and noise covariance
   do mi = 1, mn
-    mgc%cv(1,mi)%clh = clh(:,mi,:,:)
-    mgc%cv(1,mi)%nij = iNcov(:,mi,:)
+    deallocate(mgc%cv(1,mi)%imap)
   end do
 
   !setup for multigrid preconditioner
@@ -154,7 +180,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 end subroutine cnfilter_freq
 
 
-subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,xlm,chn,lmaxs,nsides0,nsides1,itns,eps,filter,verbose,reducmn,ro,stat)
+subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,xlm,chn,lmaxs,nsides0,nsides1,itns,eps,filter,inl,verbose,reducmn,ro,stat)
 !* Same as cnfilter_freq but for the maps with two different Nsides. 
 !*
 !* Args:
@@ -200,15 +226,17 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !opt4py :: reducmn = 0
   !opt4py :: ro = 50
   !opt4py :: stat = ''
+  !opt4py :: inl = 0
   double precision, intent(in), dimension(n,0:lmax) :: cl
   double precision, intent(in), dimension(mn0,0:lmax) :: bl0
   double precision, intent(in), dimension(mn1,0:lmax) :: bl1
   double precision, intent(in), dimension(n,mn0,0:npix0-1) :: iNcov0, maps0
   double precision, intent(in), dimension(n,mn1,0:npix1-1) :: iNcov1, maps1
+  double precision, intent(in), dimension(n,mn0+mn1,0:lmax) :: inl
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
   type(mg_chain)  :: mgc
-  integer :: ou=6, c, ni, mi, mn, rn, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn0+mn1)
+  integer :: ou=6, c, ni, mi, mn, rn, l, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn0+mn1)
   integer(8) :: t1, t2, t_rate, t_max
   double precision :: clh(n,mn0+mn1,0:lmax,0:lmax), bl(mn0+mn1,0:lmax)
   double precision, allocatable :: nij(:,:)
@@ -263,34 +291,57 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   end if
   call set_mgchain(mgc,chn,mn,mnmaxs,ilmaxs,insides,itns,eps,verbose,ro)
 
-  !inverse noise covariance x map
+  !setup signal and noise covariance
   allocate(mgc%cv(mgc%n,mn))
   do mi = 1, mn
+    ! input map for rhs
+    allocate( mgc%cv(1,mi)%imap(n,0:mgc%npix(1,mi)-1) )
+    if (mi<=mn0)  mgc%cv(1,mi)%imap = maps0(:,mi,:)
+    if (mi>mn0)   mgc%cv(1,mi)%imap = maps1(:,mi,:)
+    ! signal and noise covariance
     do c = 1, mgc%n
-      allocate(mgc%cv(c,mi)%nij(n,0:mgc%npix(c,mi)-1),mgc%cv(c,mi)%clh(n,0:mgc%lmax(c),0:mgc%lmax(c)))
+      allocate( mgc%cv(c,mi)%nij(n,0:mgc%npix(c,mi)-1), mgc%cv(c,mi)%clh(n,0:mgc%lmax(c),0:mgc%lmax(c)) )
       mgc%cv(c,mi)%nij = 0d0
       mgc%cv(c,mi)%clh = 0d0
     end do
+    ! for chain=1
+    mgc%cv(1,mi)%clh = clh(:,mi,:,:)
     ! check Nij size for chain = 1
     if (mi<=mn0) then
       call check_error(size(iNcov0,dim=3)/=mgc%npix(1,mi),'iNcov0 size is wrong',str(size(iNcov0,dim=3))//','//str(mgc%npix(1,mi)),ou)
-      mgc%cv(1,mi)%nij = iNcov0(:,mi,:)*maps0(:,mi,:)
+      mgc%cv(1,mi)%nij = iNcov0(:,mi,:)!*maps0(:,mi,:)
     else
       call check_error(size(iNcov1,dim=3)/=mgc%npix(1,mi),'iNcov1 size is wrong',str(size(iNcov1,dim=3))//','//str(mgc%npix(1,mi)),ou)
-      mgc%cv(1,mi)%nij = iNcov1(:,mi-mn0,:)*maps1(:,mi-mn0,:)
+      mgc%cv(1,mi)%nij = iNcov1(:,mi-mn0,:)!*maps1(:,mi-mn0,:)
     end if
   end do
+
+  !setup inverse noise spectrum if necessary
+  if (sum(inl)/=0) then
+    do mi = 1, mn
+      do c = 1, mgc%n
+        allocate(mgc%cv(c,mi)%nl(n,0:mgc%lmax(c),0:mgc%lmax(c)))
+        mgc%cv(c,mi)%nl = 0d0
+        do ni = 1, n
+          do l = 2, mgc%lmax(c)
+            mgc%cv(c,mi)%nl(ni,l,0:l)  = inl(ni,mi,l)
+          end do
+        end do
+      end do
+    end do
+  end if
 
   !first compute b = C^1/2 N^-1 X
   call matmul_rhs(n,mn,mgc%npix(1,:),lmax,clh,mgc%cv(1,:),b)
 
-  !setup signal and noise covariance
-  ! for chain=1
   do mi = 1, mn
-    mgc%cv(1,mi)%clh = clh(:,mi,:,:)
-    if (mi<=mn0)  mgc%cv(1,mi)%nij = iNcov0(:,mi,:)
-    if (mi>mn0)   mgc%cv(1,mi)%nij = iNcov1(:,mi-mn0,:)
+    deallocate(mgc%cv(1,mi)%imap)
   end do
+
+  !do mi = 1, mn
+  !  if (mi<=mn0)  mgc%cv(1,mi)%nij = iNcov0(:,mi,:)
+  !  if (mi>mn0)   mgc%cv(1,mi)%nij = iNcov1(:,mi-mn0,:)
+  !end do
 
   !setup for multigrid preconditioner
   ! for chain>=2
