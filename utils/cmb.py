@@ -12,6 +12,12 @@ elif sys.version_info[:3] > (2,5,2):
   import cPickle as pickle
 
 
+#////////// Constants //////////#
+
+# CMB temperature
+Tcmb  = 2.726e6 #K
+
+
 #////////// Frequency Spectrum //////////#
 
 def Int_Planck(nu,T): 
@@ -59,7 +65,7 @@ def beam(theta,lmax):
 
 #////////// Noise spectrum //////////#
 
-def nl_white(sigma,theta,lmax,Tcmb=2.72e6):
+def nl_white(sigma,theta,lmax):
 
     return (sigma*ac2rad/Tcmb)**2*beam(theta,lmax)**2
 
@@ -146,5 +152,48 @@ def apsx(rlz,lmax,falm,galm,verbose=True,overwrite=False,mtype=['T','E','B']):
             cls[ii,2,:] = curvedsky.utils.alm2cl(lmax,Balm,balm)
 
     return cls
+
+
+
+def read_camb_cls(fname,ftype='scal',output=''):
+    
+    if ftype == 'scal': # unlensed scal Cls
+        ll, TT, EE, TE, PP, TP = (np.loadtxt(fname)).T
+
+    elif ftype == 'lens': # lensed cls
+        ll, TT, EE, BB, TE = (np.loadtxt(fname)).T
+
+    s = ll*(ll+1.)*Tcmb**2/(2*np.pi)
+    TT /= s
+    EE /= s
+    TE /= s
+    if ftype == 'scal':
+        PP /= ll**4*Tcmb**2
+        TP /= ll**3*Tcmb**2
+    elif ftype == 'lens':
+        BB /= s
+
+    TT = np.insert(TT,0,np.array([0.,0.]))
+    EE = np.insert(EE,0,np.array([0.,0.]))
+    TE = np.insert(TE,0,np.array([0.,0.]))
+    if ftype == 'scal':
+        PP = np.insert(PP,0,np.array([0.,0.]))
+        TP = np.insert(TP,0,np.array([0.,0.]))
+    elif ftype == 'lens':
+        BB = np.insert(BB,0,np.array([0.,0.]))
+
+    if ftype == 'scal':
+        if output=='array':
+            return np.array((TT,EE,TE,PP,TP))
+        else:
+            return TT, EE, TE, PP, TP
+
+    elif ftype == 'lens':
+        if output=='array':
+            return np.array((TT,EE,BB,TE))
+        else:
+            return TT, EE, BB, TE
+
+
 
 

@@ -5,8 +5,7 @@ import configparser
 
 #from IPython.display import clear_output
 
-
-def check_path(filename,overwrite=False,verbose=True,output='exist and is not overwritten',leave=False):
+def check_path_core(filename,overwrite,verbose,leave,output):
 
     skip = False
 
@@ -17,7 +16,20 @@ def check_path(filename,overwrite=False,verbose=True,output='exist and is not ov
             else:
                 print(filename+' '+output,end="\r")
         skip = True
-    
+
+    return skip
+ 
+
+
+def check_path(filename,overwrite=False,verbose=True,output='exist and is not overwritten',leave=False):
+
+    if isinstance(filename,str):
+        skip = check_path_core(filename,overwrite,verbose,leave,output)
+
+    if isinstance(filename,list):
+        skips = [ check_path_core(fname,overwrite,verbose,leave,output) for fname in filename ]
+        skip = all(skips)
+   
     return skip
 
 

@@ -24,7 +24,7 @@ class statistics:
         self.onlydiag = False
 
 
-    def x2PTE(self,diag=False):
+    def x2PTE(self,diag=False,verbose=False):
         # compute chi^2 PTE of ocl using scl
         n   = len(self.scl[:,0])
         # for real data
@@ -32,7 +32,9 @@ class statistics:
         dxi = self.scl - mx
         dx0 = self.ocl - mx
         cov = np.cov(dxi,rowvar=0)
-        if diag: cov = np.diag(np.diag(cov))
+        if diag: 
+            cov = np.diag(np.diag(cov))
+            if verbose: print(dx0**2/np.diag(cov))
         oX2 = np.dot(dx0,np.dot(np.linalg.inv(cov),dx0))
         # for sim (exclude self rlz)
         dxi = np.array([self.scl[i,:]-np.mean(np.delete(self.scl,i,0),axis=0) for i in range(n)])
