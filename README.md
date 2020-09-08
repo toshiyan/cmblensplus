@@ -21,10 +21,10 @@ Curved sky modules:
 
 Flat sky modules:
 
-  - Lensing Reconstruction, Delensing \ 
-   Namikawa PRD 95 (2017) 103514, https://arxiv.org/abs/1703.00169
+  - Lensing Reconstruction, Delensing \
+   Developed in Namikawa PRD 95 (2017) 103514, https://arxiv.org/abs/1703.00169
   - Cosmic Birefringence \
-   Namikawa PRD 95 (2017) 043523, https://arxiv.org/abs/1612.07855
+   Developed in Namikawa PRD 95 (2017) 043523, https://arxiv.org/abs/1612.07855
 
 
 # This Package
