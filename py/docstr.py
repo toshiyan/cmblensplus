@@ -19,18 +19,19 @@ def extract_declare(slines):
     return declare
 
 
-def ext_params(declare,argtype='intent(out)'):
+def ext_params(declare,argtype='intent(out)',verbose=False):
     # extract output arguments
     pset = []
     for dec in declare:
         if argtype in dec[0]:
             p = dec[1].replace(',',' ').split()
             pset.extend(p)
+    if verbose:  print(pset)
 
     return pset
 
 
-def ext_charg(slines):
+def ext_charg(slines,verbose):
     # extract arguments replaced for python
     # such argument is specified by charg
     pset = []
@@ -41,10 +42,12 @@ def ext_charg(slines):
             p1 = p1.replace(' ','')
             pset.append([p0,p1])
 
+    if verbose:  print(pset)
+
     return pset
 
 
-def ext_opt4py(slines):
+def ext_opt4py(slines,verbose):
     # extract optional arguments for python but not for f90 
     # such argument is specified by opt4py
     pset = []
@@ -55,10 +58,12 @@ def ext_opt4py(slines):
             v = v.replace(' ','')
             pset.append([p,v])
 
+    if verbose:  print(pset)
+
     return pset
 
 
-def ext_optional(pset,declare,slines):  # !!! This function should be removed in the future
+def ext_optional(pset,declare,slines,verbose):  # !!! This function should be removed in the future
     popt = []
     pops = [] #optional arguments whose default value depends on the input arguments
     for p in pset:
@@ -77,28 +82,32 @@ def ext_optional(pset,declare,slines):  # !!! This function should be removed in
         else:
             popt.append([p,defval])
 
+    if verbose:  print(popt,pops)
+
     return popt, pops
 
 
-def func_rm_args(func,pset,ispops=False):
+def func_rm_args(Func,pset,ispops=False):
     # remove args contained in pset
     # decompose elements first and rejoin to avoid confusion e.g. "abc" and "abctype"
+    func, args = Func.split('(')
     for p in pset:
-        subf = []
+        args_pass = []
+        args_chng = []
         # loop for argments in the function definition
-        for f in func.replace(')','').split(','): 
+        for f in args.replace(')','').split(','): 
             if p[0] in f and len(p[0])==len(f): #only for exact match
             #if p[0] == f: #only for exact match
                 if ispops:
-                    subf.append(p[0]+'=None')
+                    args_chng.append(p[0]+'=None')
                 else:
-                    subf.append(p[0]+'='+p[1])
+                    args_chng.append(p[0]+'='+p[1])
             else: #for not optional arguments, just pass and store default args
-                subf.append(f)
+                args_pass.append(f)
         # join all arguments
-        func = ','.join(subf)+')'
+        args = ','.join(args_pass)+','+','.join(args_chng)+')'
 
-    return func
+    return func+'('+args
 
 
 def func_ch_args(args,pset):
@@ -146,10 +155,12 @@ def add_code(f,slines):
 parser = argparse.ArgumentParser(description='scan f90 file and create the signature file for f2py')
 parser.add_argument('-libname',default='')
 parser.add_argument('-modname','--list',nargs='+',default='')
+parser.add_argument('--verbose',action='store_true')
 Args = parser.parse_args()
 
 libname = Args.libname
 modname = Args.list
+verbose = Args.verbose
 
 for mod in modname:
     
@@ -182,15 +193,16 @@ for mod in modname:
         # extract declaration part
         declare = extract_declare(slines)
 
-        # check argument type
-        pout = ext_params(declare)
-        popt = ext_params(declare,'optional')
-        pext = ext_opt4py(slines)
-        charg = ext_charg(slines)
-        popt, pops = ext_optional(popt,declare,slines)
-
         # extract function
         func = slines[0].replace('\n','').replace('subroutine ','')
+        if verbose: print(func)
+
+        # check argument type
+        pout = ext_params(declare,verbose=verbose)
+        popt = ext_params(declare,'optional',verbose=verbose)
+        pext = ext_opt4py(slines,verbose)
+        charg = ext_charg(slines,verbose)
+        popt, pops = ext_optional(popt,declare,slines,verbose)
 
         # remove output args from "func"
         for p in pout:
@@ -200,10 +212,12 @@ for mod in modname:
         # call lib (should not place after chargs)
         libfunc = libname+'.'+mod+'.'+func
 
-        # change arguments
-        name = func[:func.find('(')]
+        # extract and change arguments
         args = func[func.find('(')+1:].replace(')','').split(',')
         args = func_ch_args(args,charg)
+
+        # define func
+        name = func[:func.find('(')]
         func = name + '(' + ','.join(args) + ')'
 
         # func for example usage
