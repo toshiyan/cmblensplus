@@ -30,6 +30,10 @@ def check_path(filename,overwrite=False,verbose=True,output='exist and is not ov
         skips = [ check_path_core(fname,overwrite,verbose,leave,output) for fname in filename ]
         skip = all(skips)
    
+    if isinstance(filename,dict):
+        skips = [ check_path_core(fname,overwrite,verbose,leave,output) for key, fname in filename.items() ]
+        skip = all(skips)
+ 
     return skip
 
 

@@ -2,6 +2,7 @@
 import numpy as np
 import scipy.integrate as integrate
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
+from scipy.interpolate import interp2d
 
 import hankel
 
@@ -44,6 +45,20 @@ def IntegPJ0(k,pk0,h=.001,verbose=False):
     # replace r=0 with the exact result
     PJR[0] = PJ0
     return spline(r,PJR)
+
+
+def IntegPJ(k,zs,pk,h=.001):
+    # construct a function: F(r) = int[kP(k)*J_0(kr)/2pi]
+    r = basic.cosmofuncs.dist_comoving( np.linspace(1e-4,5.,2000) ) * .05
+    # setup hankel transform
+    ht = hankel.HankelTransform(nu=0.,h=h)
+    PJR = np.zeros((len(zs),len(r)))
+    for zi, z in enumerate(zs):
+        # for r /= 0
+        PJR[zi,:] = ht.transform( spline(k, pk[zi]) , r, False, inverse=True)/(2*np.pi)
+        # replace r=0 with the exact result
+        PJR[zi,0] = integrate.quad( spline(k, k*pk[zi]) , 1e-4, 4. )[0]/(2*np.pi)
+    return interp2d(r,zs,PJR,kind='cubic')
 
 
 def phi2deltam_coeff(z,**cp):

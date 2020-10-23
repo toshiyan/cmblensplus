@@ -155,7 +155,8 @@ def PTEs(ocb,scb,diag=False,disp=True,x1pte=False,x2pte=True,fpt=2,comment=''):
         statistics.x1PTE(st)
         if disp:
             print('chi:',np.around(st.ox1,decimals=1),end=' ')
-            print(', chi (sim):',np.around(st.mx1,decimals=1),end=' ')
+            print(', chi (sim mean):',np.around(st.mx1,decimals=1),end=' ')
+            print(', chi (sim std):',np.around(np.std(st.sx1),decimals=1),end=' ')
             print(', PTE:',form.format(st.px1),com)
 
     if x2pte:
@@ -207,6 +208,19 @@ def get_cov(scl,fcl=None,scale=1.,diag=False,cinv=False):
     if diag: cov = np.diag(np.diag(cov))
     if cinv: cov = np.linalg.inv(cov)
     return cov
+
+
+#////////// Optimal Combination //////////#
+
+def combine(ocl0,ocl1,scl0,scl1,bnum):
+    # combining two binned cl data at each multipole bin
+    vcl0 = np.std(scl0,axis=0)
+    vcl1 = np.std(scl1,axis=0)
+    vclx = np.array( [ np.cov(scl0[:,b],scl1[:,b])[0,1] for b in range(bnum)] )
+    g0 = vcl1**2 - vclx
+    g1 = vcl0**2 - vclx
+    vcl = (g0*ocl0+g1*ocl1) / (vcl0**2+vcl1**2-2*vclx)
+    return vcl
 
 
 def opt_weight(x,low=-1.,diag=False):

@@ -7,6 +7,13 @@ import basic
 class multipole_binning:
 
     def __init__(self,n,spc='',lmin=1,lmax=2048):
+        
+        if not isinstance(n,int): 
+            sys.exit('n is not integer')
+
+        if not isinstance(spc,str): 
+            sys.exit('spc is not str')
+
         self.n = n
         self.spc = spc
         self.lmin = lmin
@@ -65,6 +72,24 @@ def binning_opt_core(cl,vl,mb):
     return cb
 
 
+def binning_opt_weight(vl,mb):
+
+    wb = np.zeros(mb.n)
+    
+    for i in range(mb.n):
+        
+        b0, b1 = int(mb.bp[i]) , int(mb.bp[i+1])
+        
+        wl = 1./vl[b0:b1]**2
+        
+        if np.count_nonzero(wl) > 0:
+            wb[i] = 1. / np.sqrt( np.sum(wl[wl!=0]) )
+        else:
+            wb[i] = 0
+
+    return wb
+
+
 def binning1(cl,b):
     """
     dim = 1  ->  cl = [L] and cb = [b]
@@ -104,13 +129,17 @@ def binning2(cl,b0,b1):
         return np.concatenate((cb0,cb1),axis=1)
 
 
-def binned_spec(mb,fcl,cn=1,doreal=True,opt=False,vl=None):
+def binned_spec(mb,fcl,cn=1,doreal=True,opt=False,vl=None,rl=None):
     # for a given array of files, fcl, which containes real (fcl[0]) and sims (fcl[1:]), return realization mean and std of binned spectrum
+    # rl is the correction to cl
     
     snmax = len(fcl)
 
     scl = np.array([np.loadtxt(fcl[i],unpack=True)[cn] for i in range(1,snmax)])
     
+    if rl is not None:
+        scl *= rl[None,:]
+
     if opt and vl is None:
         Vl = np.std(scl,axis=0)
     else:
