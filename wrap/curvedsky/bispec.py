@@ -41,7 +41,7 @@ def bispec_norm(bn,bp,bstype='equi',bst=2,sL=[0,0]):
   """
   return libcurvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL)
 
-def bispec_bin(bn,bp,lmax,alm,bstype='equi',bst=2,sL=[0,0]):
+def bispec_bin(bn,bp,lmax,alm,bst=2,bstype='equi',sL=[0,0]):
   """
   Return the unnormalized binned reduced bispectrum for a given multipole bin
 
@@ -64,7 +64,7 @@ def bispec_bin(bn,bp,lmax,alm,bstype='equi',bst=2,sL=[0,0]):
   """
   return libcurvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
 
-def xbispec_bin(bn,bp,lmax,n,alm,bstype='equi',bst=2,sL=[0,0]):
+def xbispec_bin(bn,bp,lmax,n,alm,bst=2,bstype='equi',sL=[0,0]):
   """
   Return the unnormalized binned reduced cross-bispectrum for a given multipole bin
 

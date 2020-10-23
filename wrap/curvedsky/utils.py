@@ -181,7 +181,7 @@ def alm2cl(lmax,alm1,alm2=None):
   if alm2 is None:  alm2 = alm1
   return libcurvedsky.utils.alm2cl(lmax,alm1,alm2)
 
-def alm2bcl(bn,lmax,alm1,alm2=None,spc=''):
+def alm2bcl(bn,lmax,alm1,spc='',alm2=None):
   """
   From alm to angular power spectrum with multipole binning
 
@@ -202,6 +202,41 @@ def alm2bcl(bn,lmax,alm1,alm2=None,spc=''):
   """
   if alm2 is None:  alm2 = alm1
   return libcurvedsky.utils.alm2bcl(bn,lmax,alm1,alm2,spc)
+
+def alm2rho(lmax,alm1,alm2):
+  """
+  Compute correlation coefficients between two alms
+
+  Args:
+    :lmax (*int*): Maximum multipole of the input alm
+    :alm1 [*l,m*] (*dcmplx*): 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+    :alm2 [*l,m*] (*dcmplx*): 2nd harmonic coefficient, with bounds (0:lmax,0:lmax)
+
+  Returns:
+    :rho [*l*] (*double*): Auto or cross angular power spectrum, with bounds (0:lmax)
+
+  Usage:
+    :rho = curvedsky.utils.alm2rho(lmax,alm1,alm2):
+  """
+  return libcurvedsky.utils.alm2rho(lmax,alm1,alm2)
+
+def alm2cov(alm,n=0,lmax=0):
+  """
+  Compute correlation coefficients between two alms
+
+  Args:
+    :lmax (*int*): Maximum multipole of the input alms
+    :alm [*n,l,m*] (*dcmplx*): 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+
+  Returns:
+    :cov [*n,n,l*] (*double*): Auto and cross angular power spectra between alm[*i*] and alm[*j*]
+
+  Usage:
+    :cov = curvedsky.utils.alm2cov(n,lmax,alm):
+  """
+  n = len(alm[:,0,0])
+  lmax = len(alm[0,:,0]) - 1
+  return libcurvedsky.utils.alm2cov(n,lmax,alm)
 
 def apodize(nside,rmask,ascale,order=1,holeminsize=0):
   """
@@ -343,14 +378,11 @@ def map_mul_lfunc(nside,imap,lmax,lfunc):
   """
   return libcurvedsky.utils.map_mul_lfunc(nside,imap,lmax,lfunc)
 
-def mulwin(nside,lmax,mmax,alm,win):
+def mulwin(alm,win,nside=0,lmax=0,mmax=0):
   """
   Multiply window to a map obtained from alm
 
   Args:
-    :nside (*int*): Nside of input map
-    :lmax (*int*): Maximum multipole of the input alm
-    :mmax (*int*): Maximum m of the input alm
     :alm [*l,m*] (*dcmplx*): Harmonic coefficient to be multiplied at window, with bounds (0:lmax,0:mmax)
     :win [*pix*] (*double*): Transformed map, with bounds (0:npix-1)
 
@@ -360,21 +392,22 @@ def mulwin(nside,lmax,mmax,alm,win):
   Usage:
     :wlm = curvedsky.utils.mulwin(nside,lmax,mmax,alm,win):
   """
-  npix = 12*nside**2
+  npix = len(win)
+  lmax = len(alm[:,0]) - 1
+  mmax = len(alm[0,:]) - 1
   return libcurvedsky.utils.mulwin(npix,lmax,mmax,alm,win)
 
-def mulwin_spin(nside,lmax,mmax,spin,elm,blm,win):
+def mulwin_spin(elm,blm,win,nside=0,lmax=0,mmax=0,spin=2):
   """
   Ylm transform of the map to alm with the healpix (l,m) order
 
   Args:
-    :nside (*int*): Nside of input map
-    :lmax (*int*): Maximum multipole of the input alm
-    :mmax (*int*): Maximum m of the input alm
-    :spin (*int*): Spin of the transform
     :elm [*l,m*] (*dcmplx*): Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
     :blm [*l,m*] (*dcmplx*): Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
     :win [*pix*] (*double*): Transformed map, with bounds (0:npix-1)
+
+  Args (Optional):
+    :spin (*int*): Spin of the transform, default to 2
 
   Returns:
     :wlm [*2,l,m*] (*dcmplx*): Parity-eve/odd harmonic coefficients obtained from the window-multiplied map, with bounds (2,0:lmax,0:mmax)
@@ -382,15 +415,16 @@ def mulwin_spin(nside,lmax,mmax,spin,elm,blm,win):
   Usage:
     :wlm = curvedsky.utils.mulwin_spin(nside,lmax,mmax,spin,elm,blm,win):
   """
-  npix = 12*nside**2
+  npix = len(win)
+  lmax = len(elm[:,0]) - 1
+  mmax = len(elm[0,:]) - 1
   return libcurvedsky.utils.mulwin_spin(npix,lmax,mmax,spin,elm,blm,win)
 
-def lm_healpy2healpix(lmpy,almpy,lmax):
+def lm_healpy2healpix(almpy,lmax,lmpy=0):
   """
   Transform healpy alm to healpix alm
 
   Args:
-    :lmpy (*int*): Length of healpy alm
     :lmax (*int*): Maximum multipole of the input/output alm satisfying 2 x lmpy = (lmax+1) x (lmax+2)
     :almpy[*index*] (*dcmplx*): Healpy alm, with bounds (0:lmpy-1)
 
@@ -400,6 +434,7 @@ def lm_healpy2healpix(lmpy,almpy,lmax):
   Usage:
     :almpix = curvedsky.utils.lm_healpy2healpix(lmpy,almpy,lmax):
   """
+  lmpy = len(almpy)
   return libcurvedsky.utils.lm_healpy2healpix(lmpy,almpy,lmax)
 
 def cosin_healpix(nside):
@@ -461,7 +496,7 @@ def calc_mfs(bn,nu,lmax,walm,nside=0):
   if nside == 0:  nside = lmax
   return libcurvedsky.utils.calc_mfs(bn,nu,lmax,walm,nside)
 
-def mock_galaxy_takahashi(fname,zn,ngz,zi,b0=1.0,btype='sqrtz',a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0):
+def mock_galaxy_takahashi(fname,zn,ngz,zi,a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0,b0=1.0,btype='sqrtz'):
   """
   Compute galaxy overdensity map from dark matter density map
 
