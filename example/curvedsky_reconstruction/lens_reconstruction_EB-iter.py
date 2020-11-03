@@ -46,8 +46,8 @@ lcl = basic.aps.read_cambcls('../data/lensedcls.dat',2,rlmax,4,bb=True)/Tcmb**2 
 # In[ ]:
 
 
-sigs = [5.,3.,1.,.5,.1,.05]
-sigs = [5.]
+sigs = [3.,1.,.5,.3,.1,.05]
+#sigs = [5.]
 snr = np.zeros(len(sigs))
 for i, sig in enumerate(sigs):
     nl  = np.zeros((4,rlmax+1))
