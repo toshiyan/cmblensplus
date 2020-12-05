@@ -108,6 +108,36 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype)
 end subroutine bispec_lens_lss_init
 
 
+subroutine get_pl(cp,z,k,pkl0,lmax,ftype,pl)
+  implicit none
+  !I/O
+  type(cosmoparams), intent(in) :: cp
+  character(*), intent(in) :: ftype
+  integer, intent(in) :: lmax
+  double precision, intent(in)  :: z(:), k(:), pkl0(:)
+  double precision, intent(out) :: pl(:,:)
+  !internal
+  integer :: i, zn, kn
+  double precision, allocatable :: chi(:), kl(:,:), pk(:,:), pkL(:,:)
+
+  zn = size(z)  !number of z points for z-integral
+  kn = size(k)  !number of CAMB output k
+
+  !* get linear and non-linear Pk at each z
+  allocate(pkL(zn,kn),pk(zn,kn))
+  call get_pk(cp,z,k,pkL0,pkL,pk,ftype)
+
+  !* interpolate k, Pk at k=l/chi
+  allocate(chi(zn),kl(zn,lmax))
+  chi = C_z(z,cp)  !comoving distance at each z
+  if (2d0/chi(zn)<k(1)) write(*,*) 'warning: required minimum k is smaller than input', 2d0/chi(zn), k(1)
+  call Limber_k2l(chi,k,pk,kl,pl)
+
+  deallocate(pkL,pk,chi,kl)
+
+end subroutine get_pl
+
+
 subroutine bispec_lens_lss(cp,b,shap,eL,model,ltype,l0,bl)
 ! lensing bispectrum
   implicit none
@@ -784,7 +814,7 @@ subroutine bispec_lens_snr_assym(cp,b,eL1,eL2,eL3,Cl,wp,ck,m,snr)
 end subroutine bispec_lens_snr_assym
 
 
-subroutine snr_xbisp(cp,b,eL,cgg,ckk,btype,m,snr)
+subroutine bispec_lens_snr_cross(cp,b,eL,cgg,ckk,btype,m,snr)
 ! SNR sum of gkk or ggk bispectrum
   implicit none
   type(cosmoparams), intent(in) :: cp
@@ -821,7 +851,7 @@ subroutine snr_xbisp(cp,b,eL,cgg,ckk,btype,m,snr)
 
   snr = dsqrt(tot)
 
-end subroutine snr_xbisp
+end subroutine bispec_lens_snr_cross
 
 
 subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,ck,model,theta,skew,pb)
@@ -986,6 +1016,28 @@ subroutine zinterp(zmin,zmax,zn,zspace,z,dz)
 end subroutine zinterp
 
 
+subroutine gal_zweight(btype,zker,dNdz)
+  implicit none
+  double precision, intent(in) :: dNdz(:)
+  double precision, intent(inout) :: zker(:)
+  character(*), intent(in) :: btype
+
+  select case (btype)
+  case ('kkk')
+    zker = zker
+  case ('gkk')
+    zker = zker * dNdz
+  case ('ggk')
+    zker = zker * dNdz ** 2
+  case ('ggg')
+    zker = zker * dNdz ** 3
+  case default
+    stop 'need z-kernel type'
+  end select
+
+end subroutine gal_zweight
+
+
 subroutine lens_zweight(cp,z,dz,zs,zker,btype)
   !lensing weights
   implicit none
@@ -1029,6 +1081,8 @@ subroutine lens_zweight(cp,z,dz,zs,zker,btype)
     zker = dz/Hz * wlens(1,:)*wlens(2,:) / chi**4 * Hz
   case ('ggk')
     zker = dz/Hz * wlens(1,:) / chi**4 * Hz**2
+  case ('ggg')
+    zker = dz/Hz * 1d0 / chi**4 * Hz**3
   case default
     stop 'need z-kernel type'
   end select
@@ -1038,23 +1092,65 @@ subroutine lens_zweight(cp,z,dz,zs,zker,btype)
 end subroutine lens_zweight
 
 
-!subroutine lens_aps(b,cl)
-!* kappa aps
-!  implicit none
-!  type(bispecfunc), intent(in) :: b
+subroutine cl_zweight(cp,z,dz,zs,zker,cltype,dNdz)
+  !cl weights
+  implicit none
+  type(cosmoparams), intent(in) :: cp
+  double precision, intent(in)  :: z(:), dz(:), zs(2), dNdz(:)
+  double precision, intent(out) :: zker(:)
+  character(*), intent(in) :: cltype
+  integer :: s, zn
+  double precision :: chis(2), h
+  double precision, allocatable :: Hz(:), chi(:), wlf(:), wlens(:,:)
 
-!  allocate(Hz(zn),chi(zn),wlf(zn))
-!  chis = C_z(zs,cp) !source comoving distance
-!  chi  = C_z(z,cp)  !comoving distance at each z
-!  Hz   = H_z(z,cp)  !expansion rate at z
+  zn = size(z)
+ 
+  allocate(Hz(zn),chi(zn),wlf(zn),wlens(2,zn))
+  chis(1) = C_z(zs(1),cp) !source comoving distance
+  chis(2) = C_z(zs(2),cp) !source comoving distance
+  chi  = C_z(z,cp)  !comoving distance at each z
+  Hz   = H_z(z,cp)  !expansion rate at z
+  h    = cp%H0/100d0
 
-!  ck = 0d0
-!  do l = 2, ln
-!    ck(l) = sum(b%pl(:,l)*(dz/Hz)*(wlf*(chis-chi)*chi/chis)**2/chi**2)
-!  end do
-!  deallocate(Hz,chi,wlf)
+  ! lens kernel
+  wlf  = 1.5d0*cp%Om*(cp%H0/3d5)**2*(1d0+z) !matter -> potential conversion factor
 
-!end subroutine lens_aps
+  do s = 1, 2
+    wlens(s,:) = wlf*(chis(s)-chi)*chi/chis(s)
+  end do
+
+  ! check errors
+  if (minval(chis)<maxval(chi)) stop 'chis is smaller than maximum of chi in the chi integral'
+
+  ! choose kernel for z integral
+  select case (cltype)
+  case ('kk')
+    zker = dz/Hz * wlens(1,:)*wlens(2,:) / chi**2
+  case ('gkk')
+    zker = dz/Hz * wlens(1,:)*dNdz / chi**2 * Hz
+  case ('gg')
+    zker = dz/Hz * dNdz**2 / chi**2 * Hz**2
+  case default
+    stop 'need z-kernel type'
+  end select
+
+  deallocate(Hz,chi,wlf,wlens)
+
+end subroutine cl_zweight
+
+
+subroutine cl_calc_flat(pl,zker,cl)
+  implicit none
+  double precision, intent(in) :: pl(:,:), zker(:)
+  double precision, intent(out) :: cl(:)
+  integer :: l
+
+  cl = 0d0
+  do l = 2, size(cl)
+    cl(l) = sum(pl(:,l)*zker)
+  end do
+
+end subroutine cl_calc_flat
 
 
 subroutine get_pk(cp,z,k,pkL0,pkL,pk,ftype)

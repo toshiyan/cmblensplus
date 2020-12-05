@@ -19,6 +19,24 @@ module alkernel
 contains
 
 
+subroutine get_lfac(lmax,lfac,lk2)
+  implicit none
+  !I/O
+  double precision, intent(out), dimension(lmax) :: lk2
+  integer, intent(in) :: lmax
+  character(1), intent(in) :: lfac
+  integer :: l
+
+  lk2 = 1d0
+  if (lfac=='k') then
+    do l = 1, lmax
+      lk2(l) = (dble(l*(l+1))/2d0)**2
+    end do
+  end if
+
+end subroutine get_lfac
+
+
 subroutine Zeta(m1,m2,rL,A,mu,Z)
 ! * Computing Zeta_{m1,m2}(A,\mu) = \sum_{l=m1}^{lmax} A(l) * (2l+1)*d_{m1m2}^l/4pi
 ! - return Zeta(|m1|,|m2|) and Zeta(|m1|,-|m2|)
@@ -213,6 +231,7 @@ end subroutine conv_egrad
 
 subroutine Kernels_Lens(rL,WA,WB,X,kernel)
 !Kernels of lensing reconstruction noise
+! for Gamma, this computes px Gamma = cx**2 Gamma.
   implicit none
   !I/O
   character(*), intent(in) :: kernel
@@ -375,6 +394,10 @@ subroutine Kernels_Rot(rL,WA,WB,X,kernel)
   do i = 1, GL%n !Gauss-Legendre Integration
     mu = GL%z(i)
     select case(kernel)
+    case ('Sp','Gp')
+      call Zeta(2,2,rL,WA,mu,ZA22)
+      call Zeta(2,2,rL,WB,mu,ZB22)
+      II = ZA22(1)*ZB22(1)-ZA22(2)*ZB22(2)
     case ('Sm','Gm')
       call Zeta(2,2,rL,WA,mu,ZA22)
       call Zeta(2,2,rL,WB,mu,ZB22)
@@ -401,6 +424,12 @@ subroutine Kernels_Rot(rL,WA,WB,X,kernel)
     end do
   end do
 
+  !px
+  select case(kernel)
+  case ('Gp','Gm')
+    X = -X
+  end select
+
   call gl_finalize(GL)
 
 end subroutine Kernels_Rot
@@ -420,7 +449,7 @@ subroutine Kernels_Tau(rL,WA,WB,X,kernel,gln,gle)
   integer :: i, l, lmax, gn
   double precision :: mu, II, al, c1_inv, c3, ge
   double precision, dimension(2) :: d00_sup, d00_mid, d00_inf
-  double precision, dimension(2) :: ZA00, ZB00, ZA22, ZB22
+  double precision, dimension(2) :: ZA00, ZB00, ZA20, ZB20, ZA22, ZB22
 
   !* initialize
   lmax = size(X)
@@ -441,20 +470,22 @@ subroutine Kernels_Tau(rL,WA,WB,X,kernel,gln,gle)
       call ZETA(0,0,rL,WA,mu,ZA00)
       call ZETA(0,0,rL,WB,mu,ZB00)
       II = 2d0*ZA00(1)*ZB00(1)
-    case ('Sc')
-    case ('Gc')
+    case ('Sc','Gc')
+      call ZETA(2,0,rL,WA,mu,ZA20)
+      call ZETA(2,0,rL,WB,mu,ZB20)
+      II = ZA20(1)*ZB20(1) + ZA20(2)*ZB20(2)
     case ('Sp','Gp')
       call Zeta(2,2,rL,WA,mu,ZA22)
       call Zeta(2,2,rL,WB,mu,ZB22)
-      II = ZA22(1)*ZB22(1)+ZA22(2)*ZB22(2)
+      II = ZA22(1)*ZB22(1) + ZA22(2)*ZB22(2)
     case ('Sm','Gm')
       call Zeta(2,2,rL,WA,mu,ZA22)
       call Zeta(2,2,rL,WB,mu,ZB22)
-      II = ZA22(1)*ZB22(1)-ZA22(2)*ZB22(2)
+      II = ZA22(1)*ZB22(1) - ZA22(2)*ZB22(2)
     case default
       stop 'error: no kernel'
     end select
-    do l = 1, lmax ! loop for l
+    do l = 1, lmax ! loop for L
       al = dble(l)
       if(l==1) then 
         d00_sup = wigd_ini(0,0,mu)
@@ -549,7 +580,6 @@ subroutine Kernels_LensTau(rL,WA,WB,X,kernel)
   call gl_finalize(GL)
 
 end subroutine Kernels_LensTau
-
 
 
 end module alkernel
