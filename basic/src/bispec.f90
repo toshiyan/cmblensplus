@@ -6,13 +6,69 @@ module bispec
   use general,   only: GLdxs, GLpoints, linspace, gauss_legendre_params, gl_initialize, gl_finalize
   use cosmofunc, only: cosmoparams, set_cosmoparams, omega_m
   use pstool,    only: binned_ells
-  use bstool,    only: bispecfunc, bispec_lens_bin, bispec_lens_snr, bispec_lens_lss, bispec_lens_pb, bispec_lens_lss_init, bispec_lens_pb_init, zinterp, skewspec_lens, bispec_gauss_bin
+  use bstool!, only: bispecfunc, bispec_lens_bin, bispec_lens_snr, bispec_lens_lss, bispec_lens_pb, bispec_lens_lss_init, bispec_lens_pb_init, zinterp, skewspec_lens, bispec_gauss_bin, cl_zweight, get_pl, cl_calc_flat, gal_zweight
   implicit none
 
 contains
 
 
-subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,bl0,bl1,pktype,ltype)
+subroutine cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,cl,pktype,cltype,dNdz)
+!*  Compute lensing bispectrum analytically
+!* 
+!*  Args:
+!*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
+!*    :z[zn] (double) : redshift points for the z-integral
+!*    :dz[zn] (double) : interval of z
+!*    :zs[3] (double) : source redshifts
+!*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
+!*    :k[kn] (double) : k for the matter power spectrum in unit of [h/Mpc]
+!*    :pk0[kn] (double) : the linear matter power spectrum at z=0 in unit of [Mpc^3/h^3]
+!*
+!*  Args(optional):
+!*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
+!*    :cltype (str) : kk, gk, or gg
+!*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
+!*
+!*  Returns:
+!*    :cl[l] (double) : power spectrum from LSS contributions at [lmin,lmax]
+!*
+  implicit none
+  !I/O
+  character(8), intent(in) :: cpmodel, pktype, cltype
+  integer, intent(in) :: lmax, zn, kn
+  double precision, intent(in), dimension(2) :: zs
+  double precision, intent(in), dimension(1:zn) :: z, dz, dNdz
+  double precision, intent(in), dimension(1:kn) :: k, pk0
+  double precision, intent(out), dimension(0:lmax) :: cl
+  !internal
+  type(cosmoparams) :: cp
+  double precision :: pl(zn,lmax), zker(zn)
+  !opt4py :: zn = 0
+  !opt4py :: kn = 0
+  !add2py :: if zn == 0: zn=len(z)
+  !add2py :: if kn == 0: kn=len(k)
+  !opt4py :: pktype = 'T12'
+  !opt4py :: cltype = 'kk'
+  !opt4py :: dNdz = None
+  !add2py :: if dNdz is None: dNdz = z*0.
+  !add2py :: if len(dNdz) != zn: print('size of dNdz is strange')
+
+  ! cosmological parameters (to compute background quantities)
+  call set_cosmoparams(cp,cpmodel)
+
+  ! precompute quantities for bispectrum
+  call get_pl(cp,z,k*cp%h,pk0/cp%h**3,lmax,pktype,pl)
+  call cl_zweight(cp,z,dz,zs,zker,cltype,dNdz)
+
+  ! power pectrum
+  write(*,*) 'compute power pectrum'
+  cl = 0d0
+  call cl_calc_flat(pl,zker,cl(1:))
+
+end subroutine cl_flat
+
+
+subroutine bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,bl0,bl1,zn,kn,pktype,ltype,btype,dNdz)
 !*  Compute lensing bispectrum analytically
 !* 
 !*  Args:
@@ -20,18 +76,18 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
 !*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
 !*    :model (str) : fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
 !*    :z[zn] (double) : redshift points for the z-integral
-!*    :zn (int) : number of redshifts for the z-integral
 !*    :dz[zn] (double) : interval of z
 !*    :zs[3] (double) : source redshifts
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
-!*    :k[kn] (double) : k for the matter power spectrum
-!*    :pk0 (double) : the linear matter power spectrum at z=0
-!*    :kn (int) : size of k
+!*    :k[kn] (double) : k for the matter power spectrum in unit of [h/Mpc]
+!*    :pk0[kn] (double) : the linear matter power spectrum at z=0 in unit of [Mpc^3/h^3]
 !*
 !*  Args(optional):
 !*    :lan, kan (double) : parameters for the modified gravity extension, default to lan=kan=1 (GR)
 !*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
 !*    :ltype (str) : fullsky correction (full) or not 
+!*    :btype (str) : bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
+!*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
 !*
 !*  Returns:
 !*    :bl0[l] (double) : lensing bispectrum from LSS contributions at [lmin,lmax]
@@ -39,23 +95,31 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
 !*
   implicit none
   !I/O
-  character(8), intent(in) :: shap, cpmodel, model, pktype, ltype
+  character(8), intent(in) :: shap, cpmodel, model, pktype, ltype, btype
   integer, intent(in) :: lmin, lmax, zn, kn
   double precision, intent(in), dimension(3) :: zs
   double precision, intent(in) :: lan, kan
-  double precision, intent(in), dimension(1:zn) :: z, dz
+  double precision, intent(in), dimension(1:zn) :: z, dz, dNdz
   double precision, intent(in), dimension(1:kn) :: k, pk0
   double precision, intent(out), dimension(lmin:lmax) :: bl0, bl1
-  !opt4py :: lan = 0.
-  !opt4py :: kan = 0.
-  !opt4py :: pktype = 'T12'
-  !opt4py :: ltype = ''
   !internal
   integer :: l0, oL(2), i
   double precision, allocatable :: wp(:,:,:,:), ck(:,:,:)
   type(gauss_legendre_params) :: gl
   type(cosmoparams) :: cp
   type(bispecfunc)  :: b
+  !opt4py :: zn = 0
+  !opt4py :: kn = 0
+  !add2py :: if zn == 0: zn=len(z)
+  !add2py :: if kn == 0: kn=len(k)
+  !opt4py :: lan = 0.
+  !opt4py :: kan = 0.
+  !opt4py :: pktype = 'T12'
+  !opt4py :: ltype = ''
+  !opt4py :: btype = 'kkk'
+  !opt4py :: dNdz = None
+  !add2py :: if dNdz is None: dNdz = z*0.
+  !add2py :: if len(dNdz) != zn: print('size of dNdz is strange')
 
   ! cosmological parameters (to compute background quantities)
   call set_cosmoparams(cp,cpmodel)
@@ -66,8 +130,9 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
 
   ! precompute quantities for bispectrum
   allocate(wp(3,3,zn,lmax),ck(3,zn,lmax))
-  call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,oL,model,pktype) !correction for h/Mpc to /Mpc
-  call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,oL,wp,ck)
+  call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,oL,model,pktype,btype) !correction for h/Mpc to /Mpc
+  call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,oL,wp,ck) !only compute for btype=kkk
+  if (btype/='kkk')  call gal_zweight(btype,b%zker,dNdz)
 
   ! MG parameter z-evolution
   allocate(b%mgp(2,zn));  b%mgp=1d0
@@ -86,7 +151,7 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,k,pk0,kn,lan,kan,b
 end subroutine bispeclens
 
 
-subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,bc,bl0,bl1,pktype)
+subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,bc,bl0,bl1,pktype,btype,dNdz)
 !*  Compute binned lensing bispectrum analytically
 !* 
 !*  Args:
@@ -94,18 +159,18 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
 !*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
 !*    :model (str) : fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
 !*    :z[zn] (double) : redshift points for the z-integral
-!*    :zn (int) : number of redshifts for the z-integral
 !*    :dz[zn] (double) : interval of z
 !*    :zs[3] (double) : source redshifts
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
 !*    :bn (int) : number of multipole bins
-!*    :k[kn] (double) : k for the matter power spectrum
-!*    :pk0 (double) : the linear matter power spectrum at z=0
-!*    :kn (int) : size of k
+!*    :k[kn] (double) : k for the matter power spectrum in unit of [h/Mpc]
+!*    :pk0[kn] (double) : the linear matter power spectrum at z=0 in unit of [Mpc^3/h^3]
 !*
 !*  Args(optional):
 !*    :lan, kan (double) : parameters for the modified gravity extension, default to lan=kan=1 (GR)
 !*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
+!*    :btype (str) : bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
+!*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
 !*
 !*  Returns:
 !*    :bc[bn] (double)  : multipole bin centers
@@ -114,16 +179,25 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
 !*
   implicit none
   !I/O
-  character(8), intent(in) :: shap, cpmodel, model, pktype
+  character(8), intent(in) :: shap, cpmodel, model, pktype, btype
   integer, intent(in) :: lmin, lmax, zn, bn, kn
   double precision, intent(in), dimension(3) :: zs
   double precision, intent(in) :: lan, kan
-  double precision, intent(in),  dimension(1:zn) :: z, dz
+  double precision, intent(in),  dimension(1:zn) :: z, dz, dNdz
   double precision, intent(in),  dimension(1:kn) :: k, pk0
   double precision, intent(out), dimension(1:bn) :: bc, bl0, bl1
+  !opt4py :: zn = 0
+  !opt4py :: kn = 0
+  !add2py :: if zn == 0: zn=len(z)
+  !add2py :: if kn == 0: kn=len(k)
   !opt4py :: lan = 0.
   !opt4py :: kan = 0.
   !opt4py :: pktype = 'T12'
+  !opt4py :: btype = 'kkk'
+  !opt4py :: dNdz = None
+  !add2py :: if dNdz is None: dNdz = z*0.
+  !add2py :: if len(dNdz) != zn: print('size of dNdz is strange')
+
   !internal
   integer :: oL(2), l, i, eL1(2), eL2(2), eL3(2)
   double precision, allocatable :: bp(:), wp(:,:,:,:), ck(:,:,:)
@@ -141,6 +215,7 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
   allocate(wp(3,3,zn,oL(2)),ck(3,zn,oL(2)))
   call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,oL,model,pktype) !correction for h/Mpc to /Mpc
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,oL,wp,ck)
+  if (btype/='kkk')  call gal_zweight(btype,b%zker,dNdz)
 
   ! MG parameter z-evolution
   allocate(b%mgp(2,zn));  b%mgp=1d0
@@ -181,38 +256,51 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
 end subroutine bispeclens_bin
 
 
-subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pktype)
+subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pktype,btype,dNdz,cgg)
 !*  Compute SNR of lensing bispectrum analytically
 !* 
 !*  Args:
 !*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
 !*    :model (str) : fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
 !*    :z[zn] (double) : redshift points for the z-integral
-!*    :zn (int) : number of redshifts for the z-integral
 !*    :dz[zn] (double) : interval of z
 !*    :zs[3] (double) : source redshifts
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
 !*    :cl[l] (int) : observed lensing spectrum at 0<=l<=lmax
-!*    :k[kn] (double) : k for the matter power spectrum
-!*    :pk0 (double) : the linear matter power spectrum at z=0
-!*    :kn (int) : size of k
+!*    :k[kn] (double) : k for the matter power spectrum in unit of [h/Mpc]
+!*    :pk0[kn] (double) : the linear matter power spectrum at z=0 in unit of [Mpc^3/h^3]
 !*
 !*  Args(optional):
 !*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
+!*    :btype (str) : bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
+!*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
+!*    :cgg[l] (double) : observed galaxy spectrum
 !*
 !*  Returns:
 !*    :snr (double)  : total SNR
 !*
   implicit none
   !I/O
-  character(8), intent(in) :: cpmodel, model, pktype
+  character(8), intent(in) :: cpmodel, model, pktype, btype
   integer, intent(in) :: lmin, lmax, zn, kn
   double precision, intent(in), dimension(3) :: zs
-  double precision, intent(in), dimension(1:zn) :: z, dz
+  double precision, intent(in), dimension(1:zn) :: z, dz, dNdz
   double precision, intent(in), dimension(1:kn) :: k, pk0
-  double precision, intent(in), dimension(0:lmax) :: cl
+  double precision, intent(in), dimension(0:lmax) :: cl, cgg
   double precision, intent(out) :: snr
+  !opt4py :: zn = 0
+  !opt4py :: kn = 0
+  !add2py :: if zn == 0: zn=len(z)
+  !add2py :: if kn == 0: kn=len(k)
   !opt4py :: pktype = 'T12'
+  !opt4py :: btype = 'kkk'
+  !opt4py :: dNdz = None
+  !add2py :: if dNdz is None: dNdz = z*0.
+  !add2py :: if len(dNdz) != zn: print('size of dNdz is strange')
+  !opt4py :: cgg = None
+  !add2py :: if cgg is None: cgg = cl*0.
+  !add2py :: if len(cgg) != lmax+1: print('size of cgg is strange')
+
   !internal
   integer :: eL(2)
   double precision, allocatable :: wp(:,:,:,:), ck(:,:,:)
@@ -229,11 +317,17 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
   allocate(wp(3,3,zn,eL(2)),ck(3,zn,eL(2)))
   call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,eL,model,pktype) !correction for h/Mpc to /Mpc
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,eL,wp,ck)
+  if (btype/='kkk')  call gal_zweight(btype,b%zker,dNdz)
 
   ! snr
   allocate(b%mgp(2,zn));  b%mgp=1d0
   write(*,*) 'compute bispectrum snr'
-  call bispec_lens_snr(cp,b,eL,cl(1:lmax),wp,ck,model,snr)
+  select case(btype)
+  case('kkk','ggg')
+    call bispec_lens_snr(cp,b,eL,cl(1:lmax),wp,ck,model,snr)
+  case('gkk','ggk')
+    call bispec_lens_snr_cross(cp,b,eL,cgg(1:lmax),cl(1:lmax),btype,model,snr)
+  end select
   deallocate(b%mgp,wp,ck)
 
 end subroutine bispeclens_snr

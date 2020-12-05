@@ -3,11 +3,38 @@
 !/////////////////////////////////////////////////////////////////////!
 
 module galaxy
-  use utilsgal, only: zbin_SF, ngal_SF
+  use utilsgal, only: zbin_SF, ngal_SF, nz_SF_scal
   use funcs,    only: lnGamma
   implicit none
 
 contains
+
+
+subroutine dndz_sf(zn,z,a,b,zm,dndz)
+!* Galaxy z distribution
+!*
+!*  Args:
+!*    :z[zn] (double) : redshifts at which dNdz is returned
+!*    :a, b (double)  : shape parameters of Schechter-like galaxy distribution
+!*    :zm (double)    : mean redshift
+!*
+!*  Returns:
+!*    :dndz[zn] (double) : galaxy z distribution
+!*
+  implicit none
+  integer, intent(in) :: zn
+  double precision, intent(in) :: a, b, zm
+  double precision, intent(in), dimension(1:zn) :: z
+  double precision, intent(out), dimension(1:zn) :: dndz
+  integer :: i
+  !opt4py :: zn = 0
+  !add2py :: if zn==0: zn=len(z)
+
+  do i = 1, zn
+    dndz(i) = nz_SF_scal(z(i),a,b,zm)
+  end do
+
+end subroutine dndz_sf
 
 
 subroutine zbin(zn,a,b,zm,zb,verbose)
