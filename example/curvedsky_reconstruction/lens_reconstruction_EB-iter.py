@@ -55,7 +55,7 @@ for i, sig in enumerate(sigs):
     nl[1,:] = 2*nl[0,:]
     nl[2,:] = 2*nl[0,:]
     ocl = lcl + nl
-    Ag, __ = cs.norm_lens.qeb_iter(Lmax,rlmax,rlmin,rlmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],ucl[3,:])
+    Ag, __ = cs.norm_quad.qeb_iter(Lmax,rlmax,rlmin,rlmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],ucl[3,:])
 
 
 # In[ ]:

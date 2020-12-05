@@ -53,8 +53,8 @@ for i in range(mcnum):
     try:
         Ag0, Ag1 = np.loadtxt('tmp/al.dat',unpack=True,usecols=(1,2))
     except:
-        Ag0, Ac = curvedsky.norm_lens.qtt(lmax,rlmin,rlmax,lcl[0,:rlmax+1],lcl[0,:rlmax+1])
-        Ag1, Ac = curvedsky.norm_lens.qeb(lmax,rlmin,rlmax,lcl[1,:rlmax+1],lcl[1,:rlmax+1],lcl[2,:rlmax+1])
+        Ag0, Ac = curvedsky.norm_quad.qtt('lens',lmax,rlmin,rlmax,lcl[0,:rlmax+1],lcl[0,:rlmax+1])
+        Ag1, Ac = curvedsky.norm_quad.qeb('lens',lmax,rlmin,rlmax,lcl[1,:rlmax+1],lcl[1,:rlmax+1],lcl[2,:rlmax+1])
         np.savetxt('tmp/al.dat',np.array((np.linspace(0,lmax,lmax+1),Ag0,Ag1)).T)
 
     # reconstruction
