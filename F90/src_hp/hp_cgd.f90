@@ -57,13 +57,13 @@ subroutine set_mgchain(mgc,chn,mn,mnmaxs,lmaxs,nsides,itns,eps,verbose,ro)
   mgc%verbose = verbose
 
   if (verbose) then
-    write(*,'('//str(chn)//'(I4,X))') mgc%nside
-    write(*,'('//str(chn)//'(I4,X))') mgc%mnmax
-    write(*,'('//str(chn)//'(I4,X))') mgc%lmax
-    write(*,'('//str(chn)//'(I4,X))') mgc%itn
-    write(*,'('//str(chn)//'(E14.7,X))') mgc%eps
+    write(*,'(A6,X,'//str(chn)//'(I4,X))') 'nside:', mgc%nside
+    write(*,'(A6,X,'//str(chn)//'(I4,X))') '#maps:', mgc%mnmax
+    write(*,'(A6,X,'//str(chn)//'(I4,X))') 'lmax: ', mgc%lmax
+    write(*,'(A6,X,'//str(chn)//'(I4,X))') '#iter:', mgc%itn
+    write(*,'(A6,X,'//str(chn)//'(E14.7,X))') 'eps:  ', mgc%eps
     write(*,*) mgc%lsp
-    if (mgc%ro/=50)  write(*,*) mgc%ro
+    if (mgc%ro/=50)  write(*,'(A19,X,I4,X,A5)') 'residual output per', mgc%ro, 'iters'
   end if
 
 end subroutine set_mgchain
