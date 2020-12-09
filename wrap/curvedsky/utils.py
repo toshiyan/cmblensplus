@@ -16,7 +16,7 @@ def gauss1alm(lmax,Cl):
   """
   return libcurvedsky.utils.gauss1alm(lmax,Cl)
 
-def gauss2alm(lmax,cl1,cl2,xl,flm=None):
+def gauss2alm(lmax,cl1,cl2,xl):
   """
   Generating two alms as random Gaussian fields whose power spectra are cl1, cl2 and the cross spectrum is xl.
 
@@ -26,17 +26,31 @@ def gauss2alm(lmax,cl1,cl2,xl,flm=None):
     :cl2 [*l*] (*double*): Angular power spectrum of the 2nd alm, with bounds (0:lmax)
     :xl [*l*] (*double*): Cross-power spectrum between alm1 and alm2, with bounds (0:lmax)
 
-  Args(optional):
-    :flm [*l,m*] (*dcmplx*): pre-computed Gaussian fields whose spectrum is cl1, with bounds (0:lmax,0:lmax), default to None
+  Returns:
+    :alm [*2,l,m*] (*dcmplx*): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
+
+  Usage:
+    :alm = curvedsky.utils.gauss2alm(lmax,cl1,cl2,xl):
+  """
+  return libcurvedsky.utils.gauss2alm(lmax,cl1,cl2,xl)
+
+def gauss2alm_const(lmax,cl1,cl2,xl,flm):
+  """
+  Generating two alms as random Gaussian fields whose power spectra are cl1, cl2 and the cross spectrum is xl.
+
+  Args:
+    :lmax (*int*): Maximum multipole of the output alm
+    :cl1 [*l*] (*double*): Angular power spectrum of the 1st alm, with bounds (0:lmax)
+    :cl2 [*l*] (*double*): Angular power spectrum of the 2nd alm, with bounds (0:lmax)
+    :xl [*l*] (*double*): Cross-power spectrum between alm1 and alm2, with bounds (0:lmax)
 
   Returns:
     :alm [*2,l,m*] (*dcmplx*): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
 
   Usage:
-    :alm = curvedsky.utils.gauss2alm(lmax,cl1,cl2,xl,flm):
+    :alm = curvedsky.utils.gauss2alm_const(lmax,cl1,cl2,xl,flm):
   """
-  if flm is None:  flm = 0
-  return libcurvedsky.utils.gauss2alm(lmax,cl1,cl2,xl,flm)
+  return libcurvedsky.utils.gauss2alm_const(lmax,cl1,cl2,xl,flm)
 
 def gaussTEB(lmax,TT,EE,BB,TE):
   """
@@ -399,7 +413,7 @@ def mulwin(alm,win,nside=0,lmax=0,mmax=0):
 
 def mulwin_spin(elm,blm,win,nside=0,lmax=0,mmax=0,spin=2):
   """
-  Ylm transform of the map to alm with the healpix (l,m) order
+  Multiply window to a map obtained from alm
 
   Args:
     :elm [*l,m*] (*dcmplx*): Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)

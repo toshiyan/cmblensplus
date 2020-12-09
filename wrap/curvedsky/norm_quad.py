@@ -1,141 +1,137 @@
 import libcurvedsky
 
-def qtt(lmax,rlmin,rlmax,fC,OCT,gtype= ''):
+def qtt(est,lmax,rlmin,rlmax,TT,OCT,lfac=''):
   """
-  Normalization of reconstructed CMB lensing potential and its curl mode from the temperature quadratic estimator
+  Normalization of reconstructed fields from the temperature quadratic estimator
 
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
+    :TT [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
     :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
-    :Ag [*l*] (*double*): CMB lensing potential normalization, with bounds (0:lmax)
-    :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+    :Al [*2,l*] (*double*): Normalizations (1 is dummy except lens = 0 and curl = 1), with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qtt(lmax,rlmin,rlmax,fC,OCT,gtype):
+    :Al = curvedsky.norm_quad.qtt(est,lmax,rlmin,rlmax,TT,OCT,lfac):
   """
-  return libcurvedsky.norm_lens.qtt(lmax,rlmin,rlmax,fC,OCT,gtype)
+  return libcurvedsky.norm_quad.qtt(est,lmax,rlmin,rlmax,TT,OCT,lfac)
 
-def qte(lmax,rlmin,rlmax,fC,OCT,OCE,gtype= ''):
+def qte(est,lmax,rlmin,rlmax,TE,OCT,OCE,lfac=''):
   """
-  Normalization of reconstructed CMB lensing potential and its curl mode from the TE quadratic estimator
+  Normalization of reconstructed fields from the TE quadratic estimator
 
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
+    :TE [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
     :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
     :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
-    :Ag [*l*] (*double*): CMB lensing potential normalization, with bounds (0:lmax)
-    :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+    :Al [*2,l*] (*double*): Normalizations (1 is dummy except lens = 0 and curl = 1), with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qte(lmax,rlmin,rlmax,fC,OCT,OCE,gtype):
+    :Al = curvedsky.norm_quad.qte(est,lmax,rlmin,rlmax,TE,OCT,OCE,lfac):
   """
-  return libcurvedsky.norm_lens.qte(lmax,rlmin,rlmax,fC,OCT,OCE,gtype)
+  return libcurvedsky.norm_quad.qte(est,lmax,rlmin,rlmax,TE,OCT,OCE,lfac)
 
-def qtb(lmax,rlmin,rlmax,fC,OCT,OCB,gtype= ''):
+def qtb(est,lmax,rlmin,rlmax,TE,OCT,OCB,lfac=''):
   """
-  Normalization of reconstructed CMB lensing potential and its curl mode from the TB quadratic estimator
+  Normalization of reconstructed fields from the TB quadratic estimator
 
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
+    :TE [*l*] (*double*): Theory TE spectrum, with bounds (0:rlmax)
     :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
     :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
-    :Ag [*l*] (*double*): CMB lensing potential normalization, with bounds (0:lmax)
-    :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+    :Al [*2,l*] (*double*): Normalizations (1 is dummy except lens = 0 and curl = 1), with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qtb(lmax,rlmin,rlmax,fC,OCT,OCB,gtype):
+    :Al = curvedsky.norm_quad.qtb(est,lmax,rlmin,rlmax,TE,OCT,OCB,lfac):
   """
-  return libcurvedsky.norm_lens.qtb(lmax,rlmin,rlmax,fC,OCT,OCB,gtype)
+  return libcurvedsky.norm_quad.qtb(est,lmax,rlmin,rlmax,TE,OCT,OCB,lfac)
 
-def qee(lmax,rlmin,rlmax,fC,OCE,gtype= ''):
+def qee(est,lmax,rlmin,rlmax,EE,OCE,lfac=''):
   """
-  Normalization of reconstructed CMB lensing potential and its curl mode from the E-mode quadratic estimator
+  Normalization of reconstructed amplitude modulation from the EE quadratic estimator
 
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
+    :EE [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
     :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
-    :Ag [*l*] (*double*): CMB lensing potential normalization, with bounds (0:lmax)
-    :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+    :Al [*2,l*] (*double*): Normalization, with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qee(lmax,rlmin,rlmax,fC,OCE,gtype):
+    :Al = curvedsky.norm_quad.qee(est,lmax,rlmin,rlmax,EE,OCE,lfac):
   """
-  return libcurvedsky.norm_lens.qee(lmax,rlmin,rlmax,fC,OCE,gtype)
+  return libcurvedsky.norm_quad.qee(est,lmax,rlmin,rlmax,EE,OCE,lfac)
 
-def qeb(lmax,rlmin,rlmax,fC,OCE,OCB,gtype= ''):
+def qeb(est,lmax,rlmin,rlmax,EE,OCE,OCB,lfac='',BB=0):
   """
-  Normalization of reconstructed CMB lensing potential and its curl mode from the EB quadratic estimator
+  Normalization of reconstructed fields from the EB quadratic estimator
 
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
+    :EE [*l*] (*double*): Theory EE spectrum, with bounds (0:rlmax)
     :OCE [*l*] (*double*): Observed EE spectrum, with bounds (0:rlmax)
     :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
 
-  Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+  Args(optionals): 
+    :BB [*l*] (*double*): Theory BB spectrum, with bounds (0:rlmax)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
-    :Ag [*l*] (*double*): CMB lensing potential normalization, with bounds (0:lmax)
-    :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+    :Al [*2,l*] (*double*): Normalization, with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qeb(lmax,rlmin,rlmax,fC,OCE,OCB,gtype):
+    :Al = curvedsky.norm_quad.qeb(est,lmax,rlmin,rlmax,EE,OCE,OCB,BB,lfac):
   """
-  return libcurvedsky.norm_lens.qeb(lmax,rlmin,rlmax,fC,OCE,OCB,gtype)
+  if BB==0: BB=0.*EE
+  return libcurvedsky.norm_quad.qeb(est,lmax,rlmin,rlmax,EE,OCE,OCB,BB,lfac)
 
-def qbb(lmax,rlmin,rlmax,fC,OCB,gtype= ''):
+def qbb(est,lmax,rlmin,rlmax,BB,OCB,lfac=''):
   """
-  Normalization of reconstructed CMB lensing potential and its curl mode from the B-mode quadratic estimator
+  Normalization of reconstructed amplitude modulation from the BB quadratic estimator
 
   Args:
     :lmax (*int*): Maximum multipole of output normalization spectrum
     :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory BB spectrum, with bounds (0:rlmax)
+    :BB [*l*] (*double*): Theory BB spectrum, with bounds (0:rlmax)
     :OCB [*l*] (*double*): Observed BB spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
-    :Ag [*l*] (*double*): CMB lensing potential normalization, with bounds (0:lmax)
-    :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
+    :Al [*2,l*] (*double*): Normalization, with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qbb(lmax,rlmin,rlmax,fC,OCB,gtype):
+    :Al = curvedsky.norm_quad.qbb(est,lmax,rlmin,rlmax,BB,OCB,lfac):
   """
-  return libcurvedsky.norm_lens.qbb(lmax,rlmin,rlmax,fC,OCB,gtype)
+  return libcurvedsky.norm_quad.qbb(est,lmax,rlmin,rlmax,BB,OCB,lfac)
 
-def qttte(lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,gtype= ''):
+def qttte(est,lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,lfac=''):
   """
   Correlation between unnormalized TT and TE quadratic estimators
 
@@ -149,18 +145,18 @@ def qttte(lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,gtype= ''):
     :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
     :Ig [*l*] (*double*): Correlation between lensing potential estimators, with bounds (0:lmax)
     :Ic [*l*] (*double*): Correlation between curl mode estimators, with bounds (0:lmax)
 
   Usage:
-    :Ig,Ic = curvedsky.norm_lens.qttte(lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,gtype):
+    :Ig,Ic = curvedsky.norm_quad.qttte(est,lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,lfac):
   """
-  return libcurvedsky.norm_lens.qttte(lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,gtype)
+  return libcurvedsky.norm_quad.qttte(est,lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,lfac)
 
-def qttee(lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,gtype= ''):
+def qttee(est,lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,lfac=''):
   """
   Correlation between unnormalized TT and EE quadratic estimators
 
@@ -174,18 +170,18 @@ def qttee(lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,gtype= ''):
     :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
     :Ig [*l*] (*double*): Correlation between lensing potential estimators, with bounds (0:lmax)
     :Ic [*l*] (*double*): Correlation between curl mode estimators, with bounds (0:lmax)
 
   Usage:
-    :Ig,Ic = curvedsky.norm_lens.qttee(lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,gtype):
+    :Ig,Ic = curvedsky.norm_quad.qttee(est,lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,lfac):
   """
-  return libcurvedsky.norm_lens.qttee(lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,gtype)
+  return libcurvedsky.norm_quad.qttee(est,lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,lfac)
 
-def qteee(lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,gtype= ''):
+def qteee(est,lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,lfac=''):
   """
   Correlation between unnormalized TE and EE quadratic estimators
 
@@ -199,18 +195,18 @@ def qteee(lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,gtype= ''):
     :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
     :Ig [*l*] (*double*): Correlation between lensing potential estimators, with bounds (0:lmax)
     :Ic [*l*] (*double*): Correlation between curl mode estimators, with bounds (0:lmax)
 
   Usage:
-    :Ig,Ic = curvedsky.norm_lens.qteee(lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,gtype):
+    :Ig,Ic = curvedsky.norm_quad.qteee(est,lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,lfac):
   """
-  return libcurvedsky.norm_lens.qteee(lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,gtype)
+  return libcurvedsky.norm_quad.qteee(est,lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,lfac)
 
-def qtbeb(lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,gtype= ''):
+def qtbeb(est,lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,lfac=''):
   """
   Correlation between unnormalized TB and EB quadratic estimators
 
@@ -225,16 +221,16 @@ def qtbeb(lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,gtype= ''):
     :OCTE [*l*] (*double*): Observed TE spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
     :Ig [*l*] (*double*): Correlation between lensing potential estimators, with bounds (0:lmax)
     :Ic [*l*] (*double*): Correlation between curl mode estimators, with bounds (0:lmax)
 
   Usage:
-    :Ig,Ic = curvedsky.norm_lens.qtbeb(lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,gtype):
+    :Ig,Ic = curvedsky.norm_quad.qtbeb(est,lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,lfac):
   """
-  return libcurvedsky.norm_lens.qtbeb(lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,gtype)
+  return libcurvedsky.norm_quad.qtbeb(est,lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,lfac)
 
 def qmv(lmax,QDO,Al,Il):
   """
@@ -251,11 +247,11 @@ def qmv(lmax,QDO,Al,Il):
     :Nl [*6,l*] (*double*): Weights for each estimator (TT, TE, EE, TB, EB, BB=0), with bounds (0:lmax)
 
   Usage:
-    :MV,Nl = curvedsky.norm_lens.qmv(lmax,QDO,Al,Il):
+    :MV,Nl = curvedsky.norm_quad.qmv(lmax,QDO,Al,Il):
   """
-  return libcurvedsky.norm_lens.qmv(lmax,QDO,Al,Il)
+  return libcurvedsky.norm_quad.qmv(lmax,QDO,Al,Il)
 
-def qall(QDO,lmax,rlmin,rlmax,fC,OC,gtype= ''):
+def qall(est,QDO,lmax,rlmin,rlmax,fC,OC,lfac=''):
   """
   Compute MV estimator normalization. Currently BB is ignored. 
 
@@ -266,7 +262,7 @@ def qall(QDO,lmax,rlmin,rlmax,fC,OC,gtype= ''):
     :fC/OC [*l*] (*double*): Theory/Observed CMB angular power spectra (TT, EE, BB, TE), with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
     :Ag [*6,l*] (*double*): Normalization of the TT, TE, EE, TB, EB, and MV estimators for lensing potential, with bounds (6,0:lmax)
@@ -275,9 +271,9 @@ def qall(QDO,lmax,rlmin,rlmax,fC,OC,gtype= ''):
     :Nlc [*6,l*] (*double*): Same as Nlg but for curl mode
 
   Usage:
-    :Ag,Ac,Nlg,Nlc = curvedsky.norm_lens.qall(QDO,lmax,rlmin,rlmax,fC,OC,gtype):
+    :Ag,Ac,Nlg,Nlc = curvedsky.norm_quad.qall(est,QDO,lmax,rlmin,rlmax,fC,OC,lfac):
   """
-  return libcurvedsky.norm_lens.qall(QDO,lmax,rlmin,rlmax,fC,OC,gtype)
+  return libcurvedsky.norm_quad.qall(est,QDO,lmax,rlmin,rlmax,fC,OC,lfac)
 
 def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter= 1,conv= 1e-6):
   """
@@ -302,11 +298,11 @@ def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter= 1,conv= 1e-
     :Ac [*l*] (*double*): Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
 
   Usage:
-    :Ag,Ac = curvedsky.norm_lens.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv):
+    :Ag,Ac = curvedsky.norm_quad.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv):
   """
-  return libcurvedsky.norm_lens.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv)
+  return libcurvedsky.norm_quad.qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter,conv)
 
-def ttt(lmax,rlmin,rlmax,fC,OCT,gtype= ''):
+def xtt(est,lmax,rlmin,rlmax,fC,OCT,lfac=''):
   """
   Unnormalized response between lensing potential and amplitude modulation from the temperature quadratic estimator
 
@@ -317,34 +313,13 @@ def ttt(lmax,rlmin,rlmax,fC,OCT,gtype= ''):
     :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
 
   Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
+    :lfac (*str*): Multiplying square of L(L+1)/2, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
 
   Returns:
     :Ag [*l*] (*double*): Cross normalization, with bounds (0:lmax)
 
   Usage:
-    :Ag = curvedsky.norm_lens.ttt(lmax,rlmin,rlmax,fC,OCT,gtype):
+    :Ag = curvedsky.norm_quad.xtt(est,lmax,rlmin,rlmax,fC,OCT,lfac):
   """
-  return libcurvedsky.norm_lens.ttt(lmax,rlmin,rlmax,fC,OCT,gtype)
-
-def stt(lmax,rlmin,rlmax,fC,OCT,gtype= ''):
-  """
-  Unnormalized response between lensing potential and poisson sources/inhomogeneous nosie with the temperature quadratic estimator
-
-  Args:
-    :lmax (*int*): Maximum multipole of output normalization spectrum
-    :rlmin/rlmax (*int*): Minimum/Maximum multipole of CMB for reconstruction
-    :fC [*l*] (*double*): Theory TT spectrum, with bounds (0:rlmax)
-    :OCT [*l*] (*double*): Observed TT spectrum, with bounds (0:rlmax)
-
-  Args(optional):
-    :gtype (*str*): Type of output, i.e., convergence (gtype='k') or lensing potential (gtype='', default)
-
-  Returns:
-    :Ag [*l*] (*double*): Cross normalization, with bounds (0:lmax)
-
-  Usage:
-    :Ag = curvedsky.norm_lens.stt(lmax,rlmin,rlmax,fC,OCT,gtype):
-  """
-  return libcurvedsky.norm_lens.stt(lmax,rlmin,rlmax,fC,OCT,gtype)
+  return libcurvedsky.norm_quad.xtt(est,lmax,rlmin,rlmax,fC,OCT,lfac)
 
