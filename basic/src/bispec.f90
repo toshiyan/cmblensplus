@@ -315,7 +315,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
 
   ! precompute quantities for bispectrum
   allocate(wp(3,3,zn,eL(2)),ck(3,zn,eL(2)))
-  call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,eL,model,pktype) !correction for h/Mpc to /Mpc
+  call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,eL,model,pktype,btype) !correction for h/Mpc to /Mpc
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,eL,wp,ck)
   if (btype/='kkk')  call gal_zweight(btype,b%zker,dNdz)
 
