@@ -8,7 +8,6 @@
 #
 import os
 import argparse
-import re
 
 # read libname and modulename
 parser = argparse.ArgumentParser(description='scan f90 file and create the signature file for f2py')

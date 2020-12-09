@@ -150,6 +150,13 @@ def add_code(f,slines):
             code = l[l.find('::')+3:]
             f.write('  '+code)
 
+# restrict return index
+def get_returnvals(slines):
+    for l in slines:
+        if '!return' in l and '::' in l:
+            idx = l[l.find('::')+3:][0:1]
+    return '['+idx+']'
+
 
 # read libname and modulename
 parser = argparse.ArgumentParser(description='scan f90 file and create the signature file for f2py')
@@ -210,7 +217,8 @@ for mod in modname:
             func = func.replace(','+p+')',')')
 
         # call lib (should not place after chargs)
-        libfunc = libname+'.'+mod+'.'+func
+        #returnval = get_returnval(slines)
+        libfunc = libname + '.' + mod + '.' + func #+ returnval
 
         # extract and change arguments
         args = func[func.find('(')+1:].replace(')','').split(',')
