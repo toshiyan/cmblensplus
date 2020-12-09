@@ -61,7 +61,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !opt4py :: verbose = False
   !opt4py :: ro = 50
   !opt4py :: stat = ''
-  !opt4py :: inl = 0
+  !opt4py :: inl = None
   double precision, intent(in), dimension(n,0:lmax) :: cl
   double precision, intent(in), dimension(mn,0:lmax) :: bl
   double precision, intent(in), dimension(n,mn,0:lmax) :: inl
@@ -77,7 +77,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !replace
   !chargs :: npix -> nside
   !add2py :: npix = 12*nside**2
-  !add2py :: if inl==0: inl = 0*iNcov[:,:,:lmax+1]
+  !add2py :: if inl is None: inl = 0*iNcov[:,:,:lmax+1]
 
   mnmaxs = mn
 
@@ -230,7 +230,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !opt4py :: reducmn = 0
   !opt4py :: ro = 50
   !opt4py :: stat = ''
-  !opt4py :: inl = 0
+  !opt4py :: inl = None
   double precision, intent(in), dimension(n,0:lmax) :: cl
   double precision, intent(in), dimension(mn0,0:lmax) :: bl0
   double precision, intent(in), dimension(mn1,0:lmax) :: bl1
@@ -253,7 +253,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !chargs :: npix1 -> nside1
   !add2py :: npix0 = 12*nside0**2
   !add2py :: npix1 = 12*nside1**2
-  !add2py :: if inl==0: inl = 0*iNcov[:,:,:lmax+1]
+  !add2py :: if inl is None: inl = 0*iNcov[:,:,:lmax+1]
 
   mn = mn0 + mn1
   mnmaxs = mn
