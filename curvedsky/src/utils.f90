@@ -1305,7 +1305,7 @@ end subroutine calc_mfs
 
 
 subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
-!*  Compute galaxy overdensity map from dark matter density map
+!*  Compute galaxy overdensity map from dark matter density map. 
 !*  The galaxy z distribution is assumed to have the functional form given by Eq.(7) of https://arxiv.org/abs/1810.03346
 !*
 !*  Args:
@@ -1321,7 +1321,7 @@ subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
 !*    :b0 (double)         : constant galaxy bias at z=0
 !*
 !*  Returns:
-!*    :gmap [pix,zbin] (double): The galaxy numberdensity map at each zbin
+!*    :gmap [pix,zbin] (double): The galaxy number density map at each zbin
 !*
   implicit none
   character(*), intent(in) :: fname, btype

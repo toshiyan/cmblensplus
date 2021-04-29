@@ -209,7 +209,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !*    :reducmn (int): Reducing number of maps per chain (1,2) or not (0, default). If 1, the maps are combined for the same nside inside the multigrid chain. If 2, in addition to the procedure of 1, the each nside maprs are further combined into a single map inside the second chain (chain>=3).
 !*
 !* Returns:
-!*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
+!*    :xlm[n,l,m] (dcmplx) : C-inverse or Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 !*
   implicit none
   !I/O

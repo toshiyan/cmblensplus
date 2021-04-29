@@ -903,48 +903,43 @@ subroutine qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,Ag,Ac,iter
   double precision, intent(in), dimension(0:rlmax) :: OCB
   double precision, intent(in), dimension(0:dlmax) :: Cpp
   double precision, intent(out), dimension(0:lmax) :: Ag, Ac
-  !optional
-  integer, intent(in), optional :: iter
-  double precision, intent(in), optional :: conv
-  !f2py integer :: iter = 1
-  !f2py double precision :: conv = 1e-6
+  integer, intent(in) :: iter
+  double precision, intent(in) :: conv
   !internal
-  integer :: i, n, l, it
-  double precision :: ratio, c
-  double precision :: AgEB(0:dlmax), rCBB(0:rlmax)
-
-  AgEB=0d0
-  rCBB=0d0
+  integer :: i, n, l
+  double precision :: ratio
+  double precision :: Al(2,0:dlmax), rCBB(0:rlmax), BB(0:rlmax)
+  !opt4py :: iter = 1
+  !opt4py :: conv = 0.001
 
   if (elmax<dlmax.or.elmax<rlmax) stop 'error (qeb_iter): does not support elmax<dlmax or elmax<rlmax'
 
   !initial values
   ratio = 1d0
   rCBB  = OCB
-  it = 1
-  c  = 0.001
-  if (present(iter)) it = iter
-  if (present(conv)) c  = conv
+  Al   = 0d0
+  BB   = 0d0
 
-  do n = 1, it !loop for iteration 
+  do n = 1, iter !loop for iteration 
 
     !lensing reconstruction with EB
-    call qeb('lens',dlmax,rlmin,rlmax,CE(0:rlmax),OCE(0:rlmax),rCBB,AgEB,Ac,'')
+    call qeb('lens',dlmax,rlmin,rlmax,CE(0:rlmax),OCE(0:rlmax),rCBB,BB(0:rlmax),Al(:,0:dlmax),'')
 
     !convergence check using gradient mode
     if (n>=2) then
-      ratio = (sum(Ag)/sum(AgEB)-1d0)/dble(dlmax)
+      ratio = (sum(Ag)/sum(Al(1,:))-1d0)/dble(dlmax)
       write(*,*) n, ratio
     end if
-    Ag = AgEB
+    Ag = Al(1,:)
+    Ac = Al(2,:)
 
-    if (abs(ratio) < c) exit
+    if (abs(ratio) < conv) exit
 
     !delensing with EB-estimator
-    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),CE(1:dlmax),Cpp(1:dlmax),OCE(1:dlmax)-CE(1:dlmax),AgEB,rCBB)
+    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),CE(1:dlmax),Cpp(1:dlmax),OCE(1:dlmax)-CE(1:dlmax),Al(1,1:dlmax),rCBB(1:rlmax))
     rCBB = OCB - rCBB !delensed B-mode
 
-    if(n==it) write(*,*) 'not well converged'
+    if(n==iter) write(*,*) 'not well converged'
 
   end do
 
