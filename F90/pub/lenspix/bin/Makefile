@@ -8,13 +8,12 @@ F90C     = ifort
 FFLAGS = -qopenmp -O3 -ip -fpp -error-limit 5 -heap-arrays -ftrapuv
 #DMPIPIX and DMPI is not included in version 11.0
 
-HEALPIX = ../../mylib/pub/Healpix
-healpix = $(HEALPIX)
-cfitsio = ../../mylib/pub/cfitsio/
 Lib = ../
-MyLib = ../../mylib/
+MyLib = ../../../
+HEALPIX = ${MyLib}/pub/Healpix/
+cfitsio = ${MyLib}/pub/cfitsio/
 
-F90FLAGS = $(FFLAGS) -I$(MyLib)/mod -L$(MyLib)/lib -I$(Lib)/mod -L$(Lib)/lib -I$(healpix)/include -L$(cfitsio) -L$(healpix)/lib -lutils -llenspix -lhealpix -lcfitsio
+F90FLAGS = $(FFLAGS) -I$(MyLib)/mod -L$(MyLib)/lib -I$(Lib)/mod -L$(Lib)/lib -I$(HEALPIX)/include -L$(cfitsio) -L$(healpix)/lib -lutils -llenspix -lhealpix -lcfitsio
 
 OBJFILES= main.o
 

@@ -31,7 +31,7 @@ module bstool
 contains
 
 
-subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype)
+subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype,verbose)
   implicit none
   !I/O
   type(cosmoparams), intent(in) :: cp
@@ -40,6 +40,7 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype)
   integer, intent(in) :: oL(2)
   double precision, intent(in)  :: z(:), dz(:), zs(3), k(:), pkl0(:)
   character(*), intent(in), optional :: btype
+  logical, intent(in), optional :: verbose
   !internal
   character(4) :: bisptype = 'kkk'
   logical :: nonlinear
@@ -65,7 +66,7 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype)
   s0   = dsqrt(pk2sigma(8d0/cp%h,k,pkL0))
   b%D  = D_z(z,cp,zn)
   b%sz = s0*b%D
-  write(*,*) 'sigma8 = ', s0
+  if (present(verbose) .and. verbose) write(*,*) 'sigma8 = ', s0
 
   !* interpolate k, Pk at k=l/chi
   allocate(chi(zn),b%kl(zn,oL(2)),b%plL(zn,oL(2)),b%pl(zn,oL(2)))

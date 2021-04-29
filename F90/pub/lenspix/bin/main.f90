@@ -11,8 +11,8 @@ program SimLensCMB
   use AMLUtils
 
   !namikawa
-  use myutils,   only: str, savetxt, linspace
-  use mycls,     only: calccl
+  use general,   only: str, savetxt, linspace
+  use pstool,     only: calccl
   use healpix_types
   use alm_tools
   use pix_tools
