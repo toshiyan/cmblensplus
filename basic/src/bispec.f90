@@ -419,27 +419,25 @@ subroutine zpoints(zmin,zmax,zn,z,dz,zspace)
 end subroutine zpoints
 
 
-subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,theta,pktype,pb)
+subroutine skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,theta,pktype,pb,Om,H0,w0,wa,mnu,ns,verbose)
 !* Compute skew spectrum using a matter bispectrum fitting formula
 !*
 !*  Args:
-!*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
+!*    :cpmodel (str) : cosmological parameter model (model0, modelw, modelp, or input)
 !*    :model (str) : fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
-!*    :z[zn] (double) : redshift points for the z-integral
-!*    :dz[zn] (double) : interval of z
+!*    :zmin/zmax (double) : minimum/maximum z for z-integral
 !*    :zn (int) : number of redshifts for the z-integral
 !*    :zs[2] (double) : source redshifts where zs[2] is used for the squared map
-!*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
-!*    :bn (int) : number of multipoles for skew spectrum
-!*    :ols[bn] (int) : multipoles to be computed for skew spectrum
-!*    :k[kn] (double) : k for the matter power spectrum
-!*    :pk0 (double) : the linear matter power spectrum at z=0
-!*    :kn (int) : size of k
+!*    :lmin/lmax (int) : minimum/maximum multipoles of alms included in the skew spectrum
+!*    :ols[bn] (int) : output multipoles to be computed for skew spectrum
+!*    :k[kn] (double) : k for the matter power spectrum [h/Mpc]
+!*    :pk0 (double) : the linear matter power spectrum at z=0 [Mpc^3/h^3]
 !*
 !*  Args(optional):
 !*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
 !*    :theta (double) : kappa map resolution in arcmin
 !*    :pb (bool) : with post-Born correction or not (default=True)
+!*    :verbose (bool) : output messages
 !*
 !*  Returns:
 !*    :skew (double)  : skew-spectrum
@@ -449,43 +447,68 @@ subroutine skewspeclens(cpmodel,model,z,dz,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,
   character(8), intent(in) :: cpmodel, model, pktype
   integer, intent(in) :: bn, lmin, lmax, zn, kn
   double precision, intent(in), dimension(2) :: zs
-  double precision, intent(in) :: theta
+  double precision, intent(in) :: theta, zmin, zmax
+  double precision, intent(in) :: Om, H0, w0, wa, mnu, ns
   integer, intent(in), dimension(1:bn) :: ols
-  double precision, intent(in), dimension(1:zn) :: z, dz
   double precision, intent(in), dimension(1:kn) :: k, pk0
   double precision, intent(out), dimension(1:3,1:bn) :: skew
-  logical, intent(in) :: pb
+  logical, intent(in) :: pb, verbose
   !opt4py :: pktype = 'T12'
   !opt4py :: pb = True
   !opt4py :: theta = 0.0
+  !opt4py :: Om = 0.3
+  !opt4py :: H0 = 70.
+  !opt4py :: w0 = -1.
+  !opt4py :: wa = 0.
+  !opt4py :: mnu = 0.06
+  !opt4py :: ns = 0.965
+  !opt4py :: bn = 0
+  !add2py :: if bn==0: bn=len(ols)
+  !opt4py :: kn = 0
+  !add2py :: if kn == 0: kn=len(k)
+  !opt4py :: verbose = True
   !internal
   integer :: n, eL(2), tL(2)
   double precision :: zss(3)
+  double precision, dimension(1:zn) :: z, dz
   double precision, allocatable :: wp(:,:,:,:), ck(:,:,:)
   type(gauss_legendre_params) :: gl
   type(cosmoparams) :: cp
   type(bispecfunc)  :: b
 
   ! cosmological parameters (to compute background quantities)
-  call set_cosmoparams(cp,cpmodel)
+  if (cpmodel=='input') then
+    cp%Om = Om
+    cp%H0 = H0
+    cp%w0 = w0
+    cp%wa = wa
+    cp%nu = mnu/(93.14d0*(cp%H0/100d0)**2*cp%Om)
+    cp%h  = cp%H0/100d0
+    cp%Ov = 1d0 - cp%Om
+    cp%ns = ns
+  else
+    call set_cosmoparams(cp,cpmodel)
+  end if
+
+  ! z points for integral
+  call zinterp(zmin,zmax,zn,1,z,dz)
 
   ! other parameters
   tL(1) = 1
   tL(2) = max(lmax,ols(bn))
-  eL = (/lmin,lmax/)
 
   ! skewspectrum
   allocate(wp(3,3,zn,tL(2)),ck(3,zn,tL(2)))
   zss(1) = zs(1)
   zss(2) = zs(2)
   zss(3) = zs(2)
-  call bispec_lens_lss_init(cp,b,z,dz,zss,k*cp%h,pk0/cp%h**3,tL,model,pktype) 
+  call bispec_lens_lss_init(cp,b,z,dz,zss,k*cp%h,pk0/cp%h**3,tL,model,pktype,verbose=verbose) 
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zss,tL,wp,ck)
   skew = 0d0
-  write(*,*) 'calc skewspec'
+  if (verbose) write(*,*) 'calc skewspec'
   do n = 1, bn
-    call skewspec_lens(cp,b,ols(n),eL,(/1d0,1d0/),wp,ck,model,theta,skew(:,n),pb)
-    write(*,*) ols(n), skew(1,n)
+    call skewspec_lens(cp,b,ols(n),(/lmin,lmax/),(/1d0,1d0/),wp,ck,model,theta,skew(:,n),pb)
+    if (verbose) write(*,*) ols(n), skew(1,n)
   end do
   deallocate(wp,ck)
 
