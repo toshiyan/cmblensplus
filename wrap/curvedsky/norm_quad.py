@@ -275,7 +275,7 @@ def qall(est,QDO,lmax,rlmin,rlmax,fC,OC,lfac=''):
   """
   return libcurvedsky.norm_quad.qall(est,QDO,lmax,rlmin,rlmax,fC,OC,lfac)
 
-def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter= 1,conv= 1e-6):
+def qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,iter=1,conv=0.001):
   """
   Normalization of reconstructed CMB lensing potential and its curl mode from the EB quadratic estimator
 

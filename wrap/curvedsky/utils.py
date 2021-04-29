@@ -43,6 +43,7 @@ def gauss2alm_const(lmax,cl1,cl2,xl,flm):
     :cl1 [*l*] (*double*): Angular power spectrum of the 1st alm, with bounds (0:lmax)
     :cl2 [*l*] (*double*): Angular power spectrum of the 2nd alm, with bounds (0:lmax)
     :xl [*l*] (*double*): Cross-power spectrum between alm1 and alm2, with bounds (0:lmax)
+    :flm [*l,m*] (*dcmplx*): Constrained realiation of alms whose power is cl1
 
   Returns:
     :alm [*2,l,m*] (*dcmplx*): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
@@ -513,6 +514,7 @@ def calc_mfs(bn,nu,lmax,walm,nside=0):
 def mock_galaxy_takahashi(fname,zn,ngz,zi,a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0,b0=1.0,btype='sqrtz'):
   """
   Compute galaxy overdensity map from dark matter density map
+  The galaxy z distribution is assumed to have the functional form given by Eq.(7) of https://arxiv.org/abs/1810.03346
 
   Args:
     :fname (*str*): Filename of density map
@@ -527,7 +529,7 @@ def mock_galaxy_takahashi(fname,zn,ngz,zi,a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0,b0
     :b0 (*double*): constant galaxy bias at z=0
 
   Returns:
-    :V [*bin,type*] (*double*): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
+    :gmap [*pix,zbin*] (*double*): The galaxy numberdensity map at each zbin
 
   Usage:
     :gmap = curvedsky.utils.mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias):

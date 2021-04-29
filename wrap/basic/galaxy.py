@@ -1,5 +1,23 @@
 import libbasic
 
+def dndz_sf(z,a,b,zm,zn=0):
+  """
+ Galaxy z distribution
+
+  Args:
+    :z[*zn*] (*double*): redshifts at which dNdz is returned
+    :a, b (*double*): shape parameters of Schechter-like galaxy distribution
+    :zm (*double*): mean redshift
+
+  Returns:
+    :dndz[*zn*] (*double*): galaxy z distribution
+
+  Usage:
+    :dndz = basic.galaxy.dndz_sf(zn,z,a,b,zm):
+  """
+  if zn==0: zn=len(z)
+  return libbasic.galaxy.dndz_sf(zn,z,a,b,zm)
+
 def zbin(zn,a,b,zm,verbose=False):
   """
  Computing z-interval of z-bin so that number of galaxies at each z-bin is equal
@@ -20,7 +38,7 @@ def zbin(zn,a,b,zm,verbose=False):
   """
   return libbasic.galaxy.zbin(zn,a,b,zm,verbose)
 
-def frac(zn,zb,a,b,zm,zbias=0.0,sigma=0.0,verbose=False):
+def frac(zn,zb,a,b,zm,verbose=False,zbias=0.0,sigma=0.0):
   """
  Computing z-interval of z-bin so that number of galaxies at each z-bin is equal
 
