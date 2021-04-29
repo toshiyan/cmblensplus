@@ -7,9 +7,9 @@ import misctools
 import tqdm
 
 if sys.version_info[:3] > (3,0):
-  import pickle
+    import pickle
 elif sys.version_info[:3] > (2,5,2):
-  import cPickle as pickle
+    import cPickle as pickle
 
 
 #////////// Constants //////////#
@@ -53,6 +53,34 @@ def Int_Planck_deriv(nu,T):
     return Int_Planck(nu,T) * (np.exp(c.h*nu0/c.kB/T)*c.h*nu0/c.kB/T**2)/(np.exp(c.h*nu0/c.kB/T)-1.)
 
 
+def T2y(nu):
+    """
+    g(nu) factor to convert from T to y
+    nu [GHz]
+    """
+    x = c.h*(nu*1e9)/(c.kB*c.Tcmb*1e-6)
+    return x*np.cosh(x/2.)/np.sinh(x/2.) - 4.
+
+
+def unit_conversion(freq,conv): #https://lambda.gsfc.nasa.gov/data/planck/early_sources/explanatory_supplement.pdf Table 4
+
+    unit = {}
+    unit['30']  = {'center':28.5, 'Kcmb->KRJ':0.979328,     'KRJ->MJy/sr':24.845597}
+    unit['44']  = {'center':44.1, 'Kcmb->KRJ':0.95121302,   'KRJ->MJy/sr':59.666236}
+    unit['70']  = {'center':70.3, 'Kcmb->KRJ':0.88140690,   'KRJ->MJy/sr':151.73238}
+    unit['100'] = {'center':100,  'Kcmb->KRJ':0.76581996,   'KRJ->MJy/sr':306.81118}
+    unit['143'] = {'center':143,  'Kcmb->KRJ':0.59714682,   'KRJ->MJy/sr':627.39818}
+    unit['217'] = {'center':217,  'Kcmb->KRJ':0.31573332,   'KRJ->MJy/sr':1444.7432}
+    unit['353'] = {'center':353,  'Kcmb->KRJ':0.071041398,  'KRJ->MJy/sr':3823.1434}
+    unit['545'] = {'center':545,  'Kcmb->KRJ':0.0059757149, 'KRJ->MJy/sr':9113.0590}
+    unit['857'] = {'cenrer':857,  'Kcmb->KRJ':9.6589431e-05,'KRJ->MJy/sr':22533.716}
+
+    if conv in ['Kcmb->KRJ','KRJ->MJy/sr']:
+        return unit[freq][conv]
+    elif conv == 'Kcmb->MJy/sr':
+        return unit[freq]['Kcmb->KRJ']*unit[freq]['KRJ->MJy/sr']
+
+
 #////////// Gaussian beam //////////#
 
 def beam(theta,lmax):
@@ -72,7 +100,7 @@ def nl_white(sigma,theta,lmax):
 
 #////////// Angular power spectrum /////////#
 
-def aps(rlz,lmax,falm,odd=True,w2=1.,mtype=['T','E','B'],fname=None,loadcls=True,verbose=True,overwrite=False):
+def aps(rlz,lmax,falm,odd=True,w2=1.,mtype=['T','E','B'],fname=None,skip_rlz=[],loadcls=True,verbose=True,overwrite=False):
     '''
     Compute CMB aps (TT,EE,BB,TE,TB,EB)
     '''
@@ -85,6 +113,8 @@ def aps(rlz,lmax,falm,odd=True,w2=1.,mtype=['T','E','B'],fname=None,loadcls=True
     cls = np.zeros((len(rlz),cn,lmax+1))
 
     for ii, i in enumerate(tqdm.tqdm(rlz,ncols=100,desc='aps:')):
+
+        if i in skip_rlz: continue
 
         if fname is not None and misctools.check_path(fname[i],verbose=verbose,overwrite=overwrite):
 

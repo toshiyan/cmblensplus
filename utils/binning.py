@@ -129,9 +129,10 @@ def binning2(cl,b0,b1):
         return np.concatenate((cb0,cb1),axis=1)
 
 
-def binned_spec(mb,fcl,cn=1,doreal=True,opt=False,vl=None,rl=None):
+def binned_spec(mb,fcl,cn=1,doreal=True,opt=False,vl=None,rl=None,lfac=None):
     # for a given array of files, fcl, which containes real (fcl[0]) and sims (fcl[1:]), return realization mean and std of binned spectrum
-    # rl is the correction to cl
+    # rl is the correction to sim cl
+    # lfac is a multipole factor to cl (to be multiplied to both sim and obs cls)
     
     snmax = len(fcl)
 
@@ -139,6 +140,9 @@ def binned_spec(mb,fcl,cn=1,doreal=True,opt=False,vl=None,rl=None):
     
     if rl is not None:
         scl *= rl[None,:]
+
+    if lfac is not None:
+        scl *= lfac[None,:]
 
     if opt and vl is None:
         Vl = np.std(scl,axis=0)
@@ -153,6 +157,10 @@ def binned_spec(mb,fcl,cn=1,doreal=True,opt=False,vl=None,rl=None):
     if doreal:
 
         ocl = np.loadtxt(fcl[0],unpack=True)[cn]
+
+        if lfac is not None:
+            ocl *= lfac
+
         ocb = binning(ocl,mb,vl=Vl)
 
         if opt and vl is None:

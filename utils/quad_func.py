@@ -7,7 +7,6 @@ import pickle
 import tqdm
 
 # cmblensplus/wrap/
-import basic
 import curvedsky
 
 # local
@@ -19,7 +18,7 @@ def set_mtype(qlist):
 
     mtype = []
     for q in qlist:
-        if q not in ['TT','TE','EE','TB','EB','MV']:
+        if q not in ['TT','TE','EE','TB','EB','BB','MV']:
             sys.exit('invalid quadratic combination is specified')
         if q == 'MV': continue
         if not q[0] in mtype: mtype.append(q[0])
@@ -49,10 +48,10 @@ class quad_fname:
         self.n0bs = qaps+'n0_'+qtag+'_n'+str(qobj.n0sim).zfill(3)+'.dat'
 
         # mean field
-        self.ml   = [qmlm+'cl_'+qtag+'_'+x+'.dat' for x in qobj.ids]
-        self.mfb  = [qmlm+'mlm_'+qtag+'_'+x+'.pkl' for x in qobj.ids]
-        self.mfcl = qmlm+'mfcl_'+qtag+'_n'+str(qobj.mfsim).zfill(3)+'.dat'
-        self.mf   = qmlm+'mfalm_'+qtag+'_n'+str(qobj.mfsim).zfill(3)+'.pkl'
+        self.mfcl  = [qmlm+'cl_'+qtag+'_'+x+'.dat' for x in qobj.ids]
+        self.mfalm = [qmlm+'mlm_'+qtag+'_'+x+'.pkl' for x in qobj.ids]
+        self.MFcl  = qmlm+'mfcl_'+qtag+'_n'+str(qobj.mfsim).zfill(3)+'.dat'
+        self.MFalm = qmlm+'mfalm_'+qtag+'_n'+str(qobj.mfsim).zfill(3)+'.pkl'
 
         # reconstructed spectra
         self.mcls = qaps+'cl_'+qtag+'.dat'
@@ -72,7 +71,7 @@ class quad_fname:
         # additional alms
         self.walm = [qalm+'walm_'+qtag+'_'+x+'.pkl' for x in qobj.ids]
 
-
+'''
 def cmb_data(qobj,lcl=None,ocl=None,ifl=None,falm='',stag=''):
 
     # determined by CMB data to be used for reconstruction
@@ -89,6 +88,7 @@ def cmb_data(qobj,lcl=None,ocl=None,ifl=None,falm='',stag=''):
         
     # tag for cmb data given by hand
     qobj.cmbtag = stag
+'''
 
 
 def setup_bhe(qobj,bhe): # bhe types
@@ -118,7 +118,8 @@ class quad():
                  n0min=1, n0max=50, rdmin=1, rdmax=100, rd4sim=False, mfmin=1, mfmax=100,
                  qDO=None, qMV=None, qlist=None, qtype='', wn=None, bhe=None, 
                  overwrite=False, verbose=True,
-                 stag='', root='', ids=[]
+                 stag='', root='', ids=[], 
+                 qtagext=''
                 ):
 
         #//// get parameters ////#
@@ -159,7 +160,7 @@ class quad():
         self.mfsim  = self.mfmax - self.mfmin + 1
 
         # external tag
-        self.qtagext = conf.get('qtagext','')
+        self.qtagext = conf.get('qtagext',qtagext)
 
         self.oL     = [self.olmin,self.olmax]
 
@@ -208,14 +209,12 @@ class quad():
 
         #multipole bins
         self.l = np.linspace(0,self.olmax,self.olmax+1)
-        #self.bp, self.bc = basic.aps.binning(self.bn,self.oL,spc=self.binspc)
 
         #kappa
         self.kL = self.l*(self.l+1.)*.5
 
         #filename tags
         self.ltag = '_l'+str(self.rlmin)+'-'+str(self.rlmax)
-        #self.otag = '_oL'+str(self.olmin)+'-'+str(self.olmax)+'_b'+str(self.bn)+self.binspc
 
         # cmb alm mtype
         self.mtype = set_mtype(self.qlist)
@@ -273,32 +272,40 @@ class quad():
             Al, At, As = 0., 0., 0. # for BHE
             
             if self.qtype=='lens' or 'lens' in self.bhe_list:
-                if q=='TT': Ag, Ac = curvedsky.norm_lens.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
-                if q=='TE': Ag, Ac = curvedsky.norm_lens.qte(Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[1,:],gtype=gtype)
-                if q=='EE': Ag, Ac = curvedsky.norm_lens.qee(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],gtype=gtype)
-                if q=='TB': Ag, Ac = curvedsky.norm_lens.qtb(Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:],gtype=gtype)
-                if q=='EB': Ag, Ac = curvedsky.norm_lens.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],gtype=gtype)
+                if q=='TT': Ag, Ac = curvedsky.norm_quad.qtt('lens',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],lfac=gtype)
+                if q=='TE': Ag, Ac = curvedsky.norm_quad.qte('lens',Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[1,:],lfac=gtype)
+                if q=='EE': Ag, Ac = curvedsky.norm_quad.qee('lens',Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],lfac=gtype)
+                if q=='TB': Ag, Ac = curvedsky.norm_quad.qtb('lens',Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:],lfac=gtype)
+                if q=='EB': Ag, Ac = curvedsky.norm_quad.qeb('lens',Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],lfac=gtype)
                 if q=='MV':
-                    __, __, Wg, Wc = curvedsky.norm_lens.qall(self.qDO,Lmax,rlmin,rlmax,lcl,ocl,gtype=gtype)
+                    __, __, Wg, Wc = curvedsky.norm_quad.qall('lens',self.qDO,Lmax,rlmin,rlmax,lcl,ocl,lfac=gtype)
                     Ag, Ac = ag[5,:], ac[5,:]
                 Al = Ag.copy() # for BHE
 
             if self.qtype=='rot':
-                if q=='TB': Ag = curvedsky.norm_rot.qtb(Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:])
-                if q=='EB': Ag = curvedsky.norm_rot.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
-                Ac = Ag*.0
+                if q=='TB': Ag, Ac = curvedsky.norm_quad.qtb('rot',Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:])
+                if q=='EB': Ag, Ac = curvedsky.norm_quad.qeb('rot',Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
 
             if self.qtype=='tau' or 'tau' in self.bhe_list:
-                if q=='TT': Ag = curvedsky.norm_tau.qtt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
-                if q=='EB': Ag = curvedsky.norm_tau.qeb(Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
-                Ac = Ag*.0
+                if q=='TT': Ag, Ac = curvedsky.norm_quad.qtt('amp',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
+                if q=='EB': Ag, Ac = curvedsky.norm_quad.qeb('amp',Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
                 At = Ag.copy() # for BHE
 
             if self.qtype=='src' or 'src' in self.bhe_list:
-                if q=='TT': Ag = curvedsky.norm_src.qtt(Lmax,rlmin,rlmax,ocl[0,:])
-                Ac = Ag*.0
+                if q=='TT': Ag, Ac = curvedsky.norm_quad.qtt('src',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
                 As = Ag.copy() # for BHE
                     
+            if self.qtype=='ilens' or 'ilens' in self.bhe_list:
+                if q=='TE': Ag, Ac = curvedsky.norm_imag.qte('lens',Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[1,:],lfac=gtype)
+                if q=='EE': Ag, Ac = curvedsky.norm_imag.qee('lens',Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],ocl[1,:],lfac=gtype)
+                if q=='TB': Ag, Ac = curvedsky.norm_imag.qtb('lens',Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:],lfac=gtype)
+                if q=='EB': Ag, Ac = curvedsky.norm_imag.qeb('lens',Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],ocl[1,:],ocl[2,:],lfac=gtype)
+                if q=='BB': Ag, Ac = curvedsky.norm_imag.qbb('lens',Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],ocl[2,:],lfac=gtype)
+                if q=='MV':
+                    __, __, Wg, Wc = curvedsky.norm_imag.qall('lens',self.qDO,Lmax,rlmin,rlmax,lcl,ocl,lfac=gtype)
+                    Ag, Ac = ag[5,:], ac[5,:]
+                Al = Ag.copy() # for BHE
+
             #//// Bias-hardened estimator (cross response) ////#
             # Currently, only TT is supported
             Rlt, Rls, Rts = 0., 0., 0.
@@ -306,20 +313,20 @@ class quad():
             if self.qtype == 'lens':
                 if q == 'TT':
                     if 'tau' in self.bhe_list:
-                        Rlt = curvedsky.norm_lens.ttt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
+                        Rlt = curvedsky.norm_quad.xtt('lensamp',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],lfac=gtype)
                     if 'src' in self.bhe_list:
-                        Rls = curvedsky.norm_lens.stt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
+                        Rls = curvedsky.norm_quad.xtt('lenssrc',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],lfac=gtype)
                     if 'src' in self.bhe_list and 'tau' in self.bhe_list:  
-                        Rts = curvedsky.norm_tau.stt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
+                        Rts = curvedsky.norm_quad.xtt('ampsrc',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
 
             if self.qtype == 'tau':
                 if q == 'TT':
                     if 'lens' in self.bhe_list:
-                        Rlt = curvedsky.norm_lens.ttt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
+                        Rlt = curvedsky.norm_quad.xtt('lensamp',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],lfac=gtype)
                     if 'src' in self.bhe_list and 'lens' in self.bhe_list:  
-                        Rls = curvedsky.norm_lens.stt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],gtype=gtype)
+                        Rls = curvedsky.norm_quad.xtt('lenssrc',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:],lfac=gtype)
                     if 'src' in self.bhe_list:
-                        Rts = curvedsky.norm_tau.stt(Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
+                        Rts = curvedsky.norm_quad.xtt('ampsrc',Lmax,rlmin,rlmax,lcl[0,:],ocl[0,:])
 
             # Denominator
             DetR = 1 - Al*As*Rls**2 - Al*At*Rlt**2 - At*As*Rts**2 + 2.*Al*At*As*Rlt*Rls*Rts
@@ -438,6 +445,15 @@ class quad():
                     if q=='TT':  glm = curvedsky.rec_src.qtt(Lmax,rlmin,rlmax,alm['T'],alm['T'],nside_t=nside)
                     clm = glm*0.
                     slm = glm.copy()
+
+                if self.qtype=='ilens' or 'ilens' in self.bhe_list:
+                    if q=='TE':  glm, clm = curvedsky.rec_ilens.qte(Lmax,rlmin,rlmax,lcl[3,:],alm['T'],alm['E'],gtype=gtype,nside_t=nside)
+                    if q=='TB':  glm, clm = curvedsky.rec_ilens.qtb(Lmax,rlmin,rlmax,lcl[3,:],alm['T'],alm['B'],gtype=gtype,nside_t=nside)
+                    if q=='EE':  glm, clm = curvedsky.rec_ilens.qee(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],alm['E'],alm['E'],gtype=gtype,nside_t=nside)
+                    if q=='EB':  glm, clm = curvedsky.rec_ilens.qeb(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],alm['E'],alm['B'],gtype=gtype,nside_t=nside)
+                    if q=='BB':  glm, clm = curvedsky.rec_ilens.qbb(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],alm['B'],alm['B'],gtype=gtype,nside_t=nside)
+                    if q=='MV':  glm, clm = gmv.copy(), cmv.copy()
+                    llm = glm.copy()
 
                 # normalization correction
                 glm *= self.Ag[q][:,None]
@@ -680,6 +696,27 @@ class quad():
             if not self.bhe_do:
                 return slm1+slm2, (slm1+slm2)*0.
 
+        if self.qtype=='ilens' or 'ilens' in self.bhe_list:
+            if q=='TE':
+                glm1, clm1 = curvedsky.rec_ilens.qte(Lmax,rlmin,rlmax,lcl[3,:],Xlm1,Ylm2,gtype=gtype,nside_t=nside)
+                glm2, clm2 = curvedsky.rec_ilens.qte(Lmax,rlmin,rlmax,lcl[3,:],Xlm2,Ylm1,gtype=gtype,nside_t=nside)
+            if q=='TB':
+                glm1, clm1 = curvedsky.rec_ilens.qtb(Lmax,rlmin,rlmax,lcl[3,:],Xlm1,Ylm2,gtype=gtype,nside_t=nside)
+                glm2, clm2 = curvedsky.rec_ilens.qtb(Lmax,rlmin,rlmax,lcl[3,:],Xlm2,Ylm1,gtype=gtype,nside_t=nside)
+            if q=='EE':
+                glm1, clm1 = curvedsky.rec_ilens.qee(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],Xlm1,Ylm2,gtype=gtype,nside_t=nside)
+                glm2, clm2 = curvedsky.rec_ilens.qee(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],Xlm2,Ylm1,gtype=gtype,nside_t=nside)
+            if q=='EB':
+                glm1, clm1 = curvedsky.rec_ilens.qeb(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],Xlm1,Ylm2,gtype=gtype,nside_t=nside)
+                glm2, clm2 = curvedsky.rec_ilens.qeb(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],Xlm2,Ylm1,gtype=gtype,nside_t=nside)
+            if q=='BB':
+                glm1, clm1 = curvedsky.rec_ilens.qbb(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],Xlm1,Ylm2,gtype=gtype,nside_t=nside)
+                glm2, clm2 = curvedsky.rec_ilens.qbb(Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],Xlm2,Ylm1,gtype=gtype,nside_t=nside)
+
+            if not self.bhe_do:
+                return glm1+glm2, clm1+clm2
+
+
         # Bias hardened estimator (This alm is already normalized)
         if self.bhe_do:
             alm1 = self.bhe_c[q]['tau'][:,None]*tlm1 + self.bhe_c[q]['lens'][:,None]*glm1 + self.bhe_c[q]['src'][:,None]*slm1
@@ -690,12 +727,11 @@ class quad():
     def mean(self):
 
         Lmax = self.olmax
-        #oL   = np.linspace(0,Lmax,Lmax+1)
         rlz  = np.linspace(self.mfmin,self.mfmax,self.mfmax-self.mfmin+1,dtype=np.int)
 
         for q in self.qlist:
 
-            if misctools.check_path(self.f[q].mf,overwrite=self.overwrite,verbose=self.verbose): continue
+            if misctools.check_path(self.f[q].MFalm,overwrite=self.overwrite,verbose=self.verbose): continue
 
             mfg, mfc = 0., 0.
             for I in tqdm.tqdm(rlz,ncols=100,desc='mean-field (all sim average): ('+q+')'):
@@ -703,27 +739,26 @@ class quad():
                 mfg += mfgi/self.mfsim
                 mfc += mfci/self.mfsim
 
-            pickle.dump((mfg,mfc),open(self.f[q].mf,"wb"),protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump((mfg,mfc),open(self.f[q].MFalm,"wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
             # compute mf cls
-            if verbose:  print('cl for mean field bias')
+            if self.verbose:  print('cl for mean field bias')
             cl = np.zeros((2,Lmax+1))
             cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg)/self.wn[4]
             cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc)/self.wn[4]
-            np.savetxt(self.f[q].mfcl,np.concatenate((self.l[None,:],cl)).T)
+            np.savetxt(self.f[q].MFcl,np.concatenate((self.l[None,:],cl)).T)
 
 
     def mean_rlz(self):
 
         Lmax = self.olmax
-        #oL   = np.linspace(0,Lmax,Lmax+1)
 
         for q in self.qlist:
 
             # counting missing files
             filen = 0
             for i in self.rlz:
-                if misctools.check_path(self.f[q].mfb[i],overwrite=self.overwrite,verbose=self.verbose): continue
+                if misctools.check_path(self.f[q].mfalm[i],overwrite=self.overwrite,verbose=self.verbose): continue
                 filen += 1
             if filen == 0: 
                 continue  # do nothing below
@@ -738,9 +773,9 @@ class quad():
 
             for i in tqdm.tqdm(self.rlz,ncols=100,desc='mean-field: alm for each rlz ('+q+')'):
 
-                if misctools.check_path(self.f[q].mfb[i],overwrite=self.overwrite,verbose=self.verbose): continue
+                if misctools.check_path(self.f[q].mfalm[i],overwrite=self.overwrite,verbose=self.verbose): continue
         
-                if i>=self.mfmin and i<=self.mfmax: 
+                if i>=self.mfmin and i<=self.mfmax:
                     glm, clm = pickle.load(open(self.f[q].alm[i],"rb"))
                     mfg = mglm - glm/self.mfsim
                     mfc = mclm - clm/self.mfsim
@@ -750,19 +785,19 @@ class quad():
                     mfg = 1.*mglm
                     mfc = 1.*mclm
 
-                pickle.dump((mfg,mfc),open(self.f[q].mfb[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump((mfg,mfc),open(self.f[q].mfalm[i],"wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
             # compute mf cls
             for i in tqdm.tqdm(self.rlz,ncols=100,desc='mean-field: aps for each rlz ('+q+')'):
 
-                if misctools.check_path(self.f[q].ml[i],overwrite=self.overwrite,verbose=self.verbose): continue
+                if misctools.check_path(self.f[q].mfcl[i],overwrite=self.overwrite,verbose=self.verbose): continue
 
-                mfg, mfc = pickle.load(open(self.f[q].mfb[i],"rb"))
+                mfg, mfc = pickle.load(open(self.f[q].mfalm[i],"rb"))
 
                 cl = np.zeros((2,Lmax+1))
                 cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg) / self.wn[4]
                 cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc) / self.wn[4]
-                np.savetxt(self.f[q].ml[i],np.concatenate((self.l[None,:],cl)).T)
+                np.savetxt(self.f[q].mfcl[i],np.concatenate((self.l[None,:],cl)).T)
 
 
 
@@ -790,8 +825,11 @@ class quad():
 
         # mean-field bias
         if 'mean' in run:
-            self.mean_rlz()
+            self.mean()
 
+        # mean-field bias
+        if 'mean_rlz' in run:
+            self.mean_rlz()
 
 
 class quad_cross(): # for phi cross-spectrum between two different CMB data
@@ -1076,4 +1114,42 @@ def reconstruction(droot,ids,rlz=[],getobj=True,run=[],**kwargs):
     # Return parameters, filenames
     if getobj:
         return qobj
+
+    
+def load_rec_alm(qobj,q,rlz,mean_sub=True,mean_rlz=False):
+    
+    glm, clm = pickle.load(open(qobj.f[q].alm[rlz],"rb"))
+
+    if mean_sub:
+        if mean_rlz: # rlz dependent mean field
+            mfg, mfc = pickle.load(open(qobj.f[q].mfalm[rlz],"rb"))
+            glm -= mfg
+            clm -= mfc
+        else: # rlz-mean mf
+            mfg, mfc = pickle.load(open(qobj.f[q].MFalm,"rb"))
+            glm = glm*(1.+1./qobj.mfsim) - mfg           
+            clm = clm*(1.+1./qobj.mfsim) - mfc
+        
+    return glm, clm
+            
+
+def cinv_empirical_fltr(lcl,wcl,cnl,ep=1e-30):
+    
+    # quality factor defined in Planck 2015 lensing paper
+    # T' = Q T^f = Q/(cl+nl) * (T+n)/sqrt(Q)
+    
+    # wcl --- Wiener-filtered cl
+    # cnl --- 1D diagonal signal + noise spectrum
+    
+    if np.ndim(lcl) == 1:
+        Ql  = lcl**2/(wcl*cnl+ep**2)
+        ocl = np.reshape( cnl/(Ql+ep), (1,len(lcl)) )
+        ifl = np.reshape( lcl/(Ql+ep), (1,len(lcl)) )
+        
+    if np.ndim(lcl) == 2:
+        Ql  = (lcl[0:4,:])**2/(wcl*cnl+ep**2)
+        ocl = cnl/(Ql+ep) # corrected observed cl  (obs TE is not used)
+        ifl = lcl[0:3,:]/(Ql[:3]+ep) # remove theory signal cl in wiener filter
+    
+    return ocl, ifl
 

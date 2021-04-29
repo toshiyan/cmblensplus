@@ -66,5 +66,16 @@ def phi2deltam_coeff(z,**cp):
     return  1.5*cp['Om']*(cp['H0']/3e5)**2*(1.+z)*Dz(z)
 
 
+#//// Forecast ////#
+def Fisher_Matrix(L,dlnCdp,fsky=1.):
+    # return fisher matrix
+    s1, s2, ln, pn = dlnCdp.shape
+    F = np.zeros((pn,pn,ln))
+    for i in range(pn):
+        for j in range(i,pn):
+            F[i,j,:] = np.array( [ fsky*(L[l]+.5)*np.trace(np.dot(dlnCdp[:,:,l,i],dlnCdp[:,:,l,j])) for l in range(ln) ] )
+            F[j,i,:] = F[i,j,:]
+    return F
+
 
 

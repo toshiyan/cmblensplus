@@ -120,7 +120,10 @@ class statistics:
         amp = self.scl/Fcl
 
         # coefficients
-        wbi = np.array( [ np.sum(np.linalg.inv(np.cov(np.delete(amp,i,0),rowvar=0)),axis=0) for i in range(n) ] )
+        if diag:
+            wbi = np.array( [ np.sum( np.linalg.inv( np.diag(np.diag(np.cov(np.delete(amp,i,0),rowvar=0))) ),axis=0 ) for i in range(n) ] )
+        else:
+            wbi = np.array( [ np.sum( np.linalg.inv( np.cov(np.delete(amp,i,0),rowvar=0) ),axis=0 ) for i in range(n) ] )
         wti = np.array( [ np.sum(wbi[i,:]) for i in range(n)] )
 
         # amplitude estimates
@@ -334,15 +337,31 @@ def change_coord(m, coord):
     return m[..., new_pix]
 
 
-#////////// Alm Operation //////////#
+#////////// Rotation //////////#
 
-def ebrotate(alpha,Elm,Blm,smalla=True):
+def qurotate(alpha,Q,U,smalla=False):
+    # alpha is in unit of deg for default
+    angle = alpha * np.pi/180. # deg to rad
+
     if smalla:
-        rElm = Elm - Blm*2*alpha
-        rBlm = Elm*2*alpha + Blm
+        rQ = Q - U*2*angle
+        rU = Q*2*angle + U
     else:
-        rElm = Elm*np.cos(2*alpha) - Blm*np.sin(2*alpha)
-        rBlm = Elm*np.sin(2*alpha) + Blm*np.cos(2*alpha)
+        rQ = Q*np.cos(2*angle) - U*np.sin(2*angle)
+        rU = Q*np.sin(2*angle) + U*np.cos(2*angle)
+    return rQ, rU
+
+def ebrotate(alpha,Elm,Blm,smalla=False):
+    # alpha is in unit of deg for default
+    
+    angle = alpha * np.pi/180. # deg to rad
+
+    if smalla:
+        rElm = Elm - Blm*2*angle
+        rBlm = Elm*2*angle + Blm
+    else:
+        rElm = Elm*np.cos(2*angle) - Blm*np.sin(2*angle)
+        rBlm = Elm*np.sin(2*angle) + Blm*np.cos(2*angle)
     return rElm, rBlm
 
 
