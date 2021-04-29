@@ -1093,7 +1093,7 @@ subroutine cosin_healpix(npix,cosin)
 !*    :nside (int) : Nside of the desired map
 !*
 !*  Returns:
-!*    :cosin [pix] (double) : cosin(theta), with bounds (0:npix-1)
+!*    :cosin[pix] (double) : cosin(theta), with bounds (0:npix-1)
 !*
   !I/O
   implicit none
@@ -1122,6 +1122,19 @@ end subroutine cosin_healpix
 
 
 subroutine load_defangle_takahashi(fname,npix,theta,phi,verbose)
+!*  Read theta and phi coordinates at source plane obtained by Takahashi et al. (2017)
+!*
+!*  Args:
+!*    :fname (str) : file name
+!*    :npix (int) : Number of pixels of theta and phi data
+!*
+!*  Args (optional):
+!*    :verbose (bool) : output messages, default to False
+!*
+!*  Returns:
+!*    :theta[pix] (double) : theta, with bounds (0:npix-1)
+!*    :phi[pix] (double)   : phi, with bounds (0:npix-1)
+!*
   implicit none
   character(*), intent(in) :: fname
   integer, intent(in) :: npix
@@ -1150,6 +1163,20 @@ end subroutine load_defangle_takahashi
 
 
 subroutine polcoord2angle(npix,theta,phi,angle,verbose)
+!*  Converting theta and phi coordinates at source plane to deflection angle.
+!*  The algorithm is provided by Takashi Hamana and Ryuichi Takahashi.
+!*
+!*  Args:
+!*    :npix (int) : Number of pixels of theta and phi data
+!*    :theta[pix] (double) : theta, with bounds (0:npix-1)
+!*    :phi[pix] (double)   : phi, with bounds (0:npix-1)
+!*
+!*  Args (optional):
+!*    :verbose (bool) : output messages, default to False
+!*
+!*  Returns:
+!*    :angle[pix,2] (double) : deflection angle vector containing two components, with bounds (0:npix-1,1:2)
+!*
   implicit none
   integer, intent(in) :: npix
   logical, intent(in) :: verbose
@@ -1198,6 +1225,21 @@ end subroutine polcoord2angle
 
 
 subroutine polcoord2angle_alm(nside,lmax,theta,phi,glm,clm,verbose)
+!*  Converting theta and phi coordinates at source plane to deflection angle.
+!*
+!*  Args:
+!*    :npix (int) : Number of pixels of theta and phi data
+!*    :lmax (int) : Maximum multipole of alms for gradient and curl modes
+!*    :theta[pix] (double) : theta, with bounds (0:npix-1)
+!*    :phi[pix] (double)   : phi, with bounds (0:npix-1)
+!*
+!*  Args (optional):
+!*    :verbose (bool) : output messages, default to False
+!*
+!*  Returns:
+!*    :glm[l,m] (dcmplx) : gradient mode, with bounds (0:lmax,0:lmax)
+!*    :clm[l,m] (dcmplx) : curl mode, with bounds (0:lmax,0:lmax)
+!*
   implicit none
   logical, intent(in) :: verbose
   integer, intent(in) :: nside, lmax
@@ -1234,7 +1276,7 @@ end subroutine polcoord2angle_alm
 
 
 subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
-!*  Compute 2D Minkowski functionals
+!*  Compute 2D Minkowski functionals from a given alm
 !*
 !*  Args:
 !*    :bn (int)            : Number of nu bins
@@ -1305,7 +1347,7 @@ end subroutine calc_mfs
 
 
 subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
-!*  Compute galaxy overdensity map from dark matter density map. 
+!*  Compute galaxy overdensity map from dark matter density map of Takahashi et al. (2017). 
 !*  The galaxy z distribution is assumed to have the functional form given by Eq.(7) of https://arxiv.org/abs/1810.03346
 !*
 !*  Args:
