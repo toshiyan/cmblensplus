@@ -27,7 +27,7 @@ f.write('    interface\n')
 # loop over modules
 for mod in modname:
 
-  # read lines
+# read lines
   f90name = mod
   g = open(f90name)
   lines = g.readlines()
@@ -57,18 +57,17 @@ for mod in modname:
     # extract declaration part
     declare = []
     for line in slines:
-      if '::' in line and 'intent' in line:
-        dec = line.replace('\n','').split('::')
-        declare.append(dec)
+        if '::' in line and 'intent' in line:
+            dec = line.replace('\n','').split('::')
+            declare.append(dec)
 
     # extract f2py optional part
     opt = []
     for line in slines:
-      if '::' in line and '!f2py' in line:
-        op = line.replace('\n','').split('::')
-        opt.append(op)
-        #print(op)
-
+        if '::' in line and '!f2py' in line:
+            op = line.replace('\n','').split('::')
+            opt.append(op)
+            #print(op)
 
     # extract fuction
     func = slines[0].replace('\n','')
@@ -79,34 +78,34 @@ for mod in modname:
 
     # extract args description from the lines
     for p in args:
-      for dec in declare:
+        for dec in declare:
 
-          # split to avoid confusion of e.g. "abc" and "abctype"
-          d = dec[1].replace(',',' ').split()
-          if p in d:
+            # split to avoid confusion of e.g. "abc" and "abctype"
+            d = dec[1].replace(',',' ').split()
+            if p in d:
 
-            # for optional args
-            defval = ''
-            if 'optional' in dec[0]:
-              for op in opt:
-                if p in op[1].split():
-                    defval = op[1].split('=')[1]
+                # for optional args
+                defval = ''
+                if 'optional' in dec[0]:
+                    for op in opt:
+                        if p in op[1].split():
+                            defval = op[1].split('=')[1]
 
-            output = dec[0]
+                output = dec[0]
 
-            # check dependence
-            for q in args:
-              if q in dec[0][dec[0].find('dimension'):] or q in defval:
-                output += ', depend('+q+')'
+                # check dependence
+                for q in args:
+                    if q in dec[0][dec[0].find('dimension'):] or q in defval:
+                        output += ', depend('+q+')'
 
-            output += ' :: ' + p
+                output += ' :: ' + p
 
-            if defval!='':
-              output += ' =' + defval
+                if defval!='':
+                    output += ' =' + defval
 
-            # write to file
-            f.write('              '+output+'\n')
-            break
+                # write to file
+                f.write('              '+output+'\n')
+                break
 
     f.write('            '+slines[-1].replace('\n','')+'\n')
 
