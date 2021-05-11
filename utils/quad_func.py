@@ -1127,8 +1127,12 @@ def load_rec_alm(qobj,q,rlz,mean_sub=True,mean_rlz=False):
             clm -= mfc
         else: # rlz-mean mf
             mfg, mfc = pickle.load(open(qobj.f[q].MFalm,"rb"))
-            glm = glm*(1.+1./qobj.mfsim) - mfg           
-            clm = clm*(1.+1./qobj.mfsim) - mfc
+            if rlz==0: 
+                glm -= mfg           
+                clm -= mfc
+            else:
+                glm = glm*(1.+1./qobj.mfsim) - mfg           
+                clm = clm*(1.+1./qobj.mfsim) - mfc
         
     return glm, clm
             
