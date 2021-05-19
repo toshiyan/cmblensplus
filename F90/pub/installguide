@@ -1,14 +1,19 @@
+
+Here, ${public} denotes the path to this directory.
+
 [FFTW]
-1: go to FFTW/ 
 
-2: ./configure --prefix=(directory path to FFTW/) --enable-openmp
+1: go to ${public}/FFTW/ 
 
-3: make
+2: untar the tar file (e.g. fftw-3.3.8.tar) and go inside further the directory
 
-4: make install
+3: ./configure --prefix=${public}/FFTW/ --enable-openmp
+
+4: make; make install
 
 
 [Lenspix] -- depends on Healpix and cfitsio
 
 go to lenspix/src and type "make"
+
 
