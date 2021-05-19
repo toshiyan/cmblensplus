@@ -6,8 +6,8 @@ source ../../sh/pyversion.sh
 source ../../sh/setup.sh
 
 # compile link
-modd="-I${fftw}/api -I${flibloc}/mod"
-libd="-L${fftw} -L${flibloc}/lib"
+modd="-I${fftw}/include/ -I${flibloc}/mod"
+libd="-L${fftw}/lib/ -L${flibloc}/lib"
 link="-ldft -lutils -lfftw3"
 
 # files to be compiled
