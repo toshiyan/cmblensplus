@@ -7,9 +7,20 @@ Here, ${public} denotes the path to this directory.
 
 2: untar the tar file (e.g. fftw-3.3.8.tar) and go inside further the directory
 
-3: ./configure --prefix=${public}/FFTW/ --enable-openmp
+3: ./configure --prefix=${public}/FFTW/ --enable-openmp --enable-shared --enable-static
 
 4: make; make install
+
+
+[CFITSIO]
+
+1: go to ${public}/cfitsio/cfitsio
+
+2: ./configure
+
+3: make
+
+4: mv libcfitsio.a ../
 
 
 [Lenspix] -- depends on Healpix and cfitsio
