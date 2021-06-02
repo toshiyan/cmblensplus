@@ -1127,7 +1127,7 @@ subroutine cl_zweight(cp,z,dz,zs,zker,cltype,dNdz)
   select case (cltype)
   case ('kk')
     zker = dz/Hz * wlens(1,:)*wlens(2,:) / chi**2
-  case ('gkk')
+  case ('gk')
     zker = dz/Hz * wlens(1,:)*dNdz / chi**2 * Hz
   case ('gg')
     zker = dz/Hz * dNdz**2 / chi**2 * Hz**2
