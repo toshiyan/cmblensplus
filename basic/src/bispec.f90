@@ -13,7 +13,7 @@ contains
 
 
 subroutine cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,cl,pktype,cltype,dNdz)
-!*  Compute lensing bispectrum analytically
+!*  Compute flat-sky lensing powerspectrum analytically
 !* 
 !*  Args:
 !*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
@@ -27,7 +27,7 @@ subroutine cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,cl,pktype,cltype,dNdz)
 !*  Args(optional):
 !*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
 !*    :cltype (str) : kk, gk, or gg
-!*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
+!*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when cltype includes g
 !*
 !*  Returns:
 !*    :cl[l] (double) : power spectrum from LSS contributions at [lmin,lmax]
@@ -56,7 +56,7 @@ subroutine cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,cl,pktype,cltype,dNdz)
   ! cosmological parameters (to compute background quantities)
   call set_cosmoparams(cp,cpmodel)
 
-  ! precompute quantities for bispectrum
+  ! precompute quantities for power spectrum
   call get_pl(cp,z,k*cp%h,pk0/cp%h**3,lmax,pktype,pl)
   call cl_zweight(cp,z,dz,zs,zker,cltype,dNdz)
 
@@ -84,7 +84,7 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,bl0,bl1
 !*
 !*  Args(optional):
 !*    :lan, kan (double) : parameters for the modified gravity extension, default to lan=kan=1 (GR)
-!*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
+!*    :pktype (str) : fitting formula for the matter power spectrum (Lin=Linear, S02=Smith et al. 2002 or T12=Takahashi et al. 2012), default to T12
 !*    :ltype (str) : fullsky correction (full) or not 
 !*    :btype (str) : bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
 !*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
@@ -142,7 +142,7 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,bl0,bl1
   end do
   
   ! bispectrum (density and post-Bron bispectrum)
-  write(*,*) 'compute bispectrum', shap
+  write(*,*) 'compute bispectrum: shape = ', shap
   l0 = lmin+(lmax-lmin)*0.5d0/20d0
   if (mod(l0,2)/=0) l0 = l0+1
   call bispec_lens_lss(cp,b,shap,oL,model,ltype,l0,bl0)
@@ -244,7 +244,7 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
       eL1 = int(bp(1:2))
       eL2 = int(bp(l:l+1))
       eL3 = int(bp(l:l+1))
-    case ('angl')
+    case ('angl','isos')
       eL1 = int(bp(l:l+1))
       eL2 = int(bp(bn/2:bn/2+1))
       eL3 = int(bp(bn/2:bn/2+1))
@@ -378,7 +378,7 @@ subroutine bispeclens_gauss_bin(shap,bn,lmin,lmax,cl,bc,bl)
       eL1 = int(bp(1:2))
       eL2 = int(bp(l:l+1))
       eL3 = int(bp(l:l+1))
-    case ('angl')
+    case ('angl','isos')
       eL1 = int(bp(l:l+1))
       eL2 = int(bp(bn/2:bn/2+1))
       eL3 = int(bp(bn/2:bn/2+1))
