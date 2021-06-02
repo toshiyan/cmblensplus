@@ -147,7 +147,7 @@ subroutine bispec_lens_lss(cp,b,shap,eL,model,ltype,l0,bl)
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: shap, model, ltype
   integer, intent(in) :: eL(2), l0
-  double precision, intent(out) :: bl(:)
+  double precision, intent(out) :: bl(eL(1):eL(2))
   !internal
   integer :: l, zn, l1, l2, l3
 
@@ -599,7 +599,7 @@ subroutine bispec_lens_pb(shap,eL,wp,ck,bl,sql0,ltype)
   character(*), intent(in) :: shap
   integer, intent(in) :: eL(2)
   double precision, intent(in) :: wp(:,:,:,:), ck(:,:,:)
-  double precision, intent(out) :: bl(:)
+  double precision, intent(out) :: bl(eL(1):eL(2))
   !optional
   character(*), intent(in), optional :: ltype
   integer, intent(in), optional :: sql0
@@ -675,7 +675,7 @@ subroutine set_three_ells(shap,l,eL,l0,l1,l2,l3)
       l1 = l0
       l2 = l
       l3 = l
-    case('angl')
+    case('angl','isos') !either angl or isos for isosceles shape
       l1 = l
       l2 = int(eL(2)/2)
       l3 = int(eL(2)/2)
