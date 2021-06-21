@@ -3,34 +3,38 @@
 !////////////////////////////////////////////////////!
 
 module cosmofuncs
-  use constants, only: pi
+  use constants, only: pi, const_c
   use cosmofunc, only: C_z, H_z, dL_dz, dH_dz, D_z, g_factor, g_rate, cosmoparams, zoftau
   use utilsgw,   only: dotn, dlndotn
   implicit none
 
-  private C_z, H_z, dL_dz, dH_dz, D_z, g_factor
+  private pi, const_c
+  private C_z, H_z, dL_dz, dH_dz, D_z, g_factor, g_rate, cosmoparams, zoftau
+  private dotn, dlndotn
 
 contains
 
 
-subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz)
-!*  Compute the expansion rate in unit of 1/Mpc, H/c. 
+subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz,divc)
+!*  Compute the expansion rate in unit of 1/Mpc, H/c, or in unit of km/s/Mpc, H.  
 !*
 !*  Args:
-!*    :z[zn] (double)   : Redshifts at which H is computed
+!*    :z[zn] (double)  : Redshifts at which H is computed
 !*
 !*  Args(optional):
-!*    :H0 (double)      : The current value of hubble parameter in km/s/Mpc, default to 70 km/s/Mpc
-!*    :Om (double)      : The current value of Omega_matter, default to 0.3
-!*    :Ov (double)      : The current value of Omega_Dark-energy, default to 0.7
-!*    :w0, wa (double)  : The EoS of Dark Energy, default to w0=-1 and wa=0.
+!*    :H0 (double)     : The current value of hubble parameter in km/s/Mpc, default to 70 km/s/Mpc
+!*    :Om (double)     : The current value of Omega_matter, default to 0.3
+!*    :Ov (double)     : The current value of Omega_Dark-energy, default to 0.7
+!*    :w0, wa (double) : The EoS of Dark Energy, default to w0=-1 and wa=0.
+!*    :divc (bool)     : Divide H by c or not, default to True. 
 !*
 !*  Returns:
-!*    :Hz[zn] (double)   : The expansion rate, H(z)/c (H is divided by c). 
+!*    :Hz[zn] (double) : The expansion rate, H(z), divided by c (or not). 
 !*
 
   implicit none
   integer, intent(in) :: zn
+  logical, intent(in) :: divc
   double precision, intent(in) :: H0, Om, Ov, w0, wa
   double precision, intent(in), dimension(0:zn-1) :: z
   double precision, intent(out), dimension(0:zn-1) :: Hz
@@ -42,6 +46,7 @@ subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz)
   !opt4py :: w0 = -1.
   !opt4py :: wa = 0.
   !opt4py :: zn = 0
+  !opt4py :: divc = True
   !add2py :: zn = len(z)
 
   cp%H0 = H0
@@ -53,6 +58,8 @@ subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz)
   do j = 0, zn-1
     Hz(j) = H_z(z(j),cp)
   end do
+
+  if(.not.divc) Hz = Hz*const_c
 
 end subroutine hubble
 
