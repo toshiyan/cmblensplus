@@ -14,6 +14,21 @@ contains
 
 
 subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz)
+!*  Compute the expansion rate in unit of 1/Mpc, H/c. 
+!*
+!*  Args:
+!*    :z[zn] (double)   : Redshifts at which H is computed
+!*
+!*  Args(optional):
+!*    :H0 (double)      : The current value of hubble parameter in km/s/Mpc, default to 70 km/s/Mpc
+!*    :Om (double)      : The current value of Omega_matter, default to 0.3
+!*    :Ov (double)      : The current value of Omega_Dark-energy, default to 0.7
+!*    :w0, wa (double)  : The EoS of Dark Energy, default to w0=-1 and wa=0.
+!*
+!*  Returns:
+!*    :Hz[zn] (double)   : The expansion rate, H(z)/c (H is divided by c). 
+!*
+
   implicit none
   integer, intent(in) :: zn
   double precision, intent(in) :: H0, Om, Ov, w0, wa
