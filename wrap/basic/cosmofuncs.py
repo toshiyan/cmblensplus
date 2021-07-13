@@ -1,12 +1,27 @@
 import libbasic
 
-def hubble(z,H0=70.,Ov=0.7,Om=0.3,w0=-1.,wa=0.,zn=0):
+def hubble(z,H0=70.,Ov=0.7,Om=0.3,w0=-1.,wa=0.,zn=0,divc=False):
   """
+  Compute the expansion rate in unit of 1/Mpc, H/c, or in unit of km/s/Mpc, H.  
+
+  Args:
+    :z[*zn*] (*double*): Redshifts at which H is computed
+
+  Args(optional):
+    :H0 (*double*): The current value of hubble parameter in km/s/Mpc, default to 70 km/s/Mpc
+    :Om (*double*): The current value of Omega_matter, default to 0.3
+    :Ov (*double*): The current value of Omega_Dark-energy, default to 0.7
+    :w0, wa (*double*): The EoS of Dark Energy, default to w0=-1 and wa=0.
+    :divc (*bool*): Divide H by c or not, default to False.
+
+  Returns:
+    :Hz[*zn*] (*double*): The expansion rate, H(z), divided by c or not.
+
   Usage:
-    :Hz = basic.cosmofuncs.hubble(z,H0,Om,Ov,w0,wa,zn):
+    :Hz = basic.cosmofuncs.hubble(z,H0,Om,Ov,w0,wa,zn,divc):
   """
   zn = len(z)
-  return libbasic.cosmofuncs.hubble(z,H0,Om,Ov,w0,wa,zn)
+  return libbasic.cosmofuncs.hubble(z,H0,Om,Ov,w0,wa,zn,divc)
 
 def dhubble_dz(z,H0=70.,Ov=0.7,Om=0.3,w0=-1.,wa=0.,zn=0):
   """

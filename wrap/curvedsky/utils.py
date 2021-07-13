@@ -72,37 +72,29 @@ def gaussTEB(lmax,TT,EE,BB,TE):
   """
   return libcurvedsky.utils.gaussTEB(lmax,TT,EE,BB,TE)
 
-def gauss3alm(lmax,cl):
+def gaussalm(cl,n=None,lmax=None):
   """
-  Generating three alms as random Gaussian fields whose covariance is given by cl[i,j].
+  Generating alms as random Gaussian fields whose covariance is given by cl[i,j].
 
   Args:
-    :lmax (*int*): Maximum multipole of the output alm
-    :cl [*i,j,l*] (*double*): Covariance between the gaussian fields, with bounds (3,3,0:lmax)
+    :cl [*i,j,l*] (*double*): Covariance between the gaussian fields, with bounds (n,n,0:lmax)
 
   Returns:
-    :alm [*3,l,m*] (*dcmplx*): Random Gaussian alms, with bounds (3,0:lmax,0:lmax)
+    :alm [*i,l,m*] (*dcmplx*): Random Gaussian alms, with bounds (n,0:lmax,0:lmax)
 
   Usage:
-    :alm = curvedsky.utils.gauss3alm(lmax,cl):
+    :alm = curvedsky.utils.gaussalm(n,lmax,cl):
   """
-  return libcurvedsky.utils.gauss3alm(lmax,cl)
+  if n is None:    n    = len(cl[:,0,0])
+  if lmax is None: lmax = len(cl[0,0,:]) - 1
+  return libcurvedsky.utils.gaussalm(n,lmax,cl)
 
-def gauss4alm(lmax,cl):
+def cov_diag_tri(n,cl):
   """
-  Generating four alms as random Gaussian fields whose covariance is given by cl[i,j].
-
-  Args:
-    :lmax (*int*): Maximum multipole of the output alm
-    :cl [*i,j,l*] (*double*): Covariance between the gaussian fields, with bounds (4,4,0:lmax)
-
-  Returns:
-    :alm [*4,l,m*] (*dcmplx*): Random Gaussian alms, with bounds (4,0:lmax,0:lmax)
-
   Usage:
-    :alm = curvedsky.utils.gauss4alm(lmax,cl):
+    :A = curvedsky.utils.cov_diag_tri(n,cl):
   """
-  return libcurvedsky.utils.gauss4alm(lmax,cl)
+  return libcurvedsky.utils.cov_diag_tri(n,cl)
 
 def get_baseline(npix,nside_subpatch,QU):
   """
@@ -460,7 +452,7 @@ def cosin_healpix(nside):
     :nside (*int*): Nside of the desired map
 
   Returns:
-    :cosin [*pix*] (*double*): cosin(theta), with bounds (0:npix-1)
+    :cosin[*pix*] (*double*): cosin(theta), with bounds (0:npix-1)
 
   Usage:
     :cosin = curvedsky.utils.cosin_healpix(nside):
@@ -470,6 +462,19 @@ def cosin_healpix(nside):
 
 def load_defangle_takahashi(fname,npix,verbose=False):
   """
+  Read theta and phi coordinates at source plane obtained by Takahashi et al. (2017)
+
+  Args:
+    :fname (*str*): file name
+    :npix (*int*): Number of pixels of theta and phi data
+
+  Args (optional):
+    :verbose (*bool*): output messages, default to False
+
+  Returns:
+    :theta[*pix*] (*double*): theta, with bounds (0:npix-1)
+    :phi[*pix*] (*double*): phi, with bounds (0:npix-1)
+
   Usage:
     :theta,phi = curvedsky.utils.load_defangle_takahashi(fname,npix,verbose):
   """
@@ -477,6 +482,20 @@ def load_defangle_takahashi(fname,npix,verbose=False):
 
 def polcoord2angle(npix,theta,phi,verbose=False):
   """
+  Converting theta and phi coordinates at source plane to deflection angle.
+  The algorithm is provided by Takashi Hamana and Ryuichi Takahashi.
+
+  Args:
+    :npix (*int*): Number of pixels of theta and phi data
+    :theta[*pix*] (*double*): theta, with bounds (0:npix-1)
+    :phi[*pix*] (*double*): phi, with bounds (0:npix-1)
+
+  Args (optional):
+    :verbose (*bool*): output messages, default to False
+
+  Returns:
+    :angle[*pix,2*] (*double*): deflection angle vector containing two components, with bounds (0:npix-1,1:2)
+
   Usage:
     :angle = curvedsky.utils.polcoord2angle(npix,theta,phi,verbose):
   """
@@ -484,6 +503,21 @@ def polcoord2angle(npix,theta,phi,verbose=False):
 
 def polcoord2angle_alm(nside,lmax,theta,phi,verbose=False):
   """
+  Converting theta and phi coordinates at source plane to deflection angle.
+
+  Args:
+    :npix (*int*): Number of pixels of theta and phi data
+    :lmax (*int*): Maximum multipole of alms for gradient and curl modes
+    :theta[*pix*] (*double*): theta, with bounds (0:npix-1)
+    :phi[*pix*] (*double*): phi, with bounds (0:npix-1)
+
+  Args (optional):
+    :verbose (*bool*): output messages, default to False
+
+  Returns:
+    :glm[*l,m*] (*dcmplx*): gradient mode, with bounds (0:lmax,0:lmax)
+    :clm[*l,m*] (*dcmplx*): curl mode, with bounds (0:lmax,0:lmax)
+
   Usage:
     :glm,clm = curvedsky.utils.polcoord2angle_alm(nside,lmax,theta,phi,verbose):
   """
@@ -491,7 +525,7 @@ def polcoord2angle_alm(nside,lmax,theta,phi,verbose=False):
 
 def calc_mfs(bn,nu,lmax,walm,nside=0):
   """
-  Compute 2D Minkowski functionals
+  Compute 2D Minkowski functionals from a given alm
 
   Args:
     :bn (*int*): Number of nu bins
@@ -513,7 +547,7 @@ def calc_mfs(bn,nu,lmax,walm,nside=0):
 
 def mock_galaxy_takahashi(fname,zn,ngz,zi,a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0,b0=1.0,btype='sqrtz'):
   """
-  Compute galaxy overdensity map from dark matter density map
+  Compute galaxy overdensity map from dark matter density map of Takahashi et al. (2017). 
   The galaxy z distribution is assumed to have the functional form given by Eq.(7) of https://arxiv.org/abs/1810.03346
 
   Args:
@@ -529,7 +563,7 @@ def mock_galaxy_takahashi(fname,zn,ngz,zi,a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0,b0
     :b0 (*double*): constant galaxy bias at z=0
 
   Returns:
-    :gmap [*pix,zbin*] (*double*): The galaxy numberdensity map at each zbin
+    :gmap [*pix,zbin*] (*double*): The galaxy number density map at each zbin
 
   Usage:
     :gmap = curvedsky.utils.mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias):

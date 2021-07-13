@@ -1,46 +1,30 @@
 import libbasic
 
-def resbb(lmax,dlmin,dlmax,CE,Cp,WE,Wp):
-  """
-  Residual B-mode spectrum; ClBB = ClBB^lin - ClBB^est
-
-  Args:
-    :lmax (*int*): Maximum multipole of residual ClBB
-    :dlmin (*int*): Minimum multipole of E and lensing for delensing
-    :dlmax (*int*): Maximum multipole of E and lensing for delensing
-    :CE[*l*] (*double*): Power spectrum of E-mode, with bounds (0:dlmax)
-    :Cp[*l*] (*double*): Power spectrum of lensing pontential, with bounds (0:dlmax)
-    :WE[*l*] (*double*): Wiener filter of E-mode, with bounds (0:dlmax)
-    :Wp[*l*] (*double*): Wiener filter of lensing potential, with bountd (0:dlmax)
-
-  Returns:
-    :CB[*l*] (*double*): Residual B-mode spectrum, with bounds (0:lmax)
-
-  Usage:
-    :CB = basic.delens.resbb(lmax,dlmin,dlmax,CE,Cp,WE,Wp):
-  """
-  return libbasic.delens.resbb(lmax,dlmin,dlmax,CE,Cp,WE,Wp)
-
-def lintemplate(lmax,dlmin,dlmax,CE,Cp,WE,Wp):
+def lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,gtype='p'):
   """
   Estimate of lensing template B-mode power spectrum (Wiener filters as inputs)
 
   Args:
     :lmax (*int*): Maximum multipole of output spectrum
-    :dlmin (*int*): Minimum multipole of E and lensing for delensing
-    :dlmax (*int*): Maximum multipole of E and lensing for delensing
+    :elmin (*int*): Minimum multipole of E
+    :elmax (*int*): Maximum multipole of E
+    :klmin (*int*): Minimum multipole of lensing mass
+    :klmax (*int*): Maximum multipole of lensing mass
     :CE[*l*] (*double*): Power spectrum of E-mode, with bounds (0:dlmax)
     :Cp[*l*] (*double*): Power spectrum of lensing pontential, with bounds (0:dlmax)
     :WE[*l*] (*double*): Wiener filter of E-mode, with bounds (0:dlmax)
     :Wp[*l*] (*double*): Wiener filter of lensing potential, with bountd (0:dlmax)
 
+  Args(optional):
+    :gtype (*str*): specify type of the input Cp, p (default) or k.
+
   Returns:
     :CB[*l*] (*double*): Lensing B-mode power spectrum, with bounds (0:lmax)
 
   Usage:
-    :CB = basic.delens.lintemplate(lmax,dlmin,dlmax,CE,Cp,WE,Wp):
+    :CB = basic.delens.lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,gtype):
   """
-  return libbasic.delens.lintemplate(lmax,dlmin,dlmax,CE,Cp,WE,Wp)
+  return libbasic.delens.lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,gtype)
 
 def lensingbb(lmax,dlmin,dlmax,CE,Cp):
   """

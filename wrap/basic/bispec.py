@@ -2,13 +2,13 @@ import libbasic
 
 def cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn=0,kn=0,pktype='T12',cltype='kk',dNdz=None):
   """
-  Compute lensing bispectrum analytically
+  Compute flat-sky lensing powerspectrum analytically
  
   Args:
     :cpmodel (*str*): cosmological parameter model (model0, modelw, or modelp)
     :z[*zn*] (*double*): redshift points for the z-integral
     :dz[*zn*] (*double*): interval of z
-    :zs[*3*] (*double*): source redshifts
+    :zs[*2*] (*double*): two source redshifts
     :lmin/lmax (*int*): minimum/maximum multipoles of the bispectrum
     :k[*kn*] (*double*): k for the matter power spectrum in unit of [*h/Mpc*]
     :pk0[*kn*] (*double*): the linear matter power spectrum at z=0 in unit of [*Mpc^3/h^3*]
@@ -16,7 +16,7 @@ def cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn=0,kn=0,pktype='T12',cltype='kk',dNdz=N
   Args(optional):
     :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
     :cltype (*str*): kk, gk, or gg
-    :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when btype includes g
+    :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when cltype includes g
 
   Returns:
     :cl[*l*] (*double*): power spectrum from LSS contributions at [*lmin,lmax*]
@@ -47,7 +47,7 @@ def bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,zn=0,kn=0,lan=0.,kan=0
 
   Args(optional):
     :lan, kan (*double*): parameters for the modified gravity extension, default to lan=kan=1 (GR)
-    :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
+    :pktype (*str*): fitting formula for the matter power spectrum (Lin=Linear, S02=Smith et al. 2002 or T12=Takahashi et al. 2012), default to T12
     :ltype (*str*): fullsky correction (full) or not
     :btype (*str*): bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
     :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when btype includes g

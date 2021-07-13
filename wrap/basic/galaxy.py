@@ -1,8 +1,8 @@
 import libbasic
 
-def dndz_sf(z,a,b,zm,zn=0):
+def dndz_sf(z,a,b,zm,zn=None):
   """
- Galaxy z distribution
+ A model of galaxy z distribution
 
   Args:
     :z[*zn*] (*double*): redshifts at which dNdz is returned
@@ -15,8 +15,28 @@ def dndz_sf(z,a,b,zm,zn=0):
   Usage:
     :dndz = basic.galaxy.dndz_sf(zn,z,a,b,zm):
   """
-  if zn==0: zn=len(z)
+  if zn is None: zn=len(z)
   return libbasic.galaxy.dndz_sf(zn,z,a,b,zm)
+
+def photoz_error(z,zi,zn=None,sigma=0.03,zbias=0.):
+  """
+ Photo-z error on z distribution which is multiplied to original galaxy z distribution. 
+ See Eq.(13) of arXiv:1103.1118 for details.
+
+  Args:
+    :z[*zn*] (*double*): redshifts at which photoz error function is returned
+    :zi[*2*] (*double*): z-bin edges
+    :sigma (*double*): a parameter of photo-z error which is given by, sigma x (1+z)
+    :zbias (*double*): photo-z mean bias
+
+  Returns:
+    :pz[*zn*] (*double*): photoz error function
+
+  Usage:
+    :pz = basic.galaxy.photoz_error(zn,z,zi,sigma,zbias):
+  """
+  if zn is None: zn=len(z)
+  return libbasic.galaxy.photoz_error(zn,z,zi,sigma,zbias)
 
 def zbin(zn,a,b,zm,verbose=False):
   """
