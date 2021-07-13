@@ -71,7 +71,8 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype,verbose
   !* interpolate k, Pk at k=l/chi
   allocate(chi(zn),b%kl(zn,oL(2)),b%plL(zn,oL(2)),b%pl(zn,oL(2)))
   chi = C_z(z,cp)  !comoving distance at each z
-  if (2d0/chi(zn)<k(1)) write(*,*) 'warning: required minimum k is smaller than input', 2d0/chi(zn), k(1)
+  if (2d0/chi(zn)<k(1)) write(*,*) 'warning: the minimum k should be smaller than', 2d0/chi(zn), 'while the minimum input k is', k(1)
+  if (dble(oL(2))/chi(1)>k(kn)) write(*,*) 'warning: the maximum k should be larger than', dble(oL(2))/chi(1), k(kn)
   call Limber_k2l(chi,k,pkL,b%kl,b%plL)
   call Limber_k2l(chi,k,pk,b%kl,b%pl)
 

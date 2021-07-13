@@ -21,106 +21,81 @@ module delensing
 contains
 
 
-subroutine RES_CLBB(oL,dL,CE,Cp,CB,WE,Wp,NE,Np)
+!subroutine RES_CLBB(oL,dLE,dLP,CE,Cp,CB,WE,Wp,NE,Np)
 !* residual ClBB = ClBB^lin - ClBB^est
 !
-  implicit none
+!  implicit none
 ! [inputs]  
-!   oL --- multipole range of residual ClBB
-!   dL --- multipole range of delensing
+!   oL  --- multipole range of residual ClBB
+!   dLE --- multipole range of E modes
+!   dLP --- multipole range of lensing potential
 !   CE, Cp --- power spectrum of E-mode and lensing pontential
-  integer, intent(in) :: oL(2), dL(2)
-  double precision, intent(in), dimension(:) :: CE, Cp
+!  integer, intent(in) :: oL(2), dLE(2), dLP(2)
+!  double precision, intent(in), dimension(:) :: CE, Cp
 !
 ! (optional)
 !   WE, Wp --- Wiener filters of E-mode and lensing potential
 !   NE, Np --- Noise power spectra of E-mode and lensing potential
-  double precision, intent(in), dimension(:), optional :: WE, Wp, NE, Np
+!  double precision, intent(in), dimension(:), optional :: WE, Wp, NE, Np
 !
 ! [outputs]
 !   CB --- residual B-mode
-  double precision, intent(out) :: CB(:)
+!  double precision, intent(out) :: CB(:)
 !
 ! [internal]
-  integer :: l
-  double precision :: CBW(oL(2)), CBL(oL(2))
-  double precision, dimension(dL(1):dL(2)) :: A, B
+!  integer :: l, lmin, lmax
+!  double precision :: CBW(oL(2)), CBL(oL(2))
+!  double precision, dimension(dLE(1):dLE(2)) :: A
+!  double precision, dimension(dLP(1):dLP(2)) :: B
 
-! Wiener filtered Lensing B-mode power spectrum
-  CBW = 0d0
+!  CBW = 0d0
 
-  if (present(WE).and.present(Wp)) then
-    A = CE(dL(1):dL(2)) * WE(dL(1):dL(2))
-    B = Cp(dL(1):dL(2)) * Wp(dL(1):dL(2))
-    call conv_egrad(oL,dL,A,B,CBW)
-  end if
+!  if (present(WE).and.present(Wp)) then
+!    A = CE(dLE(1):dLE(2)) * WE(dLE(1):dLE(2))
+!    B = Cp(dLP(1):dLP(2)) * Wp(dLP(1):dLP(2))
+!    call conv_egrad(oL,dLE,dLP,A,B,CBW)
+!  end if
 
-  if (present(NE).and.present(Np)) then
-    do l = dL(1), dL(2)
-      A(l) = CE(l)**2/(CE(l)+NE(l))
-      B(l) = Cp(l)**2/(Cp(l)+Np(l))
-    end do
-    call conv_egrad(oL,dL,A,B,CBW)
-  end if
+!  if (present(NE).and.present(Np)) then
+!    do l = dLE(1), dLE(2)
+!      A(l) = CE(l)**2/(CE(l)+NE(l))
+!    end do
+!    do l = dLP(1), dLP(2)
+!      B(l) = Cp(l)**2/(Cp(l)+Np(l))
+!    end do
+!    call conv_egrad(oL,dLE,dLP,A,B,CBW)
+!  end if
 
 ! Lensing B-mode power spectrum
-  call conv_egrad(oL,[1,dL(2)],CE(1:dL(2)),Cp(1:dL(2)),CBL)
+!  call conv_egrad(oL,(/1,dLE(2)/),(/1,dLP(2)/),CE(1:dLE(2)),Cp(1:dLP(2)),CBL)
 
-  CB = CBL
-  CB(oL(1):oL(2)) = CBL(oL(1):oL(2)) - CBW(oL(1):oL(2))
+!  CB = CBL
+!  CB(oL(1):oL(2)) = CBL(oL(1):oL(2)) - CBW(oL(1):oL(2))
 
-end subroutine RES_CLBB
+!end subroutine RES_CLBB
 
 
-subroutine CLBB_LIN(eL,dL,CE,Cg,CB)
+!subroutine CLBB_LIN(eL,dLE,dLP,CE,CP,CB)
 ! * Lensing B-mode power spectrum as a convolution of ClEE and Clpp
-  implicit none
+!  implicit none
 !
 ! [input]
 !   eL --- multipole range of residual ClBB
-!   dL --- multipole range of delensing
-!   CE, Cg --- power spectrum of E-mode and lensing pontential
-  integer, intent(in) :: eL(2), dL(2)
-  double precision, intent(in), dimension(:) :: CE, Cg
+!   dLE, dLP --- multipole range of E modes and lensing potential
+!   CE, CP --- power spectrum of E-mode and lensing pontential
+!  integer, intent(in) :: eL(2), dLE(2), dLP(2)
+!  double precision, intent(in), dimension(:) :: CE, CP
 !
 ! [output]
 !   CB --- residual B-mode
-  double precision, intent(out) :: CB(:)
+!  double precision, intent(out) :: CB(:)
 
-  call conv_egrad(eL,dL,CE(dL(1):dL(2)),Cg(dL(1):dL(2)),CB)
+!  call conv_egrad(eL,dLE,dLP,CE(dLE(1):dLE(2)),CP(dLP(1):dLP(2)),CB)
 
-end subroutine CLBB_LIN
-
-
-subroutine CLBB_EST_W(eL,dL,CE,Cp,WE,Wp,Cl)
-! * Estimate of lensing B-mode power spectrum (Wiener filters as inputs)
-  implicit none
-!
-! [input]
-!   eL --- multipole range of residual ClBB
-!   dL --- multipole range of delensing
-!   CE --- E-mode power spectrum
-!   Cp --- lensing potential power spectrum
-!   WE --- E-mode Wiener filter
-!   Wp --- lensing potential Wiener filter
-  integer, intent(in) :: eL(2), dL(2)
-  double precision, intent(in), dimension(:) :: CE, Cp, WE, Wp
-!
-! [output]
-!   Cl --- estimated lensing B-mode power spectrum
-  double precision, intent(out) :: Cl(:)
-!
-! [internal]
-  double precision, dimension(dL(1):dL(2)) :: W1, W2
-
-  W1 = CE(dL(1):dL(2))*WE(dL(1):dL(2))
-  W2 = Cp(dL(1):dL(2))*Wp(dL(1):dL(2))
-  call conv_egrad(eL,dL,W1,W2,Cl)
-
-end subroutine CLBB_EST_W
+!end subroutine CLBB_LIN
 
 
-subroutine CLBB_EST(eL,dL,CE,Cp,NE,Np,Cl)
+subroutine CLBB_EST(eL,dLE,dLP,CE,Cp,NE,Np,Cl)
 ! * Estimate of lensing B-mode power spectrum (Noise power spectra as inputs)
   implicit none
 !
@@ -131,7 +106,7 @@ subroutine CLBB_EST(eL,dL,CE,Cp,NE,Np,Cl)
 !   Cp --- lensing potential power spectrum
 !   NE --- E-mode noise power spectrum
 !   Np --- lensing potential noise power spectrum
-  integer, intent(in) :: dL(2), eL(2)
+  integer, intent(in) :: dLE(2), dLP(2), eL(2)
   double precision, intent(in), dimension(:) :: CE, Cp, NE, Np
 !
 ! [output]
@@ -140,14 +115,17 @@ subroutine CLBB_EST(eL,dL,CE,Cp,NE,Np,Cl)
 !
 ! [internal]
   integer :: l
-  double precision, dimension(dL(1):dL(2)) :: WE, Wp
+  double precision, dimension(dLE(1):dLE(2)) :: WE
+  double precision, dimension(dLP(1):dLP(2)) :: WP
 
-  do l = dL(1), dL(2)
+  do l = dLE(1), dLE(2)
     WE(l) = CE(l)**2/(CE(l)+NE(l))
+  end do
+  do l = dLP(1), dLP(2)
     Wp(l) = Cp(l)**2/(Cp(l)+Np(l))
   end do
 
-  call conv_egrad(eL,dL,WE,Wp,Cl)
+  call conv_egrad(eL,dLE,dLP,WE,Wp,Cl)
 
 end subroutine CLBB_EST
 
@@ -169,7 +147,7 @@ subroutine Delensing_Bias(eL,dL,LE,LB,Cp,DBL,NP1,Ag,NP2)
   DBl = 0d0
 
   call DLBB(eL,dL,LE,LE,LE+NP1,LB+NP1,Cp,Ag,DLS,LE+NP2)
-  call CLBB_EST(eL,dL,LE,Cp,NP2,Ag,wBB)
+  call CLBB_EST(eL,dL,dL,LE,Cp,NP2,Ag,wBB)
 
   do l = eL(1), eL(2)
     DBl(l) = DLS(l)*(-2d0*LB(l)+2d0*wBB(l)+DLS(l)*(LB(l)+NP1(l)))
@@ -209,7 +187,7 @@ subroutine DlBB(eL,dL,CE,LE,OE1,OB1,Cp,Np,Cl,OE2)
     if(present(OE2)) WE(l) = WE(l)*LE(l)/OE2(l)
     Wp(l) = Cp(l)*Np(l)/(Cp(l)+Np(l))
   end do
-  call conv_egrad(eL,dL,WE,Wp,Cl)
+  call conv_egrad(eL,dL,dL,WE,Wp,Cl)
 
   Cl(eL(1):eL(2)) = Cl(eL(1):eL(2))/OB1(eL(1):eL(2))
 

@@ -160,7 +160,7 @@ end subroutine ZETA_L
 !/////////////////////////////////////////////////////////////////////////////!
 ! Delensing
 
-subroutine conv_egrad(oL,dL,WE,WP,X)
+subroutine conv_egrad(oL,dLE,dLP,WE,WP,X)
 ! * Kernel of lensing B-mode power spectrum
 !
 ! The Kernel function is given by
@@ -170,22 +170,26 @@ subroutine conv_egrad(oL,dL,WE,WP,X)
 ! see Eqs.(2.7) and (A.11) in Namikawa & Nagata 2014
 !
 ! inputs  : oL --- multipole range of X
-!         : dL --- multipole range of WE and WP
+!         : dLE, dLP --- multipole range of WE and WP
 !         : WE, WP --- functions to be convolved
 ! outputs : X --- kernel function
   implicit none
   !I/O
-  integer, intent(in) :: oL(1:2), dL(1:2)
-  double precision, intent(in), dimension(dL(1):dL(2)) :: WE, WP
+  integer, intent(in) :: oL(1:2), dLE(1:2), dLP(1:2)
+  double precision, intent(in), dimension(dLE(1):dLE(2)) :: WE
+  double precision, intent(in), dimension(dLP(1):dLP(2)) :: WP
   double precision, intent(out) :: X(:)
   !internal
   type(gauss_legendre_params) :: GL
-  integer :: i, l
+  integer :: i, l, lmin, lmax
   double precision :: mu, al, Ip, Im, c1_inv, c2p, c2m, c3
   double precision, dimension(2) :: ZE33, ZE31, ZE11, ZP, d22_sup, d22_mid, d22_inf
-  double precision, dimension(dL(1):dL(2)) :: al0, alm, alp
+  double precision, dimension(min(dLE(1),dLP(1)):max(dLE(2),dLP(2))) :: al0, alm, alp
 
-  do l = dL(1), dL(2)
+  lmin = min(dLE(1),dLP(1))
+  lmax = max(dLE(2),dLP(2))
+
+  do l = lmin, lmax
     al = dble(l)
     al0(l) = dsqrt(al*(al+1))
     alp(l) = dsqrt((al-2)*(al+3))
@@ -195,14 +199,14 @@ subroutine conv_egrad(oL,dL,WE,WP,X)
   X = 0d0
 
   !* GL quadrature
-  call gl_initialize(GL,int((3*dL(2)+1)/2),1d-15)
+  call gl_initialize(GL,int((3*lmax+1)/2),1d-15)
 
   do i = 1, GL%n
     mu = GL%z(i)
-    call ZETA(3,3,dL,WE*alp**2,mu,ZE33)
-    call ZETA(3,1,dL,WE*alp*alm,mu,ZE31)
-    call ZETA(1,1,dL,WE*alm**2,mu,ZE11)
-    call ZETA(1,1,dL,WP*al0**2,mu,ZP)
+    call ZETA(3,3,dLE,WE*alp(dLE(1):dLE(2))**2,mu,ZE33)
+    call ZETA(3,1,dLE,WE*alp(dLE(1):dLE(2))*alm(dLE(1):dLE(2)),mu,ZE31)
+    call ZETA(1,1,dLE,WE*alm(dLE(1):dLE(2))**2,mu,ZE11)
+    call ZETA(1,1,dLP,WP*al0(dLP(1):dLP(2))**2,mu,ZP)
     d22_sup = 0d0 ;  d22_mid = 0d0 ;  d22_inf = 0d0
     do l = 2, oL(2) !recursion of wigner d function
       if(l==2) then 
