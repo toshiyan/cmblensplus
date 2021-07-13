@@ -936,7 +936,7 @@ subroutine qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,Ag,Ac,iter
     if (abs(ratio) < conv) exit
 
     !delensing with EB-estimator
-    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),CE(1:dlmax),Cpp(1:dlmax),OCE(1:dlmax)-CE(1:dlmax),Al(1,1:dlmax),rCBB(1:rlmax))
+    call clbb_est((/rlmin,rlmax/),(/dlmin,dlmax/),(/dlmin,dlmax/),CE(1:dlmax),Cpp(1:dlmax),OCE(1:dlmax)-CE(1:dlmax),Al(1,1:dlmax),rCBB(1:rlmax))
     rCBB = OCB - rCBB !delensed B-mode
 
     if(n==iter) write(*,*) 'not well converged'

@@ -173,132 +173,81 @@ subroutine gaussTEB(lmax,TT,EE,BB,TE,alm)
 end subroutine gaussTEB
 
 
-subroutine gauss3alm(lmax,cl,alm)
-!*  Generating three alms as random Gaussian fields whose covariance is given by cl[i,j].
+subroutine gaussalm(n,lmax,cl,alm)
+!*  Generating alms as random Gaussian fields whose covariance is given by cl[i,j].
 !*
 !*  Args:
-!*    :lmax (int)          : Maximum multipole of the output alm
-!*    :cl [i,j,l] (double) : Covariance between the gaussian fields, with bounds (3,3,0:lmax)
+!*    :cl [i,j,l] (double) : Covariance between the gaussian fields, with bounds (n,n,0:lmax)
 !*
 !*  Returns:
-!*    :alm [3,l,m] (dcmplx): Random Gaussian alms, with bounds (3,0:lmax,0:lmax)
+!*    :alm [i,l,m] (dcmplx): Random Gaussian alms, with bounds (n,0:lmax,0:lmax)
 !*
   !I/O
-  integer, intent(in) :: lmax
-  double precision, intent(in), dimension(3,3,0:lmax) :: cl
-  double complex, intent(out), dimension(3,0:lmax,0:lmax) :: alm
+  integer, intent(in) :: n, lmax
+  double precision, intent(in), dimension(n,n,0:lmax) :: cl
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: alm
   !integer
-  integer :: l, m
-  double precision :: sqrt2, A11, A21, A22, A31, A32, A33
-  double complex :: g1, g2, g3
+  integer :: l, m, i
+  double precision :: prod
+  double precision, dimension(n,n) :: A
+  double complex, dimension(n) :: g
+  !opt4py :: n = None
+  !opt4py :: lmax = None
+  !add2py :: if n is None:    n    = len(cl[:,0,0])
+  !add2py :: if lmax is None: lmax = len(cl[0,0,:]) - 1
 
-  sqrt2 = sqrt(2.)
   alm = 0d0
   call initrandom(-1)
 
   do l = 1, lmax
-    !m=0
-    A11 = 0d0; A21=0d0; A22=0d0; A31=0d0; A32=0d0; A33=0d0
-    g1  = Gaussian1()
-    g2  = Gaussian1()
-    g3  = Gaussian1()
-    A11 = dsqrt(cl(1,1,l))
-    if (A11/=0) A21 = cl(1,2,l)/A11
-    A22 = dsqrt(cl(2,2,l)-A21**2)
-    if (A11/=0) A31 = cl(1,3,l)/A11
-    if (A22/=0) A32 = (cl(2,3,l)-A31*A21)/A22
-    A33 = dsqrt(cl(3,3,l)-A31**2-A32**2)
-    alm(1,l,0) = g1*A11
-    alm(2,l,0) = g1*A21 + g2*A22
-    alm(3,l,0) = g1*A31 + g2*A32 + g3*A33
-    A11 = 0d0;  A21=0d0; A22=0d0; A31=0d0; A32=0d0; A33=0d0
-    !m/=0
+
+    ! check diagonal
+    prod = 1d0
+    do i = 1, n
+      prod = prod * cl(i,i,l)
+    end do
+    if (prod==0d0) cycle
+
+    call cov_diag_tri(n,cl(:,:,l),A)
+
+    do i = 1, n
+      g(i) = Gaussian1()
+      alm(i,l,0) = sum(g(1:i)*A(i,1:i))
+    end do
+
     do m = 1, l
-      g1  = cmplx(Gaussian1(),Gaussian1())/sqrt2
-      g2  = cmplx(Gaussian1(),Gaussian1())/sqrt2
-      g3  = cmplx(Gaussian1(),Gaussian1())/sqrt2
-      A11 = dsqrt(cl(1,1,l))
-      if (A11/=0) A21 = cl(1,2,l)/A11
-      A22 = dsqrt(cl(2,2,l)-A21**2)
-      if (A11/=0) A31 = cl(1,3,l)/A11
-      if (A22/=0) A32 = (cl(2,3,l)-A21*A31)/A22
-      A33 = dsqrt(cl(2,2,l)-A31**2-A32**2)
-      alm(1,l,m) = g1*A11
-      alm(2,l,m) = g1*A21 + g2*A22
-      alm(3,l,m) = g1*A31 + g2*A32 + g3*A33
+
+      do i = 1, n
+        g(i) = cmplx(Gaussian1(),Gaussian1())/dsqrt(2d0)
+        alm(i,l,m) = sum(g(1:i)*A(i,1:i))
+      end do
+
     end do
   end do
 
-end subroutine gauss3alm
+end subroutine gaussalm
 
 
-subroutine gauss4alm(lmax,cl,alm)
-!*  Generating four alms as random Gaussian fields whose covariance is given by cl[i,j].
-!*
-!*  Args:
-!*    :lmax (int)          : Maximum multipole of the output alm
-!*    :cl [i,j,l] (double) : Covariance between the gaussian fields, with bounds (4,4,0:lmax)
-!*
-!*  Returns:
-!*    :alm [4,l,m] (dcmplx): Random Gaussian alms, with bounds (4,0:lmax,0:lmax)
-!*
-  !I/O
-  integer, intent(in) :: lmax
-  double precision, intent(in), dimension(4,4,0:lmax) :: cl
-  double complex, intent(out), dimension(4,0:lmax,0:lmax) :: alm
-  !integer
-  integer :: l, m
-  double precision :: sqrt2, A11, A21, A22, A31, A32, A33, A41, A42, A43, A44
-  double complex :: g1, g2, g3, g4
+subroutine cov_diag_tri(n,cl,A)
+  !obtain a matrix A satisfying AA^t = cl
+  implicit none
+  integer, intent(in) :: n
+  double precision, intent(in), dimension(n,n) :: cl
+  double precision, intent(out), dimension(n,n) :: A
+  !internal
+  integer :: i, k
 
-  sqrt2 = sqrt(2.)
-  alm = 0d0
-  call initrandom(-1)
+  A = 0d0
 
-  do l = 1, lmax
-    A11 = 0d0; A21=0d0; A22=0d0; A31=0d0; A32=0d0; A33=0d0; A41=0d0; A42=0d0; A43=0d0; A44=0d0
-    g1  = Gaussian1()
-    g2  = Gaussian1()
-    g3  = Gaussian1()
-    g4  = Gaussian1()
-    A11 = dsqrt(cl(1,1,l))
-    if (A11/=0) A21 = cl(1,2,l)/A11
-    A22 = dsqrt(cl(2,2,l)-A21**2)
-    if (A11/=0) A31 = cl(1,3,l)/A11
-    if (A22/=0) A32 = (cl(2,3,l)-A31*A21)/A22
-    A33 = dsqrt(cl(3,3,l)-A31**2-A32**2)
-    if (A11/=0) A41 = cl(1,4,l)/A11
-    if (A22/=0) A42 = (cl(2,4,l)-A41*A21)/A22
-    if (A33/=0) A43 = (cl(3,4,l)-A41*A31-A42*A32)/A33
-    A44 = dsqrt(cl(4,4,l)-A41**2-A42**2-A43**2)
-    alm(1,l,0) = g1*A11
-    alm(2,l,0) = g1*A21 + g2*A22
-    alm(3,l,0) = g1*A31 + g2*A32 + g3*A33
-    alm(4,l,0) = g1*A41 + g2*A42 + g3*A43 + g4*A44
-    A11 = 0d0;  A21=0d0; A22=0d0; A31=0d0; A32=0d0; A33=0d0; A41=0d0; A42=0d0; A43=0d0; A44=0d0
-    do m = 1, l
-      g1  = cmplx(Gaussian1(),Gaussian1())/sqrt2
-      g2  = cmplx(Gaussian1(),Gaussian1())/sqrt2
-      g3  = cmplx(Gaussian1(),Gaussian1())/sqrt2
-      g4  = cmplx(Gaussian1(),Gaussian1())/sqrt2
-      A11 = dsqrt(cl(1,1,l))
-      if (A11/=0) A21 = cl(1,2,l)/A11
-      A22 = dsqrt(cl(2,2,l)-A21**2)
-      if (A11/=0) A31 = cl(1,3,l)/A11
-      if (A22/=0) A32 = (cl(2,3,l)-A21*A31)/A22
-      A33 = dsqrt(cl(2,2,l)-A31**2-A32**2)
-      if (A11/=0) A41 = cl(1,4,l)/A11
-      if (A22/=0) A42 = (cl(2,4,l)-A21*A41)/A22
-      if (A33/=0) A43 = (cl(3,4,l)-A41*A31-A42*A32)/A33
-      A44 = dsqrt(cl(4,4,l)-A41**2-A42**2-A43**2)
-      alm(1,l,m) = g1*A11
-      alm(2,l,m) = g1*A21 + g2*A22
-      alm(3,l,m) = g1*A31 + g2*A32 + g3*A33
-      alm(4,l,m) = g1*A41 + g2*A42 + g3*A43 + g4*A44
+  do k = 1, n
+    ! A(k,i) = 0 if k<i
+    do i = 1, k -1
+      A(k,i) = ( cl(i,k) - sum(A(i,1:i-1)*A(k,1:i-1)) ) / A(i,i)
     end do
+    A(k,k) = dsqrt( cl(k,k) - sum(A(k,1:k-1)*A(k,1:k-1)) )
   end do
 
-end subroutine gauss4alm
+end subroutine cov_diag_tri
 
 
 subroutine get_baseline(npix,nside_subpatch,QU,blmap)
