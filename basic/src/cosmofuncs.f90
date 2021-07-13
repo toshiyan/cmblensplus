@@ -26,10 +26,10 @@ subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz,divc)
 !*    :Om (double)     : The current value of Omega_matter, default to 0.3
 !*    :Ov (double)     : The current value of Omega_Dark-energy, default to 0.7
 !*    :w0, wa (double) : The EoS of Dark Energy, default to w0=-1 and wa=0.
-!*    :divc (bool)     : Divide H by c or not, default to True. 
+!*    :divc (bool)     : Divide H by c or not, default to False. 
 !*
 !*  Returns:
-!*    :Hz[zn] (double) : The expansion rate, H(z), divided by c (or not). 
+!*    :Hz[zn] (double) : The expansion rate, H(z), divided by c or not. 
 !*
 
   implicit none
@@ -46,7 +46,7 @@ subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz,divc)
   !opt4py :: w0 = -1.
   !opt4py :: wa = 0.
   !opt4py :: zn = 0
-  !opt4py :: divc = True
+  !opt4py :: divc = False
   !add2py :: zn = len(z)
 
   cp%H0 = H0

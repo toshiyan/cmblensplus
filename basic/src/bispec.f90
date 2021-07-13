@@ -19,7 +19,7 @@ subroutine cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,cl,pktype,cltype,dNdz)
 !*    :cpmodel (str) : cosmological parameter model (model0, modelw, or modelp)
 !*    :z[zn] (double) : redshift points for the z-integral
 !*    :dz[zn] (double) : interval of z
-!*    :zs[3] (double) : source redshifts
+!*    :zs[2] (double) : two source redshifts
 !*    :lmin/lmax (int) : minimum/maximum multipoles of the bispectrum
 !*    :k[kn] (double) : k for the matter power spectrum in unit of [h/Mpc]
 !*    :pk0[kn] (double) : the linear matter power spectrum at z=0 in unit of [Mpc^3/h^3]

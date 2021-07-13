@@ -10,57 +10,51 @@ module delens
 contains
 
 
-subroutine resbb(lmax,dlmin,dlmax,CE,Cp,WE,Wp,CB)
-!*  Residual B-mode spectrum; ClBB = ClBB^lin - ClBB^est
-!*
-!*  Args:
-!*    :lmax (int)     : Maximum multipole of residual ClBB
-!*    :dlmin (int)    : Minimum multipole of E and lensing for delensing
-!*    :dlmax (int)    : Maximum multipole of E and lensing for delensing
-!*    :CE[l] (double) : Power spectrum of E-mode, with bounds (0:dlmax)
-!*    :Cp[l] (double) : Power spectrum of lensing pontential, with bounds (0:dlmax)
-!*    :WE[l] (double) : Wiener filter of E-mode, with bounds (0:dlmax)
-!*    :Wp[l] (double) : Wiener filter of lensing potential, with bountd (0:dlmax)
-!*
-!*  Returns:
-!*    :CB[l] (double) : Residual B-mode spectrum, with bounds (0:lmax)
-!*
-  implicit none
-  integer, intent(in) :: lmax, dlmin, dlmax
-  double precision, intent(in), dimension(0:dlmax) :: CE, Cp, WE, Wp
-  double precision, intent(out), dimension(0:lmax) :: CB
-
-  CB(0) = 0d0
-  call res_clbb((/1,lmax/),(/dlmin,dlmax/),CE(1:dlmax),Cp(1:dlmax),CB(1:lmax),WE(1:dlmax),Wp(1:dlmax))
-
-end subroutine resbb
-
-
-subroutine lintemplate(lmax,dlmin,dlmax,CE,Cp,WE,Wp,CB)
+subroutine lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,CB,gtype)
 !*  Estimate of lensing template B-mode power spectrum (Wiener filters as inputs)
 !*
 !*  Args:
 !*    :lmax (int)     : Maximum multipole of output spectrum
-!*    :dlmin (int)    : Minimum multipole of E and lensing for delensing
-!*    :dlmax (int)    : Maximum multipole of E and lensing for delensing
+!*    :elmin (int)    : Minimum multipole of E
+!*    :elmax (int)    : Maximum multipole of E
+!*    :klmin (int)    : Minimum multipole of lensing mass
+!*    :klmax (int)    : Maximum multipole of lensing mass
 !*    :CE[l] (double) : Power spectrum of E-mode, with bounds (0:dlmax)
 !*    :Cp[l] (double) : Power spectrum of lensing pontential, with bounds (0:dlmax)
 !*    :WE[l] (double) : Wiener filter of E-mode, with bounds (0:dlmax)
 !*    :Wp[l] (double) : Wiener filter of lensing potential, with bountd (0:dlmax)
+!*
+!*  Args(optional):
+!*    :gtype (str) : specify type of the input Cp, p (default) or k.
 !*
 !*  Returns:
 !*    :CB[l] (double) : Lensing B-mode power spectrum, with bounds (0:lmax)
 !*
   implicit none
-  integer, intent(in) :: lmax, dlmin, dlmax
-  double precision, intent(in), dimension(0:dlmax) :: CE, Cp, WE, Wp
+  character(*), intent(in) :: gtype
+  integer, intent(in) :: lmax, elmin, elmax, klmin, klmax
+  double precision, intent(in), dimension(0:elmax) :: CE, WE
+  double precision, intent(in), dimension(0:klmax) :: Cm, Wm
   double precision, intent(out), dimension(0:lmax) :: CB
 ! [internal]
-  double precision, dimension(dlmin:dlmax) :: W1, W2
+  integer :: l
+  double precision, dimension(0:klmax) :: Cp
+  double precision, dimension(elmin:elmax) :: W1
+  double precision, dimension(klmin:klmax) :: W2
+  !opt4py :: gtype = 'p'
 
-  W1 = CE(dlmin:dlmax)*WE(dlmin:dlmax)
-  W2 = Cp(dlmin:dlmax)*Wp(dlmin:dlmax)
-  call conv_egrad((/1,lmax/),(/dlmin,dlmax/),W1,W2,CB)
+  Cp = 0d0
+  if (gtype=='k') then
+    do l = 1, klmax
+      Cp(l) = 4d0*Cm(l)/dble(l**2+l)**2
+    end do
+  else
+    Cp = Cm
+  end if
+
+  W1 = CE(elmin:elmax)*WE(elmin:elmax)
+  W2 = Cp(klmin:klmax)*Wm(klmin:klmax)
+  call conv_egrad((/1,lmax/),(/elmin,elmax/),(/klmin,klmax/),W1,W2,CB)
 
 end subroutine lintemplate
 
@@ -84,7 +78,7 @@ subroutine lensingbb(lmax,dlmin,dlmax,CE,Cp,CB)
   double precision, intent(out), dimension(0:lmax) :: CB
 
   CB(0) = 0d0
-  call conv_egrad((/1,lmax/),(/dlmin,dlmax/),CE(dlmin:dlmax),Cp(dlmin:dlmax),CB(1:lmax))
+  call conv_egrad((/1,lmax/),(/dlmin,dlmax/),(/dlmin,dlmax/),CE(dlmin:dlmax),Cp(dlmin:dlmax),CB(1:lmax))
 
 end subroutine lensingbb
 

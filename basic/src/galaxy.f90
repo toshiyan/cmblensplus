@@ -3,7 +3,7 @@
 !/////////////////////////////////////////////////////////////////////!
 
 module galaxy
-  use utilsgal, only: zbin_SF, ngal_SF, nz_SF_scal
+  use utilsgal, only: zbin_SF, ngal_SF, nz_SF_scal, pz_SF_scal
   use funcs,    only: lnGamma
   implicit none
 
@@ -11,7 +11,7 @@ contains
 
 
 subroutine dndz_sf(zn,z,a,b,zm,dndz)
-!* Galaxy z distribution
+!* A model of galaxy z distribution
 !*
 !*  Args:
 !*    :z[zn] (double) : redshifts at which dNdz is returned
@@ -27,14 +27,46 @@ subroutine dndz_sf(zn,z,a,b,zm,dndz)
   double precision, intent(in), dimension(1:zn) :: z
   double precision, intent(out), dimension(1:zn) :: dndz
   integer :: i
-  !opt4py :: zn = 0
-  !add2py :: if zn==0: zn=len(z)
+  !opt4py :: zn = None
+  !add2py :: if zn is None: zn=len(z)
 
   do i = 1, zn
     dndz(i) = nz_SF_scal(z(i),a,b,zm)
   end do
 
 end subroutine dndz_sf
+
+
+subroutine photoz_error(zn,z,zi,sigma,zbias,pz)
+!* Photo-z error on z distribution which is multiplied to original galaxy z distribution. 
+!* See Eq.(13) of arXiv:1103.1118 for details.
+!*
+!*  Args:
+!*    :z[zn] (double) : redshifts at which photoz error function is returned
+!*    :zi[2] (double) : z-bin edges
+!*    :sigma (double) : a parameter of photo-z error which is given by, sigma x (1+z)
+!*    :zbias (double) : photo-z mean bias
+!*
+!*  Returns:
+!*    :pz[zn] (double) : photoz error function
+!*
+  implicit none
+  integer, intent(in) :: zn
+  double precision, intent(in) :: sigma, zbias
+  double precision, intent(in), dimension(1:2) :: zi
+  double precision, intent(in), dimension(1:zn) :: z
+  double precision, intent(out), dimension(1:zn) :: pz
+  integer :: i
+  !opt4py :: zn = None
+  !opt4py :: sigma = 0.03 
+  !opt4py :: zbias = 0.
+  !add2py :: if zn is None: zn=len(z)
+
+  do i = 1, zn
+    pz(i) = pz_SF_scal(z(i),zi,sigma,zbias)
+  end do
+
+end subroutine photoz_error
 
 
 subroutine zbin(zn,a,b,zm,zb,verbose)
