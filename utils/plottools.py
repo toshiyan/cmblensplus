@@ -28,7 +28,7 @@ def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. 
     if output: return cor
 
 
-def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=20,xmax=2048,ymin=None,ymax=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=14,ylabsize=14,xlabloc=None,ylabloc=None,xticks_labsize=10,yticks_labsize=10,legend_size=10):
+def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=None,xmax=None,xlim=None,ymin=None,ymax=None,ylim=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=14,ylabsize=14,xlabloc=None,ylabloc=None,xticks_labsize=10,yticks_labsize=10,legend_size=10):
     """
     Start to define plot environment for 1D function
     frac --- for fractional difference (add y=0,-1,1 lines)
@@ -52,8 +52,6 @@ def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=20,
     if ylog or xylog: plt.yscale('log')
     
     if frac:
-        if ymin is None: ymin = -5.
-        if ymax is None: ymax = 5.
         plt.axhline(0,ls='--',color='k')
         plt.axhline(1,ls='--',color='k',lw=.5)
         plt.axhline(-1,ls='--',color='k',lw=.5)
@@ -72,14 +70,17 @@ def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=20,
     plt.xlabel(xlab,fontsize=xlabsize)
     plt.ylabel(ylab,fontsize=ylabsize)
 
+    if xmin is not None and xmax is not None:
+        plt.xlim(xmin,xmax)
+    if xlim is not None:
+        plt.xlim(xlim[0],xlim[1])
     if ymin is not None and ymax is not None:
         plt.ylim(ymin,ymax)
+    if ylim is not None:
+        plt.ylim(ylim[0],ylim[1])
     
-    if spc == '':
-        plt.xlim(xmin,xmax)
-
     if spc == 'p2':
-        plt.xlim(np.sqrt(xmin),np.sqrt(xmax))
+        #plt.xlim(np.sqrt(xmin),np.sqrt(xmax))
         xs = np.array([20,50,100,200,500,1000,2000])
         plt.xticks(np.sqrt(xs),xs)
 

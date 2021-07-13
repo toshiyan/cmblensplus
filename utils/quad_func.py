@@ -63,7 +63,7 @@ class quad_fname:
         self.rdn0 = [qrdn+'rdn0_'+qtag+'_n'+str(qobj.rdsim).zfill(3)+'_'+x+'.dat' for x in qobj.ids]
 
         # diagonal RDN0
-        self.ddn0 = [qrdn+'ddn0_'+qtag+'_'+x+'.dat' for x in qobj.ids]
+        self.drdn0 = [qrdn+'drdn0_'+qtag+'_'+x+'.dat' for x in qobj.ids]
 
         # reconstruction noise variance map
         self.nkmap = qalm+'nkmap_'+qtag+'.pkl'
@@ -113,13 +113,15 @@ def setup_bhe(qobj,bhe): # bhe types
         
 class quad(): 
 
-    def __init__(self, rlz=[], lcl=None, ocl=None, ifl=None, falm='',
+    def __init__(self, 
+                 rlz=None, ids=[], 
+                 lcl=None, ocl=None, ifl=None, 
+                 falm='',
                  olmax=2048, rlmin=500, rlmax=3000, nside=2048,
                  n0min=1, n0max=50, rdmin=1, rdmax=100, rd4sim=False, mfmin=1, mfmax=100,
                  qDO=None, qMV=None, qlist=None, qtype='', wn=None, bhe=None, 
                  overwrite=False, verbose=True,
-                 stag='', root='', ids=[], 
-                 qtagext=''
+                 stag='', root='', qtagext=''
                 ):
 
         #//// get parameters ////#
@@ -141,7 +143,10 @@ class quad():
         #self.binspc = conf.get('binspc','')
 
         # iteration
-        self.rlz    = rlz
+        if rlz is None:
+            self.rlz = range(len(ids))
+        else:
+            self.rlz = rlz
         
         # start, stop rlz of N0 bias
         self.n0min  = conf.getint('n0min',n0min)
@@ -229,7 +234,7 @@ class quad():
         self.ids = ids
         
         #setup filename
-        self.f = {q: quad_fname(self,q) for q in self.qlist}
+        self.f = {q: quad_fname(self,q) for q in ['TT','TE','TB','EE','EB','BB','MV']}
 
 
     def cinvfilter(self,mids={'T':0,'E':1,'B':2}):
@@ -248,7 +253,7 @@ class quad():
 
 
     # compute normalization
-    def al(self,ocls=None,output=True,gtype='k'):
+    def al(self,ocls=None,output=True,store=True,val_return=False,gtype='k'):
         '''
         Return normalization of the quadratic estimators
         '''
@@ -261,9 +266,15 @@ class quad():
         rlmin = self.rlmin
         rlmax = self.rlmax
         #oL    = np.linspace(0,Lmax,Lmax+1)
+        
+        bhe_c = {}
 
-        self.Ag, self.Ac, self.Wg, self.Wc = {}, {}, {}, {}
-        self.bhe_c = {}
+        if store:
+            self.Ag, self.Ac, self.Wg, self.Wc = {}, {}, {}, {}
+            self.bhe_c = {}
+        
+        if val_return:
+            Ags, Acs = {}, {}
         
         for q in self.qlist:
 
@@ -278,7 +289,7 @@ class quad():
                 if q=='TB': Ag, Ac = curvedsky.norm_quad.qtb('lens',Lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:],lfac=gtype)
                 if q=='EB': Ag, Ac = curvedsky.norm_quad.qeb('lens',Lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:],lfac=gtype)
                 if q=='MV':
-                    __, __, Wg, Wc = curvedsky.norm_quad.qall('lens',self.qDO,Lmax,rlmin,rlmax,lcl,ocl,lfac=gtype)
+                    ag, ac, Wg, Wc = curvedsky.norm_quad.qall('lens',self.qDO,Lmax,rlmin,rlmax,lcl,ocl,lfac=gtype)
                     Ag, Ac = ag[5,:], ac[5,:]
                 Al = Ag.copy() # for BHE
 
@@ -302,7 +313,7 @@ class quad():
                 if q=='EB': Ag, Ac = curvedsky.norm_imag.qeb('lens',Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],ocl[1,:],ocl[2,:],lfac=gtype)
                 if q=='BB': Ag, Ac = curvedsky.norm_imag.qbb('lens',Lmax,rlmin,rlmax,lcl[1,:]-lcl[2,:],ocl[2,:],lfac=gtype)
                 if q=='MV':
-                    __, __, Wg, Wc = curvedsky.norm_imag.qall('lens',self.qDO,Lmax,rlmin,rlmax,lcl,ocl,lfac=gtype)
+                    ag, ac, Wg, Wc = curvedsky.norm_imag.qall('lens',self.qDO,Lmax,rlmin,rlmax,lcl,ocl,lfac=gtype)
                     Ag, Ac = ag[5,:], ac[5,:]
                 Al = Ag.copy() # for BHE
 
@@ -332,19 +343,19 @@ class quad():
             DetR = 1 - Al*As*Rls**2 - Al*At*Rlt**2 - At*As*Rts**2 + 2.*Al*At*As*Rlt*Rls*Rts
 
             # Corrected normalization (to be multiplied to the unnormalized estimators)
-            self.bhe_c[q] = {}
+            bhe_c[q] = {}
 
             if self.qtype == 'lens' and self.bhe_do:
-                self.bhe_c[q]['lens']  = ( 1. - At*As*Rts**2 ) / DetR * Al
-                self.bhe_c[q]['tau'] = ( Rls*As*Rts - Rlt ) / DetR * At * Al
-                self.bhe_c[q]['src']  = ( Rlt*At*Rts - Rls ) / DetR * As * Al
-                Ag = self.bhe_c[q]['lens']
+                bhe_c[q]['lens']  = ( 1. - At*As*Rts**2 ) / DetR * Al
+                bhe_c[q]['tau'] = ( Rls*As*Rts - Rlt ) / DetR * At * Al
+                bhe_c[q]['src']  = ( Rlt*At*Rts - Rls ) / DetR * As * Al
+                Ag = bhe_c[q]['lens']
 
             if self.qtype == 'tau' and self.bhe_do:
-                self.bhe_c[q]['tau']  = ( 1. - Al*As*Rls**2 ) / DetR * At
-                self.bhe_c[q]['lens'] = ( Rts*As*Rls - Rlt ) / DetR * Al * At
-                self.bhe_c[q]['src']  = ( Rlt*Al*Rls - Rts ) / DetR * As * At
-                Ag = self.bhe_c[q]['tau']
+                bhe_c[q]['tau']  = ( 1. - Al*As*Rls**2 ) / DetR * At
+                bhe_c[q]['lens'] = ( Rts*As*Rls - Rlt ) / DetR * Al * At
+                bhe_c[q]['src']  = ( Rlt*Al*Rls - Rts ) / DetR * As * At
+                Ag = bhe_c[q]['tau']
                 Ac = Ag*.0
 
             #//// save ////#
@@ -352,17 +363,26 @@ class quad():
             if output:
                 np.savetxt(self.f[q].al,np.array((self.l,Ag,Ac)).T)
                 if q=='MV' and self.qtype=='lens':
-                    for qi, qq in enumerate(['TT','TE','EE','TB','EB']):  
+                    for qi, qq in enumerate(self.qMV):  
                         np.savetxt(self.f[qq].wl,np.array((self.l,Wg[qi,:],Wc[qi,:])).T)
 
-            # store
-            self.Ag[q] = Ag
-            self.Ac[q] = Ac
-            if q=='MV':
-                for qi, qq in enumerate(['TT','TE','EE','TB','EB']): 
-                    self.Wg[qq] = Wg[qi,:]
-                    self.Wc[qq] = Wc[qi,:]
+            if store:
+                # store
+                self.bhe_c[q] = bhe_c[q]
+                self.Ag[q] = Ag
+                self.Ac[q] = Ac
+                if q=='MV':
+                    for qi, qq in enumerate(self.qMV): 
+                        self.Wg[qq] = Wg[qi,:]
+                        self.Wc[qq] = Wc[qi,:]
+                        
+            if val_return:
+                Ags[q] = Ag
+                Acs[q] = Ac
 
+        if val_return:
+            return Ags, Acs
+                
 
     def loadnorm(self):
 
@@ -471,6 +491,61 @@ class quad():
                     gmv += self.Wg[q][:,None]*glm
                     cmv += self.Wc[q][:,None]*clm
 
+                    
+    def __n0__(self):
+        '''
+        The N0 bias calculation
+        '''
+
+        for q in self.qlist:
+            if misctools.check_path(self.f[q].n0bs,overwrite=self.overwrite,verbose=self.verbose): return
+
+        # compute mean alm
+        alm0, alm1 = {}, {}
+        for m in self.mtype:
+            alm0[m], alm1[m] = 0., 0.
+
+        for i in tqdm.tqdm(self.n0rlz,ncols=100,desc='N0 bias: Obtain mean alm'):
+            id0, id1 = 2*i-1, 2*i
+            for m in self.mtype:
+                alm0[m] += self.Fl[m][:,None]*pickle.load(open(self.falm[m][id0],"rb"))[:self.rlmax+1,:self.rlmax+1]
+                alm1[m] += self.Fl[m][:,None]*pickle.load(open(self.falm[m][id1],"rb"))[:self.rlmax+1,:self.rlmax+1]
+        
+        # load normalization and weights including BHE coefficients
+        self.loadnorm()
+
+        # set Lmax for N0
+        Lmax  = self.olmax
+
+        # N0 power spectrum
+        cl = {q: np.zeros((2,Lmax+1)) for q in self.qlist}
+
+        # for MV
+        gmv, cmv = 0., 0.
+        
+        for q in tqdm.tqdm(self.qlist,ncols=100,desc='N0 bias: each quad-comb:'):
+
+            if q == 'MV':
+                glm, clm = gmv.copy(), cmv.copy()
+            else:
+                X, Y = q[0], q[1]
+                glm, clm = self.qXY(q,Lmax,alm0[X],alm1[X],alm0[Y],alm1[Y])
+
+            if not self.bhe_do:
+                glm *= self.Ag[q][:,None]
+            clm *= self.Ac[q][:,None]
+
+            cl[q][0,:] = curvedsky.utils.alm2cl(Lmax,glm)/(2*self.wn[4]*self.n0sim**2)
+            cl[q][1,:] = curvedsky.utils.alm2cl(Lmax,clm)/(2*self.wn[4]*self.n0sim**2)
+
+            # MV
+            if q in self.qMV and 'MV' in self.qlist:
+                gmv += self.Wg[q][:,None]*glm
+                cmv += self.Wc[q][:,None]*clm
+                
+        for q in self.qlist:
+            np.savetxt(self.f[q].n0bs,np.concatenate((self.l[None,:],cl[q])).T)
+
 
     def n0(self):
         '''
@@ -521,28 +596,46 @@ class quad():
             np.savetxt(self.f[q].n0bs,np.concatenate((self.l[None,:],cl[q])).T)
 
 
-    def diagrdn0(self,ocl,frcl):
+    def diagrdn0(self,frcl=None,ocl=None):
         '''
-        ocl = observed data cl
+        ocl = analytic cl+nl
         frcl = filenames for sim cl for each rlz which mimics data cl
         '''
-        
-        #oL = np.linspace(0,self.olmax,self.olmax+1)
 
         self.loadnorm()
-
+        
+        if ocl is None:
+            ocl = self.ocl
+        
         for i in tqdm.tqdm(self.rlz,ncols=100,desc='Diag-RDN0:'):
 
-            rcl = np.loadtxt(frcl[i],unpack=True,usecols=(1,2,3,4))  # cmb aps for ith realization
+            if frcl is not None:
+                rcl = np.loadtxt(frcl[i],unpack=True,usecols=(1,2,3,4))  # cmb aps for ith realization
+                
+            else:
+                # load cmb alms
+                alm = { cmb: pickle.load(open(self.falm[cmb][i],"rb"))[:self.rlmax+1,:self.rlmax+1] for cmb in self.mtype }
+        
+                # compute aps
+                rcl = np.zeros((4,self.rlmax+1))
+                if 'TT' in self.qlist or 'TE' in self.qlist or 'TB' in self.qlist: 
+                    rcl[0,:] = curvedsky.utils.alm2cl(self.rlmax,alm['T'])
+                if 'TE' in self.qlist or 'EE' in self.qlist or 'EB' in self.qlist: 
+                    rcl[1,:] = curvedsky.utils.alm2cl(self.rlmax,alm['E'])
+                if 'TB' in self.qlist or 'EB' in self.qlist or 'BB' in self.qlist: 
+                    rcl[2,:] = curvedsky.utils.alm2cl(self.rlmax,alm['B'])
+                if 'TE' in self.qlist: 
+                    rcl[3,:] = curvedsky.utils.alm2cl(self.rlmax,alm['T'],alm['E'])
+        
             rcl[np.where(rcl==0)] = 1e30 # a large number
 
             # data x data
             cl = ocl**2/rcl
-            Ags0, Acs0 = self.al(ocls=cl,output=False)
+            Ags0, Acs0 = self.al(ocls=cl,output=False,store=False,val_return=True)
 
             # (data-sim) x (data-sim)
             cl = ocl**2/(ocl-rcl)
-            Ags1, Acs1 = self.al(ocls=cl,output=False)
+            Ags1, Acs1 = self.al(ocls=cl,output=False,store=False,val_return=True)
 
             for q in self.qlist:
 
@@ -555,6 +648,93 @@ class quad():
                 n0c = self.Ac[q]**2*(1./Acs0[q]-1./Acs1[q])
                 
                 np.savetxt(self.f[q].drdn0[i],np.array((self.l,n0g,n0c)).T)
+
+
+    def __rdn0__(self,qout=None,falms=None):
+        '''
+        The sim-data-mixed term of the RDN0 bias calculation
+        '''
+
+        # load normalization and weights
+        self.loadnorm()
+
+        falm  = self.falm
+        Lmax  = self.olmax
+        qlist = self.qlist
+
+        if falms is None: falms = self.falm
+        if qout  is None:  qout = self
+
+        # load N0
+        N0 = { q: np.loadtxt(self.f[q].n0bs,unpack=True,usecols=(1,2)) for q in qlist }
+
+        # compute mean alm of sim
+        Alms = {m: 0. for m in self.mtype}
+
+        for I in tqdm.tqdm(range(self.rdmin,self.rdmax+1),ncols=100,desc='RDN0 bias: Obtain mean alm'):
+            for m in self.mtype:
+                Alms[m] += self.Fl[m][:,None]*pickle.load(open(self.falm[m][I],"rb"))[:self.rlmax+1,:self.rlmax+1]
+
+        # compute RDN0
+        for i in tqdm.tqdm(self.rlz,ncols=100,desc='RDN0: Commpute Spectrum'):
+
+            # skip RDN0 for sim
+            if not self.rd4sim and i!=0: 
+                continue
+
+            # avoid overwriting
+            Qlist = []
+            for q in qlist:
+                if misctools.check_path(qout.f[q].rdn0[i],overwrite=self.overwrite,verbose=self.verbose):  
+                    Qlist.append(q)
+            if Qlist != []: 
+                continue
+
+            # power spectrum
+            cl = { q: np.zeros((2,Lmax+1)) for q in qlist }
+
+            # load real alm
+            almr = { m: self.Fl[m][:,None]*pickle.load(open(falm[m][i],"rb"))[:self.rlmax+1,:self.rlmax+1] for m in self.mtype }
+
+            # sim alm
+            alms = {}
+            if self.rdmin<=i and i<=self.rdmax:
+                # remove overlapped alm
+                alms[m] = Alms[m] - self.Fl[m][:,None]*pickle.load(open(self.falm[m][i],"rb"))[:self.rlmax+1,:self.rlmax+1]
+            else:
+                alms[m] = Alms[m].copy()
+
+            # RDN0 for each quad combination
+            for q in qlist:
+
+                X, Y = q[0], q[1]
+
+                if q=='MV':
+                    glm, clm = gmv.copy(), cmv.copy()
+                else:
+                    glm, clm = self.qXY(q,Lmax,almr[X],alms[X],almr[Y],alms[Y])
+
+                if not self.bhe_do:
+                    glm *= self.Ag[q][:,None]
+                clm *= self.Ac[q][:,None]
+
+                cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm)
+                cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm)
+
+                # MV
+                if q in self.qMV and 'MV' in qlist:
+                    gmv += self.Wg[q][:,None] * glm
+                    cmv += self.Wc[q][:,None] * clm
+
+            if self.rdsim>0:
+                
+                sn = self.rdsim
+                if self.rdmin<=i and i<=self.rdmax:  sn = self.rdsim-1
+                
+                for q in qlist:
+                    cl[q] = cl[q]/(self.wn[4]*sn) - N0[q]
+                    #oL = np.linspace(0,Lmax,Lmax+1)
+                    np.savetxt(qout.f[q].rdn0[i],np.concatenate((self.l[None,:],cl[q])).T)
 
 
     def rdn0(self,qout=None,falms=None):
@@ -636,7 +816,6 @@ class quad():
                     cl[q] = cl[q]/(self.wn[4]*sn) - N0[q]
                     #oL = np.linspace(0,Lmax,Lmax+1)
                     np.savetxt(qout.f[q].rdn0[i],np.concatenate((self.l[None,:],cl[q])).T)
-
 
     
     def qXY(self,q,Lmax,Xlm1,Xlm2,Ylm1,Ylm2,gtype='k'):# for N0 and RDN0 estimates
@@ -815,14 +994,18 @@ class quad():
         if 'qrec' in run:
             self.qrec()
 
-        # Realization-independent part of RDN0
+        # Realization-independent N0
         if 'n0' in run:
             self.n0()
 
-        # Realization-dependent part of RDN0
+        # Realization-dependent N0
         if 'rdn0' in run:
             self.rdn0()
 
+        # Realization-dependent diagonal N0
+        if 'drdn0' in run:
+            self.diagrdn0()
+            
         # mean-field bias
         if 'mean' in run:
             self.mean()

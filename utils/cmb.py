@@ -1,11 +1,18 @@
+# external
 import numpy as np
+import healpy as hp
 import sys
-import constants as c
-import basic
-import curvedsky
-import misctools
 import tqdm
 
+# from cmblensplus/wrap
+import basic
+import curvedsky
+
+# from cmblensplus/utils
+import constants as c
+import misctools
+
+# for pickle (to be removed)
 if sys.version_info[:3] > (3,0):
     import pickle
 elif sys.version_info[:3] > (2,5,2):
@@ -16,6 +23,7 @@ elif sys.version_info[:3] > (2,5,2):
 
 # CMB temperature
 Tcmb  = 2.726e6 #K
+ac2rad = np.pi/10800.
 
 
 #////////// Frequency Spectrum //////////#
@@ -25,11 +33,10 @@ def Int_Planck(nu,T):
     Black body I(nu)
     nu [GHz]
     '''
-    nu0 = nu*1e9
-    return 2*c.h*nu0**3/c.c**2 * (np.exp(c.h*nu0/c.kB/T)-1.)**(-1)
+    return 2*c.h*(nu*1e9)**3/c.c**2 * (np.exp(c.h*(nu*1e9)/c.kB/T)-1.)**(-1)
 
 
-def Int_dust(nu,Td=19.6,beta=1.53): 
+def Int_dust(nu,Td=19.6,beta=1.53):
     '''
     Dust I(nu) as a modified Black body
     Td, beta: values from arXiv 1801.04945
@@ -37,6 +44,20 @@ def Int_dust(nu,Td=19.6,beta=1.53):
     '''
     return (nu*1e9)**beta*Int_Planck(nu,Td)
 
+
+def fnu_dust(nu,Td=34.,beta=2.,nu_c=4955.,alpha=2.,bc=1e-64):
+    '''
+    f(nu) defined in Eq.(13) of arXiv:1705.02332 (but alpha and bc are not given)
+    nu [GHz]
+    '''
+    fnu = np.zeros(len(nu))
+    for i, n in enumerate(nu):
+        if n <= nu_c:
+            fnu[i] = (n*1e9)**beta*Int_Planck(n,Td)*c.c**2/(2*c.h)
+        else:
+            fnu[i] = (nu_c*1e9)**beta*Int_Planck(nu_c,Td)*c.c**2/(2*c.h)*(n/nu_c)**(-alpha)
+    return fnu*bc
+    
 
 def RJfunc(nu,T):
     """
@@ -83,12 +104,14 @@ def unit_conversion(freq,conv): #https://lambda.gsfc.nasa.gov/data/planck/early_
 
 #////////// Gaussian beam //////////#
 
-def beam(theta,lmax):
-
+def beam(theta,lmax,inv=True):
+    # inverse of beam function
     ac2rad = np.pi/10800.
     L      = np.linspace(0,lmax,lmax+1)
-    beam   = np.exp(L*(L+1)*(theta*ac2rad)**2/(16.*np.log(2.)))
-    return beam
+    if inv:
+        return np.exp(L*(L+1)*(theta*ac2rad)**2/(16.*np.log(2.)))
+    else:
+        return np.exp(-L*(L+1)*(theta*ac2rad)**2/(16.*np.log(2.)))
 
 
 #////////// Noise spectrum //////////#
@@ -225,5 +248,50 @@ def read_camb_cls(fname,ftype='scal',output=''):
             return TT, EE, BB, TE
 
 
+#////////// Window function /////////#
 
+def wfactor(w,nmax=5):
+    
+    # normalization correction due to window (n=0 will be replaced below)
+    wn = np.array( [ np.average(w**n) for n in range(nmax) ] )
+    
+    # binary mask for n=0
+    if not np.isscalar(w):
+        m = w.copy()
+        m[m!=0.] = 1.
+        wn[0] = np.average(m)
+    
+    return wn
+
+#////////// Map -> Alm //////////#
+def map2alm_curvedsky(lmax,fmap,mtype=['T','E','B'],w=1.,bl=None,uKcmb=False):
+
+    if uKcmb:
+        norm = Tcmb
+    else:
+        norm = 1. 
+        
+    # load map (in unit of Tcmb for default)
+    if 'T' in mtype:
+        Tmap = w * hp.fitsfunc.read_map(fmap,field=0,verbose=False)/norm
+    if 'E' in mtype or 'B' in mtype:
+        Qmap = w * hp.fitsfunc.read_map(fmap,field=1,verbose=False)/norm
+        Umap = w * hp.fitsfunc.read_map(fmap,field=2,verbose=False)/norm
+    
+    # get nside
+    nside = hp.pixelfunc.get_nside(Tmap)
+
+    # map to alm
+    alm = {}
+    if 'T' in mtype:
+        alm['T'] = curvedsky.utils.hp_map2alm(nside,lmax,lmax,Tmap)
+    if 'E' in mtype or 'B' in mtype:
+        alm['E'], alm['B'] = curvedsky.utils.hp_map2alm_spin(nside,lmax,lmax,2,Qmap,Umap)
+
+    # beam deconvolution
+    if bl is not None:
+        for m in mtype:
+            alm[m] /= bl[:,None]
+
+    return alm
 

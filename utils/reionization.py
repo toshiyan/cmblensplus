@@ -1,11 +1,12 @@
 
-import numpy as np, tqdm, camb
+import numpy as np, tqdm
 
 # from cmblensplus
 import basic
 
 # from cmblensplus/utils
 import constants as const
+import cosmology
 
 # to avoid scipy constants use
 from scipy.integrate import quad
@@ -121,14 +122,9 @@ def compute_cltt(xe,H0=70.,Om=.3,Ov=.7,Ob=.0455,w0=-1.,wa=0.,ns=.97,As=2e-9,R0=1
     else:
         Rz = lambda z: R0*np.power(10.,alpha*(xe(z)-.5))
 
-    # compute linear matter P(k)
-    pars = camb.CAMBparams()
-    pars.set_cosmology(H0=H0, ombh2=Ob*h0**2, omch2=(Om-Ob)*h0**2)
-    pars.InitPower.set_params(ns=ns,As=As)
-    pars.set_matter_power(redshifts=[0.], kmax=20.)
-    results = camb.get_results(pars)
-    k, __, pk0 = results.get_matter_power_spectrum(minkh=1e-4, maxkh=10, npoints=500)
-    Pk = spline(k*h0,pk0/h0**3)
+    # compute linear matter P(k) at z=0
+    k, pk0 = cosmology.camb_pk(H0=H0,Om=Om,Ob=Ob,ns=ns,As=As,z=[0.],kmax=20.,minkh=1e-4,maxkh=10,npoints=500)
+    Pk = spline(k,pk0)
     
     # Kz
     Kz = lambda z: (const.sigmaT*(const.rho_c*Ob*h0**2/const.m_p)*const.Mpc2m)**2 * (1+z)**4/rz(z)**2/Hz(z)
