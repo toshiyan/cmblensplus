@@ -48,7 +48,7 @@ The additional simple python sctipts are stored at
 
   [1] Compile Fortran public software
 
-  Go to "F90/pub/" directory, and install each pubclic package (FFTW, Healpix, LAPACK, cfitsio and Lenspix). 
+  Go to "F90/pub/" directory, and install each pubclic package (FFTW, Healpix, LAPACK95, cfitsio and Lenspix). 
 
   [2] Create Fortran wrapper
 
