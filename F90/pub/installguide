@@ -27,22 +27,38 @@ Here, ${public} denotes the path to this directory.
 
 go to ${public}/lenspix/src and type "make"
 
-[Lapack]
 
-1: go to ${public}/ and download files e.g. type "wget -d http://www.netlib.org/lapack95/lapack95.tgz"
+[Lapack95]
+
+--- first install Lapack
+
+1: go to ${public}/LAPACK95/ and download a file e.g. type "wget -d http://www.netlib.org/lapack/lapack.tgz"
+
+2: type "gunzip -c lapack.tgz | tar xvf -" 
+
+3: go to lapack-xxx/ and copy INSTALL/make.inc.ifort as make.inc and edit
+  FC = ifort
+  FFLAGS = -fPIC -O3 -fp-model strict -assume protect_parens -recursive
+  FFLAGS_NOOPT = -fPIC -O0 -fp-model strict -assume protect_parens -recursive
+
+4: type "make" and then "mv *.a ../lib/"
+
+
+--- next install Lapack95
+
+1: go to ${public}/LAPACK95 and download a file e.g. type "wget -d http://www.netlib.org/lapack95/lapack95.tgz"
 
 2: type "gunzip -c lapack95.tgz | tar xvf -" 
 
-3: go to ${public}/LAPACK95 and edit make.inc file as
-  FC = ifort
-  FC1 = ifort
+3: go to LAPACK95/ and edit make.inc file as
+  FC = ifort -fPIC
+  FC1 = ifort -fPIC
 
-4: go to ${public}/LAPACK95/SRC and type "make single_double_complex_dcomplex"
+4: go to SRC/ and type "make single_double_complex_dcomplex"
 
-5: create a directory ${public}/LAPACK95/lib and 
-  mv ${public}/LAPACK95/lapack95.a .${public}/LAPACK95/lib/
-  mv ${public}/LAPACK95/lapack95_modules .${public}/LAPACK95/mod
-
+5: move files
+  mv ${public}/LAPACK95/LAPACK95/lapack95.a .${public}/LAPACK95/lib/liblapack95.a
+  mv ${public}/LAPACK95/LAPACK95/lapack95_modules .${public}/LAPACK95/mod
 
 
 
