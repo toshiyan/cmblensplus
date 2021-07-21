@@ -25,6 +25,24 @@ Here, ${public} denotes the path to this directory.
 
 [Lenspix] -- depends on Healpix and cfitsio
 
-go to lenspix/src and type "make"
+go to ${public}/lenspix/src and type "make"
+
+[Lapack]
+
+1: go to ${public}/ and download files e.g. type "wget -d http://www.netlib.org/lapack95/lapack95.tgz"
+
+2: type "gunzip -c lapack95.tgz | tar xvf -" 
+
+3: go to ${public}/LAPACK95 and edit make.inc file as
+  FC = ifort
+  FC1 = ifort
+
+4: go to ${public}/LAPACK95/SRC and type "make single_double_complex_dcomplex"
+
+5: create a directory ${public}/LAPACK95/lib and 
+  mv ${public}/LAPACK95/lapack95.a .${public}/LAPACK95/lib/
+  mv ${public}/LAPACK95/lapack95_modules .${public}/LAPACK95/mod
+
+
 
 
