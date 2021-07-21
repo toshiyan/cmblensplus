@@ -19,14 +19,14 @@ LAPACK = ${flibutils}/pub/LAPACK95/
 # compile links
 MODD = -I$(flibutils)/mod -I$(LAPACK)/mod
 LIBD = -L$(flibutils)/lib -L$(LAPACK)/lib
-LINK = -lmatrix -lutils -llapack95 #-llapack -lrefblas
+LINK = -lmatrix -lutils -llapack95 -llapack -lrefblas
 OPTION = $(MODD) $(LIBD) $(LINK)
 
 # files to be compiled
-#SRC=$(wildcard *.f90)
-#OBJ=$(patsubst %.f90, %.o, $(SRC))
-SRC=lapack95.f90
-OBJ=lapack95.o
+SRC=$(wildcard *.f90)
+OBJ=$(patsubst %.f90, %.o, $(SRC))
+#SRC=lapack95.f90
+#OBJ=lapack95.o
 
 $(target): $(OBJ)
 	ar crs $@ $^
