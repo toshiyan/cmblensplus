@@ -5,9 +5,9 @@ module remap_cmb
 
 contains
 
-subroutine simple_remapping(nside,lmax,alm,grad,tqu,w8dir)
+
+subroutine simple_remapping(nside,lmax,alm,grad,tqu)
   implicit none
-  character(*), intent(in) :: w8dir
   integer, intent(in) :: nside, lmax
   complex, intent(in) :: alm(:,:,:), grad(:)
   real, intent(out)   :: tqu(:,:)
@@ -18,7 +18,7 @@ subroutine simple_remapping(nside,lmax,alm,grad,tqu,w8dir)
   interp_factor = 1.5*(2048.0/real(nside))
   if (nside<1024)  interp_factor=1.5
 
-  call HealpixInit(H,nside,lmax,.true.,w8dir=w8dir,method=division_equalrows) 
+  call HealpixInit(H,nside,lmax,.true.,w8dir='',method=division_equalrows) 
   call alm2LensedmapInterpCyl(H,lmax,alm,grad,TQU,interp_factor)
   call HealpixFree(H)
 

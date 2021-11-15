@@ -223,7 +223,10 @@ contains
     index = (m*(2*lmax-m+1))/2 + l + 1
   end function a_ix
 
-   subroutine HealpixInit(H, nside, lmax, HasPol, w8dir, method)
+
+
+
+subroutine HealpixInit(H, nside, lmax, HasPol, w8dir, method)
     USE fitstools, ONLY : getsize_fits, input_map
     use MPIStuff
     use healpix_types
@@ -253,28 +256,30 @@ contains
  
 
 #ifndef MPIPIX
-        call HealpixFree(H)
+    call HealpixFree(H)
 !If MPI must call healpixFree manually
 #endif    
-       nullify(H%recfac,H%Lambda_slm)
+    nullify(H%recfac,H%Lambda_slm)
 
-       call HealpixInitTrig(H,nside,lmax)
+    call HealpixInitTrig(H,nside,lmax)
 
-       npol = 1
-       if (present(HasPol)) then
+    npol = 1
+    if (present(HasPol)) then
         npol = 3
-       end if
-       H%pol = HasPol
-  
+    end if
+    H%pol = HasPol
 
     allocate(H%w8ring_TQU(1:2*nside,1:max(1,npol)))
     
     use_weights = present(w8dir) 
+    
     if (use_weights) then
-     use_weights = w8dir/='' 
+       use_weights = w8dir/='' 
     end if
+
     if (use_weights) then
-         allocate(w8(1:2*nside,1:max(1,npol)))
+         
+        allocate(w8(1:2*nside,1:max(1,npol)))
  
          write (sstr,"(I5.5)") nside
          filename= trim(w8dir)//"weight_ring_n"//trim(sstr)//".fits"
@@ -486,9 +491,10 @@ contains
         if (H%MpiId>0) call MessageLoop(H)
 #endif
  
-  end subroutine HealpixInit
+end subroutine HealpixInit
 
-   subroutine HealpixInitTrig(H, nside, lmax, not_healpix)
+
+subroutine HealpixInitTrig(H, nside, lmax, not_healpix)
     use MPIStuff
     use healpix_types
     logical, intent(in), optional :: not_healpix
@@ -7467,23 +7473,24 @@ subroutine PackTEB2TEB(almin,almout, nlmax)
 
   subroutine healpix_sleepMPI(h)
     use mpistuff
-    use AMLutils
+    !use AMLutils
     type (healpixinfo) :: h
     character(len=*), parameter :: code = 'WAIT'
     
-#ifdef MPIPIX
-     if (h%MpiId==0) then 
-      call sendmessages(h,code)
-     else
-      call MpiQuietWait   
-     end if
-#endif
-  end  subroutine healpix_sleepMPI
+!#ifdef MPIPIX
+!     if (h%MpiId==0) then 
+!      call sendmessages(h,code)
+!     else
+!      call MpiQuietWait   
+!     end if
+!#endif
+
+end  subroutine healpix_sleepMPI
 
    
    subroutine healpix_wakeMPI
     use AMLutils
-    call MpiWakeQuietWait
+    !call MpiWakeQuietWait
    end  subroutine healpix_wakeMPI
     
 #ifdef MPIPIX

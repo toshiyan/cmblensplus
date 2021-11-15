@@ -5,10 +5,10 @@
 # It is necessary for linking the library.
 
 # The name that we can dlopen(3).
-dlname=''
+dlname='libfftw3.so.3'
 
 # Names of this library.
-library_names=''
+library_names='libfftw3.so.3.5.8 libfftw3.so.3 libfftw3.so'
 
 # The name of the static archive.
 old_library='libfftw3.a'
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/FFTW/lib'
+libdir='/global/u1/t/toshiyan/Work/Lib/cmblensplus/F90/pub/FFTW/lib'

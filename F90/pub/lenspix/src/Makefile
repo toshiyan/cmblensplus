@@ -20,7 +20,8 @@ LINK = -lhealpix -lcfitsio
 OPTION = $(MODD) $(LIBD) $(LINK)
 
 # files to be compiled
-OBJ = toms760.o inifile.o utils.o spin_alm_tools.o remap.o #HealpixObj.o HealpixVis.o
+#OBJ = toms760.o inifile.o utils.o spin_alm_tools.o remap.o #HealpixObj.o HealpixVis.o
+OBJ = utils.o toms760.o spin_alm_tools.o remap.o
 
 $(target): $(OBJ)
 	ar crs $@ $^
@@ -36,8 +37,4 @@ clean:
 
 # file dependencies
 spin_alm_tools.o:  utils.o toms760.o
-HealpixObj.o: spin_alm_tools.o
-HealpixVis.o: HealpixObj.o
-SimLens.o: HealpixVis.o inifile.o
-
 

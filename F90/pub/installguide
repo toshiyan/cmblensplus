@@ -7,9 +7,7 @@ Here, ${public} denotes the path to this directory.
 
 2: untar the tar file (e.g. fftw-3.3.8.tar) and go inside further the directory
 
-3: ./configure --prefix=${public}/FFTW/ --enable-openmp --enable-shared --enable-static
-
-4: make; make install
+3: ./configure --prefix=${public}/FFTW/ --enable-openmp --enable-shared --enable-static; make; make install
 
 
 [CFITSIO]
@@ -25,7 +23,7 @@ Here, ${public} denotes the path to this directory.
 
 [Lenspix] -- depends on Healpix and cfitsio
 
-go to ${public}/lenspix/src and type "make"
+go to ${public}/lenspix/src and type "make; make install"
 
 
 [Lapack95]
@@ -37,7 +35,6 @@ go to ${public}/lenspix/src and type "make"
 2: type "gunzip -c lapack.tgz | tar xvf -" 
 
 3: go to lapack-xxx/ and copy INSTALL/make.inc.ifort as make.inc and edit
-  FC = ifort
   FFLAGS = -fPIC -O3 -fp-model strict -assume protect_parens -recursive
   FFLAGS_NOOPT = -fPIC -O0 -fp-model strict -assume protect_parens -recursive
 
