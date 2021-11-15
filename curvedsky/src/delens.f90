@@ -225,7 +225,7 @@ subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
   allocate(alm0(3,0:lmax,0:lmax),dvec(0:npix-1),tqu(0:npix-1,3))
   alm0 = alm_in !double to single
   dvec = cmplx(beta(1:npix,1),beta(1:npix,2))
-  call simple_remapping(nside,lmax,alm0,dvec,tqu,'')
+  call simple_remapping(nside,lmax,alm0,dvec,tqu)
   deallocate(alm0,dvec)
 
   allocate(S(0:npix-1,3))

@@ -136,6 +136,11 @@ subroutine qte(est,lmax,rlmin,rlmax,TE,OCT,OCE,Al,lfac)
     call kernels_tau(rL,W(5,:),W(6,:),SG(3,1,:),'Sp')
   case('rot')
     call kernels_rot(rL,W(5,:),W(6,:),SG(3,1,:),'Sp')
+  case('src')
+    call kernels_tau(rL,W(1,:),W(5,:),SG(1,1,:),'S0')
+    call kernels_tau(rL,W(1,:),W(5,:),SG(2,1,:),'Gc')
+    call kernels_tau(rL,W(1,:),W(5,:),SG(3,1,:),'Sp')
+    SG = SG/4d0
   end select
   SG(2,:,:) = 2d0*SG(2,:,:)
   
@@ -147,7 +152,7 @@ subroutine qte(est,lmax,rlmin,rlmax,TE,OCT,OCE,Al,lfac)
     if (sum(SG(:,2,l))/=0d0)  Al(2,l) = lk2(l)/sum(SG(:,2,l))
   end do
   select case(est)
-  case('lens','amp')
+  case('lens','amp','src')
     Al(2,1) = 0d0
   case('rot')
     Al(1,1) = 0d0
@@ -204,6 +209,9 @@ subroutine qtb(est,lmax,rlmin,rlmax,TE,OCT,OCB,Al,lfac)
     call kernels_tau(rL,W(1,:),W(2,:),SG(1,:),'Sm')
   case('rot')
     call kernels_rot(rL,W(1,:),W(2,:),SG(1,:),'Sm')
+  case('src')
+    call kernels_tau(rL,W(1,:),W(1,:),SG(1,:),'Sm')
+    SG = SG/4d0
   end select
 
   call get_lfac(lmax,lfac,lk2)
@@ -214,7 +222,7 @@ subroutine qtb(est,lmax,rlmin,rlmax,TE,OCT,OCB,Al,lfac)
     if (SG(2,l)/=0d0)  Al(2,l) = lk2(l)/SG(2,l)
   end do
   select case(est)
-  case('lens','amp')
+  case('lens','amp','src')
     Al(1,1) = 0d0
   end select
 
@@ -271,6 +279,10 @@ subroutine qee(est,lmax,rlmin,rlmax,EE,OCE,Al,lfac)
   case('rot')
     call kernels_rot(rL,W(1,:),W(2,:),SG(1,1,:),'Sp')
     call kernels_rot(rL,W(3,:),W(3,:),SG(2,1,:),'Gp')
+  case('src')
+    call kernels_tau(rL,W(1,:),W(1,:),SG(1,1,:),'Sp')
+    call kernels_tau(rL,W(1,:),W(1,:),SG(2,1,:),'Gp')
+    SG = SG/4d0
   end select
 
   call get_lfac(lmax,lfac,lk2)
@@ -281,7 +293,7 @@ subroutine qee(est,lmax,rlmin,rlmax,EE,OCE,Al,lfac)
     if (sum(SG(:,2,l))/=0d0)  Al(2,l) = lk2(l)/sum(SG(:,2,l))
   end do
   select case(est)
-  case('lens','amp')
+  case('lens','amp','src')
     Al(2,1) = 0d0
   case('rot')
     Al(1,1) = 0d0
@@ -357,6 +369,11 @@ subroutine qeb(est,lmax,rlmin,rlmax,EE,OCE,OCB,BB,Al,lfac)
       call kernels_rot(rL,W(3,:),W(4,:),SG(2,1,:),'Gm')
     end if
     call kernels_rot(rL,W(5,:),W(6,:),SG(3,1,:),'Sm')
+  case('src')
+    call kernels_tau(rL,W(1,:),W(5,:),SG(1,1,:),'Sm')
+    call kernels_tau(rL,W(1,:),W(5,:),SG(2,1,:),'Gm')
+    call kernels_tau(rL,W(1,:),W(5,:),SG(3,1,:),'Sm')
+    SG = SG/4d0
   end select
 
   SG(2,:,:) = 2d0*SG(2,:,:)
@@ -369,7 +386,7 @@ subroutine qeb(est,lmax,rlmin,rlmax,EE,OCE,OCB,BB,Al,lfac)
     if (sum(SG(:,2,l))/=0d0)  Al(2,l) = lk2(l)/sum(SG(:,2,l))
   end do
   select case(est)
-  case('lens','amp')
+  case('lens','amp','src')
     Al(1,1) = 0d0
   end select
 
@@ -426,6 +443,10 @@ subroutine qbb(est,lmax,rlmin,rlmax,BB,OCB,Al,lfac)
   case('rot')
     call kernels_rot(rL,W(1,:),W(2,:),SG(1,1,:),'Sp')
     call kernels_rot(rL,W(3,:),W(3,:),SG(2,1,:),'Gp')
+  case('src')
+    call kernels_tau(rL,W(1,:),W(1,:),SG(1,1,:),'Sp')
+    call kernels_tau(rL,W(1,:),W(1,:),SG(2,1,:),'Gp')
+    SG = SG/4d0
   end select
 
   call get_lfac(lmax,lfac,lk2)
@@ -436,7 +457,7 @@ subroutine qbb(est,lmax,rlmin,rlmax,BB,OCB,Al,lfac)
     if (sum(SG(:,2,l))/=0d0)  Al(2,l) = lk2(l)/sum(SG(:,2,l))
   end do
   select case(est)
-  case('lens','amp')
+  case('lens','amp','src')
     Al(2,1) = 0d0
   case('rot')
     Al(1,1) = 0d0
