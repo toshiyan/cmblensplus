@@ -28,7 +28,7 @@ def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. 
     if output: return cor
 
 
-def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=None,xmax=None,xlim=None,ymin=None,ymax=None,ylim=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=14,ylabsize=14,xlabloc=None,ylabloc=None,xticks_labsize=10,yticks_labsize=10,legend_size=10):
+def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=None,xmax=None,xlim=None,ymin=None,ymax=None,ylim=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=16,ylabsize=16,xlabloc=None,ylabloc=None,xticks_labsize=12,yticks_labsize=12,legend_size=12):
     """
     Start to define plot environment for 1D function
     frac --- for fractional difference (add y=0,-1,1 lines)

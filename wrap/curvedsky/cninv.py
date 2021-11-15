@@ -2,7 +2,7 @@ import libcurvedsky
 
 def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],filter='',verbose=False,ro=50,stat='',inl=None):
   """
- Combining multiple frequency maps optimally. 
+ Combining multiple frequency CMB maps optimally. 
  The filtering would work if the noise variance is not significantly varied with scale (multipole). 
 
  Args:
@@ -22,7 +22,7 @@ def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],it
     :eps[*chain*] (*double*): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
     :itns[*chain*] (*int*): Number of interations.
     :filter (*str*): C-inverse ('') or Wiener filter (W), default to C-inverse.
-    :inl[*n,mn,l*] (*double*): Inverse noise spectrum, 0 for non white noise case.
+    :inl[*n,mn,l*] (*double*): Inverse noise spectrum (0 for white noise case, default).
     :verbose (*bool*): Output messages, default to False
     :ro (*int*): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed.
     :stat (*str*): Realtime status filename which contains the residual fraction, default to no output file
@@ -36,6 +36,41 @@ def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],it
   npix = 12*nside**2
   if inl is None: inl = 0*iNcov[:,:,:lmax+1]
   return libcurvedsky.cninv.cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,chn,lmaxs,nsides,itns,eps,filter,inl,verbose,ro,stat)
+
+def cnfilter_kappa(n,nside,lmax,clh,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],verbose=False,ro=50,stat='',inl=None,iclh=None):
+  """
+ Computing C(C+N)^-1 for multiple mass-tracer kappa maps including their correlations. 
+
+ Args:
+    :n (*int*): Number of input kappa maps to be combined
+    :nside (*int*): Nside of input maps
+    :lmax (*int*): Maximum multipole of the input cl
+    :clh[*n,n,l*] (*double*): Square root of signal covariance matrix for each multipole, with bounds (0:n-1,0:n-1,0:lmax)
+    :iNcov[*n,pix*] (*double*): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
+    :maps[*n,pix*] (*double*): Input kappa maps, with bouds (0:n-1,0:npix-1)
+
+ Args(optional):
+    :chn (*int*): Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
+    :lmaxs[*chain*] (*int*): Maximum multipole(s) at each preconditioning and lmaxs[*0*] is the input maximum multipole of cl
+    :nsides[*chain*] (*int*): Nside(s) of preconditoner and nsides[*0*] should be consistent with the input map's nside.
+    :eps[*chain*] (*double*): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
+    :itns[*chain*] (*int*): Number of interations.
+    :inl[*n,l*] (*double*): Inverse noise spectrum for each mass map (0 for white noise case, default).
+    :iclh[*n,n,l*] (*double*): Use C^{-1/2} to output C^-1 x alm (default to none).
+    :verbose (*bool*): Output messages, default to False
+    :ro (*int*): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed.
+    :stat (*str*): Realtime status filename which contains the residual fraction, default to no output file
+
+ Returns:
+    :xlm[*n,l,m*] (*dcmplx*): Wiener filtered multipoles, with bounds (n,0:lmax,0:lmax)
+
+  Usage:
+    :xlm = curvedsky.cninv.cnfilter_kappa(n,nside,lmax,clh,iNcov,maps,chn,lmaxs,nsides,itns,eps,inl,iclh,verbose,ro,stat):
+  """
+  npix = 12*nside**2
+  if inl  is None: inl  = 0*iNcov[:,:lmax+1]
+  if iclh is None: iclh = 0*clh
+  return libcurvedsky.cninv.cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,chn,lmaxs,nsides,itns,eps,inl,iclh,verbose,ro,stat)
 
 def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,chn=1,lmaxs=[0],nsides0=[0],nsides1=[0],itns=[1],eps=[1e-6],filter='',verbose=False,reducmn=0,ro=50,stat='',inl=None):
   """
@@ -58,7 +93,7 @@ def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,ma
     :eps[*chain*] (*double*): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
     :itns[*chain*] (*int*): Number of interations.
     :filter (*str*): C-inverse ('') or Wiener filter (W), default to C-inverse.
-    :inl[*n,mn,l*] (*double*): Inverse noise spectrum, 0 for non white noise case.
+    :inl[*n,mn,l*] (*double*): Inverse noise spectrum, 0 for white noise case.
     :verbose (*bool*): Output messages, default to False
     :ro (*int*): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed.
     :stat (*str*): Realtime status filename which contains the residual fraction, default to no output file

@@ -55,7 +55,7 @@ def elmask(nx,ny,D,lmin= 0,lmax= 1000,lxcut= 0,lycut= 0):
   """
   return libflatsky.utils.elmask(nx,ny,D,lmin,lmax,lxcut,lycut)
 
-def alm2bcl(bn,oL,nx,ny,D,alm1,alm2=None,spc=''):
+def alm2bcl(bn,oL,nx,ny,D,alm1,spc='',alm2=None):
   """
   Compute angular power spectrum from Fourier modes, with multipole binning
  
