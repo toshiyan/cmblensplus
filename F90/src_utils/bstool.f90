@@ -71,12 +71,22 @@ subroutine bispec_lens_lss_init(cp,b,z,dz,zs,k,pkl0,oL,model,ftype,btype,verbose
   !* interpolate k, Pk at k=l/chi
   allocate(chi(zn),b%kl(zn,oL(2)),b%plL(zn,oL(2)),b%pl(zn,oL(2)))
   chi = C_z(z,cp)  !comoving distance at each z
-  if (2d0/chi(zn)<k(1)) write(*,*) 'warning: the minimum k should be smaller than', 2d0/chi(zn), 'while the minimum input k is', k(1)
-  if (dble(oL(2))/chi(1)>k(kn)) write(*,*) 'warning: the maximum k should be larger than', dble(oL(2))/chi(1), k(kn)
+
+  !check k-range of P(k)
+  if (2d0/chi(zn)<k(1)) then
+    write(*,*) 'warning: the minimum k should be smaller than', 2d0/chi(zn), 'while the minimum input k is', k(1)
+    stop
+  end if
+  if (dble(oL(2))/chi(1)>k(kn)) then
+    write(*,*) 'warning: the maximum k should be larger than', dble(oL(2))/chi(1), k(kn)
+    stop
+  end if
+
+  !interpolation
   call Limber_k2l(chi,k,pkL,b%kl,b%plL)
   call Limber_k2l(chi,k,pk,b%kl,b%pl)
 
-  !precompute knl
+  !* precompute knl
   allocate(b%knl(zn),b%q(zn,oL(2)))
 
   select case(model)
@@ -738,13 +748,13 @@ subroutine bispec_lens_bin(cp,b,eL1,eL2,eL3,wp,ck,m,bl0,bl1)
 end subroutine bispec_lens_bin
 
 
-subroutine bispec_lens_snr(cp,b,eL,cl,wp,ck,m,snr)
+subroutine bispec_lens_snr(cp,b,eL,cl,wp,ck,m,ro,snr)
 ! SNR sum of lensing bispectrum
   implicit none
   type(cosmoparams), intent(in) :: cp
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: m
-  integer, intent(in) :: eL(2)
+  integer, intent(in) :: eL(2), ro
   double precision, intent(in) :: cl(:), wp(:,:,:,:), ck(:,:,:)
   double precision, intent(out) :: snr
   !internal
@@ -753,7 +763,7 @@ subroutine bispec_lens_snr(cp,b,eL,cl,wp,ck,m,snr)
 
   tot = 0d0
   do l1 = eL(1), eL(2)
-    if (mod(l1,10)==0) write(*,*) l1
+    if (mod(l1,ro)==0) write(*,*) l1, dsqrt(tot)
     do l2 = l1, eL(2)
       do l3 = l2, eL(2)
 
@@ -816,13 +826,13 @@ subroutine bispec_lens_snr_assym(cp,b,eL1,eL2,eL3,Cl,wp,ck,m,snr)
 end subroutine bispec_lens_snr_assym
 
 
-subroutine bispec_lens_snr_cross(cp,b,eL,cgg,ckk,btype,m,snr)
+subroutine bispec_lens_snr_cross(cp,b,eL,cgg,ckk,btype,m,ro,snr)
 ! SNR sum of gkk or ggk bispectrum
   implicit none
   type(cosmoparams), intent(in) :: cp
   type(bispecfunc), intent(in) :: b
   character(*), intent(in) :: btype, m
-  integer, intent(in) :: eL(2)
+  integer, intent(in) :: eL(2), ro
   double precision, intent(in) :: cgg(:), ckk(:)
   double precision, intent(out) :: snr
   integer :: l1, l2, l3
@@ -830,7 +840,7 @@ subroutine bispec_lens_snr_cross(cp,b,eL,cgg,ckk,btype,m,snr)
 
   tot = 0d0
   do l1 = eL(1), eL(2)
-    if (mod(l1,10)==0) write(*,*) l1
+    if (mod(l1,ro)==0) write(*,*) l1, dsqrt(tot)
     do l2 = eL(1), eL(2)
       do l3 = l2, eL(2)
         if (l3>l1+l2.or.l3<abs(l1-l2)) cycle
