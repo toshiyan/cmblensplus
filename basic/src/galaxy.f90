@@ -3,35 +3,48 @@
 !/////////////////////////////////////////////////////////////////////!
 
 module galaxy
-  use utilsgal, only: zbin_SF, ngal_SF, nz_SF_scal, pz_SF_scal
+  use utilsgal, only: zbin_SF, ngal_SF, nz_SF_scal, pz_SF_scal, z02zm
   use funcs,    only: lnGamma
   implicit none
 
 contains
 
 
-subroutine dndz_sf(zn,z,a,b,zm,dndz)
+subroutine dndz_sf(zn,z,a,b,zm,z0,dndz)
 !* A model of galaxy z distribution
 !*
 !*  Args:
 !*    :z[zn] (double) : redshifts at which dNdz is returned
 !*    :a, b (double)  : shape parameters of Schechter-like galaxy distribution
-!*    :zm (double)    : mean redshift
+!*
+!*  Args(optional):
+!*    :zm (double)    : mean redshift, default to 0
+!*    :z0 (double)    : a parameter relevant to zm, default to 0. Either zm or z0 has to be specified.
 !*
 !*  Returns:
 !*    :dndz[zn] (double) : galaxy z distribution
 !*
   implicit none
   integer, intent(in) :: zn
-  double precision, intent(in) :: a, b, zm
+  double precision, intent(in) :: a, b, zm, z0
   double precision, intent(in), dimension(1:zn) :: z
   double precision, intent(out), dimension(1:zn) :: dndz
   integer :: i
+  double precision :: zm_temp
+  !opt4py :: zm = 0
+  !opt4py :: z0 = 0
   !opt4py :: zn = None
   !add2py :: if zn is None: zn=len(z)
 
   do i = 1, zn
-    dndz(i) = nz_SF_scal(z(i),a,b,zm)
+    if (zm>0d0.and.z0==0d0) then
+      dndz(i) = nz_SF_scal(z(i),a,b,zm)
+    else if (zm==0.and.z0>0d0) then
+      call z02zm(a,b,z0,zm_temp)
+      dndz(i) = nz_SF_scal(z(i),a,b,zm_temp)
+    else
+      stop 'zm or z0 has to be appropriately specified'
+    end if
   end do
 
 end subroutine dndz_sf
@@ -69,15 +82,16 @@ subroutine photoz_error(zn,z,zi,sigma,zbias,pz)
 end subroutine photoz_error
 
 
-subroutine zbin(zn,a,b,zm,zb,verbose)
+subroutine zbin(zn,a,b,zm,zb,z0,verbose)
 !* Computing z-interval of z-bin so that number of galaxies at each z-bin is equal
 !*
 !*  Args:
 !*    :zn (int)       : number of z-bins
 !*    :a, b (double)  : shape parameters of Schechter-like galaxy distribution
-!*    :zm (double)    : mean redshift
 !*
 !*  Args(optional):
+!*    :zm (double)    : mean redshift, default to 0
+!*    :z0 (double)    : a parameter relevant to zm, default to 0. Either zm or z0 has to be specified.
 !*    :verbose (bool) : output messages (default to True)
 !*
 !*  Returns:
@@ -86,11 +100,22 @@ subroutine zbin(zn,a,b,zm,zb,verbose)
   implicit none
   logical, intent(in) :: verbose
   integer, intent(in) :: zn
-  double precision, intent(in) :: a, b, zm
+  double precision, intent(in) :: a, b, zm, z0
   double precision, intent(out), dimension(1:zn+1) :: zb
+  !internal
+  double precision :: zm_temp
+  !opt4py :: zm = 0
+  !opt4py :: z0 = 0
   !opt4py :: verbose = False
 
-  call zbin_SF(a,b,zm,zb)
+  if (zm>0d0.and.z0==0d0) then
+    call zbin_SF(a,b,zm,zb)
+  else if (zm==0.and.z0>0d0) then
+    call z02zm(a,b,z0,zm_temp)
+    call zbin_SF(a,b,zm_temp,zb)
+  else
+    stop 'zm or z0 has to be appropriately specified'
+  end if
 
   if (verbose)  write(*,*) 'zbin =', zb
 

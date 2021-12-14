@@ -256,7 +256,7 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
 end subroutine bispeclens_bin
 
 
-subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pktype,btype,dNdz,cgg)
+subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pktype,btype,dNdz,cgg,ro)
 !*  Compute SNR of lensing bispectrum analytically
 !* 
 !*  Args:
@@ -275,6 +275,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
 !*    :btype (str) : bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
 !*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
 !*    :cgg[l] (double) : observed galaxy spectrum
+!*    :ro (integer) : output progress for every "ro" multipoles (ro=100, default)
 !*
 !*  Returns:
 !*    :snr (double)  : total SNR
@@ -282,7 +283,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
   implicit none
   !I/O
   character(8), intent(in) :: cpmodel, model, pktype, btype
-  integer, intent(in) :: lmin, lmax, zn, kn
+  integer, intent(in) :: lmin, lmax, zn, kn, ro
   double precision, intent(in), dimension(3) :: zs
   double precision, intent(in), dimension(1:zn) :: z, dz, dNdz
   double precision, intent(in), dimension(1:kn) :: k, pk0
@@ -298,6 +299,7 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
   !add2py :: if dNdz is None: dNdz = z*0.
   !add2py :: if len(dNdz) != zn: print('size of dNdz is strange')
   !opt4py :: cgg = None
+  !opt4py :: ro = 100
   !add2py :: if cgg is None: cgg = cl*0.
   !add2py :: if len(cgg) != lmax+1: print('size of cgg is strange')
 
@@ -324,9 +326,9 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
   write(*,*) 'compute bispectrum snr'
   select case(btype)
   case('kkk','ggg')
-    call bispec_lens_snr(cp,b,eL,cl(1:lmax),wp,ck,model,snr)
+    call bispec_lens_snr(cp,b,eL,cl(1:lmax),wp,ck,model,ro,snr)
   case('gkk','ggk')
-    call bispec_lens_snr_cross(cp,b,eL,cgg(1:lmax),cl(1:lmax),btype,model,snr)
+    call bispec_lens_snr_cross(cp,b,eL,cgg(1:lmax),cl(1:lmax),btype,model,ro,snr)
   end select
   deallocate(b%mgp,wp,ck)
 
