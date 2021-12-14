@@ -1,4 +1,5 @@
 # external
+
 import numpy as np
 import healpy as hp
 import sys
@@ -9,7 +10,7 @@ import basic
 import curvedsky
 
 # from cmblensplus/utils
-import constants as c
+import constant as c
 import misctools
 
 # for pickle (to be removed)
@@ -21,9 +22,11 @@ elif sys.version_info[:3] > (2,5,2):
 
 #////////// Constants //////////#
 
-# CMB temperature
-Tcmb  = 2.726e6 #K
-ac2rad = np.pi/10800.
+# CMB temperature in K
+Tcmb = c.Tcmb
+
+# CMB types
+mtype = ['T','E','B']
 
 
 #////////// Frequency Spectrum //////////#
@@ -33,7 +36,7 @@ def Int_Planck(nu,T):
     Black body I(nu)
     nu [GHz]
     '''
-    return 2*c.h*(nu*1e9)**3/c.c**2 * (np.exp(c.h*(nu*1e9)/c.kB/T)-1.)**(-1)
+    return 2*c.h*(nu*1e9)**3/c.c**2 * (np.exp(c.h*(nu*1e9)/c.k/T)-1.)**(-1)
 
 
 def Int_dust(nu,Td=19.6,beta=1.53):
@@ -47,15 +50,15 @@ def Int_dust(nu,Td=19.6,beta=1.53):
 
 def fnu_dust(nu,Td=34.,beta=2.,nu_c=4955.,alpha=2.,bc=1e-64):
     '''
-    f(nu) defined in Eq.(13) of arXiv:1705.02332 (but alpha and bc are not given)
+    f(nu) defined in Eq.(D.4) of arXiv:1502.01591
     nu [GHz]
     '''
     fnu = np.zeros(len(nu))
-    for i, n in enumerate(nu):
-        if n <= nu_c:
-            fnu[i] = (n*1e9)**beta*Int_Planck(n,Td)*c.c**2/(2*c.h)
+    for i, nu_i in enumerate(nu):
+        if nu_i <= nu_c:
+            fnu[i] = (nu_i*1e9)**beta*Int_Planck(nu_i,Td)*c.c**2/(2*c.h)
         else:
-            fnu[i] = (nu_c*1e9)**beta*Int_Planck(nu_c,Td)*c.c**2/(2*c.h)*(n/nu_c)**(-alpha)
+            fnu[i] = (nu_c*1e9)**beta*Int_Planck(nu_c,Td)*c.c**2/(2*c.h)*(nu_i/nu_c)**(-alpha)
     return fnu*bc
     
 
@@ -63,7 +66,7 @@ def RJfunc(nu,T):
     """
     nu [GHz]
     """
-    return 2*(nu*1e9)**2/c.c**2 * c.kB*T
+    return 2*(nu*1e9)**2/c.c**2 * c.k*T
 
 
 def Int_Planck_deriv(nu,T):
@@ -71,7 +74,7 @@ def Int_Planck_deriv(nu,T):
     nu [GHz]
     """
     nu0 = nu*1e9
-    return Int_Planck(nu,T) * (np.exp(c.h*nu0/c.kB/T)*c.h*nu0/c.kB/T**2)/(np.exp(c.h*nu0/c.kB/T)-1.)
+    return Int_Planck(nu,T) * (np.exp(c.h*nu0/c.k/T)*c.h*nu0/c.k/T**2)/(np.exp(c.h*nu0/c.k/T)-1.)
 
 
 def T2y(nu):
@@ -79,7 +82,7 @@ def T2y(nu):
     g(nu) factor to convert from T to y
     nu [GHz]
     """
-    x = c.h*(nu*1e9)/(c.kB*c.Tcmb*1e-6)
+    x = c.h*(nu*1e9)/(c.k*c.Tcmb*1e-6)
     return x*np.cosh(x/2.)/np.sinh(x/2.) - 4.
 
 
@@ -106,19 +109,18 @@ def unit_conversion(freq,conv): #https://lambda.gsfc.nasa.gov/data/planck/early_
 
 def beam(theta,lmax,inv=True):
     # inverse of beam function
-    ac2rad = np.pi/10800.
-    L      = np.linspace(0,lmax,lmax+1)
+    L = np.linspace(0,lmax,lmax+1)
     if inv:
-        return np.exp(L*(L+1)*(theta*ac2rad)**2/(16.*np.log(2.)))
+        return np.exp(L*(L+1)*(theta*c.ac2rad)**2/(16.*np.log(2.)))
     else:
-        return np.exp(-L*(L+1)*(theta*ac2rad)**2/(16.*np.log(2.)))
+        return np.exp(-L*(L+1)*(theta*c.ac2rad)**2/(16.*np.log(2.)))
 
 
 #////////// Noise spectrum //////////#
 
 def nl_white(sigma,theta,lmax):
 
-    return (sigma*ac2rad/Tcmb)**2*beam(theta,lmax)**2
+    return (sigma*c.ac2rad/c.Tcmb)**2*beam(theta,lmax)**2
 
 
 #////////// Angular power spectrum /////////#
@@ -208,21 +210,21 @@ def apsx(rlz,lmax,falm,galm,verbose=True,overwrite=False,mtype=['T','E','B']):
 
 
 
-def read_camb_cls(fname,ftype='scal',output=''):
+def read_camb_cls(fname,ftype='scal',output='',skiprows=1,unpack=True):
     
     if ftype == 'scal': # unlensed scal Cls
-        ll, TT, EE, TE, PP, TP = (np.loadtxt(fname)).T
-
+        ll, TT, EE, TE, PP, TP = np.loadtxt(fname,skiprows=skiprows,unpack=unpack)
+    
     elif ftype == 'lens': # lensed cls
-        ll, TT, EE, BB, TE = (np.loadtxt(fname)).T
+        ll, TT, EE, BB, TE = np.loadtxt(fname,skiprows=skiprows,unpack=unpack)
 
-    s = ll*(ll+1.)*Tcmb**2/(2*np.pi)
+    s = ll*(ll+1.)*c.Tcmb**2/(2*np.pi)
     TT /= s
     EE /= s
     TE /= s
     if ftype == 'scal':
-        PP /= ll**4*Tcmb**2
-        TP /= ll**3*Tcmb**2
+        PP /= ll**4*c.Tcmb**2
+        TP /= ll**3*c.Tcmb**2
     elif ftype == 'lens':
         BB /= s
 
@@ -240,7 +242,6 @@ def read_camb_cls(fname,ftype='scal',output=''):
             return np.array((TT,EE,TE,PP,TP))
         else:
             return TT, EE, TE, PP, TP
-
     elif ftype == 'lens':
         if output=='array':
             return np.array((TT,EE,BB,TE))
@@ -267,7 +268,7 @@ def wfactor(w,nmax=5):
 def map2alm_curvedsky(lmax,fmap,mtype=['T','E','B'],w=1.,bl=None,uKcmb=False):
 
     if uKcmb:
-        norm = Tcmb
+        norm = c.Tcmb
     else:
         norm = 1. 
         

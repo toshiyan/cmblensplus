@@ -145,7 +145,8 @@ def hist_errorbars( data, ymin=None, ymax=None, divbymax=True, xerrs=False, *arg
 
 
 
-def view_maps(maps,min=-0.1,max=0.1,M=1.):
+def view_maps(maps,vrange=None):
+    # need "import ipywidgets as widgets"
     # plot multiple mollview with tab switch
 
     mlist = list(maps.keys())
@@ -166,11 +167,13 @@ def view_maps(maps,min=-0.1,max=0.1,M=1.):
     # start plot
     fig, ax = {}, {}
     for mi, m in enumerate(mlist):
-        #kap = M * curvedsky.utils.hp_alm2map(12*nside**2,lmax,lmax,klms[q][:lmax+1,:lmax+1])
         with out[mi]:
             fig[m], ax[m] = plt.subplots(figsize=[10,7])
             plt.sca(ax[m])
-            hp.mollview(maps[m],min=min,max=max,hold=True)
+            if vrange is not None:
+                hp.mollview(maps[m],min=vrange[0],max=vrange[1],hold=True)
+            else:
+                hp.mollview(maps[m],hold=True)
             plt.show(fig[m])
 
 

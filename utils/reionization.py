@@ -5,8 +5,7 @@ import numpy as np, tqdm
 import basic
 
 # from cmblensplus/utils
-import constants as const
-import cosmology
+import constant as c
 
 # to avoid scipy constants use
 from scipy.integrate import quad
@@ -105,7 +104,7 @@ def optical_depth(xe,H0=70.,Om=.3,Ov=.7,Ob=.0455,w0=-1.,wa=0.,zmin=1e-4,zmax=50,
     I = lambda z: (1+z)**2/Hz(z) * xe(z)
     
     #Eq.(3.44) of Dodelson's Modern Cosmology and conversion of H(z) unit 1/Mpc -> 1/m
-    f = const.sigmaT * (const.rho_c*Ob*h0**2/const.m_p) * const.Mpc2m 
+    f = sigmaT * (c.rho_c*Ob*h0**2/c.m_p) * c.Mpc2m 
     
     # compute z-integral
     print('optical depth:', quad(I,zmin,zmax)[0] * f) 
@@ -135,7 +134,7 @@ def compute_cltt(xe,H0=70.,Om=.3,Ov=.7,Ob=.0455,w0=-1.,wa=0.,ns=.97,As=2e-9,R0=1
     Pk = spline(k,pk0)
     
     # Kz
-    Kz = lambda z: (const.sigmaT*(const.rho_c*Ob*h0**2/const.m_p)*const.Mpc2m)**2 * (1+z)**4/rz(z)**2/Hz(z)
+    Kz = lambda z: (sigmaT*(c.rho_c*Ob*h0**2/c.m_p)*c.Mpc2m)**2 * (1+z)**4/rz(z)**2/Hz(z)
 
     # compute cltt
     l  = np.linspace(lmin,lmax,ln)
