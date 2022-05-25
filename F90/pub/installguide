@@ -1,4 +1,8 @@
 
+This file describes how to install each public code. 
+You can also use install.sh file. 
+
+
 Here, ${public} denotes the path to this directory.
 
 [FFTW]
@@ -21,7 +25,25 @@ Here, ${public} denotes the path to this directory.
 4: mv libcfitsio.a ../
 
 
-[Lenspix] -- depends on Healpix and cfitsio
+[Healpix] -- has dependcy on cfitsio
+(Instead, you can use a newer version of Healpix)
+
+1: go to ${public}/Healpix/
+
+2: ./configure 
+
+Then, you will be asked to answer many questions
+Please choose the following answers: 
+ - F90 compiler: ifort (this is recommended, but other compiler works as well)
+ - openmp is no longer supported, so use qopenmp option
+ - choose cfitsio directory to ../cfitsio/
+
+3: make
+
+4: make test (to check your compilation)
+
+
+[Lenspix] -- has dependcy on Healpix and cfitsio
 
 go to ${public}/lenspix/src and type "make; make install"
 

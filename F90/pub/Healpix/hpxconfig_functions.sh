@@ -1151,7 +1151,7 @@ GuessF90Compiler () {
 	    OFLAGS="-C vopt"
 	    CFLAGS="-C vopt"
 	    FPP="-D"
-	    PRFLAGS="-P openmp";;
+	    PRFLAGS="-P qopenmp";;
 	CYGWIN*)
 	    OFLAGS="-O"
 	    IdentifyF90Compiler;;
@@ -1380,7 +1380,7 @@ IdentifyCParallCompiler () {
     npath=`$CC -v 2>&1         | ${GREP} -i ekopath  | ${WC} -l` # pathscale EKOPath
     PRCFLAGS=""
     if [ $nicc != 0 ] ; then
-	PRCFLAGS='-openmp' # -openmp-report0
+	PRCFLAGS='-qopenmp' # -qopenmp-report0
     elif [ $ngcc != 0 ] ; then
 	PRCFLAGS='-fopenmp'
     elif [ $nclang != 0 ] ; then
@@ -1487,7 +1487,7 @@ IdentifyF90Compiler () {
   		OFLAGS="-O3"
 #		OFLAGS="-O3 -axiMKW" # generates optimized code for each Pentium platform
 # 		PRFLAGS="-openmp" # Open MP enabled
-		PRFLAGS="-openmp -openmp_report0" # Open MP enabled # June 2007
+		PRFLAGS="-qopenmp -qopenmp_report0" # Open MP enabled # June 2007
 		FI8FLAG="-i8" # change default INTEGER to 64 bits
 ##		FI8FLAG="-integer-size 64" # change default INTEGER to 64 bits
 		CFLAGS="$CFLAGS -DINTEL_COMPILER" # to combine C and F90

@@ -1,9 +1,13 @@
 #!/bin/sh
 
 # setup directory
+
 cwd=$(pwd)
 pub=${cwd}/F90/pub
+
 fftw=${cwd}/FFTW
+cfitsio=${cwd}/cfitsio
+healpix=${cwd}/Healpix
 lenspix=${cwd}/lenspix
 lapack=${cwd}/LAPACK95
 
@@ -23,6 +27,36 @@ if [ ${1} = "FFTW" -o ${1} = "all" ]; then
   cd ${cwd}
 fi
 
+# cfitsio
+if [ ${1} = "cfitsio" -o ${1} = "all" ]; then
+  echo '---- Install cfitsio ----'
+  cd ${cfitsio}/cfitsio/
+  ./configure
+  make 
+  mv libcfitsio.a ../
+  cd ${cwd}
+fi
+
+# Healpix
+if [ ${1} = "healpix" -o ${1} = "all" ]; then
+  echo '---- Install healpix ----'
+  cd ${healpix}
+  make clean
+  printf '%s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s' 3 ifort "" "" "" "" "" "" "" "" "../cfitsio"  | ./configure
+  make 
+  make test
+  cd ${cwd}
+fi
+
+# Healpix (here, version 3.80)
+#wget -d https://sourceforge.net/projects/healpix/files/Healpix_3.80/Healpix_3.80_2021Jun22.tar.gz 
+#mkdir Healpix 
+#tar xf Healpix_3.80_2021Jun22.tar.gz -C Healpix --strip-components 1
+#FC=ifort CC=icc ./configure --auto=f90
+#make
+#make test
+#rm -rf Healpix_3.80_2021Jun22.tar.gz
+
 # lenspix
 if [ ${1} = "lenspix" -o ${1} = "all" ]; then
   echo '---- Install lenspix ----'
@@ -32,7 +66,7 @@ if [ ${1} = "lenspix" -o ${1} = "all" ]; then
   cd ${cwd}
 fi
 
-# LAPACK
+# LAPACK (with ifort)
 if [ ${1} = "lapack" -o ${1} = "all" ]; then
   echo '---- Install LAPACK and LAPACK95 ----'
   cd ${lapack}
