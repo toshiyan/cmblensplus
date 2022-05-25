@@ -1,6 +1,21 @@
 # Analysis tools for 2D map to compute some higher-order statistics
 
-This package contains a Fortran wrapper for Python, to reconstruct lensing potential, cosmic bi-refrimgence, and patchy reionization from cosmic microwave background anisotropies (CMB) in full and flat sky. This package also includes modules for delensing, some bi-spectrum calculation, and so on. Installing this library at NERSC is straightforward. 
+This package contains a wrapper for Python, to reconstruct lensing potential, cosmic bi-refrimgence, and patchy reionization from cosmic microwave background anisotropies (CMB) in full and flat sky. This package also includes modules for delensing, some bi-spectrum calculation, and so on. Installing this library at NERSC is straightforward. 
+
+# Installation
+
+  The easiest way to install the entire package is to run the shellscript: 
+     - ./install.sh all
+  You will find modules inside "wrap/". 
+
+  Note that the install.sh file compiles the following files:  
+
+  [1] Fortran public software (located inside F90/pub/)
+
+  FFTW, cfitsio, Healpix, LAPACK95, and Lenspix. 
+
+  [2] Fortran codes to create a wrapper
+
 
 # Documents and Reference
 
@@ -37,33 +52,16 @@ This package contains three main python modules based on Fourtran 90 sources:
   
   - flatsky   --- the same as curvedsky code but for flatsky analysis.
 
-The additional simple python sctipts are stored at
+The additional simple python sctipts are stored inside
 
   - example   --- several example scripts for demonstration
   
   - utils     --- python scripts to compute noise biase, RDN0, diagonal RDN0, etc. 
 
 
-# Installation
-
-  [1] Compile Fortran public software
-
-  Go to "F90/pub/" directory, and install each pubclic package (FFTW, Healpix, LAPACK95, cfitsio and Lenspix). 
-
-  [2] Create Fortran wrapper
-
-  Go to the root directory and type one of the following command:
-
-    - ./MAKEALL.sh all       (for generating all modules)
-    - ./MAKEALL.sh basic     (for basic module)
-    - ./MAKEALL.sh curvedsky (for curvedsky module)
-    - ./MAKEALL.sh flatsky   (for flatsky module)
-  
-  You will find modules under "wrap/" for python 3 and "wrap_py2" for python 2, depending on your f2py version.
-
 # Examples
 
-You can find the example codes at "example" directory. 
+You can find example codes inside "example" directory. 
 
 
 # Acknowledgement
