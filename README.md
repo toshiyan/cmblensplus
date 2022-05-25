@@ -5,7 +5,9 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
 # Installation
 
   The easiest way to install the entire package is to run the shellscript: 
+
      - ./install.sh all
+  
   You will find modules inside "wrap/". 
 
   Note that the install.sh file compiles the following files:  
