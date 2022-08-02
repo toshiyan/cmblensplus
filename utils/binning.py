@@ -22,7 +22,7 @@ class multipole_binning:
         self.lmin = lmin
         self.lmax = lmax
         self.lstart = lstart
-        self.imax = self.lmax - self.lstart  # index of l=lmax
+        self.imax = int(self.lmax-self.lstart)  # index of l=lmax
         #self.bp, self.bc = basic.aps.binning(n,[lmin,lmax],spc=spc)
         self.bp, self.bc = binned_ells(n,lmin,lmax,spc)
 
