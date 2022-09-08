@@ -35,7 +35,10 @@ Tcmb  = 2.7255e6 #K
 # //// Unit Conversion //// #
 
 # angle unit conversion
-ac2rad = np.pi/10800.
+ac2rad  = np.pi/10800.
+rad2ac  = 1./ac2rad
+deg2rad = np.pi/180.
+rad2deg = 1./deg2rad
 
 # J/sr -> uk depending on frequency in GHz
 def Jysr2uK(nu):

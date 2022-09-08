@@ -1,22 +1,25 @@
 import libbasic
 
-def dndz_sf(z,a,b,zm,zn=None):
+def dndz_sf(z,a,b,zm=0,z0=0,zn=None):
   """
  A model of galaxy z distribution
 
   Args:
     :z[*zn*] (*double*): redshifts at which dNdz is returned
     :a, b (*double*): shape parameters of Schechter-like galaxy distribution
-    :zm (*double*): mean redshift
+
+  Args(optional):
+    :zm (*double*): mean redshift, default to 0
+    :z0 (*double*): a parameter relevant to zm, default to 0. Either zm or z0 has to be specified.
 
   Returns:
     :dndz[*zn*] (*double*): galaxy z distribution
 
   Usage:
-    :dndz = basic.galaxy.dndz_sf(zn,z,a,b,zm):
+    :dndz = basic.galaxy.dndz_sf(zn,z,a,b,zm,z0):
   """
   if zn is None: zn=len(z)
-  return libbasic.galaxy.dndz_sf(zn,z,a,b,zm)
+  return libbasic.galaxy.dndz_sf(zn,z,a,b,zm,z0)
 
 def photoz_error(z,zi,zn=None,sigma=0.03,zbias=0.):
   """
@@ -38,25 +41,26 @@ def photoz_error(z,zi,zn=None,sigma=0.03,zbias=0.):
   if zn is None: zn=len(z)
   return libbasic.galaxy.photoz_error(zn,z,zi,sigma,zbias)
 
-def zbin(zn,a,b,zm,verbose=False):
+def zbin(zn,a,b,zm=0,z0=0,verbose=False):
   """
  Computing z-interval of z-bin so that number of galaxies at each z-bin is equal
 
   Args:
     :zn (*int*): number of z-bins
     :a, b (*double*): shape parameters of Schechter-like galaxy distribution
-    :zm (*double*): mean redshift
 
   Args(optional):
+    :zm (*double*): mean redshift, default to 0
+    :z0 (*double*): a parameter relevant to zm, default to 0. Either zm or z0 has to be specified.
     :verbose (*bool*): output messages (default to True)
 
   Returns:
     :zb[*zn+1*] (*double*): z-intervals
 
   Usage:
-    :zb = basic.galaxy.zbin(zn,a,b,zm,verbose):
+    :zb = basic.galaxy.zbin(zn,a,b,zm,z0,verbose):
   """
-  return libbasic.galaxy.zbin(zn,a,b,zm,verbose)
+  return libbasic.galaxy.zbin(zn,a,b,zm,z0,verbose)
 
 def frac(zn,zb,a,b,zm,verbose=False,zbias=0.0,sigma=0.0):
   """

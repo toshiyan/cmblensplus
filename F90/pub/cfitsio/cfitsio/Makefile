@@ -23,7 +23,7 @@ CFITSIO_MAJOR	= 3
 CFITSIO_MINOR	= 37
 CFITSIO_SONAME	= 2
 
-prefix		= /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/cfitsio/cfitsio
+prefix		= /global/u1/t/toshiyan/Work/Lib/cmblensplus/F90/pub/cfitsio/cfitsio
 exec_prefix	= ${prefix}
 DESTDIR		= 
 CFITSIO_LIB	= ${DESTDIR}${exec_prefix}/lib

@@ -14,6 +14,7 @@ import basic
 # cmblensplus/utils/
 import constant
 import cmb
+import analysis as ana
 
 
 #////////// Constants //////////#
@@ -61,6 +62,81 @@ def window_kap(z,zcmb=1088.69,**cps):
     return 1.5 * cps['Om']*(cps['H0']/constant.C)**2 * (1.+z) * chi*(chis-chi)/chis
 
 
+# //// CAMB Cl //// #
+
+def calc_cmb_aps(lmax,cltype=[],H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,tau=0.06,As=2e-9,ns=0.965,r=0,lens_ac=2):
+    
+    #Set up a new set of parameters for CAMB
+    pars = camb.CAMBparams()
+    pars.set_cosmology(H0=H0, ombh2=ombh2, omch2=omch2, mnu=mnu, omk=omk, tau=tau)
+    pars.InitPower.set_params(As=As, ns=ns, r=r)
+    pars.set_for_lmax(lmax, lens_potential_accuracy=lens_ac);
+    
+    #calculate results for these parameters
+    results = camb.get_results(pars)
+
+    #read lensed CMB aps (TT,EE,BB,TE)
+    ucl, lcl = None, None
+    l = np.linspace(0,lmax,lmax+1)
+    if 'unlens' in cltype:
+        ucl = results.get_unlensed_scalar_cls().T[:,:lmax+1] * 2*np.pi/(l[None,:]**2+l[None,:]+1e-30)
+    if 'lens' in cltype:
+        lcl = results.get_lensed_scalar_cls().T[:,:lmax+1] * 2*np.pi/(l[None,:]**2+l[None,:]+1e-30)
+    return ucl, lcl
+        
+
+def calc_phi_aps(Lmax,H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,As=2e-9,ns=0.965,ac=1,lsamp=1,lens_ac=5):
+
+    pars = camb.CAMBparams()
+    pars.set_cosmology(H0=H0, ombh2=ombh2, omch2=omch2, mnu=mnu, omk=omk)
+    pars.InitPower.set_params(As=As, ns=ns)
+    pars.set_for_lmax(Lmax, lens_potential_accuracy=lens_ac)
+    pars.NonLinear = camb.model.NonLinear_both
+    pars.Accuracy.AccuracyBoost = ac
+    pars.Accuracy.lSampleBoost = lsamp
+    
+    results  = camb.get_results(pars)
+    
+    return results.get_lens_potential_cls(Lmax)
+
+
+def calc_lss_aps(Lmax,zi,w,bz=1.,H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,As=2e-9,ns=0.965,ac=1,lsamp=1,lens_ac=5):
+
+    pars = camb.CAMBparams()
+    pars.set_cosmology(H0=H0, ombh2=ombh2, omch2=omch2, mnu=mnu, omk=omk)
+    pars.InitPower.set_params(As=As, ns=ns)
+    pars.set_for_lmax(Lmax, lens_potential_accuracy=lens_ac)
+
+    pars.Want_CMB = False
+    pars.NonLinear = camb.model.NonLinear_both
+    pars.Accuracy.AccuracyBoost = ac
+    pars.Accuracy.lSampleBoost = lsamp
+    
+    #//// Set up W(z) window functions ////#
+    klist = list(w)
+    
+    if 'cib' in klist:
+        tracers = [ camb.sources.SplinedSourceWindow( z=zi, W=w['cib'], dlog10Ndm=.4, bias=np.sum(w['cib']*(zi[1]-zi[0])) ) ]
+    
+    for m in klist: # add galaxies
+        if m == 'cib':  continue
+        tracers += [ camb.sources.SplinedSourceWindow( z=zi, W=w[m], dlog10Ndm=0, bias_z=bz ) ]
+    pars.SourceWindows = tracers
+
+    # turning off GR corrections as they impact on large-scale (ell<20) for galaxy and should not present in CIB
+    pars.SourceTerms.counts_redshift = False 
+    pars.SourceTerms.counts_velocity = False
+    pars.SourceTerms.counts_timedelay = False
+    pars.SourceTerms.counts_ISW = False
+    pars.SourceTerms.counts_potential = False
+    camb_list = np.concatenate((np.array(['P']),np.array(list([ 'W'+str(i) for i in range(1,len(w)+1) ]))))
+        
+    results   = camb.get_results(pars)
+    
+    return camb_list, results.get_source_cls_dict()
+
+    
+
 # //// Limber Cl //// #
 
 def cl_limber(L,z,dz,W0,W1,k,pk0,ln=200,**cps):
@@ -69,7 +145,7 @@ def cl_limber(L,z,dz,W0,W1,k,pk0,ln=200,**cps):
     k:   Wavenumber in unit of h/Mpc
     pk0: P(k,z=0) in unit of (Mpc/h)^3
     '''
-
+    
     h0  = cps['H0']*1e-2
     Pk  = spline(k*h0,pk0/h0**3)
 
@@ -163,27 +239,10 @@ def phi2deltam_coeff(z,**cp):
 
 #//// Forecast ////#
 
-def Fisher_Matrix(L,dCdp=None,iC=None,dlnCdp=None,fsky=1.):
-    # return fisher matrix
-    s1, s2, ln, pn = dlnCdp.shape
-    F = np.zeros((pn,pn,ln))
-    # symmetric in pn x pn
-    for i in range(pn):
-        for j in range(i,pn):
-            if dlnCdp is not None:
-                F[i,j,:] = np.array( [ fsky*(L[l]+.5) * np.trace( np.dot(dlnCdp[:,:,l,i],dlnCdp[:,:,l,j]) ) for l in range(ln) ] )
-            elif dCdp is not None and iC is not None:
-                F[i,j,:] = np.array( [ fsky*(L[l]+.5) * np.trace( np.dot(np.dot(iC[:,:,l],dCdp[:,:,l,i]),np.dot(iC[:,:,l],dCdp[:,:,l,j])) ) for l in range(ln) ] )
-            else:
-                print('need either (dlnCdp) or (dCdp and iC)')
-            F[j,i,:] = F[i,j,:]
-    return F
+def Fisher_Matrix(L,dCdp=None,iC=None,dlnCdp=None,fsky=1):
+    return ana.Fisher_Matrix(L,dCdp=dCdp,iC=iC,dlnCdp=dlnCdp,fsky=fsky)
 
 
-def Fisher_2Dcontour(F,display=False):
-    lam, v = np.linalg.eig(np.linalg.inv(F))
-    lam = np.sqrt(lam)*1.516575089
-    phi = np.rad2deg(np.arctan2(v[1,0],v[0,0]))
-    if display: print(lam,phi)
-    return lam, phi
+def Fisher_2Dcontour(F,i=0,j=1,display=False):
+    return ana.Fisher_2Dcontour(F,i=i,j=j,display=display)
     

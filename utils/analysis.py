@@ -1,6 +1,9 @@
+# This module contains functions for data analysis, likelihood and forecast
+
 import numpy as np
 
-# * aps amplitude histogram
+
+# aps amplitude histogram
 class statistics:
 
     def __init__(self,ocl=1.,scl=1.):
@@ -143,7 +146,10 @@ class statistics:
             self.p = 1.-2*np.abs(self.p-0.5)
 
 
-#////////// Statistics from MC sim //////////#
+#////////////////////////#
+# Statistics from MC sim #
+#////////////////////////#
+
 def PTEs(ocb,scb,diag=False,disp=True,x1pte=False,x2pte=True,fpt=2,comment=''):
 
     st = statistics(ocb,scb)
@@ -213,7 +219,7 @@ def get_cov(scl,fcl=None,scale=1.,diag=False,cinv=False):
     return cov
 
 
-#////////// Optimal Combination //////////#
+# Optimal Combination
 
 def combine(ocl0,ocl1,scl0,scl1,bnum):
     # combining two binned cl data at each multipole bin
@@ -242,7 +248,7 @@ def opt_weight(x,low=-1.,diag=False):
     return wi, wb, wt
 
 
-#////////// Apodization function //////////#
+# Apodization function
 
 def apofunc(distance,aposcale):
     # apodization window
@@ -277,7 +283,31 @@ def window_2d(nx,ny,Dx,Dy,aposcale):
     return np.outer(Wx,Wy)
 
 
-#////////// Likelihood function //////////#
+# Absolute Angle Estimator
+
+def est_absangle(oCX,sCX,oCY,sCY,fcl=1.,disp=True,diag=False,x1pte=False,x2pte=True):
+
+    # estimate amplitude of the cross spectrum
+    ocl = oCX/(oCY*2*np.pi/180.)
+    scl = sCX/(sCY*2*np.pi/180.)
+    st = statistics(ocl,scl)
+    statistics.get_amp(st,fcl,diag=diag)
+
+    # check PTE of observed cls
+    if x1pte:
+        statistics.x1PTE(st)
+        print('x-PTEs of the spectrum ratio:',np.around(st.px1,decimals=3))
+    if x2pte:
+        statistics.x2PTE(st,diag=diag)
+        print('x^2-PTEs of the spectrum ratio:',np.around(st.px2,decimals=3))
+
+    return st
+
+
+
+#////////////////////#
+# Likelihood
+#////////////////////#
 
 def lnLHL(rx,fcl,icov,bi=None):
     # rx = ocb/scb
@@ -299,24 +329,68 @@ def lnLHLs(rx,fcl,icov,bi=None):
     return -0.5*gx*fcl[bi]*icov[bi,bi]*gx*fcl[bi]
 
 
-#////////// Absolute Angle Estimator //////////#
+# general Gaussian function
+def lnL_gauss(scov,ocov,method=0):
+    
+    lmax = len(scov[:,0,0]) - 1
+    
+    if method == 0:
+        scov_i = scov.copy()
+        scov_i[2:,:,:] = np.array( [ np.linalg.inv(scov[l,:,:]) for l in range(2,lmax+1) ] )
+        Bmat = np.array( [ np.dot( ocov[l,:,:], scov_i[l,:,:] ) for l in range(lmax+1) ] )
+        return np.array( [ (2*l+1)*(np.trace(Bmat[l,:,:])-np.log(np.linalg.det(Bmat[l,:,:]))-2.) for l in range(2,lmax+1) ] )
+    
+    elif method == 1:
+        import scipy.linalg as LA
+        scov_isq = scov.copy()
+        scov_isq[2:,:,:] = np.array( [ LA.inv(LA.sqrtm(scov[l])) for l in range(2,lmax+1) ] )
+        Cmat = np.array( [ np.dot( scov_isq[l] , np.dot( ocov[l], scov_isq[l] ) ) for l in range(lmax+1) ] )
+        Dii  = scov[:,:,0].copy()
+        Dii[2:,:]  = np.array( [ np.linalg.eigh(Cmat[l])[0] for l in range(2,lmax+1) ] ) 
+        return np.array( [ (2*l+1)*(np.sum(Dii[l]-np.log(Dii[l]))-len(Dii[l])) for l in range(2,lmax+1) ] )
 
-def est_absangle(oCX,sCX,oCY,sCY,fcl=1.,disp=True,diag=False,x1pte=False,x2pte=True):
 
-    # estimate amplitude of the cross spectrum
-    ocl = oCX/(oCY*2*np.pi/180.)
-    scl = sCX/(sCY*2*np.pi/180.)
-    st = statistics(ocl,scl)
-    statistics.get_amp(st,fcl,diag=diag)
+#////////////////////#
+# Fisher matrix
+#////////////////////#
 
-    # check PTE of observed cls
-    if x1pte:
-        statistics.x1PTE(st)
-        print('x-PTEs of the spectrum ratio:',np.around(st.px1,decimals=3))
-    if x2pte:
-        statistics.x2PTE(st,diag=diag)
-        print('x^2-PTEs of the spectrum ratio:',np.around(st.px2,decimals=3))
 
-    return st
+def Fisher_Matrix(L,dCdp=None,iC=None,dlnCdp=None,fsky=1.):
+
+    # return fisher matrix
+    s1, s2, ln, pn = dlnCdp.shape
+    F = np.zeros((pn,pn,ln))
+    
+    # symmetric in pn x pn
+    for i in range(pn):
+        for j in range(i,pn):
+            if dlnCdp is not None:
+                F[i,j,:] = np.array( [ fsky*(L[l]+.5) * np.trace( np.dot(dlnCdp[:,:,l,i],dlnCdp[:,:,l,j]) ) for l in range(ln) ] )
+            elif dCdp is not None and iC is not None:
+                F[i,j,:] = np.array( [ fsky*(L[l]+.5) * np.trace( np.dot(np.dot(iC[:,:,l],dCdp[:,:,l,i]),np.dot(iC[:,:,l],dCdp[:,:,l,j])) ) for l in range(ln) ] )
+            else:
+                print('need either (dlnCdp) or (dCdp and iC)')
+            F[j,i,:] = F[i,j,:]
+    return F
+
+
+def Fisher_2Dcontour(F,i=0,j=1,display=False):
+    
+    invF = np.linalg.inv(F)
+    
+    subF = np.zeros((2,2))
+    subF[0,0] = invF[i,i]
+    subF[1,1] = invF[j,j]
+    subF[0,1] = invF[i,j]
+    subF[1,0] = invF[j,i]
+    
+    lam, v = np.linalg.eig(subF)
+    lam = np.sqrt(lam)*1.516575089
+    phi = np.rad2deg(np.arctan2(v[1,0],v[0,0]))
+    
+    if display: print(lam,phi)
+    
+    return lam, phi
+
 
 

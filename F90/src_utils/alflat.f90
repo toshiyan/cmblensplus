@@ -14,7 +14,7 @@ contains
 
 
 subroutine alxy_flat_integ(q,qtype,eL,rL,Alg,Alc,fC,W1,W2,AA,BB,AB,gln,gle,lxcut)
-! integrating fXY*gXY
+! Integrating fXY*gXY
   implicit none
   !I/O
   character(*), intent(in) :: q, qtype
@@ -26,7 +26,7 @@ subroutine alxy_flat_integ(q,qtype,eL,rL,Alg,Alc,fC,W1,W2,AA,BB,AB,gln,gle,lxcut
   !internal
   type(gauss_legendre_params) :: GL
   integer :: l, L1, L2, i, n
-  double precision :: eps, lx1, lx2
+  double precision :: eps, lx1, lx2, aL2
   double precision, dimension(:), allocatable :: phi, intg, intc
 
   if (q=='Tx'.and..not.(present(AA).and.present(BB).and.(present(AB)))) stop 'error (alflat): asymetric estimator needs all auto/cross spectra'
@@ -59,11 +59,12 @@ subroutine alxy_flat_integ(q,qtype,eL,rL,Alg,Alc,fC,W1,W2,AA,BB,AB,gln,gle,lxcut
           lx2 = dble(l) - lx1
           if (abs(lx1)<lxcut.or.abs(lx2)<lxcut) cycle
         end if
-        L2 = int(dsqrt(dble(l)**2+dble(L1)**2-2*l*L1*dcos(phi(i))))
 
-        if (rL(1)>L2.or.L2>rL(2)) cycle !outside of reconstruction multipole range
+        aL2 = dsqrt(dble(l)**2+dble(L1)**2-2*l*L1*dcos(phi(i)))
+        if (rL(1)>aL2.or.aL2>rL(2)) cycle !outside of reconstruction multipole range
 
         !choose integrant: fXY*gXY
+        L2 = int(aL2)
         select case(q)
         case ('TT')
           call KTT(rL,l,L1,phi(i),fC(L1),fC(L2),W1(L1),W2(L2),intg(i),intc(i),qtype)

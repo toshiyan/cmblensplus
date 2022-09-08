@@ -173,11 +173,14 @@ subroutine gaussTEB(lmax,TT,EE,BB,TE,alm)
 end subroutine gaussTEB
 
 
-subroutine gaussalm(n,lmax,cl,alm)
+subroutine gaussalm(n,lmax,cl,alm,ilm)
 !*  Generating alms as random Gaussian fields whose covariance is given by cl[i,j].
 !*
 !*  Args:
 !*    :cl [i,j,l] (double) : Covariance between the gaussian fields, with bounds (n,n,0:lmax)
+!*
+!*  Args:
+!*    :ilm [l,m] (dcmplx)  : Input alm for the cl[0,0] element (default to None). The other alms are generated to be correlated with ilm. 
 !*
 !*  Returns:
 !*    :alm [i,l,m] (dcmplx): Random Gaussian alms, with bounds (n,0:lmax,0:lmax)
@@ -185,19 +188,24 @@ subroutine gaussalm(n,lmax,cl,alm)
   !I/O
   integer, intent(in) :: n, lmax
   double precision, intent(in), dimension(n,n,0:lmax) :: cl
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: ilm
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: alm
   !integer
   integer :: l, m, i
-  double precision :: prod
+  double precision :: prod, sumilm
   double precision, dimension(n,n) :: A
   double complex, dimension(n) :: g
   !opt4py :: n = None
   !opt4py :: lmax = None
+  !opt4py :: ilm = None
   !add2py :: if n is None:    n    = len(cl[:,0,0])
   !add2py :: if lmax is None: lmax = len(cl[0,0,:]) - 1
+  !add2py :: if ilm is None:  ilm  = [[0 for x in range(lmax+1)] for y in range(lmax+1)] 
 
   alm = 0d0
   call initrandom(-1)
+
+  sumilm = sum(ilm)
 
   do l = 1, lmax
 
@@ -212,6 +220,7 @@ subroutine gaussalm(n,lmax,cl,alm)
 
     do i = 1, n
       g(i) = Gaussian1()
+      if (sumilm/=0 .and. i==1 .and. A(1,1)/=0d0)  g(1) = ilm(l,0)/A(1,1) ! replace to ilm
       alm(i,l,0) = sum(g(1:i)*A(i,1:i))
     end do
 
@@ -219,6 +228,7 @@ subroutine gaussalm(n,lmax,cl,alm)
 
       do i = 1, n
         g(i) = cmplx(Gaussian1(),Gaussian1())/dsqrt(2d0)
+        if (sumilm/=0 .and. i==1 .and. A(1,1)/=0d0)  g(1) = ilm(l,m)/A(1,1) ! replace to ilm
         alm(i,l,m) = sum(g(1:i)*A(i,1:i))
       end do
 
@@ -1001,6 +1011,16 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
   call map2alm_spin(nside,lmax,mmax,spin,map,wlm)
 
 end subroutine mulwin_spin
+
+
+subroutine lmpy2lmax(lmpy,lmax)
+  implicit none
+  integer, intent(in) :: lmpy
+  integer, intent(out) :: lmax
+
+  lmax = int((-3d0+dsqrt(1d0+8*lmpy))/2d0)
+
+end subroutine lmpy2lmax
 
 
 subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)

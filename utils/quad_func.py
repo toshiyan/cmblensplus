@@ -1340,3 +1340,29 @@ def cinv_empirical_fltr(lcl,wcl,cnl,ep=1e-30):
     
     return ocl, ifl
 
+
+def norm_quad_mv(lmax,rlmin,rlmax,ucl,lcl,ocl,eb='qe'):
+    
+    # Reconstruction Noise with Iterative EB
+    
+    Ag = np.zeros((7,lmax+1))
+    Ac = np.zeros((7,lmax+1))
+
+    # QDO = TT+TE+EE, and Ag[5] = TT+TE+EE
+    Ag[:6,:], Ac[:6,:], nlg, nlc = curvedsky.norm_quad.qall('lens',[True,True,True,False,False,False],lmax,rlmin,rlmax,lcl,ocl)
+    Ag[3,:], Ac[3,:] = curvedsky.norm_quad.qtb('lens',lmax,rlmin,rlmax,lcl[3,:],ocl[0,:],ocl[2,:])
+    if eb=='qe': #QE reconstruction for EB
+        Ag[4,:], Ac[4,:] = curvedsky.norm_quad.qeb('lens',lmax,rlmin,rlmax,lcl[1,:],ocl[1,:],ocl[2,:])
+    else: #iterative reconstruction for EB
+        Ag[4,:], Ac[4,:] = curvedsky.norm_quad.qeb_iter(lmax,rlmax,rlmin,rlmax,rlmin,rlmax,ucl[1,:],ocl[1,:],ocl[2,:],ucl[3,:],iter=20,conv=1e-10)
+    
+    #TT+TE+EE+EB
+    Ag[6,2:] = Ag[5,2:]*Ag[4,2:]/(Ag[5,2:]+Ag[4,2:])
+    Ac[6,2:] = Ac[5,2:]*Ac[4,2:]/(Ac[5,2:]+Ac[4,2:])
+
+    #EE+EB
+    Ag[5,2:] = Ag[2,2:]*Ag[4,2:]/(Ag[2,2:]+Ag[4,2:])
+    Ac[5,2:] = Ac[2,2:]*Ac[4,2:]/(Ac[2,2:]+Ac[4,2:])
+    
+    return Ag, Ac
+

@@ -275,10 +275,10 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
 !*    :btype (str) : bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
 !*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
 !*    :cgg[l] (double) : observed galaxy spectrum
-!*    :ro (integer) : output progress for every "ro" multipoles (ro=100, default)
+!*    :ro (int) : output progress for every "ro" multipoles (ro=100, default)
 !*
 !*  Returns:
-!*    :snr (double)  : total SNR
+!*    :snr (double) : total SNR
 !*
   implicit none
   !I/O

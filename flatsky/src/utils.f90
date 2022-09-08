@@ -4,20 +4,79 @@
 
 module utils
   use random,    only: InitRandom, ranmar, Gaussian1
-  use constants, only: iu, pi
+  use constants, only: iu, pi, dlc
   use general,   only: check_positive
   use grid2d,    only: elxy, elarray, elarrays_1d, elarrays_2d, wap, make_lmask
   use pstool,    only: binned_ells, power_binning, cb2cl
+  use fftw,      only: dft
   implicit none
 
   private check_positive
   private InitRandom, ranmar, gaussian1
-  private iu, pi
+  private iu, pi, dlc
   private elxy, elarray, elarrays_1d, elarrays_2d, wap, make_lmask
   private binned_ells, power_binning, cb2cl
+  private dft
 
 
 contains 
+
+
+!//// DFT ////!
+
+subroutine map2alm(nx,ny,D,map,alm)
+!*  DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of x and y grids
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :map[x,y] (double) : Map on 2D grid with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :alm[x,y] (dcmplx) : Fourier modes on 2D grid, with bounds (nx,ny)
+!*
+  implicit none
+  integer, intent(in) :: nx, ny
+  double precision, intent(in), dimension(2) :: D
+  double precision, intent(in), dimension(nx,ny) :: map
+  double complex, intent(out), dimension(nx,ny) :: alm
+  integer :: nn(2)
+  double complex :: tmp(nx,ny)
+
+  nn  = (/nx,ny/)
+  tmp = cmplx(map)
+  call dft(tmp,nn,D,1)
+  alm = tmp
+
+end subroutine map2alm
+
+
+subroutine alm2map(nx,ny,D,alm,map)
+!*  DFT for 2D array. 
+!*
+!*  Args:
+!*    :nx, ny (int)      : Number of Lx and Ly grids
+!*    :D[2] (double)     : Side length (x and y) of map
+!*    :alm[x,y] (dcmplx) : Fourier modes on 2D grid to be transformed, with bounds (nx,ny)
+!*
+!*  Returns:
+!*    :map[x,y] (double) : Map on 2D grid, with bounds (nx,ny)
+!*
+  implicit none
+  integer, intent(in) :: nx, ny
+  double precision, intent(in), dimension(2) :: D
+  double complex, intent(in), dimension(nx,ny) :: alm
+  double precision, intent(out), dimension(nx,ny) :: map
+  integer :: nn(2)
+  double complex :: tmp(nx,ny)
+
+  nn = (/nx,ny/)
+  tmp = alm
+  call dft(tmp,nn,D,-1)
+  map = dble(tmp)
+
+end subroutine alm2map
+
 
 !//// Fourier modes ////!
 
@@ -218,7 +277,7 @@ end subroutine c2d2bcl
 
 ! Power spectrum interpolation
 
-subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
+subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d,method)
 !*  Assign values of 1D angular power spectrum on to 2D grid with linear interpolation
 !*
 !*  Args: 
@@ -227,6 +286,9 @@ subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
 !*    :lmin (int)     : minimum multipole of cl to be interpolated
 !*    :lmax (int)     : maximum multipole of cl to be interpolated
 !*    :Cl[l] (double) : 1D power spectrum, with bounds (0:lmax)
+!*
+!*  Args(optional):
+!*    :method (str) : type of interpolation method, i.e., linear interpolation (method='linear', default), or step (method='step')
 !*
 !*  Returns:
 !*    :c2d[nx,ny] (double): 2D power spectrum, with bounds (nx,ny)
@@ -237,6 +299,9 @@ subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(0:lmax) :: Cl
   double precision, intent(out), dimension(nx,ny) :: c2d
+  !optional
+  character(*), intent(in), optional :: method
+  !f2py character(*) :: method='linear'
   !internal
   logical :: p
   integer :: i, j, l0, l1
@@ -253,7 +318,12 @@ subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
       if (lmin>els(i,j).or.els(i,j)>lmax-1) cycle
       l0 = int(els(i,j))
       l1 = l0 + 1
-      c2d(i,j) = Cl(l0) + (els(i,j)-l0)*(Cl(l1)-Cl(l0))
+      select case(method)
+      case('linear')
+        c2d(i,j) = Cl(l0) + (els(i,j)-l0)*(Cl(l1)-Cl(l0))
+      case('step')
+        c2d(i,j) = Cl(l0)
+      end select
       if (c2d(i,j)>=0d0.or..not.p) cycle
       write(*,*) Cl(l0), Cl(l1), l0, els(i,j)
       stop 'error (cl2c2d): interpolated Cl is negative'

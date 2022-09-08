@@ -101,7 +101,7 @@ def bispeclens_bin(shap,cpmodel,model,z,dz,zs,lmin,lmax,bn,k,pk0,zn=0,kn=0,lan=0
   if len(dNdz) != zn: print('size of dNdz is strange')
   return libbasic.bispec.bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,pktype,btype,dNdz)
 
-def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T12',btype='kkk',dNdz=None,cgg=None):
+def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T12',btype='kkk',dNdz=None,cgg=None,ro=100):
   """
   Compute SNR of lensing bispectrum analytically
  
@@ -121,12 +121,13 @@ def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T1
     :btype (*str*): bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
     :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when btype includes g
     :cgg[*l*] (*double*): observed galaxy spectrum
+    :ro (*int*): output progress for every "ro" multipoles (ro=100, default)
 
   Returns:
     :snr (*double*): total SNR
 
   Usage:
-    :snr = basic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg):
+    :snr = basic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg,ro):
   """
   if zn == 0: zn=len(z)
   if kn == 0: kn=len(k)
@@ -134,7 +135,7 @@ def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T1
   if len(dNdz) != zn: print('size of dNdz is strange')
   if cgg is None: cgg = cl*0.
   if len(cgg) != lmax+1: print('size of cgg is strange')
-  return libbasic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg)
+  return libbasic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg,ro)
 
 def bispeclens_gauss_bin(shap,bn,lmin,lmax,cl):
   """

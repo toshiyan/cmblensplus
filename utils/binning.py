@@ -27,7 +27,7 @@ class multipole_binning:
         self.bp, self.bc = binned_ells(n,lmin,lmax,spc)
 
 
-def binned_ells(n,lmin,lmax,spc):
+def binned_ells(n,lmin,lmax,spc=''):
     '''
     return binned multipole edges and centers
     '''

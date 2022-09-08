@@ -1,5 +1,39 @@
 import libflatsky
 
+def map2alm(nx,ny,D,map):
+  """
+  DFT for 2D array. 
+
+  Args:
+    :nx, ny (*int*): Number of x and y grids
+    :D[*2*] (*double*): Side length (x and y) of map
+    :map[*x,y*] (*double*): Map on 2D grid with bounds (nx,ny)
+
+  Returns:
+    :alm[*x,y*] (*dcmplx*): Fourier modes on 2D grid, with bounds (nx,ny)
+
+  Usage:
+    :alm = flatsky.utils.map2alm(nx,ny,D,map):
+  """
+  return libflatsky.utils.map2alm(nx,ny,D,map)
+
+def alm2map(nx,ny,D,alm):
+  """
+  DFT for 2D array. 
+
+  Args:
+    :nx, ny (*int*): Number of Lx and Ly grids
+    :D[*2*] (*double*): Side length (x and y) of map
+    :alm[*x,y*] (*dcmplx*): Fourier modes on 2D grid to be transformed, with bounds (nx,ny)
+
+  Returns:
+    :map[*x,y*] (*double*): Map on 2D grid, with bounds (nx,ny)
+
+  Usage:
+    :map = flatsky.utils.alm2map(nx,ny,D,alm):
+  """
+  return libflatsky.utils.alm2map(nx,ny,D,alm)
+
 def el2d(nx,ny,D):
   """
   Return absolute value of multipole in 2D grids
@@ -101,7 +135,7 @@ def c2d2bcl(nx,ny,D,c2d,bn,oL,spc=''):
   """
   return libflatsky.utils.c2d2bcl(nx,ny,D,c2d,bn,oL,spc)
 
-def cl2c2d(nx,ny,D,lmin,lmax,Cl):
+def cl2c2d(nx,ny,D,lmin,lmax,Cl,method='linear'):
   """
   Assign values of 1D angular power spectrum on to 2D grid with linear interpolation
 
@@ -112,13 +146,16 @@ def cl2c2d(nx,ny,D,lmin,lmax,Cl):
     :lmax (*int*): maximum multipole of cl to be interpolated
     :Cl[*l*] (*double*): 1D power spectrum, with bounds (0:lmax)
 
+  Args(optional):
+    :method (*str*): type of interpolation method, i.e., linear interpolation (method='linear', default), or step (method='step')
+
   Returns:
     :c2d[*nx,ny*] (*double*): 2D power spectrum, with bounds (nx,ny)
  
   Usage:
-    :c2d = flatsky.utils.cl2c2d(nx,ny,D,lmin,lmax,Cl):
+    :c2d = flatsky.utils.cl2c2d(nx,ny,D,lmin,lmax,Cl,method):
   """
-  return libflatsky.utils.cl2c2d(nx,ny,D,lmin,lmax,Cl)
+  return libflatsky.utils.cl2c2d(nx,ny,D,lmin,lmax,Cl,method)
 
 def cb2c2d(bn,bc,nx,ny,D,lmin,lmax,Cb,method=''):
   """

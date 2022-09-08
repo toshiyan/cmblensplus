@@ -248,7 +248,7 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   !internal
   logical :: message
   integer :: c, ni, mi, i, l
-  double precision :: absb, absr, absx, d, d0, td, alpha
+  double precision :: power, absb, absr, absx, d, d0, td, alpha
   double precision :: mm(0:lmax,0:lmax)
   double complex, dimension(1:n,0:mgc%lmax(chain),0:mgc%lmax(chain)) :: r, z, p, Ap
 
@@ -257,6 +257,12 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   if (isnan(absb)) stop '|b|^2 is Nan'
 
   message = ou==7.or.mgc%verbose
+  select case (mgc%ytype)
+  case ('scal')
+    power = 1  ! clh is Cov
+  case ('cmb')
+    power = 2  ! clh is Cov^{1/2}
+  end select
 
   if (chain==1) then
     !diagonal preconditioner
@@ -267,10 +273,10 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
       do mi = 1, mgc%mnmax(1)
         do l = 0, lmax
           if (allocated(mgc%cv(1,mi)%nl)) then
-            mm(l,0:l) = mm(l,0:l) + mgc%cv(1,mi)%clh(ni,ni,l)**2 * ave(mgc%cv(1,mi)%nij(ni,:)) * ave(mgc%cv(1,mi)%nl(ni,:,0))
+            mm(l,0:l) = mm(l,0:l) + mgc%cv(1,mi)%clh(ni,ni,l)**power * ave(mgc%cv(1,mi)%nij(ni,:)) * ave(mgc%cv(1,mi)%nl(ni,:,0))
           else
             !derived by averaging over m for int Ylm^* N^-1 Ylm
-            mm(l,0:l) = mm(l,0:l) + mgc%cv(1,mi)%clh(ni,ni,l)**2 * ave(mgc%cv(1,mi)%nij(ni,:))
+            mm(l,0:l) = mm(l,0:l) + mgc%cv(1,mi)%clh(ni,ni,l)**power * ave(mgc%cv(1,mi)%nij(ni,:))
           end if
         end do
       end do
@@ -364,7 +370,7 @@ end subroutine precondition
 
 
 subroutine matmul_rhs(ytype,n,mn,lmax,cv,RHS)
-  ! Computing RHS = C^{1/2} N^{-1} d
+  ! Computing RHS = C^{1/2} N^{-1} d (cmb) or N^{-1} d (scal)
   implicit none
   !I/O
   type(mg_covmat), intent(in) :: cv(mn)
@@ -451,9 +457,8 @@ subroutine matmul_rhs_scal(n,npix,lmax,cv,alm)
 
   end do
     
-  ! C^1/2 x alm
-  call matmul_cov_alm(n,lmax,cv%clh,blm,alm)
-  
+  alm = blm
+
 end subroutine matmul_rhs_scal
 
 
@@ -514,8 +519,9 @@ subroutine matmul_lhs_cmb(n,npix,lmax,cv,x,v)
     map = map*cv%nij
   end if
 
-  !multiply C^{1/2}
   call spht_map2alm(n,npix,lmax,lmax,map,alm)
+  
+  !multiply C^{1/2}
   call matmul_cov_alm(n,lmax,cv%clh,alm,v)
 
 end subroutine matmul_lhs_cmb
@@ -534,7 +540,7 @@ subroutine matmul_lhs_scal(n,npix,lmax,cv,x,v)
 
   integer :: ni
 
-  ! C^1/2 x alm
+  ! Cov x alm
   call matmul_cov_alm(n,lmax,cv%clh,x,alm)
 
   do ni = 1, n
@@ -555,8 +561,7 @@ subroutine matmul_lhs_scal(n,npix,lmax,cv,x,v)
   
   end do
 
-  !multiply C^{1/2}
-  call matmul_cov_alm(n,lmax,cv%clh,alm,v)
+  v = alm
 
 end subroutine matmul_lhs_scal
 

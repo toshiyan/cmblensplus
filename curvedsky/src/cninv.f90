@@ -35,7 +35,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !*    :nsides[chain] (int) : Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside. 
 !*    :eps[chain] (double): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
 !*    :itns[chain] (int) : Number of interations. 
-!*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
+!*    :filter (str): C-inverse ('') or Wiener filter (W), default to the Wiener filter.
 !*    :inl[n,mn,l] (double) : Inverse noise spectrum (0 for white noise case, default).
 !*    :verbose (bool): Output messages, default to False
 !*    :ro (int): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed. 
@@ -57,7 +57,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !opt4py :: nsides = [0]
   !opt4py :: itns = [1]
   !opt4py :: eps = [1e-6]
-  !opt4py :: filter = ''
+  !opt4py :: filter = 'W'
   !opt4py :: verbose = False
   !opt4py :: ro = 50
   !opt4py :: stat = ''
@@ -176,14 +176,14 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 end subroutine cnfilter_freq
 
 
-subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,inl,iclh,verbose,ro,stat)
+subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,inl,verbose,ro,stat)
 !* Computing C(C+N)^-1 for multiple mass-tracer kappa maps including their correlations. 
 !*
 !* Args:
 !*    :n (int) : Number of input kappa maps to be combined
 !*    :nside (int) : Nside of input maps
 !*    :lmax (int) : Maximum multipole of the input cl
-!*    :clh[n,n,l] (double) : Square root of signal covariance matrix for each multipole, with bounds (0:n-1,0:n-1,0:lmax)
+!*    :cov[n,n,l] (double) : Signal covariance matrix for each multipole, with bounds (0:n-1,0:n-1,0:lmax)
 !*    :iNcov[n,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
 !*    :maps[n,pix] (double) : Input kappa maps, with bouds (0:n-1,0:npix-1)
 !*
@@ -194,7 +194,6 @@ subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
 !*    :eps[chain] (double): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
 !*    :itns[chain] (int) : Number of interations. 
 !*    :inl[n,l] (double) : Inverse noise spectrum for each mass map (0 for white noise case, default).
-!*    :iclh[n,n,l] (double) : Use C^{-1/2} to output C^-1 x alm (default to none).
 !*    :verbose (bool): Output messages, default to False
 !*    :ro (int): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed. 
 !*    :stat (str): Realtime status filename which contains the residual fraction, default to no output file
@@ -208,9 +207,8 @@ subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   character(100), intent(in) :: stat
   integer, intent(in) :: n, npix, lmax, chn, ro
   integer, intent(in), dimension(1:chn) :: lmaxs, nsides, itns
-  double precision, intent(in), dimension(n,n,0:lmax) :: clh
+  double precision, intent(in), dimension(n,n,0:lmax) :: cov
   double precision, intent(in), dimension(chn) :: eps
-  double precision, intent(in), dimension(n,n,0:lmax) :: iclh
   double precision, intent(in), dimension(n,0:lmax) :: inl
   double precision, intent(in), dimension(n,0:npix-1) :: iNcov, maps
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
@@ -223,7 +221,6 @@ subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   !opt4py :: ro = 50
   !opt4py :: stat = ''
   !opt4py :: inl = None
-  !opt4py :: iclh = None
   !internal
   type(mg_chain)  :: mgc
   integer :: ou=6, c, ni, mi, rn, l, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,n)
@@ -234,7 +231,6 @@ subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   !chargs :: npix -> nside
   !add2py :: npix = 12*nside**2
   !add2py :: if inl  is None: inl  = 0*iNcov[:,:lmax+1]
-  !add2py :: if iclh is None: iclh = 0*clh
 
   if (stat/='')  then 
     ou = 7
@@ -268,7 +264,7 @@ subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   ! check Nij size for chain = 1
   call check_error(size(iNcov,dim=2)/=mgc%npix(1,1),'iNcov size is wrong',str(size(iNcov,dim=2))//','//str(mgc%npix(1,1)),ou=ou)
   !setup signal and noise covariance
-  mgc%cv(1,1)%clh = clh
+  mgc%cv(1,1)%clh = cov
   mgc%cv(1,1)%nij = iNcov
 
   !setup inverse noise spectrum if necessary
@@ -294,7 +290,7 @@ subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
       do ni = 1, n
         call udgrade_ring_1d_d(mgc%cv(1,1)%nij(ni,:),mgc%nside(1,1),mgc%cv(c,1)%nij(ni,:),mgc%nside(c,1))
       end do
-      mgc%cv(c,1)%clh = clh(:,:,0:mgc%lmax(c))
+      mgc%cv(c,1)%clh = cov(:,:,0:mgc%lmax(c))
     end do
     call coarse_invmatrix(n,mgc%lmax(mgc%n),mgc)
   end if
@@ -310,12 +306,7 @@ subroutine cnfilter_kappa(n,npix,lmax,clh,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
 
   call free_mgchain(mgc)
 
-  ! C^1/2 x alm i.e. wiener filter
-  if (sum(iclh)/=0d0) then
-    call matmul_cov_alm(n,lmax,iclh,alm,xlm)
-  else
-    call matmul_cov_alm(n,lmax,clh,alm,xlm)
-  end if
+  xlm = alm
 
 end subroutine cnfilter_kappa
 
@@ -339,7 +330,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !*    :nsides0/1[chain] (int) : Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside. 
 !*    :eps[chain] (double): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
 !*    :itns[chain] (int) : Number of interations. 
-!*    :filter (str): C-inverse ('') or Wiener filter (W), default to C-inverse.
+!*    :filter (str): C-inverse ('') or Wiener filter (W), default to the Wiener filter.
 !*    :inl[n,mn,l] (double) : Inverse noise spectrum, 0 for white noise case.
 !*    :verbose (bool): Output messages, default to False
 !*    :ro (int): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed. 
@@ -363,7 +354,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !opt4py :: nsides1 = [0]
   !opt4py :: itns = [1]
   !opt4py :: eps = [1e-6]
-  !opt4py :: filter = ''
+  !opt4py :: filter = 'W'
   !opt4py :: verbose = False
   !opt4py :: reducmn = 0
   !opt4py :: ro = 50

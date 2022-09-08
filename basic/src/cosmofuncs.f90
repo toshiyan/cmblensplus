@@ -246,27 +246,31 @@ subroutine growth_rate(z,H0,Om,Ov,w0,wa,zn,fz)
 end subroutine growth_rate
 
 
-
 subroutine nz_gw(z,Cz,Hz,ntype,dotn0,Tobs,nz)
-!*  Distribution function of NS binary sources per redshift (dN/dz)
+!*  Distribution function of NS binary sources per redshift (dN/dz) at z
+!*
+!*  Args:
+!*    :z (double)  : redshift
+!*    :Cz (double) : comoving distance
+!*    :Hz (double) : expansion rate
+!*
+!*  Args(optional):
+!*    :ntype (str) : type of dotn functional form, i.e, CH06 (default) or none.
+!*    :dotn0 (double) : current merger-rate
+!*    :Tobs (double)  : total observation time
+!*
+!*  Returns:
+!*    :nz (double) : distribution function at z
+
 !
   implicit none
-! [inputs]  
-!   ntype  --- type of dotn functional from
-!   z      --- redshift
-!   Cz     --- comoving distance
-!   Hz     --- expansion rate
   character(4), intent(in) :: ntype
   double precision, intent(in) :: z, Cz, Hz
-! (optional)
-!   dotn0   --- current merger-rate
-!   Tobs    --- total observation time
   double precision, intent(in) :: dotn0, Tobs
-! [output]
-!   f       --- distrubution function at z
   double precision, intent(out) :: nz
 ! [internal]
   double precision :: Lz, sz
+  !opt4py :: ntype = 'CH06'
   !opt4py :: dotn0 = 1e-6
   !opt4py :: Tobs = 3.
 

@@ -1,7 +1,7 @@
 # HEALPix/F90 pkg-config file
 # compiled with ifort
 
-prefix=/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix
+prefix=/global/u1/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix
 suffix=
 exec_prefix=${prefix}/bin${suffix}
 libdir=${prefix}/lib${suffix}
@@ -13,5 +13,5 @@ Version: 3_31
 URL: http://healpix.sourceforge.net
 Requires: cfitsio >= 3.20
 Libs: -L${libdir} -lhealpix -lhpxgif
-Cflags: -I${includedir} -openmp -openmp_report0 -fPIC 
+Cflags: -I${includedir} -qopenmp -qopenmp_report0 -fPIC 
 

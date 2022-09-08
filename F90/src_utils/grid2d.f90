@@ -12,6 +12,11 @@ module grid2d
     module procedure spin_weight_1darray, spin_weight_2darray
   end interface 
 
+  interface make_lmask
+    module procedure make_lmask_int, make_lmask_dble
+  end interface 
+
+
   private InitRandom, ranmar, gaussian1
   private iu, pi, twopi
   private filelines, savetxt, loadtxt
@@ -209,7 +214,7 @@ subroutine elarrays_2d(nn,D,elx,ely,els,eli,ei2p)
 end subroutine elarrays_2d
 
 
-subroutine make_lmask(nn,D,rL,mask)
+subroutine make_lmask_int(nn,D,rL,mask)
   implicit none
   integer, intent(in) :: nn(2), rL(2)
   double precision, intent(in) :: D(2)
@@ -226,7 +231,44 @@ subroutine make_lmask(nn,D,rL,mask)
     end do
   end do
 
-end subroutine make_lmask
+end subroutine make_lmask_int
+
+
+subroutine make_lmask_dble(nn,D,rL,mask)
+  implicit none
+  integer, intent(in) :: nn(2)
+  double precision, intent(in) :: D(2), rL(2)
+  double precision, intent(out) :: mask(nn(1),nn(2))
+  double precision :: els(nn(1),nn(2))
+  integer :: i, j
+
+  call elarrays_2d(nn,D,els=els)
+
+  mask = 1d0
+  do i = 1, nn(1)
+    do j = 1, nn(2)
+      if (rL(1)>els(i,j).or.els(i,j)>rL(2))  mask(i,j) = 0d0
+    end do
+  end do
+
+end subroutine make_lmask_dble
+
+
+subroutine make_binmask(nn,D,bmin,bmax,bf,bn)
+  implicit none
+  integer, intent(in) :: nn(2), bn
+  double precision, intent(in) :: D(2)
+  double precision, intent(in), dimension(bn) :: bmin, bmax
+  double precision, intent(out), dimension(bn,nn(1),nn(2)) :: bf
+  integer :: b
+
+  bf = 0d0
+
+  do b = 1, bn
+    call make_lmask_dble(nn,D,(/bmin(b),bmax(b)/),bf(b,:,:))
+  end do
+
+end subroutine make_binmask
 
 
 subroutine spin_weight_1darray(sw,nn,D,trans,S)

@@ -118,9 +118,36 @@ def beam(theta,lmax,inv=True):
 
 #////////// Noise spectrum //////////#
 
-def nl_white(sigma,theta,lmax):
+def nl_cmb(lmax,sigma,theta,lknee=0.,alpha=0.):
 
-    return (sigma*c.ac2rad/c.Tcmb)**2*beam(theta,lmax)**2
+    N_white = (sigma*c.ac2rad/c.Tcmb)**2*beam(theta,lmax)**2
+
+    if lknee == 0 and alpha == 0.:
+        return N_white
+    else:
+        l = np.linspace(0,lmax,lmax+1)
+        return N_white * ( 1. + ((l+1e-30)/lknee)**alpha )
+
+
+def nl_cmb_all(lmax,sigma,theta,lknee=0.,alpha=0.,lTmax=None):
+    '''
+    Return Nl for TT, EE, and BB (+TE) assuming a simple isotropic noise spectrum with a beam deconvolution
+    * sigma: white noise level in uK-arcmin in temperature
+    * theta: Gaussian FWHM in arcmin
+    '''
+
+    nl = np.zeros((4,lmax+1))
+
+    # TT
+    nl[0] = nl_cmb(lmax,sigma,theta,lknee=lknee,alpha=alpha)
+    
+    # EE and BB
+    nl[1] = nl[2] = 2.*nl[0]
+
+    if lTmax is not None and lTmax != lmax:
+        nl[0,lTmax+1:] = 1e30 # filling a very large number
+
+    return nl
 
 
 #////////// Angular power spectrum /////////#

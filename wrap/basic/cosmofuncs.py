@@ -71,9 +71,22 @@ def growth_rate(z,H0=70.,Ov=0.7,Om=0.3,w0=-1.,wa=0.,zn=0):
   zn = len(z)
   return libbasic.cosmofuncs.growth_rate(z,H0,Om,Ov,w0,wa,zn)
 
-def nz_gw(z,Cz,Hz,ntype,dotn0=1e-6,Tobs=3.):
+def nz_gw(z,Cz,Hz,ntype='CH06',dotn0=1e-6,Tobs=3.):
   """
-  Distribution function of NS binary sources per redshift (dN/dz)
+  Distribution function of NS binary sources per redshift (dN/dz) at z
+
+  Args:
+    :z (*double*): redshift
+    :Cz (*double*): comoving distance
+    :Hz (*double*): expansion rate
+
+  Args(optional):
+    :ntype (*str*): type of dotn functional form, i.e, CH06 (default) or none.
+    :dotn0 (*double*): current merger-rate
+    :Tobs (*double*): total observation time
+
+  Returns:
+    :nz (*double*): distribution function at z
   Usage:
     :nz = basic.cosmofuncs.nz_gw(z,Cz,Hz,ntype,dotn0,Tobs):
   """

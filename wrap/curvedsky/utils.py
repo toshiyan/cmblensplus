@@ -72,22 +72,26 @@ def gaussTEB(lmax,TT,EE,BB,TE):
   """
   return libcurvedsky.utils.gaussTEB(lmax,TT,EE,BB,TE)
 
-def gaussalm(cl,n=None,lmax=None):
+def gaussalm(cl,n=None,lmax=None,ilm=None):
   """
   Generating alms as random Gaussian fields whose covariance is given by cl[i,j].
 
   Args:
     :cl [*i,j,l*] (*double*): Covariance between the gaussian fields, with bounds (n,n,0:lmax)
 
+  Args:
+    :ilm [*l,m*] (*dcmplx*): Input alm for the cl[*0,0*] element (default to None). The other alms are generated to be correlated with ilm.
+
   Returns:
     :alm [*i,l,m*] (*dcmplx*): Random Gaussian alms, with bounds (n,0:lmax,0:lmax)
 
   Usage:
-    :alm = curvedsky.utils.gaussalm(n,lmax,cl):
+    :alm = curvedsky.utils.gaussalm(n,lmax,cl,ilm):
   """
   if n is None:    n    = len(cl[:,0,0])
   if lmax is None: lmax = len(cl[0,0,:]) - 1
-  return libcurvedsky.utils.gaussalm(n,lmax,cl)
+  if ilm is None:  ilm  = [[0 for x in range(lmax+1)] for y in range(lmax+1)] 
+  return libcurvedsky.utils.gaussalm(n,lmax,cl,ilm)
 
 def cov_diag_tri(n,cl):
   """
@@ -426,6 +430,13 @@ def mulwin_spin(elm,blm,win,nside=0,lmax=0,mmax=0,spin=2):
   lmax = len(elm[:,0]) - 1
   mmax = len(elm[0,:]) - 1
   return libcurvedsky.utils.mulwin_spin(npix,lmax,mmax,spin,elm,blm,win)
+
+def lmpy2lmax(lmpy):
+  """
+  Usage:
+    :lmax = curvedsky.utils.lmpy2lmax(lmpy):
+  """
+  return libcurvedsky.utils.lmpy2lmax(lmpy)
 
 def lm_healpy2healpix(almpy,lmax,lmpy=0):
   """

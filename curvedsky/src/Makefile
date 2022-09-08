@@ -12,7 +12,7 @@ FLAGS = $(FLAG) $(DBAG)
 
 ## Directories ##
 flibloc = ../
-flibutl = ../../utils/
+flibutl = ../../F90/
 healpix = ${flibutl}/pub/Healpix
 cfitsio = ${flibutl}/pub/cfitsio
 lenspix = ${flibutl}/pub/lenspix
@@ -22,7 +22,7 @@ MODD= -I${lenspix}/mod -I${healpix}/include -I$(LAPACK)/mod -I${flibutl}/mod
 LIBD= -L${lenspix}/lib -L${healpix}/lib -L${cfitsio} -L$(LAPACK)/lib -L${flibutl}/lib
 LINK= -llenspix -lutils -lhealpix -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas
 
-OPTION = $(MODD) $(LIBD) $(LINK)
+OPTION = $(MODD) $(LIBD) $(LINK) -Wl,-R${healpix}/lib
 
 OBJ = utils.o bispec.o rec_lens.o delens.o rec_tau.o rec_src.o
 

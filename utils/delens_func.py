@@ -2,16 +2,17 @@ import numpy as np
 import basic
 
 #//// Delensing ////#
-def resbb_multitracer(olmax,elmin,elmax,klmin,klmax,vec,cov,kk,lEE,pp,WE):
+def resbb_multitracer(olmax,elmin,klmin,vec,cov,kk,lEE,WE,gtype='k'):
     
-    Lmax = len(vec[0,:]) - 1
+    lmax = len(lEE) - 1
+    Lmax = len(kk) - 1
 
     ava = np.zeros(Lmax+1)
     for L in range(Lmax+1):
         if np.sum(vec[:,L]) == 0.: continue
         ava[L] = np.dot(vec[:,L],np.dot(np.linalg.inv(cov[:,:,L]),vec[:,L])) / kk[L]
-    
-    tbb = basic.delens.lintemplate(olmax,elmin,elmax,klmin,klmax,lEE[:elmax+1],pp[:klmax+1],WE[:elmax+1],ava[:klmax+1])
+
+    tbb = basic.delens.lintemplate(olmax,elmin,lmax,klmin,Lmax,lEE,kk,WE[:lmax+1],ava,gtype=gtype)
     return tbb
 
     

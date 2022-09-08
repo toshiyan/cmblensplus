@@ -7,14 +7,10 @@ module ffttools
   use fftw,      only: dft, dft_2darray, dft_pol, window_deriv
   implicit none
 
-  INTEGER FFTW_ESTIMATE
-  PARAMETER (FFTW_ESTIMATE=64)
+  !interface dft
+  !  module procedure :: dft1d, dft2d, dft2dr, dft2drc, dft2dcr
+  !end interface dft
 
-  interface dft
-    module procedure :: dft1d, dft2d, dft2dr, dft2drc, dft2dcr
-  end interface dft
-
-  private FFTW_ESTIMATE
   private iu, pi, twopi
   private dft, dft_2darray, dft_pol, window_deriv
 

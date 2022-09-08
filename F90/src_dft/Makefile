@@ -20,7 +20,7 @@ LINK = -lutils -lfftw3
 
 OPTION = $(MODD) $(LIBD) $(LINK)
 
-OBJ = fftw.o #fft_remap.o
+OBJ = fftw.o fft_utils.o #fft_remap.o
 
 $(target): $(OBJ)
 	ar cr $@ $^

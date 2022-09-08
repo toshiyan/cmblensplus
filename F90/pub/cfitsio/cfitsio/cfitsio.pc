@@ -1,4 +1,4 @@
-prefix=/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/cfitsio/cfitsio
+prefix=/global/u1/t/toshiyan/Work/Lib/cmblensplus/F90/pub/cfitsio/cfitsio
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
