@@ -18,6 +18,8 @@ contains
 subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,filter,inl,verbose,ro,stat)
 !* Combining multiple frequency CMB maps optimally. 
 !* The filtering would work if the noise variance is not significantly varied with scale (multipole). 
+!* Please make sure that your input maps are beam-convolved. 
+!* This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
 !*
 !* Args:
 !*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
@@ -27,7 +29,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
 !*    :bl[mn,l] (double) : Beam spectrum, with bounds (0:mn-1,0:lmax)
 !*    :iNcov[n,mn,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:mn-1,0:npix-1)
-!*    :maps[n,mn,pix] (double) : Input T, Q, U maps, with bouds (0:n-1,0:mn-1,0:npix-1)
+!*    :maps[n,mn,pix] (double) : Beam-convolved T, Q, U maps, with bouds (0:n-1,0:mn-1,0:npix-1)
 !*
 !* Args(optional):
 !*    :chn (int) : Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
@@ -313,6 +315,8 @@ end subroutine cnfilter_kappa
 
 subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,xlm,chn,lmaxs,nsides0,nsides1,itns,eps,filter,inl,verbose,reducmn,ro,stat)
 !* Same as cnfilter_freq but for the maps with two different Nsides. 
+!* Please make sure that your input maps are beam-convolved. 
+!* This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
 !*
 !* Args:
 !*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
@@ -322,7 +326,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
 !*    :bl0/1[mn,l] (double) : Beam function, with bounds (0:n-1,0:lmax)
 !*    :iNcov0/1[n,mn,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
-!*    :maps0/1[n,mn,pix] (double) : Input T, Q, U maps, with bouds (0:n-1,0:npix-1)
+!*    :maps0/1[n,mn,pix] (double) : Beam-convolved T, Q, U maps, with bouds (0:n-1,0:npix-1)
 !*
 !* Args(optional):
 !*    :chn (int) : Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
