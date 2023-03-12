@@ -13,7 +13,7 @@ rlmin = 500
 rlmax = 2048      # reconstruction multipole range
 dlmin = 2
 dlmax = 2048 
-nside = 2048
+nside = 2048      # this corresponds to 1.7 arcmin resolution and is not enough for highly accurate case, but is just for demonstration
 npix = 12*nside**2
 mcnum = 1
 
