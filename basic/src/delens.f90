@@ -54,7 +54,7 @@ subroutine lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,CB,gtype)
 
   W1 = CE(elmin:elmax)*WE(elmin:elmax)
   W2 = Cp(klmin:klmax)*Wm(klmin:klmax)
-  call conv_egrad((/1,lmax/),(/elmin,elmax/),(/klmin,klmax/),W1,W2,CB)
+  call conv_egrad((/1,lmax/),(/elmin,elmax/),(/klmin,klmax/),W1,W2,CB(1:lmax))
 
 end subroutine lintemplate
 
