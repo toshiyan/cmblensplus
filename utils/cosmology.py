@@ -44,22 +44,14 @@ def window_cib(chi,z,nu,z_c=2.,sigma_z=2.,bc=.528654,dim='',weight_only=False):
     return w_cib
 
 
-#def window_gal(Hz,chi,fNz):
-#    '''
-#    # fNz is a normalized z-distribution so that its integral over z becomes a fractional number of galaxies at the bin
-#    # For a single bin, the integral of fNz over z becomes unity. 
-#    The window has a unit of 1/Mpc
-#    '''
-#    return (Hz/chi) * fNz
-
-
-def window_kap(z,zcmb=1088.69,**cps):
+def window_gal(Hz,chi,fNz):
     '''
-    The window has a unit of 1/Mpc (see Eq.(D.3) of arXiv:1502.01591). To pass into camb python as a source count, 1/H(z) should be further multiplied.
+    fNz is a normalized z-distribution so that its integral over z becomes a fractional number of galaxies at the bin
+    For a single bin, the integral of fNz over z becomes unity. 
+    The window has a unit of 1/Mpc
     '''
-    chi  = basic.cosmofuncs.dist_comoving(z,**cps)
-    chis = basic.cosmofuncs.dist_comoving([zcmb],**cps)[0]
-    return 1.5 * cps['Om']*(cps['H0']/constant.C)**2 * (1.+z) * chi*(chis-chi)/chis
+    return (Hz/chi) * fNz
+
 
 
 # //// CAMB Cl //// #
@@ -144,6 +136,7 @@ def cl_limber(L,z,dz,W0,W1,k,pk0,ln=200,**cps):
     The weights, W0 and W1, have a unit of 1/Mpc. 
     k:   Wavenumber in unit of h/Mpc
     pk0: P(k,z=0) in unit of (Mpc/h)^3
+    cps: a dictionary with the following keys, H0, Om, Ov, w0, wa
     '''
     
     h0  = cps['H0']*1e-2
@@ -166,16 +159,23 @@ def cl_limber(L,z,dz,W0,W1,k,pk0,ln=200,**cps):
 
 # Matter P(k)
 
-def camb_pk(H0=70.,Om=.3,Ob=0.0455,ns=.96,As=2e-9,z=[0.],kmax=20.,minkh=1e-4,maxkh=10,npoints=500):
+def camb_pk(H0=70.,Om=.3,Ob=0.0455,ns=.96,As=2e-9,z=[0.],kmin=1e-4,kmax=1e1,npoints=500,output_with_h=False,nonlinear=False):
     # compute linear matter P(k) with CAMB
     h0 = H0*.01
     pars = camb.CAMBparams()
     pars.set_cosmology(H0=H0, ombh2=Ob*h0**2, omch2=(Om-Ob)*h0**2)
     pars.InitPower.set_params(ns=ns,As=As)
     pars.set_matter_power(redshifts=z, kmax=kmax)
+    if nonlinear: 
+        pars.NonLinear = camb.model.NonLinear_both
+    else:
+        pars.NonLinear = camb.model.NonLinear_none        
     results = camb.get_results(pars)
-    k, __, pk0 = results.get_matter_power_spectrum(minkh=minkh, maxkh=maxkh, npoints=npoints)
-    return  k*h0, pk0/h0**3
+    k, __, pk0 = results.get_matter_power_spectrum(minkh=kmin/h0, maxkh=kmax/h0, npoints=npoints)
+    if output_with_h:
+        return k, pk0
+    else:
+        return k*h0, pk0/h0**3
 
 
 def Pmk(k,z,k0=0.05,H0=70.,ns=.96,Om=.27,As=2e-9):

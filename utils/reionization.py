@@ -90,25 +90,6 @@ def xe_asym(z,alpha_xe=7.,z_early=20.,zend=6.,f_xe=1.08):
     if z >= z_early:
         return 0.
 
-    
-def optical_depth(xe,H0=70.,Om=.3,Ov=.7,Ob=.0455,w0=-1.,wa=0.,zmin=1e-4,zmax=50,zn=1000):
-    
-    h0 = H0/100.
-    
-    # precompute H(z)
-    zi  = np.linspace(zmin,zmax,zn)
-    Hzi = basic.cosmofuncs.hubble(zi,divc=True,H0=H0,Om=Om,Ov=Ov,w0=w0,wa=wa)
-    Hz  = spline( zi, Hzi )
-
-    # define z-integral
-    I = lambda z: (1+z)**2/Hz(z) * xe(z)
-    
-    #Eq.(3.44) of Dodelson's Modern Cosmology and conversion of H(z) unit 1/Mpc -> 1/m
-    f = sigmaT * (c.rho_c*Ob*h0**2/c.m_p) * c.Mpc2m 
-    
-    # compute z-integral
-    print('optical depth:', quad(I,zmin,zmax)[0] * f) 
-
 
 def compute_cltt(xe,H0=70.,Om=.3,Ov=.7,Ob=.0455,w0=-1.,wa=0.,ns=.97,As=2e-9,R0=10.,alpha=0.,bias=6.,lmin=1,lmax=3000,ln=100,zmin=1e-4,zmax=50,zn=1000,evol=False):
     
@@ -143,4 +124,38 @@ def compute_cltt(xe,H0=70.,Om=.3,Ov=.7,Ob=.0455,w0=-1.,wa=0.,ns=.97,As=2e-9,R0=1
         cl[i] = __cltt__(L,rz,Dz,Hz,Pk,xe,Rz,Kz,bias=bias,evol=evol)
 
     return l, cl
+
+
+
+# for tau related 
+
+def dtau_dchi(z,xe='tanh',ombh2=0.02254):
+    
+    if xe=='tanh':
+        xez = xe_sym(z)
+    elif xe=='asym':
+        xez = xe_asym(z)
+    else: # xe should be a number 
+        xez = xe
+    
+    #Eq.(3.44) of Dodelson's Modern Cosmology and conversion of H(z) unit 1/Mpc -> 1/m
+    f = c.sigmaT * (c.rho_c*ombh2/c.m_p) * c.Mpc2m 
+
+    # dtau/dchi
+    return  f * (1+z)**2 * xez
+    
+    
+def optical_depth(xe,H0=70.,Om=.3,Ov=.7,Ob=.0455,w0=-1.,wa=0.,zmin=1e-4,zmax=50,zn=1000):
+    
+    # precompute H(z)
+    zi  = np.linspace(zmin,zmax,zn)
+    Hzi = basic.cosmofuncs.hubble(zi,divc=True,H0=H0,Om=Om,Ov=Ov,w0=w0,wa=wa)
+    Hz  = spline( zi, Hzi )
+
+    # define z-integral
+    I = lambda z: dtau_dchi(z,xe(z),ombh2=Ob*(H0*.01)**2)/Hz(z) 
+    
+    # compute z-integral
+    print('optical depth:', quad(I,zmin,zmax)[0]) 
+
 

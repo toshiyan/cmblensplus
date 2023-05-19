@@ -358,7 +358,12 @@ def lnL_gauss(scov,ocov,method=0):
 def Fisher_Matrix(L,dCdp=None,iC=None,dlnCdp=None,fsky=1.):
 
     # return fisher matrix
-    s1, s2, ln, pn = dlnCdp.shape
+    if dlnCdp is not None:
+        s1, s2, ln, pn = dlnCdp.shape
+    elif dCdp is not None and iC is not None:
+        s1, s2, ln, pn = dCdp.shape
+    else:
+        print('need either (dlnCdp) or (dCdp and iC)')
     F = np.zeros((pn,pn,ln))
     
     # symmetric in pn x pn
