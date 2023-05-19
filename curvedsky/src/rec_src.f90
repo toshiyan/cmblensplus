@@ -36,8 +36,8 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside_t,verbose)
   double complex, intent(out), dimension(0:lmax,0:lmax) :: slm
   !internal
   integer :: l, npix, nside
-  double precision, allocatable :: map(:,:)
-  double complex, allocatable :: alm(:,:,:)
+  double precision, allocatable :: map1(:), map2(:)
+  double complex, allocatable :: alm1(:,:,:), alm2(:,:,:)
   !opt4py :: nside_t = 0
   !opt4py :: verbose = False
 
@@ -47,24 +47,25 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside_t,verbose)
   npix = 12*nside**2
 
   ! alm to map 
-  allocate(alm(2,0:rlmax,0:rlmax)); alm = 0d0
+  allocate(alm1(1,0:rlmax,0:rlmax),alm2(1,0:rlmax,0:rlmax)); alm1=0d0; alm2=0d0
   do l = rlmin, rlmax
-    alm(1,l,0:l) = Tlm1(l,0:l)
-    alm(2,l,0:l) = Tlm2(l,0:l)
+    alm1(1,l,0:l) = Tlm1(l,0:l)
+    alm2(1,l,0:l) = Tlm2(l,0:l)
   end do 
-  allocate(map(2,0:npix-1))
-  call alm2map(nside,rlmax,rlmax,alm(1:1,:,:),map(1,:))
-  call alm2map(nside,rlmax,rlmax,alm(2:2,:,:),map(2,:))
-  deallocate(alm)
+  allocate(map1(0:npix-1),map2(0:npix-1))
+  call alm2map(nside,rlmax,rlmax,alm1,map1)
+  call alm2map(nside,rlmax,rlmax,alm2,map2)
+  deallocate(alm1,alm2)
 
   ! map to alm
-  allocate(alm(1,0:lmax,0:lmax))
-  call map2alm(nside,lmax,lmax,map(1,:)*map(2,:),alm)
+  allocate(alm1(1,0:lmax,0:lmax))
+  map1 = map1*map2
+  call map2alm(nside,lmax,lmax,map1,alm1)
   slm = 0d0
   do l = 1, lmax
-    slm(l,0:l) = 0.5d0*alm(1,l,0:l)
+    slm(l,0:l) = 0.5d0*alm1(1,l,0:l)
   end do
-  deallocate(map,alm)
+  deallocate(map1,map2,alm1)
 
 end subroutine qtt
 

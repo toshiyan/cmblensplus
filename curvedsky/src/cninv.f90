@@ -71,17 +71,15 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
   type(mg_chain)  :: mgc
-  integer :: ou=6, c, ni, mi, rn, l, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn)
+  integer :: ou=6, c, ni, mi, rn, l, nside
+  integer, allocatable :: ilmaxs(:), mnmaxs(:), insides(:,:)
   integer(8) :: t1, t2, t_rate, t_max
-  double precision :: clh(n,n,mn,0:lmax)
-  double precision, allocatable :: nij(:,:)
-  double complex :: b(n,0:lmax,0:lmax)
+  double precision, allocatable :: clh(:,:,:,:), nij(:,:)
+  double complex, allocatable :: b(:,:,:)
   !replace
   !chargs :: npix -> nside
   !add2py :: npix = 12*nside**2
   !add2py :: if inl is None: inl = 0*iNcov[:,:,:lmax+1]
-
-  mnmaxs = mn
 
   if (stat/='')  then 
     ou = 7
@@ -89,9 +87,12 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   end if
 
   !compute beam-convolved half signal spectrum
+  allocate(clh(n,n,mn,0:lmax))
   call clhalf(n,mn,lmax,cl,bl,clh)
 
   !set multigrid parameters
+  allocate(ilmaxs(chn), mnmaxs(chn), insides(chn,mn))
+  mnmaxs = mn
   if (chn==1) then
     ilmaxs  = (/lmax/)
     insides(1,:) = int(dsqrt(npix/12d0))
@@ -105,6 +106,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
     mnmaxs(2:) = 1
   end if
   call set_mgchain(mgc,'cmb',chn,mn,mnmaxs,ilmaxs,insides,itns,eps,verbose,ro)
+  deallocate(ilmaxs,mnmaxs,insides)
 
   !initialize arrays for cinv
   allocate(mgc%cv(mgc%n,mn))
@@ -122,7 +124,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
     mgc%cv(1,mi)%clh = clh(:,:,mi,:)
     mgc%cv(1,mi)%nij = iNcov(:,mi,:)
   end do
-
+  
   !setup inverse noise spectrum if necessary
   if (sum(inl)/=0) then
     do mi = 1, mn
@@ -139,6 +141,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   end if
 
   !first compute b = C^1/2 N^-1 X
+  allocate(b(n,0:lmax,0:lmax))
   call matmul_rhs(mgc%ytype,n,mn,lmax,mgc%cv(1,:),b)
 
   do mi = 1, mn
@@ -174,12 +177,14 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   call free_mgchain(mgc)
 
   call correct_filtering(n,lmax,cl,filter,xlm)
+  
+  deallocate(clh,b)
 
 end subroutine cnfilter_freq
 
 
 subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,eps,inl,verbose,ro,stat)
-!* Computing C(C+N)^-1 for multiple mass-tracer kappa maps including their correlations. 
+!* Computing the inverse-variance weighted multipole, (C+N)^-1 x kappa, for multiple mass-tracers of kappa maps. 
 !*
 !* Args:
 !*    :n (int) : Number of input kappa maps to be combined
@@ -225,10 +230,11 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   !opt4py :: inl = None
   !internal
   type(mg_chain)  :: mgc
-  integer :: ou=6, c, ni, mi, rn, l, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,n)
+  integer :: ou=6, c, ni, mi, rn, l, nside
+  integer, allocatable :: ilmaxs(:), mnmaxs(:), insides(:,:)
   integer(8) :: t1, t2, t_rate, t_max
   double precision, allocatable :: nij(:,:)
-  double complex, dimension(n,0:lmax,0:lmax) :: b, alm
+  double complex, allocatable, dimension(:,:,:) :: b, alm
   !replace
   !chargs :: npix -> nside
   !add2py :: npix = 12*nside**2
@@ -240,6 +246,7 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   end if
 
   !set multigrid parameters
+  allocate(ilmaxs(chn),mnmaxs(chn),insides(chn,n))
   mnmaxs = 1
   if (chn==1) then
     ilmaxs  = (/lmax/)
@@ -253,6 +260,7 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
     end do
   end if
   call set_mgchain(mgc,'scal',chn,1,mnmaxs,ilmaxs,insides,itns,eps,verbose,ro)
+  deallocate(ilmaxs,mnmaxs,insides)
 
   !initialize arrays for cinv
   allocate(mgc%cv(mgc%n,1))
@@ -282,6 +290,7 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   end if
 
   !first compute b = C^1/2 N^-1 X
+  allocate(b(n,0:lmax,0:lmax))
   call matmul_rhs(mgc%ytype,n,1,lmax,mgc%cv(1,:),b)
   deallocate(mgc%cv(1,1)%imap)
 
@@ -298,6 +307,7 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   end if
 
   !run kernel
+  allocate(alm(n,0:lmax,0:lmax))
   call system_clock(t1)
   call cg_algorithm(n,lmax,b,alm,mgc,1,ou)
   call system_clock(t2, t_rate, t_max) 
@@ -309,6 +319,8 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   call free_mgchain(mgc)
 
   xlm = alm
+  
+  deallocate(b,alm)
 
 end subroutine cnfilter_kappa
 
@@ -373,11 +385,11 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
   !internal
   type(mg_chain)  :: mgc
-  integer :: ou=6, c, ni, mi, mn, rn, l, nside, ilmaxs(chn), mnmaxs(chn), insides(chn,mn0+mn1)
+  integer :: ou=6, c, ni, mi, mn, rn, l, nside
+  integer, allocatable :: ilmaxs(:), mnmaxs(:), insides(:,:)
   integer(8) :: t1, t2, t_rate, t_max
-  double precision :: clh(n,n,mn0+mn1,0:lmax), bl(mn0+mn1,0:lmax)
-  double precision, allocatable :: nij(:,:)
-  double complex :: b(n,0:lmax,0:lmax)
+  double precision, allocatable :: nij(:,:), clh(:,:,:,:), bl(:,:)
+  double complex, allocatable :: b(:,:,:)
   integer :: nn
 
   !replace
@@ -385,10 +397,9 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !chargs :: npix1 -> nside1
   !add2py :: npix0 = 12*nside0**2
   !add2py :: npix1 = 12*nside1**2
-  !add2py :: if inl is None: inl = 0*iNcov[:,:,:lmax+1]
+  !add2py :: if inl is None: inl = 0*iNcov0[:,:,:lmax+1]
 
   mn = mn0 + mn1
-  mnmaxs = mn
 
   if (stat/='')  then 
     ou = 7
@@ -396,11 +407,15 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   end if
 
   !compute beam-convolved half signal spectrum
+  allocate(clh(n,n,mn,0:lmax),bl(mn,0:lmax))
   bl(:mn0,:)   = bl0
   bl(mn0+1:,:) = bl1
   call clhalf(n,mn,lmax,cl,bl,clh)
+  deallocate(bl)
 
   !set multigrid parameters
+  allocate(ilmaxs(chn),mnmaxs(chn),insides(chn,mn))
+  mnmaxs = mn
   if (chn==1) then
     ilmaxs  = (/lmax/)
     insides(1,:mn0)   = int(dsqrt(npix0/12d0))
@@ -427,6 +442,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
     end select
   end if
   call set_mgchain(mgc,'cmb',chn,mn,mnmaxs,ilmaxs,insides,itns,eps,verbose,ro)
+  deallocate(ilmaxs,mnmaxs,insides)
 
   !setup signal and noise covariance
   allocate(mgc%cv(mgc%n,mn))
@@ -434,7 +450,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
     ! input map for rhs
     allocate( mgc%cv(1,mi)%imap(n,0:mgc%npix(1,mi)-1) )
     if (mi<=mn0)  mgc%cv(1,mi)%imap = maps0(:,mi,:)
-    if (mi>mn0)   mgc%cv(1,mi)%imap = maps1(:,mi,:)
+    if (mi>mn0)   mgc%cv(1,mi)%imap = maps1(:,mi-mn0,:)
     ! signal and noise covariance
     do c = 1, mgc%n
       allocate( mgc%cv(c,mi)%nij(n,0:mgc%npix(c,mi)-1), mgc%cv(c,mi)%clh(n,n,0:mgc%lmax(c)) )
@@ -469,6 +485,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   end if
 
   !first compute b = C^1/2 N^-1 X
+  allocate(b(n,0:lmax,0:lmax))
   call matmul_rhs(mgc%ytype,n,mn,lmax,mgc%cv(1,:),b)
 
   do mi = 1, mn
@@ -544,6 +561,8 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
     call coarse_invmatrix(n,mgc%lmax(mgc%n),mgc)
   
   end if
+  
+  deallocate(clh)
 
   !run kernel
   call system_clock(t1)
@@ -557,6 +576,8 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   call free_mgchain(mgc)
 
   call correct_filtering(n,lmax,cl,filter,xlm)
+  
+  deallocate(b)
 
 end subroutine cnfilter_freq_nside
 

@@ -14,6 +14,8 @@ module utils
   use general,   only: str
   use pstool,    only: binned_ells, power_binning
   use utilsgal,  only: nz_SF_scal, pz_SF_scal, gbias
+  !from F90/src_hp
+  use hp_spht,   only: spht_map2alm
   implicit none
 
   private alm2map, alm2map_spin, map2alm, map2alm_spin, alm2map_der
@@ -26,6 +28,8 @@ module utils
   private fill_holes_nest, dist2holes_nest
   private convert_ring2nest, convert_nest2ring
   private nz_SF_scal, pz_SF_scal, gbias
+  
+  private spht_map2alm
 
 contains
 
@@ -83,9 +87,23 @@ subroutine gauss2alm(lmax,cl1,cl2,xl,alm)
   !internal
   integer :: l, m
   double precision :: tamp, corr, xamp
+  double complex, dimension(:,:), allocatable :: tlm
 
   alm = 0
-  call gauss1alm(lmax,cl1,alm(1,:,:))
+  !call gauss1alm(lmax,cl1,alm(1,:,:))
+  allocate(tlm(0:lmax,0:lmax))
+  call gauss1alm(lmax,cl1,tlm)
+  alm(1,:,:) = tlm
+  deallocate(tlm)
+
+  !call initrandom(-1)
+  !alm(1,:,:) = 0
+  !do l = 1, lmax
+  !  alm(1,l,0) = Gaussian1()* dsqrt(cl1(l))
+  !  do m = 1, l
+  !    alm(1,l,m) = cmplx(Gaussian1(),Gaussian1())*dsqrt(cl1(l)/2d0)
+  !  end do 
+  !end do
 
   call initrandom(-1)
   do l = 2, lmax
@@ -165,10 +183,18 @@ subroutine gaussTEB(lmax,TT,EE,BB,TE,alm)
   integer, intent(in) :: lmax
   double precision, intent(in), dimension(0:lmax) :: TT, EE, BB, TE
   double complex, intent(out), dimension(3,0:lmax,0:lmax) :: alm
-  double complex :: flm(0:lmax,0:lmax)
-
-  call gauss2alm(lmax,TT,EE,TE,alm(1:2,:,:))
-  call gauss1alm(lmax,BB,alm(3,:,:))
+  double complex, allocatable, dimension(:,:) :: almb
+  double complex, allocatable, dimension(:,:,:) :: almte
+  
+  allocate(almte(2,0:lmax,0:lmax))
+  call gauss2alm(lmax,TT,EE,TE,almte)
+  alm(1:2,:,:) = almte
+  deallocate(almte)
+  
+  allocate(almb(0:lmax,0:lmax))
+  call gauss1alm(lmax,BB,almb)
+  alm(3,:,:) = almb
+  deallocate(almb)
 
 end subroutine gaussTEB
 
@@ -656,7 +682,7 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
   integer :: n, nside, hsize
   integer, allocatable :: mask(:)
   double precision :: x, y
-  double precision, allocatable :: map(:,:)
+  double precision, allocatable :: map(:,:), rmap(:)
 
   !replace
   !chargs :: npix -> nside
@@ -664,7 +690,7 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 
   nside = int(sqrt(npix/12d0))
 
-  allocate(map(0:npix-1,1)); map=0d0
+  allocate(map(0:npix-1,1),rmap(0:npix-1)); map=0d0; rmap=0d0
   map(:,1) = rmask
 
   if (order == 1) then
@@ -683,7 +709,8 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 
   !compute distance from valid to the closest invalid pixel
   write(*,*) 'compute distance'
-  call dist2holes_nest(nside, mask, map(:,1))
+  call dist2holes_nest(nside, mask, rmap)
+  map(:,1) = rmap
   deallocate(mask)
 
   if (order == 1) then
@@ -753,7 +780,8 @@ subroutine hp_alm2map(npix,lmax,mmax,alm,map)
  
   !internal
   integer :: nside
-  double complex :: tlm(1,0:lmax,0:mmax)
+  double complex, allocatable :: tlm(:,:,:)
+  double precision, allocatable :: tmap(:)
   
   !replace
   !chargs :: npix -> nside
@@ -761,8 +789,10 @@ subroutine hp_alm2map(npix,lmax,mmax,alm,map)
 
   nside = int(dsqrt(npix/12d0))
 
+  allocate(tlm(1,0:lmax,0:lmax))
   tlm(1,:,:) = alm
   call alm2map(nside,lmax,mmax,tlm,map)
+  deallocate(tlm)
 
 end subroutine hp_alm2map
 
@@ -790,8 +820,8 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
 
   !internal
   integer :: nside
-  double precision :: map(0:npix-1,2)
-  double complex :: alm(2,0:lmax,0:mmax)
+  double precision, allocatable :: map(:,:)
+  double complex, allocatable :: alm(:,:,:)
 
   !replace
   !chargs :: npix -> nside
@@ -799,11 +829,13 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
 
   nside = int(dsqrt(npix/12d0))
 
+  allocate(alm(2,0:lmax,0:mmax),map(0:npix-1,2))
   alm(1,:,:) = elm
   alm(2,:,:) = blm
   call alm2map_spin(nside,lmax,mmax,spin,alm,map)
   map0 = map(:,1)
   map1 = map(:,2)
+  deallocate(alm,map)
 
 end subroutine hp_alm2map_spin
 
@@ -829,7 +861,7 @@ subroutine hp_map2alm(npix,lmax,mmax,map,alm)
 
   !internal
   integer :: nside
-  double complex :: tlm(1,0:lmax,0:mmax)
+  double complex, allocatable :: tlm(:,:,:)
 
   !replace
   !chargs :: npix -> nside
@@ -839,9 +871,10 @@ subroutine hp_map2alm(npix,lmax,mmax,map,alm)
 
   if (size(map)/=npix) stop 'error (utils.hp_map2alm): size of map array is not 12*nside**2'
 
-  tlm = 0d0
+  allocate(tlm(1,0:lmax,0:mmax)); tlm = 0d0
   call map2alm(nside,lmax,mmax,map,tlm)
   alm = tlm(1,:,:)
+  deallocate(tlm)
 
 end subroutine hp_map2alm
 
@@ -869,7 +902,7 @@ subroutine hp_map2alm_spin(npix,lmax,mmax,spin,map0,map1,alm)
 
   !internal
   integer :: nside
-  double precision :: S(0:npix-1,2)
+  double precision, allocatable :: S(:,:)
 
   !replace
   !chargs :: npix -> nside
@@ -880,10 +913,11 @@ subroutine hp_map2alm_spin(npix,lmax,mmax,spin,map0,map1,alm)
   if (size(map0)/=npix) stop 'error (utils.hp_map2alm_spin): size of map0 array is not 12*nside**2'
   if (size(map1)/=npix) stop 'error (utils.hp_map2alm_spin): size of map1 array is not 12*nside**2'
 
+  allocate(S(0:npix-1,2))
   S(:,1) = map0
   S(:,2) = map1
-  alm = 0d0
   call map2alm_spin(nside,lmax,mmax,spin,S,alm)
+  deallocate(S)
 
 end subroutine hp_map2alm_spin
 
@@ -909,16 +943,18 @@ subroutine map_mul_lfunc(nside,imap,lmax,lfunc,omap)
   
   !internal
   integer :: l, npix
-  double complex :: alm(1,0:lmax,0:lmax)
+  double complex, allocatable :: alm(:,:,:)
 
   npix = 12*nside**2
   if (npix/=size(imap))  stop 'size of input map is inconsistent with input nside'
 
+  allocate(alm(1,0:lmax,0:lmax))
   call map2alm(nside,lmax,lmax,imap,alm)
   do l = 0, lmax
     alm(1,l,:) = alm(1,l,:) * lfunc(l)
   end do
   call alm2map(nside,lmax,lmax,alm,omap)
+  deallocate(alm)
 
 end subroutine map_mul_lfunc
 
@@ -942,8 +978,8 @@ subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
   
   !internal
   integer :: nside
-  double precision :: map(0:npix-1)
-  double complex :: tlm(1,0:lmax,0:mmax)
+  double precision, allocatable :: map(:)
+  double complex, allocatable :: tlm(:,:,:)
 
   !replace
   !chargs :: npix -> nside
@@ -956,11 +992,13 @@ subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
 
   nside = int(dsqrt(npix/12d0))
 
+  allocate(map(0:npix-1),tlm(1,0:lmax,0:mmax))
   tlm(1,:,:) = alm
   call alm2map(nside,lmax,mmax,tlm,map)
   map = win*map
   call map2alm(nside,lmax,mmax,map,tlm)
   wlm = tlm(1,:,:)
+  deallocate(map,tlm)
 
 end subroutine mulwin
 
@@ -988,8 +1026,8 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
 
   !internal
   integer :: nside
-  double precision :: map(0:npix-1,2)
-  double complex :: alm(2,0:lmax,0:mmax)
+  double precision, allocatable :: map(:,:)
+  double complex, allocatable :: alm(:,:,:)
 
   !replace
   !chargs :: npix -> nside
@@ -1003,12 +1041,14 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
 
   nside = int(dsqrt(npix/12d0))
 
+  allocate(map(0:npix-1,2),alm(2,0:lmax,0:mmax))
   alm(1,:,:) = elm
   alm(2,:,:) = blm
   call alm2map_spin(nside,lmax,mmax,spin,alm,map)
   map(:,1) = win*map(:,1)
   map(:,2) = win*map(:,2)
   call map2alm_spin(nside,lmax,mmax,spin,map,wlm)
+  deallocate(map,alm)
 
 end subroutine mulwin_spin
 
@@ -1149,19 +1189,20 @@ subroutine polcoord2angle(npix,theta,phi,angle,verbose)
   implicit none
   integer, intent(in) :: npix
   logical, intent(in) :: verbose
-  double precision, intent(in), dimension(:) :: theta, phi
+  double precision, intent(in), dimension(0:npix-1) :: theta, phi
   double precision, intent(out), dimension(0:npix-1,2) :: angle
   !opt4py :: verbose = False
   !internal
   integer :: nside, n
   double precision :: theta0, phi0, deltaphi, cosalp, sinalp, alpha, cosdelta, sindelta
-  double precision, dimension(0:npix-1) :: theta_i, phi_i
+  double precision, allocatable :: theta_i(:), phi_i(:)
 
   if (verbose) write(*,*) 'nside', nside
   if (verbose) write(*,*) 'size:', size(theta), size(phi)
   nside = int(dsqrt(npix/12d0))
 
   !healpix location
+  allocate(theta_i(0:npix-1),phi_i(0:npix-1))
   if (verbose) write(*,*) 'obtain image plane theta/phi'
   do n = 0, npix-1
       call pix2ang_ring(nside,n,theta0,phi0)
@@ -1189,6 +1230,8 @@ subroutine polcoord2angle(npix,theta,phi,angle,verbose)
           angle(n,2) = alpha*sindelta
       end if
   end do
+  
+  deallocate(theta_i,phi_i)
 
 end subroutine polcoord2angle
 
@@ -1217,8 +1260,8 @@ subroutine polcoord2angle_alm(nside,lmax,theta,phi,glm,clm,verbose)
   !opt4py :: verbose = False
   !internal
   integer :: npix, l
-  double precision, dimension(0:12*nside**2-1,2) :: angle
-  double complex, dimension(2,0:lmax,0:lmax) :: dlm
+  double precision, allocatable :: angle(:,:)
+  double complex, allocatable :: dlm(:,:,:)
 
   npix = 12*nside**2
 
@@ -1228,10 +1271,13 @@ subroutine polcoord2angle_alm(nside,lmax,theta,phi,glm,clm,verbose)
   end if
 
   if (verbose) write(*,*) 'convert to angle'
+  allocate(angle(0:npix-1,2))
   call polcoord2angle(npix,theta,phi,angle,verbose)
 
   if (verbose) write(*,*) 'deflection angle to its alms'
+  allocate(dlm(2,0:lmax,0:lmax))
   call map2alm_spin(nside,lmax,lmax,1,angle,dlm)
+  deallocate(angle)
 
   if (verbose) write(*,*) 'convert to glm and clm'
   glm = 0d0
@@ -1240,6 +1286,7 @@ subroutine polcoord2angle_alm(nside,lmax,theta,phi,glm,clm,verbose)
       glm(l,0:l) = dlm(1,l,0:l)/dsqrt(dble(l**2+l))
       clm(l,0:l) = dlm(2,l,0:l)/dsqrt(dble(l**2+l))
   end do
+  deallocate(dlm)
 
 end subroutine polcoord2angle_alm
 

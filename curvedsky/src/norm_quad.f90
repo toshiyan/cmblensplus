@@ -1035,6 +1035,73 @@ subroutine xtt(est,lmax,rlmin,rlmax,fC,OCT,Ag,lfac)
 end subroutine xtt
 
 
+subroutine xeb(est,lmax,rlmin,rlmax,EE,EB,OCE,OCB,BB,Aa)
+!*  Response of reconstructed field to other in the EB quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :EE [l] (double)  : Theory EE spectrum, with bounds (0:rlmax)
+!*    :EB [l] (double)  : Theory EB spectrum, with bounds (0:rlmax)
+!*    :OCE [l] (double) : Observed EE spectrum, with bounds (0:rlmax)
+!*    :OCB [l] (double) : Observed BB spectrum, with bounds (0:rlmax)
+!*
+!*  Args(optionals): 
+!*    :BB [l] (double)  : Theory BB spectrum, with bounds (0:rlmax)
+!*
+!*  Returns:
+!*    :Aa [l] (double) : Pol. rot. angle normalization, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  character(*), intent(in) :: est
+  integer, intent(in) :: lmax, rlmin, rlmax
+  double precision, intent(in), dimension(0:rlmax) :: EE, EB, OCE, OCB
+  double precision, intent(out), dimension(0:lmax) :: Aa
+  !optional
+  double precision, intent(in), dimension(0:rlmax), optional :: BB
+  !f2py double precision :: BB = 0
+  !docstr :: BB = EE*0
+  !internal
+  integer :: l, rL(2)
+  double precision, dimension(rlmin:rlmax) :: W1, W2, W3, W4
+  double precision, dimension(3,lmax) :: SG
+
+  rL = (/rlmin,rlmax/)
+  SG = 0d0
+
+  do l = rlmin, rlmax
+    if (OCE(l)==0d0) stop 'error (norm_quad.xeb): observed clee is zero'
+    if (OCB(l)==0d0) stop 'error (norm_quad.xeb): observed clbb is zero'
+  end do
+
+  if (present(BB).and.sum(BB)/=0d0) then
+
+    W1 = 1d0/OCE(rlmin:rlmax)
+    W2 = BB(rlmin:rlmax)*EB(rlmin:rlmax) / OCB(rlmin:rlmax)
+    call kernels_rot(rL,W1,W2,SG(1,:),'Sm')
+    SG(1,:) = -SG(1,:)
+
+  end if
+
+  W1 = EE(rlmin:rlmax)/OCE(rlmin:rlmax)
+  W2 = EB(rlmin:rlmax)/OCB(rlmin:rlmax)
+  !W2 = (EB(rlmin:rlmax)-BB(rlmin:rlmax))/OCB(rlmin:rlmax)
+  W3 = 1d0/OCB(rlmin:rlmax)
+  W4 = EE(rlmin:rlmax)*EB(rlmin:rlmax) / OCE(rlmin:rlmax)
+
+  select case(est)
+  case('rotamp')
+    call kernels_rot(rL,W1,W2,SG(2,:),'Gm')
+    call kernels_rot(rL,W3,W4,SG(3,:),'Sm')
+  end select
+
+  Aa = sum(SG,dim=1)/2d0
+
+end subroutine xeb
+
+
+
 end module norm_quad
 
 

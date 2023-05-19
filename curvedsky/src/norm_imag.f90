@@ -338,6 +338,66 @@ subroutine qbb(est,lmax,rlmin,rlmax,fC,OCB,Al,lfac)
 end subroutine qbb
 
 
+subroutine qbb_asym(est,lmax,rlmin,rlmax,fC,OCB1,OCB2,Al,lfac)
+!*  Normalization of reconstructed imaginary CMB lensing potential and its curl mode from the B-mode quadratic estimator
+!*
+!*  Args:
+!*    :lmax (int)       : Maximum multipole of output normalization spectrum
+!*    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
+!*    :fC [l] (double)  : Theory BB spectrum, with bounds (0:rlmax)
+!*    :OCB1/2 [l] (double) : Observed BB spectrum for experiment 1 and 2, with bounds (0:rlmax)
+!*
+!*  Args(optional):
+!*    :lfac (str)    : Type of output, i.e., convergence (lfac='k') or lensing potential (lfac='', default)
+!*
+!*  Returns:
+!*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  character(*), intent(in) :: est
+  character(1), intent(in) :: lfac
+  integer, intent(in) :: lmax, rlmin, rlmax
+  double precision, intent(in) , dimension(0:rlmax) :: fC, OCB1, OCB2
+  double precision, intent(out), dimension(2,0:lmax) :: Al
+  !internal
+  integer :: l, rL(2)
+  double precision, dimension(lmax) :: lk2
+  double precision, dimension(2,rlmin:rlmax) :: W
+  double precision, dimension(2,lmax) :: SG
+  !opt4py :: lfac = ''
+
+  write(*,*) 'norm qBB'
+  rL = (/rlmin,rlmax/)
+
+  do l = rlmin, rlmax
+    if (OCB1(l)==0d0) stop 'error (qbb): observed clbb is zero'
+    if (OCB2(l)==0d0) stop 'error (qbb): observed clbb is zero'
+  end do
+
+  W(1,:) = 1d0 / OCB1(rlmin:rlmax)
+  W(2,:) = fC(rlmin:rlmax)**2 / OCB2(rlmin:rlmax)
+
+  SG = 0d0
+  select case(est)
+  case('lens')
+    call kernels_lens(rL,W(1,:),W(2,:),SG,'Sm')
+  case('amp')
+    call kernels_tau(rL,W(1,:),W(2,:),SG(1,:),'Sm')
+  end select
+
+  call get_lfac(lmax,lfac,lk2)
+
+  Al = 0d0
+  do l = 1, lmax
+    if (SG(1,l)/=0d0)  Al(1,l) = lk2(l)/SG(1,l)/4d0
+    if (SG(2,l)/=0d0)  Al(2,l) = lk2(l)/SG(2,l)/4d0
+  end do
+  Al(1,1) = 0d0
+
+end subroutine qbb_asym
+
+
 end module norm_imag
 
 

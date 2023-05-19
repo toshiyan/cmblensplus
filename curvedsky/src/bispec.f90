@@ -36,17 +36,17 @@ subroutine make_quad_gauss(lmax,alm,qlm)
   !internal
   integer :: nside
   double precision, allocatable :: map(:)
-  double complex :: alm_in(1,0:lmax,0:lmax), alm_out(1,0:lmax,0:lmax)
+  double complex, allocatable :: alm_tmp(:,:,:)
 
   nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
 
-  allocate(map(0:12*nside**2-1))
-  alm_in(1,:,:) = alm
-  call alm2map(nside,lmax,lmax,alm_in,map)
+  allocate(map(0:12*nside**2-1),alm_tmp(1,0:lmax,0:lmax))
+  alm_tmp(1,:,:) = alm
+  call alm2map(nside,lmax,lmax,alm_tmp,map)
   map = map + map**2
-  call map2alm(nside,lmax,lmax,map,alm_out)
-  qlm = alm_out(1,:,:)
-  deallocate(map)
+  call map2alm(nside,lmax,lmax,map,alm_tmp)
+  qlm = alm_tmp(1,:,:)
+  deallocate(map,alm_tmp)
 
 end subroutine make_quad_gauss
 
@@ -79,7 +79,8 @@ subroutine bispec_norm(bn,bp,norm,bstype,bst,sL)
   !opt4py :: bst = 2
   !opt4py :: sL = [0,0]
   !internal
-  integer :: l1, l, lmax, b, aL(2), sL0(2), eL(2)
+  integer :: l, lmax, b, aL(2), sL0(2), eL(2)
+  double precision :: nbisp
   double complex, allocatable :: klm(:,:)
 
   !sque
@@ -89,35 +90,43 @@ subroutine bispec_norm(bn,bp,norm,bstype,bst,sL)
   !isos
   aL = int(bp(bn/2:bn/2+1)) !middle bin
 
-  !alm
-  lmax = bp(bn+1)
-  allocate(klm(0:lmax,0:lmax)); klm=0d0
-
-  do l = 1, lmax
-    klm(l,0) = dsqrt(2d0*l+1d0)
-  end do
-
   !compute binned bispectrum
   do b = 1, bn
 
     eL = int(bp(b:b+1))
 
+    !define maximum l
+    select case(bstype)
+    case ('equi')
+      lmax = eL(2)
+    case ('fold')
+      lmax = eL(2)
+    case ('sque')
+      lmax = max(eL(2),sL(2))
+    case ('isos')
+      lmax = max(eL(2),aL(2))
+    end select
+  
+    allocate(klm(0:lmax,0:lmax)); klm=0d0
+    do l = 1, lmax
+      klm(l,0) = dsqrt(2d0*l+1d0)
+    end do
+
     select case(bstype)
     case('equi')
-      call equi(eL(1),eL(2),klm(0:eL(2),0:eL(2)),norm(b),bst)
+      call equi(eL(1),eL(2),klm,norm(b),bst)
     case('fold')
-      call fold(eL(1),eL(2),klm(0:eL(2),0:eL(2)),norm(b),bst)
+      call fold(eL(1),eL(2),klm,norm(b),bst)
     case('sque')
-      l1 = max(eL(2),sL(2))
-      call sque(eL,sL,l1,klm(0:l1,0:l1),norm(b),bst)
+      call sque(eL,sL,lmax,klm,norm(b),bst)
     case('isos')
-      l1 = max(eL(2),aL(2))
-      call isos(eL,aL,l1,klm(0:l1,0:l1),norm(b),bst)
+      call isos(eL,aL,lmax,klm,norm(b),bst)
     end select
+
+    deallocate(klm)
 
   end do
 
-  deallocate(klm)
 
 end subroutine bispec_norm
 
@@ -153,7 +162,8 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
   !opt4py :: bstype = 'equi'
   !opt4py :: sL = [0,0]
   !internal
-  integer :: aL(2), b, eL(2), sL0(2), l1
+  integer :: aL(2), b, eL(2), sL0(2), ilmax
+  double complex, allocatable :: alm_tmp(:,:)
 
   if (bp(bn+1)>lmax) stop 'error (equi_bin): not enough size of alm'
 
@@ -164,19 +174,35 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
 
   do b = 1, bn
     eL = int(bp(b:b+1))
+    
+    !define maximum l
+    select case(bstype)
+    case ('equi','fold')
+      ilmax = eL(2)
+    case ('sque')
+      ilmax = max(eL(2),sL(2))
+    case ('isos')
+      ilmax = max(eL(2),aL(2))
+    end select
+  
+    allocate(alm_tmp(0:ilmax,0:ilmax))
+    alm_tmp = alm(0:ilmax,0:ilmax)
+
     select case (bstype)
     case ('equi')
-      call equi(eL(1),eL(2),alm(0:eL(2),0:eL(2)),bis(b),bst)
+      call equi(eL(1),eL(2),alm_tmp,bis(b),bst)
     case ('fold')
-      call fold(eL(1),eL(2),alm(0:eL(2),0:eL(2)),bis(b),bst)
+      call fold(eL(1),eL(2),alm_tmp,bis(b),bst)
     case ('sque')
-      l1 = max(eL(2),sL(2))
-      call sque(eL,sL0,l1,alm(0:l1,0:l1),bis(b),bst)
+      call sque(eL,sL0,ilmax,alm,bis(b),bst)
     case ('isos')
-      l1 = max(eL(2),aL(2))
-      call isos(eL,aL,l1,alm(0:l1,0:l1),bis(b),bst)
+      call isos(eL,aL,ilmax,alm,bis(b),bst)
     end select
+
+    deallocate(alm_tmp)
+  
   end do
+
 
 end subroutine bispec_bin
 

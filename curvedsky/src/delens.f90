@@ -51,7 +51,7 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside_t,gtype)
   double complex, dimension(:,:,:), allocatable :: alm
 
   nside = nside_t
-  if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
+  if (nside_t==0)  nside = 2**(int(dlog(dble(max(elmax,plmax)))/dlog(2d0)))
   npix = 12*nside**2
 
   allocate(ilk(plmax)); ilk = 1d0
@@ -216,6 +216,7 @@ subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
   real, allocatable :: tqu(:,:)
   complex, allocatable :: alm0(:,:,:), dvec(:)
   double precision, allocatable :: S(:,:)
+  double complex, allocatable :: alm_t(:,:,:), alm_p(:,:,:)
   !replace
   !chargs :: npix -> nside
   !add2py :: npix = 12*nside**2
@@ -224,18 +225,62 @@ subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
 
   allocate(alm0(3,0:lmax,0:lmax),dvec(0:npix-1),tqu(0:npix-1,3))
   alm0 = alm_in !double to single
-  dvec = cmplx(beta(1:npix,1),beta(1:npix,2))
+  dvec = cmplx(beta(0:npix-1,1),beta(0:npix-1,2))
   call simple_remapping(nside,lmax,alm0,dvec,tqu)
   deallocate(alm0,dvec)
 
-  allocate(S(0:npix-1,3))
+  allocate(S(0:npix-1,3),alm_t(1,0:lmax,0:lmax),alm_p(2,0:lmax,0:lmax))
   S = tqu !single to double
-  call map2alm(nside,lmax,lmax,S(:,1),alm_re(1:1,:,:))
-  call map2alm_spin(nside,lmax,lmax,2,S(:,2:3),alm_re(2:3,:,:))
-  deallocate(S)
+  call map2alm(nside,lmax,lmax,S(:,1),alm_t)
+  call map2alm_spin(nside,lmax,lmax,2,S(:,2:3),alm_p)
+  alm_re(1:1,:,:) = alm_t
+  alm_re(2:3,:,:) = alm_p
+  deallocate(S,alm_t,alm_p)
 
 end subroutine remap_tp
 
+
+subroutine remap_tp_map(npix,lmax,beta,alm_in,map_re)
+!*  Remapping CMB temperaure and polarization with a given shift vector based on a simple implementation of LensPix
+!*  This function returs X(n+beta) where n is the original direction and beta is the shift vector
+!*  The output is given by alms where alm[0,l,m] is temperature, alm[1,l,m] is E mode, and alm[2,l,m] is B mode.
+!*
+!*  Args:
+!*    :nside (int)               : Nside of input shift vector
+!*    :lmax (int)                : Maximum multipole of the input plm
+!*    :beta [pix,2] (double)     : 2D shift vector, with bounds (0:npix-1,1:2)
+!*    :alm_in [TEB,l,m] (dcmplx) : Input T/E/B alms to be remapped, with bounds (1:3,0:lmax,0:lmax).
+!*
+!*  Returns:
+!*    :map_re [pix,TQU] (double) : Remapped T/Q/U alms, with bounds (0:lmax,0:lmax,1:3). 
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: npix, lmax
+  double precision, intent(in), dimension(0:npix-1,2) :: beta
+  double complex, intent(in), dimension(3,0:lmax,0:lmax) :: alm_in
+  double precision, intent(out), dimension(0:npix-1,3) :: map_re
+  !internal
+  integer :: nside
+  real, allocatable :: tqu(:,:)
+  complex, allocatable :: alm0(:,:,:), dvec(:)
+  !replace
+  !chargs :: npix -> nside
+  !add2py :: npix = 12*nside**2
+
+  nside = int(dsqrt(npix/12d0))
+
+  allocate(alm0(3,0:lmax,0:lmax),dvec(0:npix-1),tqu(0:npix-1,3))
+  alm0 = alm_in !double to single
+  dvec = cmplx(beta(0:npix-1,1),beta(0:npix-1,2))
+  call simple_remapping(nside,lmax,alm0,dvec,tqu)
+  deallocate(alm0,dvec)
+
+  !single to double
+  map_re(:,1) = tqu(:,1) 
+  map_re(:,2:3) = tqu(:,2:3)
+
+end subroutine remap_tp_map
 
 end module delens
 
