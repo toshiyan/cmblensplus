@@ -231,7 +231,7 @@ subroutine coarse_invmatrix(n,lmax,mgc)
 end subroutine coarse_invmatrix
 
 
-subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
+subroutine cg_algorithm(n,lmax,b,xout,mgc,chain,ou,ratio)
 !* Searching for a solution x of Ax = b with the Conjugate Gradient iteratively
 !* The code assumes 
 !*    1) A = [1 + C^1/2 N^-1 C^1/2]
@@ -243,16 +243,18 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
   type(mg_chain), intent(inout) :: mgc
   integer, intent(in) :: n, lmax, chain, ou
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: b
-  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: x
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xout
   double precision, intent(out), optional :: ratio(mgc%itn(chain))
   !internal
   logical :: message
-  integer :: c, ni, mi, i, l
+  integer :: c, ni, mi, i, l, lmaxch
   double precision :: power, absb, absr, absx, d, d0, td, alpha
-  double precision :: mm(0:lmax,0:lmax)
-  double complex, dimension(1:n,0:mgc%lmax(chain),0:mgc%lmax(chain)) :: r, z, p, Ap
+  double precision, allocatable :: mm(:,:)
+  double complex, allocatable, dimension(:,:,:) :: r, z, p, Ap, x
+  
+  lmaxch = mgc%lmax(chain)
 
-  if (lmax/=mgc%lmax(chain)) stop 'error: lmax is inconsistent'
+  if (lmax/=lmaxch) stop 'error: lmax is inconsistent'
   absb = dsqrt(sum(abs(b)**2))
   if (isnan(absb)) stop '|b|^2 is Nan'
 
@@ -264,11 +266,16 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
     power = 2  ! clh is Cov^{1/2}
   end select
 
+  write(*,*) chain
+  
   if (chain==1) then
     !diagonal preconditioner
     if (message)  write(ou,*) 'precompute diagonal preconditioner'
+    write(*,*) n, mgc%mnmax(1)
     allocate(mgc%pmat(n,0:lmax,0:lmax))
     do ni = 1, n
+      allocate(mm(0:lmax,0:lmax))
+      !write(*,*) ni
       mm = 0d0
       do mi = 1, mgc%mnmax(1)
         do l = 0, lmax
@@ -279,11 +286,14 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
             mm(l,0:l) = mm(l,0:l) + mgc%cv(1,mi)%clh(ni,ni,l)**power * ave(mgc%cv(1,mi)%nij(ni,:))
           end if
         end do
+        write(*,*) sum(mgc%cv(1,mi)%clh(ni,ni,:)), ave(mgc%cv(1,mi)%nij(ni,:))
       end do
       mgc%pmat(ni,:,:) = 1d0/(1d0+mm)
+      deallocate(mm)
     end do
   end if
-
+  
+  allocate(x(n,0:lmaxch,0:lmaxch))
   !initial value (this is the solution if MA=I)
   call precondition(n,lmax,b,x,mgc,chain,ou)
   absx = dsqrt(sum(abs(x)**2))
@@ -293,6 +303,8 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
     write(ou,*) chain
     stop 'Mb is Nan'
   end if
+
+  allocate(r(n,0:lmaxch,0:lmaxch),z(n,0:lmaxch,0:lmaxch),p(n,0:lmaxch,0:lmaxch),Ap(n,0:lmaxch,0:lmaxch))
 
   !residual
   call matmul_lhs(mgc%ytype,n,mgc%mnmax(chain),mgc%npix(chain,:),lmax,mgc%cv(chain,:),x,r)
@@ -337,6 +349,10 @@ subroutine cg_algorithm(n,lmax,b,x,mgc,chain,ou,ratio)
     end if
 
   end do
+  
+  xout = x
+  
+  deallocate(r,z,p,Ap,x)
 
 end subroutine cg_algorithm
 
@@ -379,9 +395,12 @@ subroutine matmul_rhs(ytype,n,mn,lmax,cv,RHS)
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: RHS
   !internal
   integer :: mi, npix
-  double complex :: alm(n,0:lmax,0:lmax)
+  !double complex :: alm(n,0:lmax,0:lmax)
+  double complex, allocatable :: alm(:,:,:)
 
+  allocate(alm(n,0:lmax,0:lmax))
   RHS = 0d0
+  write(*,*) 'B'
   do mi = 1, mn
     npix = size(cv(mi)%nij,dim=2)
     select case(ytype)
@@ -394,6 +413,7 @@ subroutine matmul_rhs(ytype,n,mn,lmax,cv,RHS)
     end select
     RHS = RHS + alm
   end do
+  deallocate(alm)
 
 end subroutine matmul_rhs
 
@@ -405,10 +425,10 @@ subroutine matmul_rhs_cmb(n,npix,lmax,cv,alm)
   integer, intent(in) :: n, npix, lmax
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: alm
   !internal
-  double complex :: blm(n,0:lmax,0:lmax)
+  double complex, allocatable :: blm(:,:,:)
   double precision, allocatable :: map(:,:)
 
-  allocate(map(n,0:npix-1))
+  allocate(map(n,0:npix-1),blm(n,0:lmax,0:lmax))
   map = cv%imap*cv%nij  !data map x invN
 
   !for non-white noise
@@ -424,6 +444,8 @@ subroutine matmul_rhs_cmb(n,npix,lmax,cv,alm)
     
   ! C^1/2 x alm
   call matmul_cov_alm(n,lmax,cv%clh,blm,alm)
+  
+  deallocate(blm)
 
 end subroutine matmul_rhs_cmb
 
@@ -436,29 +458,31 @@ subroutine matmul_rhs_scal(n,npix,lmax,cv,alm)
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: alm
   !internal
   integer :: ni
-  double complex :: blm(n,0:lmax,0:lmax)
-  double precision, allocatable :: map(:)
+  double complex, allocatable :: blm(:,:,:)
+  double precision, allocatable :: map(:,:)
 
   do ni = 1, n
 
-    allocate(map(0:npix-1))
-    map = cv%imap(ni,:)*cv%nij(ni,:)  !data map x invN
+    allocate(map(1,0:npix-1),blm(1,0:lmax,0:lmax))
+  
+    map(1,:) = cv%imap(ni,:)*cv%nij(ni,:)  !data map x invN
 
     !for non-white noise
     if (allocated(cv%nl)) then
-      call spht_map2alm(1,npix,lmax,lmax,map,blm(ni,:,:))
-      blm(ni,:,:) = blm(ni,:,:)*cv%nl(ni,:,:)
-      call spht_alm2map(1,npix,lmax,lmax,blm(ni,:,:),map)
-      map = map*cv%nij(ni,:)
+      call spht_map2alm(1,npix,lmax,lmax,map,blm)
+      blm(1,:,:) = blm(1,:,:)*cv%nl(ni,:,:)
+      call spht_alm2map(1,npix,lmax,lmax,blm,map)
+      map(1,:) = map(1,:)*cv%nij(ni,:)
     end if
 
-    call spht_map2alm(1,npix,lmax,lmax,map,blm(ni,:,:))
-    deallocate(map)
+    call spht_map2alm(1,npix,lmax,lmax,map,blm)
+
+    alm(ni,:,:) = blm(1,:,:)
+  
+    deallocate(map,blm)
 
   end do
-    
-  alm = blm
-
+  
 end subroutine matmul_rhs_scal
 
 
@@ -472,21 +496,24 @@ subroutine matmul_lhs(ytype,n,mn,npix2,lmax,cv,x,v)
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
   !internal
   integer :: mi, npix
-  double complex :: alm(n,0:lmax,0:lmax)
+  double complex, allocatable :: alm(:,:,:)
 
-  !make 1+C^{1/2}N^{-1}C^{1/2}
   v = x
   do mi = 1, mn
+    allocate(alm(n,0:lmax,0:lmax))
     npix = size(cv(mi)%nij,dim=2)
     select case(ytype)
     case('scal')
+      !multiply 1+N^{-1}C
       call matmul_lhs_scal(n,npix,lmax,cv(mi),x,alm)
     case('cmb')
+      !multiply 1+C^{1/2}N^{-1}C^{1/2}
       call matmul_lhs_cmb(n,npix,lmax,cv(mi),x,alm)
     case default
       stop 'no correct ytype assigned'
     end select
     v = v + alm
+    deallocate(alm)
   end do
 
 end subroutine matmul_lhs
@@ -500,11 +527,14 @@ subroutine matmul_lhs_cmb(n,npix,lmax,cv,x,v)
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: x
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
   !internal
-  double precision :: map(n,0:npix-1)
-  double complex :: alm(n,0:lmax,0:lmax)
+  double precision, allocatable :: map(:,:)
+  double complex, allocatable :: alm(:,:,:)
 
   integer :: nn, i
 
+  !write(*,*) 'lhs'
+  allocate(map(n,0:npix-1),alm(n,0:lmax,0:lmax))
+  
   call matmul_cov_alm(n,lmax,cv%clh,x,alm)
 
   !multiply noise covariance in pixel space
@@ -523,6 +553,8 @@ subroutine matmul_lhs_cmb(n,npix,lmax,cv,x,v)
   
   !multiply C^{1/2}
   call matmul_cov_alm(n,lmax,cv%clh,alm,v)
+  
+  deallocate(map,alm)
 
 end subroutine matmul_lhs_cmb
 
@@ -535,34 +567,43 @@ subroutine matmul_lhs_scal(n,npix,lmax,cv,x,v)
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: x
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: v
   !internal
-  double precision :: map(0:npix-1)
-  double complex :: alm(n,0:lmax,0:lmax)
-
+  double precision, allocatable :: map(:,:)
+  double complex, allocatable :: alm(:,:,:), blm(:,:,:)
   integer :: ni
+
+  allocate(alm(n,0:lmax,0:lmax))
 
   ! Cov x alm
   call matmul_cov_alm(n,lmax,cv%clh,x,alm)
 
+  !multiply noise covariance in pixel space
+  
   do ni = 1, n
   
-    !multiply noise covariance in pixel space
-    call spht_alm2map(1,npix,lmax,lmax,alm(ni,:,:),map)
-    map = map*cv%nij(ni,:)
+    allocate(map(1,0:npix-1),blm(1,0:lmax,0:lmax))
+    
+    blm(1,:,:) = alm(ni,:,:)
+    call spht_alm2map(1,npix,lmax,lmax,blm,map)
+    map(1,:) = map(1,:)*cv%nij(ni,:)
 
     !for non-white noise
     if (allocated(cv%nl)) then
-      call spht_map2alm(1,npix,lmax,lmax,map,alm(ni,:,:))
-      alm(ni,:,:) = alm(ni,:,:)*cv%nl(ni,:,:)
-      call spht_alm2map(1,npix,lmax,lmax,alm(ni,:,:),map)
-      map = map*cv%nij(ni,:)
+      call spht_map2alm(1,npix,lmax,lmax,map,blm)
+      blm(1,:,:) = blm(1,:,:)*cv%nl(ni,:,:)
+      call spht_alm2map(1,npix,lmax,lmax,blm,map)
+      map(1,:) = map(1,:)*cv%nij(ni,:)
     end if
 
-    call spht_map2alm(1,npix,lmax,lmax,map,alm(ni,:,:))
+    call spht_map2alm(1,npix,lmax,lmax,map,blm)
+
+    v(ni,:,:) = blm(1,:,:)
+    
+    deallocate(map,blm)
   
   end do
 
-  v = alm
-
+  deallocate(alm)
+  
 end subroutine matmul_lhs_scal
 
 

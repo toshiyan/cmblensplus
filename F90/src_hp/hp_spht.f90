@@ -18,26 +18,35 @@ subroutine spht_alm2map(n,npix,lmax,mmax,alm,map)
   double complex, intent(in), dimension(n,0:lmax,0:mmax) :: alm
   double precision, intent(out), dimension(n,0:npix-1) :: map
   integer :: nside, ni
-  double precision :: tmap(0:npix-1,1:n)
+  double precision, allocatable :: tmap(:), pmap(:,:)
+  double complex, allocatable :: tlm(:,:,:), plm(:,:,:)
 
   nside = int(sqrt(npix/12d0))
+  
+  allocate(tmap(0:npix-1),pmap(0:npix-1,2),tlm(1,0:lmax,0:lmax),plm(2,0:lmax,0:lmax))
 
   tmap = 0d0
   select case(n)
   case(1)
-    call alm2map(nside,lmax,mmax,alm,tmap(0:npix-1,1))
+    call alm2map(nside,lmax,mmax,alm,tmap)
+    map(1,:) = tmap
   case(2)
-    call alm2map_spin(nside,lmax,mmax,2,alm(1:2,0:lmax,0:mmax),tmap(0:npix-1,1:2))
+    call alm2map_spin(nside,lmax,mmax,2,alm,pmap)
+    map(1,:) = pmap(:,1)
+    map(2,:) = pmap(:,2)
   case(3)
-    call alm2map(nside,lmax,mmax,alm(1:1,0:lmax,0:mmax),tmap(0:npix-1,1))
-    call alm2map_spin(nside,lmax,mmax,2,alm(2:3,0:lmax,0:mmax),tmap(0:npix-1,2:3))
+    tlm(1,:,:) = alm(1,:,:)
+    call alm2map(nside,lmax,mmax,tlm,tmap)
+    map(1,:) = tmap
+    plm(1,:,:) = alm(2,:,:)
+    plm(2,:,:) = alm(3,:,:)
+    call alm2map_spin(nside,lmax,mmax,2,plm,pmap)
+    map(2,:) = pmap(:,1)
+    map(3,:) = pmap(:,2)
   case default
     stop 'error (spht_alm2map): n should be 1, 2, or 3'
   end select
 
-  do ni = 1, n
-    map(ni,0:npix-1) = tmap(0:npix-1,ni)
-  end do
 
 end subroutine spht_alm2map
 
@@ -48,26 +57,36 @@ subroutine spht_map2alm(n,npix,lmax,mmax,map,alm)
   double precision, intent(in), dimension(n,0:npix-1) :: map
   double complex, intent(out), dimension(n,0:lmax,0:mmax) :: alm
   integer :: nside, ni
-  double precision :: tmap(0:npix-1,1:n)
+  double precision, allocatable :: tmap(:), pmap(:,:)
+  double complex, allocatable :: tlm(:,:,:), plm(:,:,:)
 
   nside = int(sqrt(npix/12d0))
 
-  do ni = 1, n
-    tmap(:,ni) = map(ni,:)
-  end do
-
-  alm = 0d0
+  allocate(tmap(0:npix-1),pmap(0:npix-1,2),tlm(1,0:lmax,0:lmax),plm(2,0:lmax,0:lmax))
+  
   select case(n)
   case(1)
-    call map2alm(nside,lmax,mmax,tmap(:,1),alm)
+    tmap = map(1,:)
+    call map2alm(nside,lmax,mmax,tmap,tlm)
+    alm = tlm
   case(2)
-    call map2alm_spin(nside,lmax,mmax,2,tmap(:,1:2),alm(1:2,:,:))
+    pmap(:,1) = map(1,:)
+    pmap(:,2) = map(2,:)
+    call map2alm_spin(nside,lmax,mmax,2,pmap,plm)
+    alm = plm
   case(3)
-    call map2alm(nside,lmax,mmax,tmap(:,1),alm(1:1,:,:))
-    call map2alm_spin(nside,lmax,mmax,2,tmap(:,2:3),alm(2:3,:,:))
+    tmap = map(1,:)
+    pmap(:,1) = map(2,:)
+    pmap(:,2) = map(3,:)
+    call map2alm(nside,lmax,mmax,tmap,tlm)
+    call map2alm_spin(nside,lmax,mmax,2,pmap,plm)
+    alm(1:1,:,:) = tlm
+    alm(2:3,:,:) = plm
   case default
     stop 'error (spht_map2alm): n should be 1, 2, or 3'
   end select
+  
+  deallocate(tmap,pmap,tlm,plm)
 
 end subroutine spht_map2alm
 

@@ -20,13 +20,14 @@ subroutine equi(lmin,lmax,alm,bispec,bst)
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
   double precision, intent(out) :: bispec
   !internal
-  integer :: l, nside
+  integer :: l, nside, npix
   double precision, allocatable :: kmap(:)
   double complex, allocatable :: klm(:,:,:)
 
   nside = bst*2**(int(dlog(dble(lmax))/dlog(2d0)))
+  npix  = 12*nside**2
 
-  allocate(kmap(0:12*nside**2-1),klm(1,0:lmax,0:lmax))
+  allocate(kmap(0:npix-1),klm(1,0:lmax,0:lmax))
 
   klm = 0d0
   do l = lmin, lmax !multipole filtering
@@ -34,7 +35,7 @@ subroutine equi(lmin,lmax,alm,bispec,bst)
   end do
 
   call alm2map(nside,lmax,lmax,klm,kmap)
-  bispec = sum(kmap**3)*(4d0*pi)/(12d0*dble(nside)**2)
+  bispec = sum(kmap**3)*(4d0*pi)/dble(npix)
 
   deallocate(kmap,klm)
 
@@ -49,27 +50,30 @@ subroutine fold(lmin,lmax,alm,bispec,bst)
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
   double precision, intent(out) :: bispec
   !internal
-  integer :: l, nside
-  double precision, allocatable :: kmap(:,:)
+  integer :: l, nside, npix
+  double precision, allocatable :: kmap1(:), kmap2(:)
   double complex, allocatable :: klm(:,:,:)
 
   nside = bst*2**(int(dlog(dble(lmax))/dlog(2d0)))
+  npix  = 12*nside**2
 
-  allocate(kmap(0:12*nside**2-1,2),klm(2,0:lmax,0:lmax))
+  allocate(kmap1(0:npix-1),kmap2(0:npix-1),klm(1,0:lmax,0:lmax))
 
   klm = 0d0
   do l = lmin, lmax !ell filtering
     klm(1,l,0:l) = alm(l,0:l)
   end do
+  call alm2map(nside,lmax,lmax,klm,kmap1)
+
+  klm = 0d0
   do l = max(2,int(lmin/2d0)), int(lmax/2d0)
-    klm(2,l,0:l) = alm(l,0:l)
+    klm(1,l,0:l) = alm(l,0:l)
   end do
+  call alm2map(nside,lmax,lmax,klm,kmap2)
+  
+  bispec = sum(kmap1*kmap2**2) * (4d0*pi)/dble(npix)
 
-  call alm2map(nside,lmax,lmax,klm(1:1,:,:),kmap(:,1))
-  call alm2map(nside,lmax,lmax,klm(2:2,:,:),kmap(:,2))
-  bispec = sum(kmap(:,1)*kmap(:,2)**2) * (4d0*pi)/(12d0*dble(nside)**2)
-
-  deallocate(kmap,klm)
+  deallocate(kmap1,kmap2,klm)
 
 end subroutine fold
 
@@ -83,29 +87,32 @@ subroutine sque(eL,sL,l1,alm,bispec,bst)
   double complex, intent(in), dimension(0:l1,0:l1) :: alm
   double precision, intent(out) :: bispec
   !internal
-  integer :: l, nside
-  double precision, allocatable :: kmap(:,:)
+  integer :: l, nside, npix
+  double precision, allocatable :: kmap1(:), kmap2(:)
   double complex, allocatable :: klm(:,:,:)
 
   if (max(sL(2),eL(2))>l1) stop 'error (sque): l1 is too small'
 
   nside = bst*2**(int(dlog(dble(l1))/dlog(2d0)))
+  npix  = 12*nside**2
 
-  allocate(kmap(0:12*nside**2-1,2),klm(2,0:l1,0:l1))
+  allocate(kmap1(0:npix-1),kmap2(0:npix-1),klm(2,0:l1,0:l1))
 
   klm = 0d0
   do l = sL(1), sL(2) !ell filtering
     klm(1,l,0:l) = alm(l,0:l)
   end do
+  call alm2map(nside,l1,l1,klm,kmap1)
+
+  klm = 0d0
   do l = eL(1), eL(2)
-    klm(2,l,0:l) = alm(l,0:l)
+    klm(1,l,0:l) = alm(l,0:l)
   end do
+  call alm2map(nside,l1,l1,klm,kmap2)
+  
+  bispec = sum(kmap1*kmap2**2) * (4d0*pi)/dble(npix)
 
-  call alm2map(nside,l1,l1,klm(1:1,:,:),kmap(:,1))
-  call alm2map(nside,l1,l1,klm(2:2,:,:),kmap(:,2))
-  bispec = sum(kmap(:,1)*kmap(:,2)**2) * (4d0*pi)/(12d0*dble(nside)**2)
-
-  deallocate(kmap,klm)
+  deallocate(kmap1,kmap2,klm)
 
 end subroutine sque
 
@@ -119,29 +126,32 @@ subroutine isos(eL,aL,l1,alm,bispec,bst)
   double complex, intent(in), dimension(0:l1,0:l1) :: alm
   double precision, intent(out) :: bispec
   !internal
-  integer :: l, nside
-  double precision, allocatable :: kmap(:,:)
+  integer :: l, nside, npix
+  double precision, allocatable :: kmap1(:), kmap2(:)
   double complex, allocatable :: klm(:,:,:)
 
   if (max(aL(2),eL(2))>l1) stop 'error (isos): l1 is too small'
 
   nside = bst*2**(int(dlog(dble(l1))/dlog(2d0)))
+  npix  = 12*nside**2
 
-  allocate(kmap(0:12*nside**2-1,2),klm(2,0:l1,0:l1))
+  allocate(kmap1(0:npix-1),kmap2(0:npix-1),klm(2,0:l1,0:l1))
 
   klm = 0d0
   do l = eL(1), eL(2) !ell filtering
     klm(1,l,0:l) = alm(l,0:l)
   end do
+  call alm2map(nside,l1,l1,klm,kmap1)
+
+  klm = 0d0
   do l = aL(1), aL(2)
-    klm(2,l,0:l) = alm(l,0:l)
+    klm(1,l,0:l) = alm(l,0:l)
   end do
+  call alm2map(nside,l1,l1,klm,kmap2)
+  
+  bispec = sum(kmap1*kmap2**2) * (4d0*pi)/dble(npix)
 
-  call alm2map(nside,l1,l1,klm(1:1,:,:),kmap(:,1))
-  call alm2map(nside,l1,l1,klm(2:2,:,:),kmap(:,2))
-  bispec = sum(kmap(:,1)*kmap(:,2)**2) * (4d0*pi)/(12d0*dble(nside)**2)
-
-  deallocate(kmap,klm)
+  deallocate(kmap1,kmap2,klm)
 
 end subroutine isos
 
