@@ -187,11 +187,14 @@ subroutine elarrays_2d(nn,D,elx,ely,els,eli,ei2p)
   double precision, allocatable :: elx0(:,:), ely0(:,:), els0(:,:), eli0(:,:)
   double complex, allocatable :: ei2p0(:,:)
 
+!write(*,*) 'E'
   allocate(elx0(nn(1),nn(2)),ely0(nn(1),nn(2)),els0(nn(1),nn(2)),eli0(nn(1),nn(2)),ei2p0(nn(1),nn(2)))
   elx0=0d0;  ely0=0d0;  els0=0d0;  eli0=0d0;  ei2p0=0d0
+!write(*,*) 'E'
 
   do i = 1, nn(1)
     lx = elxy(i,nn(1),D(1))
+!write(*,*) 'X'
     do j = 1, nn(2)
       ly = elxy(j,nn(2),D(2))
       elx0(i,j) = lx
@@ -218,18 +221,24 @@ subroutine make_lmask_int(nn,D,rL,mask)
   implicit none
   integer, intent(in) :: nn(2), rL(2)
   double precision, intent(in) :: D(2)
-  double precision, intent(out) :: mask(nn(1),nn(2))
-  double precision :: els(nn(1),nn(2))
+  double precision, intent(out) :: mask(:,:)
+  ! internal
   integer :: i, j
+  double precision, allocatable :: els(:,:), mask_tmp(:,:)
+
+  allocate(els(nn(1),nn(2)),mask_tmp(nn(1),nn(2)))
 
   call elarrays_2d(nn,D,els=els)
 
-  mask = 1d0
+  mask_tmp = 1d0
   do i = 1, nn(1)
     do j = 1, nn(2)
-      if (rL(1)>els(i,j).or.els(i,j)>rL(2))  mask(i,j) = 0d0
+      if (rL(1)>els(i,j).or.els(i,j)>rL(2))  mask_tmp(i,j) = 0d0
     end do
   end do
+  mask = mask_tmp
+  
+  deallocate(els,mask_tmp)
 
 end subroutine make_lmask_int
 
@@ -238,18 +247,24 @@ subroutine make_lmask_dble(nn,D,rL,mask)
   implicit none
   integer, intent(in) :: nn(2)
   double precision, intent(in) :: D(2), rL(2)
-  double precision, intent(out) :: mask(nn(1),nn(2))
-  double precision :: els(nn(1),nn(2))
+  double precision, intent(out) :: mask(:,:)
+  ! internal
   integer :: i, j
+  double precision, allocatable :: els(:,:), mask_tmp(:,:)
+
+  allocate(els(nn(1),nn(2)),mask_tmp(nn(1),nn(2)))
 
   call elarrays_2d(nn,D,els=els)
 
-  mask = 1d0
+  mask_tmp = 1d0
   do i = 1, nn(1)
     do j = 1, nn(2)
-      if (rL(1)>els(i,j).or.els(i,j)>rL(2))  mask(i,j) = 0d0
+      if (rL(1)>els(i,j).or.els(i,j)>rL(2))  mask_tmp(i,j) = 0d0
     end do
   end do
+  mask = mask_tmp
+  
+  deallocate(els,mask_tmp)
 
 end subroutine make_lmask_dble
 
