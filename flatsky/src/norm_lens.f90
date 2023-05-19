@@ -39,16 +39,18 @@ subroutine qtt(nx,ny,D,rL,OT,TT,eL,Ag,Ac)
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
   !internal
   integer :: i, j, nn(2)
-  double precision, dimension(nx,ny) :: lmask, lx, ly, Agg, Acc
-  double complex, dimension(nx,ny) :: A, Axx, Axy, Ayy, Bx, By
+  double precision, allocatable, dimension(:,:) :: lmask, lx, ly, Agg, Acc
+  double complex, allocatable, dimension(:,:) :: A, Axx, Axy, Ayy, Bx, By
 
   nn = (/nx,ny/)
+
+  allocate(lx(nx,ny),ly(nx,ny),Agg(nx,ny),Acc(nx,ny),A(nx,ny),Axx(nx,ny),Axy(nx,ny),Ayy(nx,ny),Bx(nx,ny),By(nx,ny),lmask(nx,ny))
 
   call elarrays_2d(nn,D,elx=lx,ely=ly)
 
   ! filtering
   call make_lmask(nn,D,rL,lmask)
-
+  
   Axx = lmask * lx**2 * TT**2*OT
   Axy = lmask * lx*ly * TT**2*OT
   Ayy = lmask * ly**2 * TT**2*OT
@@ -85,6 +87,8 @@ subroutine qtt(nx,ny,D,rL,OT,TT,eL,Ag,Ac)
       if (Acc(i,j)>0)  Ac(i,j) = 1d0/Acc(i,j)
     end do
   end do
+  
+  deallocate(lx,ly,Agg,Acc,A,Axx,Axy,Ayy,Bx,By,lmask)
 
 end subroutine qtt
 
@@ -114,10 +118,13 @@ subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
   !internal
   integer :: i, j, nn(2)
-  double precision, dimension(nx,ny) :: lmask, lx, ly, Agg, Acc
-  double complex, dimension(nx,ny) :: ei2p, Axx, Axy, Ayy, Cxx, Cxy, Cyy, Ax, Ay, A, Bm, Bp, Bx, By, Bxx, Bxy, Byy
+  double precision, allocatable, dimension(:,:) :: lmask, lx, ly, Agg, Acc
+  double complex, allocatable, dimension(:,:) :: ei2p, Axx, Axy, Ayy, Cxx, Cxy, Cyy, Ax, Ay, A, Bm, Bp, Bx, By, Bxx, Bxy, Byy
 
   nn = (/nx,ny/)
+  
+  allocate(lmask(nx,ny),lx(nx,ny),ly(nx,ny),Agg(nx,ny),Acc(nx,ny))
+  allocate(ei2p(nx,ny),Axx(nx,ny),Axy(nx,ny),Ayy(nx,ny),Cxx(nx,ny),Cxy(nx,ny),Cyy(nx,ny),Ax(nx,ny),Ay(nx,ny),A(nx,ny),Bm(nx,ny),Bp(nx,ny),Bx(nx,ny),By(nx,ny),Bxx(nx,ny),Bxy(nx,ny),Byy(nx,ny))
 
   call elarrays_2d(nn,D,lx,ly,ei2p=ei2p)
 
@@ -181,6 +188,8 @@ subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
       if (Acc(i,j)>0)  Ac(i,j) = 1d0/Acc(i,j)
     end do
   end do
+  
+  deallocate(lmask, lx, ly, Agg, Acc, ei2p, Axx, Axy, Ayy, Cxx, Cxy, Cyy, Ax, Ay, A, Bm, Bp, Bx, By, Bxx, Bxy, Byy)
 
 
 end subroutine qte
@@ -211,10 +220,13 @@ subroutine qtb(nx,ny,D,OT,OB,TE,rL,eL,Ag,Ac)
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
   !internal
   integer :: i, j, nn(2)
-  double precision, dimension(nx,ny) :: lx, ly, lmask, Agg, Acc
-  double complex, dimension(nx,ny) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, ei2p
+  double precision, allocatable, dimension(:,:) :: lx, ly, lmask, Agg, Acc
+  double complex, allocatable, dimension(:,:) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, ei2p
 
   nn = (/nx,ny/)
+  
+  allocate(lx(nx,ny),ly(nx,ny),lmask(nx,ny),Agg(nx,ny),Acc(nx,ny),Axx(nx,ny),Axy(nx,ny),Ayy(nx,ny),Bxx(nx,ny),Bxy(nx,ny),Byy(nx,ny),A(nx,ny),B(nx,ny),ei2p(nx,ny))
+  
   call elarrays_2d(nn,D,lx,ly,ei2p=ei2p)
 
   ! filtering
@@ -259,6 +271,7 @@ subroutine qtb(nx,ny,D,OT,OB,TE,rL,eL,Ag,Ac)
     end do
   end do
 
+  deallocate(lx,ly,lmask,Agg,Acc,Axx,Axy,Ayy,Bxx,Bxy,Byy,A,B,ei2p)
 
 end subroutine qtb
 
@@ -287,10 +300,13 @@ subroutine qee(nx,ny,D,OE,EE,rL,eL,Ag,Ac)
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
 ! [internal]
   integer :: i, j, nn(2)
-  double precision, dimension(nx,ny) :: lx, ly, lmask, Agg, Acc
-  double complex, dimension(nx,ny) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, Ax, Ay, Bx, By, ei2p
+  double precision, allocatable, dimension(:,:) :: lx, ly, lmask, Agg, Acc
+  double complex, allocatable, dimension(:,:) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, Ax, Ay, Bx, By, ei2p
 
   nn = (/nx,ny/)
+  
+  allocate(lx(nx,ny),ly(nx,ny),lmask(nx,ny),Agg(nx,ny),Acc(nx,ny),Axx(nx,ny),Axy(nx,ny),Ayy(nx,ny),Bxx(nx,ny),Bxy(nx,ny),Byy(nx,ny),A(nx,ny),B(nx,ny),Ax(nx,ny),Ay(nx,ny),Bx(nx,ny),By(nx,ny),ei2p(nx,ny))
+  
   call elarrays_2d(nn,D,lx,ly,ei2p=ei2p)
 
   ! filtering
@@ -346,6 +362,8 @@ subroutine qee(nx,ny,D,OE,EE,rL,eL,Ag,Ac)
       if (Acc(i,j)>0)  Ac(i,j) = 2d0/Acc(i,j)
     end do
   end do
+  
+  deallocate(lx,ly,lmask,Agg,Acc,Axx,Axy,Ayy,Bxx,Bxy,Byy,A,B,Ax,Ay,Bx,By,ei2p)
 
 end subroutine qee
 
@@ -375,10 +393,13 @@ subroutine qeb(nx,ny,D,OE,OB,EE,rL,eL,Ag,Ac)
   double precision, intent(out), dimension(nx,ny) :: Ag, Ac
   !internal
   integer :: i, j, nn(2)
-  double precision, dimension(nx,ny) :: lx, ly, lmask, Agg, Acc
-  double complex, dimension(nx,ny) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, ei2p
+  double precision, allocatable, dimension(:,:) :: lx, ly, lmask, Agg, Acc
+  double complex, allocatable, dimension(:,:) :: Axx, Axy, Ayy, Bxx, Bxy, Byy, A, B, ei2p
 
   nn = (/nx,ny/)
+  
+  allocate(lx(nx,ny),ly(nx,ny),lmask(nx,ny),Agg(nx,ny),Acc(nx,ny),Axx(nx,ny),Axy(nx,ny),Ayy(nx,ny),Bxx(nx,ny),Bxy(nx,ny),Byy(nx,ny),A(nx,ny),B(nx,ny),ei2p(nx,ny))
+
   call elarrays_2d(nn,D,lx,ly,ei2p=ei2p)
 
   ! filtering
@@ -422,6 +443,8 @@ subroutine qeb(nx,ny,D,OE,OB,EE,rL,eL,Ag,Ac)
       if (Acc(i,j)>0)  Ac(i,j) = 1d0/Acc(i,j)
     end do
   end do
+
+  deallocate(lx,ly,lmask,Agg,Acc,Axx,Axy,Ayy,Bxx,Bxy,Byy,A,B,ei2p)
 
 end subroutine qeb
 

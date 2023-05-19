@@ -521,9 +521,9 @@ subroutine gauss2alm(nx,ny,D,lmin,lmax,TT,TE,EE,tlm,elm)
   call gauss1alm(nx,ny,D,lmin,lmax,uni,ulm)
 
   allocate(TT2d(nx,ny),TE2d(nx,ny),EE2d(nx,ny))
-  call cl2c2d(nx,ny,D,lmin,lmax,TT,TT2d)
-  call cl2c2d(nx,ny,D,lmin,lmax,TE,TE2d)
-  call cl2c2d(nx,ny,D,lmin,lmax,EE,EE2d)
+  call cl2c2d(nx,ny,D,lmin,lmax,TT,TT2d,method='linear')
+  call cl2c2d(nx,ny,D,lmin,lmax,TE,TE2d,method='linear')
+  call cl2c2d(nx,ny,D,lmin,lmax,EE,EE2d,method='linear')
 
   elm = 0d0
   do i = 1, nx
