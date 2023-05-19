@@ -124,9 +124,10 @@ subroutine dft_2darray(map,nn,D,trans)
   !internal
   integer :: i, j, m1, m2, n, plan(8)
   double precision :: mean
-  complex(dlc) :: amap(0:nn(1)-1,0:nn(2)-1), f
+  complex(dlc) :: f
+  complex(dlc), allocatable :: amap(:,:)
 
-
+  allocate(amap(0:nn(1)-1,0:nn(2)-1))
   do i = 1, nn(1)
     do j = 1, nn(2)
       amap(i-1,j-1) = (-1)**(i+j)*map(i,j)
@@ -153,6 +154,7 @@ subroutine dft_2darray(map,nn,D,trans)
       map(i,j) = f*(-1)**(i+j+m1+m2)*amap(i-1,j-1)
     end do
   end do
+  deallocate(amap)
 
   ! error control
   mean = sum(abs(map))/dble(nn(1)*nn(2))
