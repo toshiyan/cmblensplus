@@ -911,7 +911,7 @@ subroutine qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,Ag,Ac,iter
 !*
 !*  Args(optional):
 !*    :iter (int)    : number of iteration, default to 1 (no iteration)
-!*    :conv (double) : a parameter for convergence the iteration, default to 0.001
+!*    :conv (double) : a parameter for convergence the iteration, default to 0.00001
 !*
 !*  Returns:
 !*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
@@ -931,7 +931,7 @@ subroutine qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,Ag,Ac,iter
   double precision :: ratio
   double precision :: Al(2,0:dlmax), rCBB(0:rlmax), BB(0:rlmax)
   !opt4py :: iter = 1
-  !opt4py :: conv = 0.001
+  !opt4py :: conv = 0.00001
 
   if (elmax<dlmax.or.elmax<rlmax) stop 'error (qeb_iter): does not support elmax<dlmax or elmax<rlmax'
 
