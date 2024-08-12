@@ -46,27 +46,36 @@ do
   # Healpix
   if [ ${args} = "healpix" -o ${args} = "all" ]; then
     echo '---- Install healpix ----'
-    cd ${healpix}
-    make clean
-    printf '%s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s' 3 ifort "" "" "" "" "" "" "" "" "../cfitsio"  | ./configure
-    make; make test
-    cd ${cwd}
+    #cd ${healpix}
+    #make clean
+    #printf '%s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s' 3 ifort "" "" "" "" "" "" "" "" "../cfitsio"  | ./configure
+    #make; make test
+    #cd ${cwd}
+    # Healpix (here, version 3.80)
+    # from this version, -lsharp option is needed for compiling external source codes
+    wget -d https://sourceforge.net/projects/healpix/files/Healpix_3.80/Healpix_3.80_2021Jun22.tar.gz 
+    rm -rf Healpix
+    mkdir Healpix
+    tar xf Healpix_3.80_2021Jun22.tar.gz -C Healpix --strip-components 1
+    cd Healpix
+    ## --- install libsharp --- #
+    ##edit Healpix/src/common_libraries/libsharp/configure as
+    # --- install main codes --- #
+    FC=ifort CC=icc FITSIO=../cfitsio ./configure --auto=f90
+    make
+    make test
+    rm -rf Healpix_3.80_2021Jun22.tar.gz
+    # --- edit bashrc.ext (the following is an example)
+    # export LD_LIBRARY_PATH=$HOME/Work/Lib/cmblensplus/F90/pub/Healpix/lib/:$LD_LIBRARY_PATH
+
   fi
 
-  # Healpix (here, version 3.80)
-  #wget -d https://sourceforge.net/projects/healpix/files/Healpix_3.80/Healpix_3.80_2021Jun22.tar.gz 
-  #mkdir Healpix 
-  #tar xf Healpix_3.80_2021Jun22.tar.gz -C Healpix --strip-components 1
-  #FC=ifort CC=icc ./configure --auto=f90
-  #make
-  #make test
-  #rm -rf Healpix_3.80_2021Jun22.tar.gz
 
   # lenspix
   if [ ${args} = "lenspix" -o ${args} = "all" ]; then
     echo '---- Install lenspix ----'
     cd ${lenspix}/src/
-    make; make install
+    make clean; make; make install
     cd ${cwd}
   fi
 
