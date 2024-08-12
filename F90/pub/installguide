@@ -26,9 +26,8 @@ Here, ${public} denotes the path to this directory.
 
 
 [Healpix] -- has dependcy on cfitsio
-(Instead, you can use a newer version of Healpix)
 
-1: go to ${public}/Healpix/
+1: download Healpix_3.31_2016Aug26.tar.gz and extract all files under ${public}/Healpix/, then go to ${public}/Healpix/
 
 2: ./configure 
 
@@ -41,6 +40,11 @@ Please choose the following answers:
 3: make
 
 4: make test (to check your compilation)
+
+5: go to ${public}/Healpix/lib and rename libsharp_healpix_f.a to libsharp.a
+
+
+Instead, you can use a newer version of Healpix, but then you need to install libsharp.
 
 
 [Lenspix] -- has dependcy on Healpix and cfitsio
