@@ -2,6 +2,7 @@
 
 This package contains a wrapper for Python, to reconstruct lensing potential, cosmic bi-refrimgence, and patchy reionization from cosmic microwave background anisotropies (CMB) in full and flat sky. This package also includes modules for delensing, some bi-spectrum calculation, and so on. Installing this library at NERSC is straightforward. 
 
+
 # Installation
 
   The easiest way to install the entire package is to run the shellscript: 
@@ -72,5 +73,6 @@ The library software uses the following public codes: FFTW, HEALPix, LAPACK, CFI
 
 # Contact
 
-  namikawa at slac.stanford.edu
+  toshiya.namikawa at ipmu.jp
+  
 
