@@ -43,7 +43,7 @@ do
     cd ${cwd}
   fi
 
-  # Healpix
+  # Healpix (Please install manually)
   if [ ${args} = "healpix" -o ${args} = "all" ]; then
     echo '---- Install healpix ----'
     #cd ${healpix}
