@@ -60,3 +60,14 @@ def load_config(section):
 
 
 
+def create_directory(directory_path,verbose=True):
+    try:
+        # Create the directory if it doesn't exist
+        os.makedirs(directory_path)
+        print(f"Directory '{directory_path}' created successfully.")
+    except OSError as e:
+        if verbose:
+            print(f"Error: {directory_path} - {e}")
+
+
+

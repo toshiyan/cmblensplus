@@ -46,6 +46,8 @@ subroutine spht_alm2map(n,npix,lmax,mmax,alm,map)
   case default
     stop 'error (spht_alm2map): n should be 1, 2, or 3'
   end select
+  
+  deallocate(tmap,pmap,tlm,plm)
 
 
 end subroutine spht_alm2map

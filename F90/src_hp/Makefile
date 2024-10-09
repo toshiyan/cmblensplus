@@ -20,7 +20,8 @@ LAPACK  = ${flib}/pub/LAPACK95/
 MODD= -I${healpix}/include -I$(LAPACK)/mod -I${flib}/mod
 LIBD= -L${healpix}/lib -L${cfitsio} -L$(LAPACK)/lib -L${flib}/lib
 #LINK= -lutils -lhealpix -lsharp -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas
-LINK= -lutils -lhealpix -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas
+#LINK= -lutils -lhealpix -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas
+LINK= -lutils -lhealpix -lsharp -lcfitsio -liomp5 -lpthread -llapack95 -llapack -lrefblas
 
 OPTION = $(MODD) $(LIBD) $(LINK)
 

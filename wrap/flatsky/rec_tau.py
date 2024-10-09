@@ -1,4 +1,5 @@
 import libflatsky
+import numpy
 
 def qtt(nx,ny,D,rL,fC,T1,T2):
   """

@@ -45,7 +45,7 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside_t,verbose)
 
   nside = nside_t
   if (nside_t==0)  nside = 2**(int(dlog(dble(lmax))/dlog(2d0)))
-  if (verbose)   write(*,*) 'calc rot-EB estimator with nside=', nside
+  !if (verbose)   write(*,*) 'calc rot-EB estimator with nside=', nside
   npix = 12*nside**2
 
   ! convolution
@@ -71,7 +71,7 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside_t,verbose)
   deallocate(map)
 
   ! compute alm
-  write(*,*) 'compute polarization rotation'
+  !write(*,*) 'compute polarization rotation'
   alm = 0d0
   do l = 1, lmax
     alm(l,0:l) = -2d0*xlm(1,l,0:l)

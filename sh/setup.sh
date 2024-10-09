@@ -1,6 +1,7 @@
 #!/bin/bash
 
 fflags="-qopenmp -fPIC"
+#fflags="-qopenmp -fPIC -check -traceback"
 f2pycomp="intelem"
 
 # f90 shared library

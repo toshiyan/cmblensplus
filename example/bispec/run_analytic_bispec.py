@@ -1,5 +1,6 @@
 
 import basic
+import os
 import numpy as np
 import healpy as hp
 
@@ -41,19 +42,14 @@ bn = 20
 D = 'data/'
 L = np.linspace(0,olmax,olmax+1)
 
-# Compute matter power spectrum at redshift 0
-#k, pk0 = np.loadtxt( D+cpmodel+'/Pk/Pklin.dat', unpack=True )
 pars = camb.CAMBparams()
-pars.set_cosmology(H0=67.5, ombh2=0.022, omch2=0.122)
-pars.InitPower.set_params(ns=0.965)
-pars.set_matter_power(redshifts=[0.], kmax=2.0)
-
-#Linear spectra
-pars.NonLinear = model.NonLinear_none
+pars.set_cosmology(H0=70., ombh2=0.046*.7**2, omch2=0.233*.7**2)
+pars.InitPower.set_params(ns=0.97,As=2.25e-9)
+pars.set_matter_power(redshifts=[0.], kmax=50.)
 results = camb.get_results(pars)
-k, __, pk0 = results.get_matter_power_spectrum(minkh=1e-4, maxkh=1, npoints = 200)
-#s8 = np.array(results.get_sigma8())
-kn = np.size(k)
+k, __, pk0 = results.get_matter_power_spectrum(minkh=1e-4, maxkh=40, npoints=1000)
+s8 = np.array(results.get_sigma8())
+print(np.max(k))
 
 z, dz = basic.bispec.zpoints(zmin,zmax,zn)
 

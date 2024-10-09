@@ -178,6 +178,7 @@ for mod in modname:
     # initial statement
     f = open(pyname,'w')
     f.write('import '+libname+'\n')
+    f.write('import numpy\n') # default to import numpy
     f.write('\n')
     f.close()
 

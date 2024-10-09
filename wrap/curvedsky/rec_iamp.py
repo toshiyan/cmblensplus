@@ -1,4 +1,5 @@
 import libcurvedsky
+import numpy
 
 def qeb(lmax,rlmin,rlmax,EB,Elm,Blm,nside_t=0,verbose=False):
   """

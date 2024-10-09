@@ -10,6 +10,8 @@ import numpy as np
 import tqdm
 import basic
 import flatsky
+import cmb
+import binning
 from matplotlib.pyplot import *
 
 
@@ -25,14 +27,15 @@ nx, ny = 512, 512
 D  = np.array([nx,ny]) / 60.*np.pi/180.
 bn = 50
 mc = 10
-qlist = ['TT','TE','TB','EE','EB']
+#qlist = ['TT','TE','TB','EE','EB']
+qlist = ['TT']
 
 
 # In[3]:
 
 
 # binned multipoles
-bp, bc = basic.aps.binning(bn,oL)
+bp, bc = binning.binned_ells(bn,oL[0],oL[1])
 
 
 # In[4]:
@@ -47,7 +50,7 @@ kl = el*(el+1.)/2.
 
 
 # load unlensed and lensed Cls
-lcl  = basic.aps.read_cambcls('../data/lensedcls.dat',2,lmax,4,bb=True)/Tcmb**2
+lcl = cmb.read_camb_cls('../data/lensedcls.dat',ftype='lens',output='array')[:,:lmax+1]
 itt     = np.zeros(lmax+1)
 iee     = np.zeros(lmax+1)
 ibb     = np.zeros(lmax+1)
@@ -96,9 +99,6 @@ Alc = {q: flatsky.utils.c2d2bcl(nx,ny,D,kl**2*Ac[q],bn,oL) for q in qlist}
 #np.savetxt('al_curl.dat',np.array((bc,Alc['TT'],Alc['TE'],Alc['TB'],Alc['EE'],Alc['EB'])).T,fmt='%8.6e')
 
 
-# In[10]:
-
-
 # loop over MC realizations
 cks = {q: np.zeros((mc,bn)) for q in qlist}
 
@@ -142,7 +142,6 @@ for q in qlist:
     clf()
 
 
-# In[ ]:
 
 
 

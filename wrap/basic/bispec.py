@@ -1,6 +1,7 @@
 import libbasic
+import numpy
 
-def cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn=0,kn=0,pktype='T12',cltype='kk',dNdz=None):
+def cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn=0,kn=0,pktype='T12',cltype='kk',dNdz=None,wdel=None):
   """
   Compute flat-sky lensing powerspectrum analytically
  
@@ -17,20 +18,22 @@ def cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn=0,kn=0,pktype='T12',cltype='kk',dNdz=N
     :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
     :cltype (*str*): kk, gk, or gg
     :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when cltype includes g
+    :wdel[*zn,l*] (*double*): modified chi-kernel function for z-cleaning at l=0 to lmax
 
   Returns:
     :cl[*l*] (*double*): power spectrum from LSS contributions at [*lmin,lmax*]
 
   Usage:
-    :cl = basic.bispec.cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,pktype,cltype,dNdz):
+    :cl = basic.bispec.cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,pktype,cltype,dNdz,wdel):
   """
   if zn == 0: zn=len(z)
   if kn == 0: kn=len(k)
   if dNdz is None: dNdz = z*0.
+  if wdel is None: wdel = numpy.zeros((zn,lmax+1))
   if len(dNdz) != zn: print('size of dNdz is strange')
-  return libbasic.bispec.cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,pktype,cltype,dNdz)
+  return libbasic.bispec.cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,pktype,cltype,dNdz,wdel)
 
-def bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,zn=0,kn=0,lan=0.,kan=0.,pktype='T12',ltype='',btype='kkk',dNdz=None):
+def bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,zn=0,kn=0,lan=0.,kan=0.,pktype='T12',ltype='',btype='kkk',dNdz=None,wdel=None):
   """
   Compute lensing bispectrum analytically
  
@@ -51,21 +54,23 @@ def bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,zn=0,kn=0,lan=0.,kan=0
     :ltype (*str*): fullsky correction (full) or not
     :btype (*str*): bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
     :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when btype includes g
+    :wdel[*zn,l*] (*double*): modified chi-kernel function by z-cleaning at l=0 to lmax
 
   Returns:
     :bl0[*l*] (*double*): lensing bispectrum from LSS contributions at [*lmin,lmax*]
     :bl1[*l*] (*double*): lensing bispectrum from post-Born contributions at [*lmin,lmax*]
 
   Usage:
-    :bl0,bl1 = basic.bispec.bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,zn,kn,pktype,ltype,btype,dNdz):
+    :bl0,bl1 = basic.bispec.bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,zn,kn,pktype,ltype,btype,dNdz,wdel):
   """
   if zn == 0: zn=len(z)
   if kn == 0: kn=len(k)
   if dNdz is None: dNdz = z*0.
+  if wdel is None: wdel = numpy.zeros((zn,lmax+1))
   if len(dNdz) != zn: print('size of dNdz is strange')
-  return libbasic.bispec.bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,zn,kn,pktype,ltype,btype,dNdz)
+  return libbasic.bispec.bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,zn,kn,pktype,ltype,btype,dNdz,wdel)
 
-def bispeclens_bin(shap,cpmodel,model,z,dz,zs,lmin,lmax,bn,k,pk0,zn=0,kn=0,lan=0.,kan=0.,pktype='T12',btype='kkk',dNdz=None):
+def bispeclens_bin(shap,cpmodel,model,z,dz,zs,lmin,lmax,bn,k,pk0,zn=0,kn=0,lan=0.,kan=0.,pktype='T12',btype='kkk',dNdz=None,wdel=None):
   """
   Compute binned lensing bispectrum analytically
  
@@ -86,6 +91,7 @@ def bispeclens_bin(shap,cpmodel,model,z,dz,zs,lmin,lmax,bn,k,pk0,zn=0,kn=0,lan=0
     :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
     :btype (*str*): bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
     :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when btype includes g
+    :wdel[*zn,l*] (*double*): modified chi-kernel function by z-cleaning at l=0 to lmax
 
   Returns:
     :bc[*bn*] (*double*): multipole bin centers
@@ -93,15 +99,16 @@ def bispeclens_bin(shap,cpmodel,model,z,dz,zs,lmin,lmax,bn,k,pk0,zn=0,kn=0,lan=0
     :bl1[*bn*] (*double*): binned lensing bispectrum from post-Born contributions
 
   Usage:
-    :bc,bl0,bl1 = basic.bispec.bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,pktype,btype,dNdz):
+    :bc,bl0,bl1 = basic.bispec.bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,pktype,btype,dNdz,wdel):
   """
   if zn == 0: zn=len(z)
   if kn == 0: kn=len(k)
   if dNdz is None: dNdz = z*0.
+  if wdel is None: wdel = numpy.zeros((zn,lmax+1))
   if len(dNdz) != zn: print('size of dNdz is strange')
-  return libbasic.bispec.bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,pktype,btype,dNdz)
+  return libbasic.bispec.bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,lan,kan,pktype,btype,dNdz,wdel)
 
-def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T12',btype='kkk',dNdz=None,cgg=None,ro=100):
+def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T12',btype='kkk',dNdz=None,wdel=None,cgg=None,ro=100):
   """
   Compute SNR of lensing bispectrum analytically
  
@@ -112,7 +119,7 @@ def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T1
     :dz[*zn*] (*double*): interval of z
     :zs[*3*] (*double*): source redshifts
     :lmin/lmax (*int*): minimum/maximum multipoles of the bispectrum
-    :cl[*l*] (*int*): observed lensing spectrum at 0<=l<=lmax
+    :cl[*l*] (*int*): observed angular power spectrum at 0<=l<=lmax
     :k[*kn*] (*double*): k for the matter power spectrum in unit of [*h/Mpc*]
     :pk0[*kn*] (*double*): the linear matter power spectrum at z=0 in unit of [*Mpc^3/h^3*]
 
@@ -120,22 +127,24 @@ def bispeclens_snr(cpmodel,model,z,dz,zs,lmin,lmax,cl,k,pk0,zn=0,kn=0,pktype='T1
     :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
     :btype (*str*): bispectrum type, i.e., kkk (lens-lens-lens), gkk (density-lens-lens), ggk (density-density-lens), or ggg (density-density-density)
     :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when btype includes g
+    :wdel[*zn,l*] (*double*): modified chi-kernel function by z-cleaning at l=0 to lmax
     :cgg[*l*] (*double*): observed galaxy spectrum
     :ro (*int*): output progress for every "ro" multipoles (ro=100, default)
 
   Returns:
-    :snr (*double*): total SNR
+    :snr[*2*] (*double*): total SNR amd LSS-only SNR
 
   Usage:
-    :snr = basic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg,ro):
+    :snr = basic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg,ro,wdel):
   """
   if zn == 0: zn=len(z)
   if kn == 0: kn=len(k)
   if dNdz is None: dNdz = z*0.
   if len(dNdz) != zn: print('size of dNdz is strange')
+  if wdel is None: wdel = numpy.zeros((zn,lmax+1))
   if cgg is None: cgg = cl*0.
   if len(cgg) != lmax+1: print('size of cgg is strange')
-  return libbasic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg,ro)
+  return libbasic.bispec.bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,pktype,btype,dNdz,cgg,ro,wdel)
 
 def bispeclens_gauss_bin(shap,bn,lmin,lmax,cl):
   """
@@ -176,15 +185,15 @@ def zpoints(zmin,zmax,zn,zspace=1):
   """
   return libbasic.bispec.zpoints(zmin,zmax,zn,zspace)
 
-def skewspeclens(cpmodel,model,zmin,zmax,zn,zs,ols,lmin,lmax,k,pk0,pktype='T12',pb=True,theta=0.0,Om=0.3,H0=70.,w0=-1.,wa=0.,mnu=0.06,ns=0.965,bn=0,kn=0,verbose=True):
+def skewspeclens(cpmodel,model,z,dz,zs,ols,lmin,lmax,k,pk0,pktype='T12',pb=True,theta=0.0,Om=0.3,H0=70.,w0=-1.,wa=0.,mnu=0.06,ns=0.965,bn=0,zn=0,kn=0,btype='kkk',dNdz=None,verbose=True,wdel=None):
   """
- Compute skew spectrum using a matter bispectrum fitting formula
+ Compute skew spectrum using a matter bispectrum fitting formula (Xl1,Yl2,Yl3)
 
   Args:
     :cpmodel (*str*): cosmological parameter model (model0, modelw, modelp, or input)
     :model (*str*): fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
-    :zmin/zmax (*double*): minimum/maximum z for z-integral
-    :zn (*int*): number of redshifts for the z-integral
+    :z[*zn*] (*double*): redshift points for the z-integral
+    :dz[*zn*] (*double*): interval of z
     :zs[*2*] (*double*): source redshifts where zs[*2*] is used for the squared map
     :lmin/lmax (*int*): minimum/maximum multipoles of alms included in the skew spectrum
     :ols[*bn*] (*int*): output multipoles to be computed for skew spectrum
@@ -193,17 +202,24 @@ def skewspeclens(cpmodel,model,zmin,zmax,zn,zs,ols,lmin,lmax,k,pk0,pktype='T12',
 
   Args(optional):
     :pktype (*str*): fitting formula for the matter power spectrum (Lin, S02 or T12)
+    :btype (*str*): bispectrum type, i.e., kkk (lens-lens^2), gkk (density-lens^2), kgg (lens-density^2), or ggg (density-density^2)
+    :dNdz[*zn*] (*double*): redshift distribution of galaxy, only used when btype includes g
     :theta (*double*): kappa map resolution in arcmin
     :pb (*bool*): with post-Born correction or not (default=True)
     :verbose (*bool*): output messages
+    :wdel[*zn,l*] (*double*): modified chi-kernel function by z-cleaning at l=0 to lmax
 
   Returns:
-    :skew (*double*): skew-spectrum
+    :skew[*3,2,l*] (*double*): skew-spectrum (S0, S1, S2) from LSS and PB contributions, separately
 
   Usage:
-    :skew = basic.bispec.skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,theta,pktype,pb,Om,H0,w0,wa,mnu,ns,verbose):
+    :skew = basic.bispec.skewspeclens(cpmodel,model,z,dz,zs,ols,lmin,lmax,k,pk0,bn,zn,kn,theta,pktype,btype,pb,Om,H0,w0,wa,mnu,ns,verbose,dNdz,wdel):
   """
   if bn==0: bn=len(ols)
+  if zn == 0: zn=len(z)
   if kn == 0: kn=len(k)
-  return libbasic.bispec.skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,theta,pktype,pb,Om,H0,w0,wa,mnu,ns,verbose)
+  if dNdz is None: dNdz = z*0.
+  if len(dNdz) != zn: print('size of dNdz is strange')
+  if wdel is None: wdel = numpy.zeros((zn,lmax+1))
+  return libbasic.bispec.skewspeclens(cpmodel,model,z,dz,zs,ols,lmin,lmax,k,pk0,bn,zn,kn,theta,pktype,btype,pb,Om,H0,w0,wa,mnu,ns,verbose,dNdz,wdel)
 

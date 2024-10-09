@@ -1,4 +1,5 @@
 import libbasic
+import numpy
 
 def hubble(z,H0=70.,Ov=0.7,Om=0.3,w0=-1.,wa=0.,zn=0,divc=False):
   """

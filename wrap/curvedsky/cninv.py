@@ -1,9 +1,12 @@
 import libcurvedsky
+import numpy
 
 def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],filter='W',verbose=False,ro=50,stat='',inl=None):
   """
  Combining multiple frequency CMB maps optimally. 
  The filtering would work if the noise variance is not significantly varied with scale (multipole). 
+ Please make sure that your input maps are beam-convolved. 
+ This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
 
  Args:
     :n (*int*): Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
@@ -13,7 +16,7 @@ def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],it
     :cl[*n,l*] (*double*): Theory signal power spectrum, with bounds (0:n-1,0:lmax)
     :bl[*mn,l*] (*double*): Beam spectrum, with bounds (0:mn-1,0:lmax)
     :iNcov[*n,mn,pix*] (*double*): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:mn-1,0:npix-1)
-    :maps[*n,mn,pix*] (*double*): Input T, Q, U maps, with bouds (0:n-1,0:mn-1,0:npix-1)
+    :maps[*n,mn,pix*] (*double*): Beam-convolved T, Q, U maps, with bouds (0:n-1,0:mn-1,0:npix-1)
 
  Args(optional):
     :chn (*int*): Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
@@ -39,7 +42,7 @@ def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],it
 
 def cnfilter_kappa(n,nside,lmax,cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],verbose=False,ro=50,stat='',inl=None):
   """
- Computing C(C+N)^-1 for multiple mass-tracer kappa maps including their correlations. 
+ Computing the inverse-variance weighted multipole, (C+N)^-1 x kappa, for multiple mass-tracers of kappa maps. 
 
  Args:
     :n (*int*): Number of input kappa maps to be combined
@@ -73,6 +76,8 @@ def cnfilter_kappa(n,nside,lmax,cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[
 def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,chn=1,lmaxs=[0],nsides0=[0],nsides1=[0],itns=[1],eps=[1e-6],filter='W',verbose=False,reducmn=0,ro=50,stat='',inl=None):
   """
  Same as cnfilter_freq but for the maps with two different Nsides. 
+ Please make sure that your input maps are beam-convolved. 
+ This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
 
  Args:
     :n (*int*): Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
@@ -82,7 +87,7 @@ def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,ma
     :cl[*n,l*] (*double*): Theory signal power spectrum, with bounds (0:n-1,0:lmax)
     :bl0/1[*mn,l*] (*double*): Beam function, with bounds (0:n-1,0:lmax)
     :iNcov0/1[*n,mn,pix*] (*double*): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
-    :maps0/1[*n,mn,pix*] (*double*): Input T, Q, U maps, with bouds (0:n-1,0:npix-1)
+    :maps0/1[*n,mn,pix*] (*double*): Beam-convolved T, Q, U maps, with bouds (0:n-1,0:npix-1)
 
  Args(optional):
     :chn (*int*): Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
@@ -107,6 +112,6 @@ def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,ma
   """
   npix0 = 12*nside0**2
   npix1 = 12*nside1**2
-  if inl is None: inl = 0*iNcov[:,:,:lmax+1]
+  if inl is None: inl = 0*iNcov0[:,:,:lmax+1]
   return libcurvedsky.cninv.cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,chn,lmaxs,nsides0,nsides1,itns,eps,filter,inl,verbose,reducmn,ro,stat)
 

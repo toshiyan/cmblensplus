@@ -1,4 +1,5 @@
 import libbasic
+import numpy
 
 def dndz_sf(z,a,b,zm=0,z0=0,zn=None):
   """

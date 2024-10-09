@@ -5,6 +5,7 @@ import os
 import numpy as np
 import pickle
 import tqdm
+import multiprocessing
 
 # cmblensplus/wrap/
 import curvedsky
@@ -27,16 +28,17 @@ def set_mtype(qlist):
     return mtype                
 
 
+
 # Define quadratic estimator names
-class quad_fname:
+class quad_fname():
 
     def __init__(self,qobj,qest):
 
         # qtype is the type of mode coupling, such as lens, rot, etc
-        qalm = qobj.root + qobj.qtype + '/alm/'
-        qrdn = qobj.root + qobj.qtype + '/rdn0/'
-        qmlm = qobj.root + qobj.qtype + '/mean/'
-        qaps = qobj.root + qobj.qtype + '/aps/'
+        qalm = qobj.qalm 
+        qrdn = qobj.qrdn
+        qmlm = qobj.qmlm
+        qaps = qobj.qaps
 
         qtag = qest + '_' + qobj.cmbtag + qobj.bhe_tag + qobj.ltag + qobj.qtagext
 
@@ -56,7 +58,7 @@ class quad_fname:
         # reconstructed spectra
         self.mcls = qaps+'cl_'+qtag+'.dat'
         self.ocls = qaps+'cl_'+qobj.ids[0]+'_'+qtag+'.dat'
-        self.cl   = [qaps+'rlz/cl_'+qtag+'_'+x+'.dat' for x in qobj.ids]
+        self.cl   = [qobj.qcls+'cl_'+qtag+'_'+x+'.dat' for x in qobj.ids]
 
         # reconstructed alm and RDN0
         self.alm  = [qalm+'alm_'+qtag+'_'+x+'.pkl' for x in qobj.ids]
@@ -70,6 +72,8 @@ class quad_fname:
 
         # additional alms
         self.walm = [qalm+'walm_'+qtag+'_'+x+'.pkl' for x in qobj.ids]
+        
+
 
 '''
 def cmb_data(qobj,lcl=None,ocl=None,ifl=None,falm='',stag=''):
@@ -123,6 +127,14 @@ class quad():
                  overwrite=False, verbose=True,
                  stag='', root='', qtagext=''
                 ):
+        
+        '''
+        lcl[0:4,0:rlmax] : Theory CMB cls used for the estimator and normalization
+        ocl[0:3,0:rlmax] : A best estimate of observd CMB cls (sum of signal and noise spectra) for TT(0), EE(1), BB(2). 
+                           This will be used for the normalization and diagonal inverse variance filtering if necessary
+        ifl[0:3,0:rlmax] : Diagonal inverse variance filter (0: 1/TT, 1: 1/EE, 2: 1/BB). If ifl=None, the code assumes that the input alms are already filtered. 
+        falm[m][i]       : Filenames for m = T, E, or B and i = ith realization in rlz. For example, falm = {m: ['test'+str(i)+'.dat' for i in range(100)] for m in ['T','E','B']}
+        '''
 
         #//// get parameters ////#
         conf = misctools.load_config('QUADREC')
@@ -147,12 +159,13 @@ class quad():
             self.rlz = range(len(ids))
         else:
             self.rlz = rlz
+        self.ids = ids
         
         # start, stop rlz of N0 bias
         self.n0min  = conf.getint('n0min',n0min)
         self.n0max  = conf.getint('n0max',n0max)
         self.n0sim  = self.n0max - self.n0min + 1
-        self.n0rlz  = np.linspace(self.n0min,self.n0max,self.n0sim,dtype=np.int)
+        self.n0rlz  = np.linspace(self.n0min,self.n0max,self.n0sim,dtype=np.int32)
 
         # start, stop rlz of RDN0 bias
         self.rdmin  = conf.getint('rdmin',rdmin)
@@ -167,10 +180,10 @@ class quad():
         # external tag
         self.qtagext = conf.get('qtagext',qtagext)
 
-        self.oL     = [self.olmin,self.olmax]
+        self.oL     = [self.olmin,self.olmax] # minimum/maximum output multipoles
 
         # rlz
-        self.mfrlz = np.linspace(self.mfmin,self.mfmax,self.mfsim,dtype=np.int)
+        self.mfrlz = np.linspace(self.mfmin,self.mfmax,self.mfsim,dtype=np.int32)
 
         # Input CMB stuff: Cl for filter, obs Cl and alm data files
         #cmb_data(self,lcl=lcl,ocl=ocl,ifl=ifl,falm=falm,stag=stag)
@@ -226,15 +239,27 @@ class quad():
         
         #//// Bias Herdened Estimators ////
         setup_bhe(self,bhe)
-            
+
+        #//// File and Directory ////#
+        self.root = root
+        self.qalm = self.root + self.qtype + '/alm/'     # reconstructed alms
+        self.qrdn = self.root + self.qtype + '/rdn0/'    # RDN0
+        self.qmlm = self.root + self.qtype + '/mean/'    # Mean field
+        self.qaps = self.root + self.qtype + '/aps/'     # Cls of reconstructed alm
+        self.qcls = self.root + self.qtype + '/aps/rlz/' # Cls for each realization
+
+        #setup filename
+        self.f = {q: quad_fname(self,q) for q in ['TT','TE','TB','EE','EB','BB','MV']}
+
         #//// Misc ////#
         self.overwrite = overwrite
         self.verbose = verbose
-        self.root = root
-        self.ids = ids
-        
-        #setup filename
-        self.f = {q: quad_fname(self,q) for q in ['TT','TE','TB','EE','EB','BB','MV']}
+
+
+    def create_directory(self):
+        # create directories if they do not exist
+        for directory in [self.qalm,self.qrdn,self.qmlm,self.qaps,self.qcls]:
+            misctools.create_directory(directory,verbose=False)
 
 
     def cinvfilter(self,mids={'T':0,'E':1,'B':2}):
@@ -760,12 +785,14 @@ class quad():
 
             # skip RDN0 for sim
             if not self.rd4sim and i!=0: 
-                continue
+                tqdm.tqdm.write('skip rdn0 for sim')
+                break
 
             # avoid overwriting
             Qlist = []
             for q in qlist:
-                if misctools.check_path(qout.f[q].rdn0[i],overwrite=self.overwrite,verbose=self.verbose):  
+                if misctools.check_path(qout.f[q].rdn0[i],overwrite=self.overwrite,verbose=False):
+                    if self.verbose: tqdm.tqdm.write(qout.f[q].rdn0[i]+' exist and is not overwritten')
                     Qlist.append(q)
             if Qlist != []: 
                 continue
@@ -906,7 +933,7 @@ class quad():
     def mean(self):
 
         Lmax = self.olmax
-        rlz  = np.linspace(self.mfmin,self.mfmax,self.mfmax-self.mfmin+1,dtype=np.int)
+        rlz  = np.linspace(self.mfmin,self.mfmax,self.mfmax-self.mfmin+1,dtype=np.int32)
 
         for q in self.qlist:
 
@@ -980,7 +1007,11 @@ class quad():
 
 
 
-    def qrec_flow(self,run=[]):
+    def qrec_flow(self,run=[],qout=None,falms=None):
+
+        # create directory to store intermediate files
+        if 'directory' in run:
+            self.create_directory()
 
         # set filtering
         if run:
@@ -1000,7 +1031,7 @@ class quad():
 
         # Realization-dependent N0
         if 'rdn0' in run:
-            self.rdn0()
+            self.rdn0(qout=qout,falms=falms)
 
         # Realization-dependent diagonal N0
         if 'drdn0' in run:
@@ -1034,7 +1065,7 @@ class quad_cross(): # for phi cross-spectrum between two different CMB data
         self.n0min  = conf.getint('n0min',n0min)
         self.n0max  = conf.getint('n0max',n0max)
         self.n0sim  = self.n0max - self.n0min + 1
-        self.n0rlz  = np.linspace(self.n0min,self.n0max,self.n0sim,dtype=np.int)
+        self.n0rlz  = np.linspace(self.n0min,self.n0max,self.n0sim,dtype=np.int32)
 
         # start, stop rlz of RDN0 bias
         self.rdmin  = conf.getint('rdmin',rdmin)

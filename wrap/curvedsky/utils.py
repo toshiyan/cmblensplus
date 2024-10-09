@@ -1,4 +1,5 @@
 import libcurvedsky
+import numpy
 
 def gauss1alm(lmax,Cl):
   """

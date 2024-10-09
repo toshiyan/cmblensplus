@@ -1,4 +1,5 @@
 import libcurvedsky
+import numpy
 
 def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t=0,gtype='',verbose=False):
   """

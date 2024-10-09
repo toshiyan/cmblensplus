@@ -141,7 +141,6 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,bl0,bl1
   call bispec_lens_lss_init(cp,b,z,dz,zs,k*cp%h,pk0/cp%h**3,oL,dNdz,wdel_tmp,model,pktype,btype) !correction for h/Mpc to /Mpc
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zs,oL,b%weight,wp,wck) !only compute for btype=kkk
   deallocate(wdel_tmp)
-  write(*,*) 'A'
   !if (btype/='kkk')  call gal_zweight(btype,b%zker,dNdz)
 
   ! MG parameter z-evolution
@@ -443,14 +442,14 @@ subroutine zpoints(zmin,zmax,zn,z,dz,zspace)
 end subroutine zpoints
 
 
-subroutine skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,skew,theta,pktype,pb,Om,H0,w0,wa,mnu,ns,verbose,wdel)
-!* Compute skew spectrum using a matter bispectrum fitting formula
+subroutine skewspeclens(cpmodel,model,z,dz,zs,ols,lmin,lmax,k,pk0,bn,zn,kn,skew,theta,pktype,btype,pb,Om,H0,w0,wa,mnu,ns,verbose,dNdz,wdel)
+!* Compute skew spectrum using a matter bispectrum fitting formula (Xl1,Yl2,Yl3)
 !*
 !*  Args:
 !*    :cpmodel (str) : cosmological parameter model (model0, modelw, modelp, or input)
 !*    :model (str) : fitting formula of the matter bispectrum (LN=linear, SC=SC03, GM=Gil-Marin+12, 3B=3-shape-bispectrum, or RT=Takahashi+19)
-!*    :zmin/zmax (double) : minimum/maximum z for z-integral
-!*    :zn (int) : number of redshifts for the z-integral
+!*    :z[zn] (double) : redshift points for the z-integral
+!*    :dz[zn] (double) : interval of z
 !*    :zs[2] (double) : source redshifts where zs[2] is used for the squared map
 !*    :lmin/lmax (int) : minimum/maximum multipoles of alms included in the skew spectrum
 !*    :ols[bn] (int) : output multipoles to be computed for skew spectrum
@@ -459,25 +458,28 @@ subroutine skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,
 !*
 !*  Args(optional):
 !*    :pktype (str) : fitting formula for the matter power spectrum (Lin, S02 or T12)
+!*    :btype (str) : bispectrum type, i.e., kkk (lens-lens^2), gkk (density-lens^2), kgg (lens-density^2), or ggg (density-density^2)
+!*    :dNdz[zn] (double) : redshift distribution of galaxy, only used when btype includes g
 !*    :theta (double) : kappa map resolution in arcmin
 !*    :pb (bool) : with post-Born correction or not (default=True)
 !*    :verbose (bool) : output messages
 !*    :wdel[zn,l] (double) : modified chi-kernel function by z-cleaning at l=0 to lmax
 !*
 !*  Returns:
-!*    :skew (double)  : skew-spectrum
+!*    :skew[3,2,l] (double)  : skew-spectrum (S0, S1, S2) from LSS and PB contributions, separately
 !*
   implicit none
   !I/O
-  character(8), intent(in) :: cpmodel, model, pktype
+  character(8), intent(in) :: cpmodel, model, pktype, btype
   integer, intent(in) :: bn, lmin, lmax, zn, kn
   double precision, intent(in), dimension(2) :: zs
-  double precision, intent(in) :: theta, zmin, zmax
+  double precision, intent(in), dimension(1:zn) :: z, dz, dNdz
+  double precision, intent(in) :: theta
   double precision, intent(in) :: Om, H0, w0, wa, mnu, ns
   integer, intent(in), dimension(1:bn) :: ols
   double precision, intent(in), dimension(1:kn) :: k, pk0
   double precision, intent(in), dimension(1:zn,0:lmax) :: wdel
-  double precision, intent(out), dimension(1:3,1:bn) :: skew
+  double precision, intent(out), dimension(1:3,1:2,1:bn) :: skew
   logical, intent(in) :: pb, verbose
   !opt4py :: pktype = 'T12'
   !opt4py :: pb = True
@@ -489,16 +491,22 @@ subroutine skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,
   !opt4py :: mnu = 0.06
   !opt4py :: ns = 0.965
   !opt4py :: bn = 0
-  !add2py :: if bn==0: bn=len(ols)
+  !opt4py :: zn = 0
   !opt4py :: kn = 0
+  !add2py :: if bn==0: bn=len(ols)
+  !add2py :: if zn == 0: zn=len(z)
   !add2py :: if kn == 0: kn=len(k)
+  !opt4py :: btype = 'kkk'
+  !opt4py :: dNdz = None
+  !add2py :: if dNdz is None: dNdz = z*0.
+  !add2py :: if len(dNdz) != zn: print('size of dNdz is strange')
   !opt4py :: verbose = True
   !opt4py :: wdel = None
   !add2py :: if wdel is None: wdel = numpy.zeros((zn,lmax+1))
   !internal
   integer :: n, eL(2), tL(2)
   double precision :: zss(3)
-  double precision, dimension(1:zn) :: z, dz, dndz
+  !double precision, dimension(1:zn) :: z, dz, dndz
   double precision, allocatable :: wp(:,:,:), wck(:,:,:,:)
   type(gauss_legendre_params) :: gl
   type(cosmoparams) :: cp
@@ -519,7 +527,7 @@ subroutine skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,
   end if
 
   ! z points for integral
-  call zinterp(zmin,zmax,zn,1,z,dz)
+  !call zinterp(zmin,zmax,zn,1,z,dz)
 
   ! other parameters
   tL(1) = 1
@@ -530,14 +538,14 @@ subroutine skewspeclens(cpmodel,model,zmin,zmax,zn,zs,bn,ols,lmin,lmax,k,pk0,kn,
   zss(1) = zs(1)
   zss(2) = zs(2)
   zss(3) = zs(2)
-  dndz = 0d0 ! dummy
-  call bispec_lens_lss_init(cp,b,z,dz,zss,k*cp%h,pk0/cp%h**3,tL,dndz,wdel(:,1:),model,pktype,verbose=verbose) 
+  !dndz = 0d0 ! dummy
+  call bispec_lens_lss_init(cp,b,z,dz,zss,k*cp%h,pk0/cp%h**3,tL,dNdz,wdel(:,1:),model,pktype,btype,verbose=verbose) 
   call bispec_lens_pb_init(cp,b%kl,b%pl,z,dz,zss,tL,b%weight,wp,wck)
   skew = 0d0
   if (verbose) write(*,*) 'calc skewspec'
   do n = 1, bn
-    call skewspec_lens(cp,b,ols(n),(/lmin,lmax/),(/1d0,1d0/),wp,wck,model,theta,skew(:,n),pb)
-    if (verbose) write(*,*) ols(n), skew(1,n)
+    call skewspec_lens(cp,b,ols(n),(/lmin,lmax/),(/1d0,1d0/),wp,wck,model,theta,skew(:,:,n),pb)
+    if (verbose) write(*,*) ols(n), skew(1,:,n)
   end do
   deallocate(wp,wck)
 

@@ -1,4 +1,5 @@
 import libcurvedsky
+import numpy
 
 def make_quad_gauss(lmax,alm):
   """

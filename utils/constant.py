@@ -6,6 +6,9 @@ from scipy import constants as const
 #Planck constant
 h = const.h #m^2kg/s
 
+#reduced Planck mass [GeV]
+mpl = 2.435e18
+
 # Speed of light
 c = const.c #m/s
 C = const.c*1e-3 #km/s

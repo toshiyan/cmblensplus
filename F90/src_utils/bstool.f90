@@ -213,6 +213,10 @@ subroutine init_weight(cp,z,dz,zs,dNdz,wdel,bisptype,zker,weight)
       weight(1,:,l) = wgal
       weight(2,:,l) = wgal
       weight(3,:,l) = wlens(3,:) - wdel(:,l)
+    case('kgg')
+      weight(1,:,l) = wlens(1,:) - wdel(:,l)
+      weight(2,:,l) = wgal
+      weight(3,:,l) = wgal
     case('ggg')
       do s = 1, 3
         weight(s,:,l) = wgal
@@ -1085,11 +1089,11 @@ subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,wck,model,theta,skew,pb)
   character(*), intent(in) :: model
   integer, intent(in) :: l1, eL(2)
   double precision, intent(in) :: sigma(2), wp(:,:,:), wck(:,:,:,:), theta
-  double precision, intent(out) :: skew(:)
+  double precision, intent(out) :: skew(:,:)
   logical, intent(in) :: pb
   !internal
   integer :: l2, l3, a1, a2, a3
-  double precision :: bisp(2), blll, w3j, hlll, del, Wl(eL(2))
+  double precision :: bisp(2), blll(2), w3j, hlll, del, Wl(eL(2))
 
   skew = 0d0
 
@@ -1118,14 +1122,14 @@ subroutine skewspec_lens(cp,b,l1,eL,sigma,wp,wck,model,theta,skew,pb)
         !end if
         hlll = w3j*dsqrt((2d0*l1+1d0)*(2d0*l2+1d0)*(2d0*l3+1d0)/(4d0*pi))
         
-        blll = del * sum(bisp) * hlll**2
+        blll = del * bisp * hlll**2
         blll = blll * Wl(l1)*Wl(l2)*Wl(l3)
         a1 = dble(l1*(l1+1))
         a2 = dble(l2*(l2+1))
         a3 = dble(l3*(l3+1))
-        skew(1) = skew(1) + blll
-        skew(2) = skew(2) + blll * 3d0 * a1
-        skew(3) = skew(3) + blll * 3d0 * a1 * (a2+a3-a1)
+        skew(1,:) = skew(1,:) + blll(1:2)
+        skew(2,:) = skew(2,:) + blll(1:2) * 3d0 * a1
+        skew(3,:) = skew(3,:) + blll(1:2) * 3d0 * a1 * (a2+a3-a1)
 
       end do
   end do

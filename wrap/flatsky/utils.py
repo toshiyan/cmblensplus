@@ -1,4 +1,5 @@
 import libflatsky
+import numpy
 
 def map2alm(nx,ny,D,map):
   """

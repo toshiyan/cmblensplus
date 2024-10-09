@@ -1,4 +1,5 @@
 import libbasic
+import numpy
 
 def alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,gln= 100,lxcut= 0,gle= 1e-14):
   """

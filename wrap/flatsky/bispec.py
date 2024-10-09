@@ -1,4 +1,5 @@
 import libflatsky
+import numpy
 
 def bispec_norm(nx,ny,D,bp,bn=1,dbin_max=-1):
   """
