@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools >= 61.0","numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cmblensplus"
+version = "0.0.1"
+authors = [
+  { name="Toshiya Namikawa", email="toshiya.namikawa@ipmu.jp" },
+]
+description = "cmblensplus"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Linux",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/toshiyan/cmblensplus"
+Documentation = "https://toshiyan.github.io/clpdoc/html/"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+

@@ -7,4 +7,6 @@
 test
 build
 docs/build
+dist
+*.egg-info
 
