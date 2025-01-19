@@ -245,6 +245,9 @@ def read_camb_cls(fname,ftype='scal',output='',skiprows=1,unpack=True):
     elif ftype == 'lens': # lensed cls
         ll, TT, EE, BB, TE = np.loadtxt(fname,skiprows=skiprows,unpack=unpack)
 
+    if ftype == 'scalall': # full cls w/o lensing on CMB
+        ll, TT, EE, __, TE, PP, TP, EP = np.loadtxt(fname,skiprows=skiprows,unpack=unpack)
+        
     s = ll*(ll+1.)*c.Tcmb**2/(2*np.pi)
     TT /= s
     EE /= s
@@ -254,15 +257,25 @@ def read_camb_cls(fname,ftype='scal',output='',skiprows=1,unpack=True):
         TP /= ll**3*c.Tcmb**2
     elif ftype == 'lens':
         BB /= s
+    elif ftype == 'scalall':
+        PP /= ll**4*c.Tcmb**2
+        TP /= ll**3*c.Tcmb**2
+        EP /= ll**3*c.Tcmb**2
 
-    TT = np.insert(TT,0,np.array([0.,0.]))
-    EE = np.insert(EE,0,np.array([0.,0.]))
-    TE = np.insert(TE,0,np.array([0.,0.]))
+    # insert 0
+    array = np.array([0 for i in range(int(ll[0]))])
+    TT = np.insert(TT,0,array)
+    EE = np.insert(EE,0,array)
+    TE = np.insert(TE,0,array)
     if ftype == 'scal':
-        PP = np.insert(PP,0,np.array([0.,0.]))
-        TP = np.insert(TP,0,np.array([0.,0.]))
+        PP = np.insert(PP,0,array)
+        TP = np.insert(TP,0,array)
     elif ftype == 'lens':
-        BB = np.insert(BB,0,np.array([0.,0.]))
+        BB = np.insert(BB,0,array)
+    elif ftype == 'scalall':
+        PP = np.insert(PP,0,array)
+        TP = np.insert(TP,0,array)
+        EP = np.insert(EP,0,array)
 
     if ftype == 'scal':
         if output=='array':
@@ -274,6 +287,11 @@ def read_camb_cls(fname,ftype='scal',output='',skiprows=1,unpack=True):
             return np.array((TT,EE,BB,TE))
         else:
             return TT, EE, BB, TE
+    elif ftype == 'scalall':
+        if output=='array':
+            return np.array((TT,EE,TE,PP,TP,EP))
+        else:
+            return TT, EE, TE, PP, TP, EP
 
 
 #////////// Window function /////////#

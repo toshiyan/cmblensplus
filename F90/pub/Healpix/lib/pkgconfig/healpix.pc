@@ -1,0 +1,19 @@
+# HEALPix/F90 pkg-config file
+# compiled with ifort
+
+compiler=ifort
+prefix=/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix
+suffix=
+exec_prefix=${prefix}/bin${suffix}
+libdir=${prefix}/lib${suffix}
+sharpdir=${prefix}/lib
+includedir=${prefix}/include${suffix}
+
+Name: HEALPix
+Description: F90 library for HEALPix (Hierarchical Equal-Area iso-Latitude) pixelisation of the sphere
+Version: 3.80
+URL: https://healpix.sourceforge.io
+Requires: cfitsio >= 3.20
+Libs: -L${libdir} -L${sharpdir} -lhealpix -lhpxgif -lsharp
+Cflags: -I${includedir} -qopenmp -fPIC
+

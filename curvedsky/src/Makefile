@@ -12,7 +12,7 @@ FLAGS = $(FLAG) $(DBAG)
 
 ## Directories ##
 flibloc = ../
-flibutl = ../../F90/
+flibutl = ../../F90
 healpix = ${flibutl}/pub/Healpix
 cfitsio = ${flibutl}/pub/cfitsio
 lenspix = ${flibutl}/pub/lenspix

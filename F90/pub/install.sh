@@ -59,9 +59,10 @@ do
     tar xf Healpix_3.80_2021Jun22.tar.gz -C Healpix --strip-components 1
     cd Healpix
     ## --- install libsharp --- #
+    # libsharp will be installed when you first configure with ./configure
     ##edit Healpix/src/common_libraries/libsharp/configure as
     # --- install main codes --- #
-    FC=ifort CC=icc FITSIO=../cfitsio ./configure --auto=f90
+    FC=ifort CC=gcc FITSIO=../cfitsio ./configure --auto=f90
     make
     make test
     rm -rf Healpix_3.80_2021Jun22.tar.gz

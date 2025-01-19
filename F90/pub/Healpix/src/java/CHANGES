@@ -1,0 +1,48 @@
+New features and improvements introduced with the healpix.essentials package,
+compared to the HealpixIndex, Healpix and PixTools classes:
+
+- close similarities with Healpix_Base_T class from Healpix C++, which allows
+  simultaneous development and bug fixes for both.
+- support for arbitrary positive Nside values in RING scheme; no longer limited
+  to powers of 2
+- maximum supported Nside value: 2^29
+- significant performance improvements: most methods have been accelerated
+  by integral factors, some by more than an order of magnitude.
+- trigonometric functions are computed using an adapted version of Naoki
+  Shibata's SLEEF library (http://freecode.com/projects/sleef), which is
+  considerably faster than Java's own implementation.
+- re-implementation of queryDisc and queryPolygon:
+  * query methods return RangeSet objects which allow much more compact storage
+    of the result
+  * new native query methods for NESTED ordering; these are slower than those
+    for RING ordering, but much quicker than converting all pixels from a RING
+    result to NESTED.
+  * inclusive queries have been improved: several bugs were fixed, and the
+    number of false positives in the result has been reduced. Users can now
+    choose between quick inclusive queries returning more false positives,
+    and slower ones returning fewer false positives.
+- the HealpixProc class offers a procedural (instead of object-oriented)
+  interface to the HealpixBase functionality, which simplifies transition
+  for users of the "Healpix" and "PixTools" classes.
+  NOTE: this only works for Nside parameters which are powers of 2
+- many bug fixes
+- no external library dependencies, except for "nom.tam.fits" if FITS I/O is
+  required
+- the code base is thread-safe in the following sense:
+  * HealpixProc methods can be called concurrently
+  * HealpixBase methods can be called concurrently on different objects
+
+
+Changes after version 3.11:
+===========================
+
+RangeSet.size() -> RangeSet.nranges()
+RangeSet(int) constructor has new semantics; see documentation!
+
+Changes after version 3.20:
+===========================
+
+- deprecated parts of the library have been removed
+- MOC support (see http://ivoa.net/documents/MOC/ for high-level description)
+- queries for arbitrary polygons (using MOC)
+- new targets in build.xml which allow compilation without external JARs

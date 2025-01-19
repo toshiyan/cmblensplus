@@ -1,0 +1,15 @@
+#!/bin/sh
+
+NAME=HealpixCxx-3.12_experimental
+URL=http://svn.code.sf.net/p/healpix/code/trunk/src/cxx
+REV=HEAD
+
+svn export -r ${REV} ${URL} ${NAME} &&\
+cd ${NAME}/autotools &&\
+autoreconf --install &&\
+./configure &&\
+make -j2 distcheck &&\
+cd - &&\
+mv ${NAME}/autotools/*tar.gz . &&\
+chmod -R a+w ${NAME} &&\
+rm -rf ${NAME}

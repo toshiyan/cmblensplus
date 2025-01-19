@@ -1,0 +1,209 @@
+#! /bin/sh
+#
+# configuration script for Healpix
+# will configure (and compile) the C, C++, F90, IDL and healpy packages
+#
+# It is free of bashims, and should work with
+#          Bourne Shell       (sh)
+#          Bourne-Again Shell (bash)
+#          Korn Shell         (ksh)
+#          Z Shell            (zsh)
+# and most versions of
+#          Debian Almquist Shell (dash)
+#
+# If is crashes unexpectedly, try replacing the top line
+# from   #! /bin/sh
+# to     #! /bin/bash
+# or     #! /bin/ksh
+# or     #! /bin/zsh
+#
+# 2008-03-26, IAP, EH
+# 2009-01-08: added comments on shells above
+# 2014-03-10: more portable substring parsing
+# 2015-05-12: updated this header
+# 2020-02-28: deal with properly with -L and --auto set together
+#
+
+# version number
+HPXVERSION=3.80
+
+#----------------------------------------
+usage="Usage: ./$(basename $0) ['?'|-h|-v] [-L] [--auto=<list>]"
+usage2="Type    ./$(basename $0) -h    for extended help"
+usage3=" If the environment variables\n\
+        CC,            (used in C,sharp,C++,F90,healpy) \n\
+        C_FITS, C_SHARED       (C)                      \n\
+        CXX,                           (C++,    healpy) \n\
+        CXXFLAGS, CXX_PARAL            (C++)            \n\
+        SHARP_COPT, SHARP_PARAL  (sharp)                \n\
+        FC, F_DIRSUFF, F_OPT, F_PARAL, F_SHARED   (F90) \n\
+        FITSDIR,               (C,      C++,F90)        \n\
+        FITSINC,               (C,      C++)            \n\
+        PYTHON                                 (healpy) \n\
+        PROFILE_EDIT           (profile)                \n\
+        papersize, ps_com, pdf_com, gif_com       (IDL) \n\
+  are defined prior to calling 'configure', they will \n\
+  be used as default values in the interactive or automated configuration process."
+usage4="all, c, cxx, f90, healpy, idl, sharp, profile"
+
+# see install.pdf
+#-------------
+welcome () {
+    echo
+    echo "*************************"
+    echo " Welcome to Healpix $HPXVERSION"
+    echo "*************************"
+    echo
+    echo "This interactive script takes care of the configuration and compilation"
+    echo "of the C, C++, F90, IDL and Python packages of the Healpix distribution."
+    echo "Default answers are shown in brakets []."
+    echo "An automatic mode is accessible with the flag --auto="
+    echo "See  $0 -h  for more information."
+    echo
+    printf "${usage3}"
+    echo
+
+}
+
+
+# read functions definition
+. ./hpxconfig_functions.sh
+
+
+# foreplay1
+setTopDefaults
+HPX_CONF_DIR=${HPX_CONF_DIR_HOME}
+
+# ----------------- options parsing ----------------------
+INTERACTIVE=1
+# ----  deal with -L
+args="$@"
+FEED='--feed'
+for i in $args ; do
+  case $i in
+      -L)
+	HPX_CONF_DIR=${HPX_CONF_DIR_INPLACE}
+	echo
+	echo "Note: the configuration directory will be ${HPX_CONF_DIR}"
+	echo
+	FEED='--feedL'
+	args=`echo "${args}" | ${SED} 's|-L||g'` # remove -L from options
+	;;
+      *);;
+  esac
+done
+# ----  deal with other options
+for i in $args ; do 
+  case $i in 
+      -h)
+	echo
+	echo "Configure script for Healpix ${HPXVERSION}"
+	echo
+	echo "${usage}"
+	echo
+	echo "'?'   Print usage and exit"
+	echo
+	echo "-h  Print this help message and exit"
+	echo
+	echo "-L  Put the configuration directory in ${HPX_CONF_DIR_INPLACE}"
+	echo "    (instead of installer's home: ${HPX_CONF_DIR_HOME})."
+	echo "    Recommended when doing a system wide installation to be used by several users."
+	echo
+	echo "-v  Print Healpix version and exit"
+	echo 
+	echo "--auto=<list>"
+	echo "     performs automatic configuration using default answers "
+	echo "     (possibly customized with environment variables described below)"
+	echo "     with <list> a comma separated list of items among"
+	echo "     ${usage4}"
+	echo
+	echo "     all:     (re-)configures everything, "
+	echo "      --auto=all is the same as --auto=profile,sharp,c,cxx,f90,idl,healpy;"
+	echo "     c:       configures C   + required items, same as profile,c;"
+	echo "     cxx:     configures C++ + required items, same as profile,cxx,"
+	echo "          libsharp will also be configured, compiled and installed "
+	echo "          if it was not previously done;"
+	echo "     cpp:     same as cxx;"
+	echo "     f90:     configures F90 + required items, same as profile,f90"
+	echo "          libsharp will also be configured, compiled and installed"
+	echo "          if it was not previously done;"
+	echo "     idl:     configures IDL + required items, same as profile,idl;"
+	echo "     sharp:   forces the (re-)configuration, compilation and installation of"
+	echo "          libsharp (required by F90 and C++);"
+	echo "     profile: configures user or system configuration files "
+	echo "          (required by C,C++,F90,IDL);"
+	echo "     healpy:  configures healpy;"
+	echo
+	echo "  for instance $0 --auto=cxx,f90  will configure  "
+	echo "      profile, libsharp (if necessary), C++ and F90 items"
+	echo  
+	echo
+	echoLn "${usage3}"
+	echo
+	echo "  Current default values:"
+	setSharpDefaults
+	setCppDefaults
+	setF90Defaults > /dev/null
+	GuessF90Compiler
+	setIdlDefaults
+	for v in CC C_FITS C_SHARED CXX CXXFLAGS CXX_PARAL FC F_DIRSUFF F_OPT F_PARAL F_SHARED FITSDIR FITSINC PYTHON PROFILE_EDIT SHARP_COPT SHARP_PARAL papersize ps_com pdf_com gif_com  ; do
+	    eval "val=\$$v"
+	    nw=`echo $val | ${WC} -w`
+	    [ $nw -le 1 ] && echo "$v=$val" || echo "$v='$val'"
+	done
+	echo 
+	echo "Missing values are determined by the script, depending on previous choices."
+	echo "Boolean variables accept 1,y,Y,t or T as meaning True,  and   0,n,N,f and F as meaning False."
+	echo "For more information, see the HEALPix documentation."
+	exit 0
+	;;
+      -v)
+        echo "${HPXVERSION}"
+	exit 0
+	;;
+      '?')
+	echoLn "\n${usage}\n\n${usage2}\n\n"
+	exit -1
+	;;
+      --auto=*)
+	INTERACTIVE=0
+        list="${i#*=}" #  remove '--auto='  from argument
+	batchfile="/tmp/Healpix_autolist.txt"
+	processAutoList ${batchfile} ${list}
+	$0 ${FEED} < ${batchfile}
+	exit 0
+	;;
+      --feed)
+        INTERACTIVE=0
+	;;
+      --feedL)
+        HPX_CONF_DIR=${HPX_CONF_DIR_INPLACE}
+        INTERACTIVE=0
+	;;
+      *)
+        echo "Unknown option: $i"
+	echoLn "\n${usage}\n\n${usage2}\n\n"
+	exit -1
+	;;
+  esac
+done
+
+# --------------------------------------------------------
+
+#-------------
+
+# foreplay2
+setConfDir
+welcome
+makeTopConf
+readyTopMakefile
+#installProfile
+
+# loop over main menu
+while [ true ]  ; do
+	mainMenu
+done
+
+# done
+goodBye
+exit

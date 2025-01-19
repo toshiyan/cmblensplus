@@ -139,6 +139,7 @@ def dtau_dchi(z,xe='tanh',ombh2=0.02254):
         xez = xe
     
     #Eq.(3.44) of Dodelson's Modern Cosmology and conversion of H(z) unit 1/Mpc -> 1/m
+    #rho_c is in unit of h^2 x kg/m^3 and we should use O_bh^2 here. 
     f = c.sigmaT * (c.rho_c*ombh2/c.m_p) * c.Mpc2m 
 
     # dtau/dchi

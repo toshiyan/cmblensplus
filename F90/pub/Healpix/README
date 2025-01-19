@@ -1,0 +1,13 @@
+HEALPix 
+
+Hierarchical Equal Area isoLatitude Pixelation of the sphere
+
+For information on HEALPix visit
+https://healpix.sourceforge.io
+
+For information on installation of HEALPix packages
+see INSTALL
+or type
+ healpix_doc
+
+

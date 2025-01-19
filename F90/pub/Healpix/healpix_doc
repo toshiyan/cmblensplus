@@ -1,0 +1,343 @@
+#! /bin/sh
+
+
+test_pdf_viewer () {
+    if [ "$VIEWER" = "" ]; then
+	for DIR in `echo $PATH | sed 's/:/ /g'`; do
+	    if [ -f "$DIR/$1" ]; then
+		VIEWER=$1
+	    fi
+	done
+    fi
+}
+
+open_pdf_viewer () {
+
+    # adapted from IDL's online_help_pdf (May 2010)
+    # added gv
+    # added evince 2012-02-29
+    this_code=open_pdf_viewer 
+    
+
+# If viewer is not specified by the environment variable, choose a default
+#    VIEWER=$IDL_ONLINE_HELP_PDF_VIEWER
+    VIEWER=$HEALPIX_PDF_VIEWER
+    if [ \( "$VIEWER" = "" \) -a \( `uname` = "Darwin" \) ]; then
+	VIEWER=darwin_open
+    fi
+
+    # try general purpose file opener (Linux)
+    test_pdf_viewer "xdg-open"
+
+    # try general purpose file opener (Gnome)
+    test_pdf_viewer "gnome-open"
+
+    # If we see Adobe's acroread, we'll default to it.
+    test_pdf_viewer "acroread"
+
+    # If we didn't find acroread, then try the free Xpdf viewer
+    test_pdf_viewer "xpdf"
+
+    # fall back on evince # (Gnome)
+    test_pdf_viewer "evince"
+
+    # fall back on okular # (KDE)
+    test_pdf_viewer "okular"
+
+    # fall back on foxit # 
+    test_pdf_viewer "foxit"
+
+    # fall back on sumatra (Windows)
+    test_pdf_viewer "sumatra" 
+
+    # fall back on gv
+    test_pdf_viewer "gv" 
+
+    if [ "x$VIEWER" = "x" ]; then
+    # No view in evidence.
+	echo "PDF viewer (xdg-open, gnome-open, acroread, xpdf, evince, okular, foxit, sumatra, gv) not found in user's PATH" 1>&2
+	aboutCustomization
+	exit 1
+    fi
+  
+    case $VIEWER in
+	darwin_open)
+        open $1 &
+	;;
+
+	xdg-open*|gnome-open*)
+	$VIEWER $1 > /dev/null 2>&1  &
+	;;
+
+	acroread*|xpdf*|evince*|okular*|foxit*|gv*)
+	$VIEWER $1 &
+	;;
+	
+	sumatra*)
+	$VIEWER $1 &
+	;;
+
+	*)
+	$VIEWER $1 &
+	;;
+
+    esac
+
+}
+
+# ======================================================================
+
+test_html_browser () {
+    if [ "$BROWSER" = "" ]; then
+	found=`which $1 2> /dev/null`
+	[ "$found" ] && BROWSER=$1
+    fi
+
+}
+
+open_html_browser () {
+    # adapted from IDL's online_help_html (May 2010)
+
+# If browser is not specified by the environment variable, then use the default
+BROWSER=$HEALPIX_HTML_BROWSER
+    if [ "$BROWSER" = "" ]; then
+	if [ `uname` = "Darwin" ]; then
+	    BROWSER=darwin_open
+	else
+	    test_html_browser "xdg-open"
+	    test_html_browser "gnome-open"
+	    test_html_browser "firefox"
+	    test_html_browser "mozilla"
+	    test_html_browser "netscape"
+	    test_html_browser "opera"
+	    test_html_browser "lynx"
+	    if [ "x$BROWSER" = "x" ]; then
+    # No browser in evidence.
+		echo "HMTL browser (xdg-open, gnome-open, firefox, mozilla, netscape, opera, lynx) not found in user's PATH" 1>&2
+		aboutCustomization
+		exit 1
+	    fi # empty
+	fi # Darwin
+    fi # $BROWSER
+
+
+    case "$BROWSER" in
+	
+	"darwin_open")
+        href="\"file://$1\""
+	osascript -e  'open location '$href
+	;;
+
+	"xdg-open"|"gnome-open")
+	$BROWSER $1 > /dev/null 2>&1  &
+	;;
+
+	"lynx")
+	xterm -e lynx "$1" &
+	;;
+
+	"mozilla"|"firefox")
+	$BROWSER -remote "openURL(file:$1, new-tab)" 2>/dev/null # try to open tab in existing session
+	if [ $? != 0 ]; then # if it fails, start a fresh session
+	    $BROWSER "file:$1" &
+	fi
+	;;
+
+	"netscape")
+	$BROWSER -remote "openURL(file:$1)" 2>/dev/null
+	if [ $? != 0 ]; then
+	    $BROWSER "$1" &
+	fi
+	;;
+
+	"opera")
+	$BROWSER -remote "openURL(file:$1)" & # open existing or new session
+	;;
+
+	*)
+	$BROWSER "$1"
+	;;
+
+    esac
+
+}
+
+# ======================================================================
+
+test_epub_viewer () {
+    if [ "$EPUB_VIEWER" = "" ]; then
+	found=`which $1 2> /dev/null`
+	[ "$found" ] && EPUB_VIEWER=$1
+    fi
+}
+
+open_epub_viewer () {
+    this_code=open_epub_viewer 
+    
+
+# If viewer is not specified by the environment variable, choose a default
+    EPUB_VIEWER=$HEALPIX_EPUB_VIEWER
+    if [ \( "$EPUB_VIEWER" = "" \) -a \( `uname` = "Darwin" \) ]; then
+	EPUB_VIEWER=darwin_open
+    fi
+
+    test_epub_viewer "ebook-viewer"
+    test_epub_viewer "FBReader"
+    test_epub_viewer "fbreader"
+    test_epub_viewer "okular"
+    test_epub_viewer "lucidor"
+    test_epub_viewer "buka"
+
+    if [ "x$EPUB_VIEWER" = "x" ]; then
+    # No view in evidence.
+	echo "EPUB viewer (ebook-viewer, FBReader, okular, lucidar, buka) not found in user's PATH" 1>&2
+	aboutCustomization
+	exit 1
+    fi
+  
+    case $EPUB_VIEWER in
+	darwin_open)
+        open $1 &
+	;;
+
+	*)
+	$EPUB_VIEWER $1 &
+	;;
+
+    esac
+
+}
+
+# ======================================================================
+aboutCustomization(){
+    echo ""
+    echo "By default, $0 will look for PDF and EPUB viewers and HTML browser among the standard ones,"
+    echo "unless the variables \$HEALPIX_PDF_VIEWER, \$HEALPIX_EPUB_VIEWER and \$HEALPIX_HTML_BROWSER are set by the user."
+    echo "Currently: "
+    echo "HEALPIX_EPUB_VIEWER  = $HEALPIX_EPUB_VIEWER"
+    echo "HEALPIX_PDF_VIEWER   = $HEALPIX_PDF_VIEWER"
+    echo "HEALPIX_HTML_BROWSER = $HEALPIX_HTML_BROWSER"
+    echo ""
+}
+# ======================================================================
+testDocLocation(){
+    docdir=""
+    
+    # try $HEALPIXDOC (custom installation)
+    [ "x${HEALPIXDOC}" != "x" ] && docdir=${HEALPIXDOC}
+
+    # try $HEALPIX/doc (standard installation)
+    if [ "x${docdir}" = "x" ]; then
+	if [ "x${HEALPIX}" = "x" ]; then
+	    echo ""
+	    echo "WARNING: \$HEALPIX variable not set"
+	    echo "         It must be defined before running Healpix"
+	    echo ""
+	else
+	    docdir=${HEALPIX}/doc
+	fi
+    fi
+
+    # try around current script (standard, but unfinished, installation)
+    if [ ! -d "${docdir}"    ]; then
+	thiscode=$0
+	# poor man's emulation of recursive 'readlink -f'
+	[ -L "${thiscode}" ] && thiscode=$( readlink ${thiscode} ) # follow link, if applicable
+	[ -L "${thiscode}" ] && thiscode=$( readlink ${thiscode} ) # follow link again
+	thispath=$( dirname ${thiscode} )
+	topdir=$( cd ${thispath} && pwd )
+	docdir=${topdir}/doc
+    fi
+
+    # try current directory (desperate)
+    [ ! -d ${docdir} ] && docdir=./doc
+
+    # test final value of $docdir
+    if [ ! -d ${docdir} ]; then
+	echo "Can not find local HEALPIX documentation"
+	echo "(expected to be in \${HEALPIX}/doc/ or in \${HEALPIXDOC}/)"
+	exit 1
+# 	echo "Will try to use remote HEALPIX documentation"
+# 	docdir="http://healpix.sourceforge.net/doc"
+    fi
+}
+# ======================================================================
+
+verbose=0 # set to 1 to know which tool is used
+
+# find documentation location
+testDocLocation
+
+file=""
+#[ ${#} -eq 1 ] && file=$1
+[ ${#} -ge 2 ] && file=$2
+
+type=0
+while [ ${type} -le 0 ]; do
+    if [ ${#} = 0 -o ${type} = -1 ]; then
+	echo " Healpix on line documentation "
+	echo
+	echo " healpix_doc [-e|-h|-p] "
+	echo "   -e:  view   EPUB documentation "  
+	echo "   -h:  browse HTML documentation "          
+	echo "   -p:  view   PDF  documentation "  
+	echo 
+	printf " Enter your choice:  e, h, p, ? (getting help) or 0 (to exit): "
+	read answer
+	if [ "x$answer" = "x0" ]; then
+	    echo "Bye ..."
+	    exit 0
+	fi
+	[ "x$answer" = "xE" -o "x$answer" = "xe" ] && type=3
+	[ "x$answer" = "xH" -o "x$answer" = "xh" ] && type=1
+	[ "x$answer" = "xP" -o "x$answer" = "xp" ] && type=2
+	if [ "x$answer" = "x?" ]; then
+	    aboutCustomization
+	    exit 0
+	fi
+	if [ $type -le 0 ] ; then
+	    echo "unkwnown answer ..."
+	    exit 1
+	fi
+    else
+	type=-1
+	[ "${1:0:2}" = "-e" ] && type=3
+	[ "${1:0:2}" = "-h" ] && type=1
+	[ "${1:0:2}" = "-p" ] && type=2
+    fi
+done
+##echo $file
+
+        
+case $type in
+    1)
+	echo "opening HEALPIX HTML documention"
+	deffile=${docdir}/html/main.htm
+	[ "x$file" != "x" ] && deffile=${file}
+	open_html_browser  ${deffile}
+	[ ${verbose} -eq 1 ] && echo "browser: ${BROWSER}"
+    ;;
+    2)
+	echo "opening HEALPIX PDF documention"
+	deffile=${docdir}/pdf/pdf_index.pdf
+	[ "x$file" != "x" ] && deffile=${file}
+	open_pdf_viewer    ${deffile}
+	[ ${verbose} -eq 1 ] && echo "viewer: ${VIEWER}"
+    ;;
+    3)
+	echo "opening HEALPIX EPUB documention"
+	deffile=${docdir}/epub/HEALPixDocumentation.epub
+	[ "x$file" != "x" ] && deffile=${file}
+	open_epub_viewer    ${deffile}
+	[ ${verbose} -eq 1 ] && echo "viewer: ${EPUB_VIEWER}"
+    ;;
+    *)
+    echo "Unknown option"
+    exit 1
+    ;;
+esac
+
+exit 0
+
+
+

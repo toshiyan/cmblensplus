@@ -1,0 +1,89 @@
+;*********************************************************************
+;
+;       This is the HEALPix-specific IDL environment startup procedure.
+;
+;       AUTHOR: A.J. Banday
+;       DATE:   02/03/2000
+;
+;       MODIFICATION HISTORY:
+;
+;       DATE      PROGRAMMER      DESCRIPTION
+;       ----      ----------      -----------
+;
+;    dd/mm/ccyy   A. Programmer   The changes made.
+;    09/08/2002	  E. Hivon	  Updated to 1.2
+;    2008-02-24   E. Hivon        Use path_sep(/search) to separate directories
+;    2008-03-17   E. Hivon        Use IDL_PATH to set !path
+;    2008-10-24   E. Hivon	  Print welcome message
+;
+;*********************************************************************
+;
+; The user should assign the environment variable IDL_PATH 
+; to a series of directories that are searched for IDL programs, 
+; procedures, functions, and "include" files. It is convenient
+; for a unix system running the C-shell to set up this variable 
+; in the ~/.cshrc file, eg.
+;         setenv IDL_PATH \+~/idl:\+/disk1/lib/idl_lib
+;
+;---------------------------------------------------------------------
+; THE FOLLOWING ITEMS SHOULD BE PRESENT IN THE USER'S (eg) 
+; ~/.cshrc.HEALPix FILE, AND AUTOMATICALLY SET TO THE CORRECT 
+; VALUES BY THE CONFIGURE SCRIPT. Modify by hand if this is not
+; the case.
+;---------------------------------------------------------------------
+; The user should define the environment variable HEALPIX.
+; For a unix system running the C-shell, one should include
+; in the ~/.cshrc file the following statement
+;         setenv HEALPIX /disk1/user1/Healpix_2.10
+; The directory /disk1/user1/Healpix_1.20 is the top-level
+; of the HEALPix distribution, version 1.20, as installed by
+; the user on his system.
+;
+; This startup file is invoked by the command hidl. The user
+; should define this alias as follows: for a unix system running 
+; the C-shell, one should include in the ~/.cshrc file the following 
+; alias hidl 'setenv IDL_PATH +$HEALPIX/src/idl:$IDL_PATH; setenv IDL_STARTUP $HEALPIX/src/idl/HEALPix_startup; idl'
+;---------------------------------------------------------------------
+;
+; This file automatically adds the HEALPix IDL directory tree 
+; to the beginning of the search path. An environment is thus
+; defined in which the use of HEALPix IDL tools should be simple. 
+;
+;*********************************************************************
+;
+ !PROMPT = 'HIDL> '
+;
+; increase history buffer for command recall
+;   
+ !EDIT_INPUT=100
+;
+; for IDL 7.0 and later, rely on environment variable IDL_PATH
+; modify path as appropriate
+; HEALPix_path = '+' + '$HEALPIX/src/idl'
+; if (float(!version.release) lt 7.0) then !path = EXPAND_PATH(HEALPix_path)+ PATH_SEP(/SEARCH) + !path
+;
+;
+; compile routines
+;
+; check that init_healpix is accessible
+pathtab = expand_path(!path,/array)
+junk = file_search(pathtab+path_sep()+'init_healpix.pro', count=count)
+
+; run init_healpix to define Healpix variables, and print welcome message
+if (count gt 0) then begin $
+	init_healpix & $
+	print,'**************************' & $
+	print,' Welcome to Healpix '+!healpix.version & $
+	print,'**************************' & $
+endif else begin $
+	print,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!' & $
+	print,'!  WARNING: the Healpix routines are currently NOT found  !' & $
+	print,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!' & $
+endelse
+
+if (count gt 0 && is_gdl()) then !PROMPT = 'HGDL> '
+
+;
+; return to interactive mode
+
+

@@ -28,7 +28,13 @@ def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. 
     if output: return cor
 
 
-def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=None,xmax=None,xlim=None,ymin=None,ymax=None,ylim=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=18,ylabsize=18,xlabloc=None,ylabloc=None,xticks_labsize=14,yticks_labsize=14,legend_size=14):
+def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',
+                 xmin=None,xmax=None,xlim=None,ymin=None,ymax=None,ylim=None,
+                 xlog=False,ylog=False,xylog=False,xscale=None,yscale=None,
+                 yticks=None,
+                 grid=False,fsize=None,legend_size=14,
+                 xlabsize=18,ylabsize=18,xlabloc=None,ylabloc=None,xticks_labsize=14,yticks_labsize=14
+                ):
     """
     Start to define plot environment for 1D function
     frac --- for fractional difference (add y=0,-1,1 lines)
@@ -50,6 +56,8 @@ def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=Non
     
     if xlog or xylog: plt.xscale('log')
     if ylog or xylog: plt.yscale('log')
+    if xscale is not None: plt.xscale(xscale)
+    if yscale is not None: plt.yscale(yscale)
     
     if frac:
         plt.axhline(0,ls='--',color='k')

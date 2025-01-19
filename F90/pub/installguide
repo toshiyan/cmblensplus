@@ -1,6 +1,7 @@
 
-This file describes how to install each public code. 
-You can also use install.sh file. 
+This file describes how to install each public code from the source. 
+You can use install.sh file. 
+You can also install codes automatically in other ways and copy the library files to lib/ directory for each package
 
 
 Here, ${public} denotes the path to this directory.

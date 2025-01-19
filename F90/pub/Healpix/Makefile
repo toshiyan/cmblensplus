@@ -1,0 +1,388 @@
+# input Makefile for HEALPix 3.80
+# DO NOT EDIT!
+# Run ./configure to produce the Makefile instead.
+
+# ------------------------------ global variables --------------------------
+
+ALL       = sharp-all c-void cpp-void f90-all healpy-void
+TESTS     = sharp-test c-void cpp-void f90-test healpy-void
+CLEAN     = sharp-clean c-void cpp-void f90-clean healpy-void
+TIDY      = sharp-tidy c-void cpp-void f90-tidy healpy-void
+DISTCLEAN = sharp-distclean c-void cpp-void f90-distclean healpy-void
+
+RM	= rm -f
+HEALPIX	= /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix
+SHARPLDIR=/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/lib
+TOPDIR    = $(shell pwd)
+
+# ------------------------------ variables for F90 --------------------------
+F90_BINDIR	= $(HEALPIX)/bin
+F90_INCDIR	= $(HEALPIX)/include
+F90_LIBDIR	= $(HEALPIX)/lib
+F90_BUILDDIR	= $(HEALPIX)/build
+FITSDIR	= /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/cfitsio
+LIBFITS	= cfitsio
+
+F90_FFTSRC  =
+
+F90_PARALL  =
+
+F90_FC	= ifort
+F90_FFLAGS	= -O3 -I$(F90_INCDIR) -cm -w -sox -qopt-report=0 -qopenmp -fPIC
+F90_CC	= gcc
+F90_CFLAGS	= -O3 -std=c99 -DINTEL_COMPILER -I$(HEALPIX)/include -fopenmp -fPIC
+F90_LDFLAGS	= -L$(F90_LIBDIR) -L$(FITSDIR) -L$(SHARPLDIR) -lhealpix -lhpxgif -lsharp -l$(LIBFITS) -Wl,-R$(FITSDIR) -Wl,-R$(SHARPLDIR) -Wl,-R$(F90_LIBDIR)  
+F90_AR        = ar -rsv
+F90_PPFLAGS	= 
+F90_I8FLAG  = -i8
+F90_LIBSUFFIX = .a
+F90_FLAGNAMELIB = 
+
+F90_PGFLAG  = 
+F90_PGLIBS  = 
+
+F90_MOD	= mod
+F90_MODDIR	= "-module "
+
+F90_OS	= Linux
+
+F90_MKFLAGS	= FC="$(F90_FC)" FFLAGS="$(F90_FFLAGS)" LDFLAGS="$(F90_LDFLAGS)" \
+	CC="$(F90_CC)" CFLAGS="$(F90_CFLAGS)" MOD="$(F90_MOD)" MODDIR=$(F90_MODDIR) \
+	OS="$(F90_OS)" HEALPIX=$(HEALPIX) LIBSUFFIX="$(F90_LIBSUFFIX)"\
+	LIBDIR=$(F90_LIBDIR) INCDIR=$(F90_INCDIR) BINDIR=$(F90_BINDIR) BUILDDIR=$(F90_BUILDDIR) \
+	FFTSRC=$(F90_FFTSRC) PARALL="$(F90_PARALL)" AR="$(F90_AR)" FLAGNAMELIB="$(F90_FLAGNAMELIB)"\
+	PPFLAGS="$(F90_PPFLAGS)" PGFLAG="$(F90_PGFLAG)" PGLIBS="$(F90_PGLIBS)" FI8FLAG="$(F90_I8FLAG)"
+
+
+# ------------------------------ variables for C --------------------------
+#
+# Compiler Options
+C_CC  =
+C_PIC =
+C_OPT =
+#
+# Where you want to install the library and header file
+C_LIBDIR =
+C_INCDIR =
+C_AR     =
+#
+# Where you have the cfitsio installation
+C_WITHOUT_CFITSIO =
+C_CFITSIO_INCDIR =
+C_CFITSIO_LIBDIR =
+C_WLRPATH =
+C_EXTRA_LIB =
+#
+# Libraries to install (static, shared, dynamic)
+C_ALL =
+
+C_MKFLAGS = CC="$(C_CC)" PIC="$(C_PIC)" OPT="$(C_OPT)" \
+	LIBDIR="$(C_LIBDIR)" INCDIR="$(C_INCDIR)" AR="$(C_AR)" \
+	WITHOUT_CFITSIO="$(C_WITHOUT_CFITSIO)" CFITSIO_INCDIR="$(C_CFITSIO_INCDIR)" \
+	CFITSIO_LIBDIR="$(C_CFITSIO_LIBDIR)" WLRPATH="$(C_WLRPATH)" \
+	EXTRA_LIB="$(C_EXTRA_LIB)" \
+	RM="$(RM)"
+
+# ------------------------------ variables for libsharp ---------------------
+# sharp configuration: (rm -rf /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/src/common_libraries/libsharp/build; mkdir /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/src/common_libraries/libsharp/build; cd /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/src/common_libraries/libsharp/build; CC="gcc" CFLAGS="-O3 -ffast-math -march=native" LDFLAGS="" /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/src/common_libraries/libsharp/configure --prefix=/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix --enable-openmp)
+SHARPBLD =/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/src/common_libraries/libsharp/build
+SHARPLIB =/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/lib/libsharp.a
+SHARPMKF =/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/Healpix/src/common_libraries/libsharp/build/Makefile
+
+# ------------------------------ variables for C++ --------------------------
+# C++ configuration
+CXXBLD = 
+
+# ------------------------------ variables for Python healpy --------------------------
+
+HPY_SETUP  =
+HPY_PYTHON =
+HPY_VARS   =
+
+# ----------------------------------------------------------------------
+# ------------------------------- global rules -------------------------
+
+all: $(ALL)
+
+
+test: $(TESTS)
+
+
+clean: $(CLEAN)
+
+
+tidy: $(TIDY)
+	$(RM) include/*.h include/*/*.h
+	$(RM) lib/*/*.* lib/*.*
+
+distclean: $(DISTCLEAN) tidy
+	$(RM) Makefile
+	$(RM) Makefile_tmp
+	$(RM) Makefile_bk*
+	$(RM) -r include
+	$(RM) -r lib
+
+# ------------------------------- F90 rules ----------------------------
+
+
+f90-progs = map2gif anafast smoothing synfast ud_grade hotspot plmgen alteralm median_filter ngsims_full_sky process_mask
+f90-libs  = f90-modules f90-libgif
+
+f90-all: sharp-all $(f90-libs) $(f90-progs)
+
+# itemized list instead of loop to allow parallel compiling
+
+# libraries
+f90-modules: sharp-all
+	@cd src/f90/mod; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+f90-libgif: f90-modules
+	@cd src/f90/lib; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+# visualization code
+map2gif: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+# processing codes
+anafast: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+smoothing: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+synfast: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+ud_grade: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+hotspot: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+plmgen: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+alteralm: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+median_filter: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+ngsims_full_sky: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+process_mask: $(f90-libs)
+	@cd src/f90/$@; \
+	$(MAKE) $(F90_MKFLAGS); \
+	cd $(TOPDIR)
+
+f90-test: f90-all
+	@cd test; \
+	$(RM) test*; \
+	$(F90_BINDIR)/synfast syn.par; \
+	$(F90_BINDIR)/map2gif -inp test_map.fits -out test_map.gif -bar t -ttl 'CMB Map'; \
+	$(F90_BINDIR)/smoothing smo.par; \
+	$(F90_BINDIR)/map2gif -inp test_sm.fits -out test_sm.gif -bar t -ttl 'Smoothed CMB Map'; \
+	$(F90_BINDIR)/ud_grade udg.par; \
+	$(F90_BINDIR)/map2gif -inp test_LOres.fits -out test_LOres.gif -bar t -ttl 'Degraded Map'; \
+	$(F90_BINDIR)/hotspot hot.par; \
+	$(F90_BINDIR)/map2gif -inp test_ext.fits -out test_ext.gif -bar t -ttl 'Extrema Only Map'; \
+	$(F90_BINDIR)/anafast ana.par; \
+        $(F90_BINDIR)/anafast ana2maps.par; \
+        $(F90_BINDIR)/anafast ana_w2.par; \
+	$(F90_BINDIR)/alteralm alt.par; \
+	$(F90_BINDIR)/median_filter med.par; \
+	$(F90_BINDIR)/map2gif -inp test_mf.fits -out test_mf.gif -bar t -ttl 'Median Filtered Map'; \
+	$(F90_BINDIR)/sky_ng_sim ngfs.par; \
+	$(F90_BINDIR)/map2gif -inp test_ngfs.fits -out test_ngfs.gif -bar t -ttl 'Non-Gaussian Map'; \
+	$(F90_BINDIR)/process_mask prmask.par; \
+	$(F90_BINDIR)/map2gif -inp test_distmask.fits -out test_distmask.gif -bar t -ttl 'Distance to mask border'; \
+	echo "Healpix F90 tests done"; \
+	echo "success rate: `ls -1 test*fits | wc -l`/12"
+
+f90-clean:
+	for p in $(f90-progs) lib mod; do \
+	$(RM) src/f90/$$p/*.o src/f90/$$p/*.$(F90_MOD) src/f90/$$p/lib*.a src/f90/$$p/*.pc src/f90/$$p/*.pcl src/f90/$$p/*.il; \
+	done
+	$(RM) -r $(F90_BUILDDIR)
+
+f90-vclean: f90-clean
+	for p in $(f90-progs); do \
+	$(RM) $(F90_BINDIR)/$$p; \
+	done
+	$(RM) $(F90_BINDIR)/sky_ng_sim*
+	$(RM) $(F90_INCDIR)/*.$(F90_MOD)
+	$(RM) $(F90_INCDIR)/*.pc $(F90_INCDIR)/*.pcl $(F90_LIBDIR)/*.pc
+	$(RM) $(F90_LIBDIR)/*.a $(F90_LIBDIR)/*$(F90_LIBSUFFIX) $(F90_LIBDIR)/*.so $(F90_LIBDIR)/*.dylib 
+
+f90-tidy: f90-vclean
+	$(RM) Makefile.bak test/test*
+
+f90-distclean: f90-tidy
+	$(RM) Makefile
+	$(RM) -r $(F90_BINDIR) $(F90_INCDIR) $(F90_LIBDIR)
+
+f90-void:
+
+# ------------------------------- C rules ----------------------------
+
+c-all: $(C_ALL)
+
+
+c-static:      # all flavors
+	@cd src/C/subs; \
+	$(MAKE) static  $(C_MKFLAGS); \
+	$(MAKE) install $(C_MKFLAGS); \
+	cd $(TOPDIR)
+
+c-dynamic:     # Mac OS only
+	@cd src/C/subs; \
+	$(MAKE) dynamic $(C_MKFLAGS) PIC="$(C_PIC)"; \
+	$(MAKE) install $(C_MKFLAGS) PIC="$(C_PIC)"; \
+	cd $(TOPDIR)
+
+c-shared:      # Other Unix/Linux
+	@cd src/C/subs; \
+	$(MAKE) shared  $(C_MKFLAGS) PIC="$(C_PIC)"; \
+	$(MAKE) install $(C_MKFLAGS) PIC="$(C_PIC)"; \
+	cd $(TOPDIR)
+
+c-test:    # will only test *static* library
+	@cd src/C/subs; \
+	$(MAKE) static  $(C_MKFLAGS); \
+	$(MAKE) tests   $(C_MKFLAGS); \
+	cd $(TOPDIR)
+
+c-clean:
+	@cd src/C/subs; \
+	$(MAKE) clean $(C_MKFLAGS); \
+	cd $(TOPDIR)
+
+c-tidy:
+	@cd src/C/subs; \
+	$(MAKE) tidy $(C_MKFLAGS); \
+	cd $(TOPDIR)
+
+c-distclean:
+	@cd src/C/subs; \
+	$(MAKE) distclean $(C_MKFLAGS); \
+	cd $(TOPDIR)
+
+c-void:
+
+# ------------------------------- libsharp rules ----------------------------
+
+sharp-all: $(SHARPLIB)
+
+$(SHARPLIB): $(SHARPMKF)
+	@cd $(SHARPBLD); \
+	$(MAKE) install; \
+	cd $(TOPDIR)
+
+$(SHARPMKF):
+	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"; \
+	echo "libsharp was not properly configured.";\
+	echo "Rerun configure.";\
+	echo "See  ./configure -h";\
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+sharp-test: sharp-all
+	@cd $(SHARPBLD);   \
+	$(MAKE) check; \
+	cd $(TOPDIR)
+
+sharp-clean:
+	@cd $(SHARPBLD); \
+	$(MAKE) clean; \
+	cd $(TOPDIR)
+
+sharp-tidy:
+	@cd $(SHARPBLD); \
+	$(MAKE) clean; \
+	cd $(TOPDIR)
+
+sharp-distclean: sharp-tidy
+	@cd $(SHARPBLD); \
+	$(MAKE) distclean; \
+	cd $(TOPDIR)
+#	$(RM) -r $(SHARPBLD)
+
+sharp-void:
+
+# ------------------------------- C++ rules ----------------------------
+
+cpp-all: sharp-all
+	@cd $(CXXBLD); \
+	$(MAKE) install; \
+	cd $(TOPDIR)
+
+cpp-test: cpp-all
+	@cd $(CXXBLD);   \
+	$(MAKE) check; \
+	cd $(TOPDIR)
+
+cpp-clean:
+	@cd $(CXXBLD); \
+	$(MAKE) clean; \
+	cd $(TOPDIR)
+
+cpp-tidy:
+	@cd $(CXXBLD); \
+	$(MAKE) distclean; \
+	cd $(TOPDIR)
+
+cpp-distclean: cpp-tidy
+#	$(RM) -r $(CXXBLD)
+
+cpp-void:
+
+# ------------------------------- healpy rules ----------------------------
+
+healpy-all:
+	@cd src/healpy; \
+	$(HPY_VARS) $(HPY_PYTHON) $(HPY_SETUP) build; \
+	$(HPY_PYTHON) $(HPY_SETUP) install --user --prefix=; \
+	cd $(TOPDIR)
+
+healpy-test: healpy-all
+	@cd /tmp; \
+	$(HPY_PYTHON) -c "import pylab; import healpy; import numpy; hpv=healpy.__version__; print ('\n\n Welcome to Healpy %s! \n\n'%(hpv)); healpy.mollview(numpy.arange(12),title='Healpy %s'%(hpv)); pylab.show()"; \
+	cd $(TOPDIR)
+
+healpy-clean:
+	@cd src/healpy; \
+	$(HPY_PYTHON) $(HPY_SETUP) clean --all; \
+	cd $(TOPDIR)
+
+healpy-tidy: healpy-clean
+
+healpy-distclean: healpy-tidy
+
+healpy-void:
+
+# ------------------------------- The End ----------------------------
+

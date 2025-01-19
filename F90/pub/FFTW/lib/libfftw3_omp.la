@@ -17,7 +17,7 @@ old_library='libfftw3_omp.a'
 inherited_linker_flags=' -fopenmp'
 
 # Libraries that this one depends upon.
-dependency_libs=' /global/u1/t/toshiyan/Work/Lib/cmblensplus/F90/pub/FFTW/lib/libfftw3.la -lm'
+dependency_libs=' /global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/FFTW/lib/libfftw3.la -lm'
 
 # Names of additional weak libraries provided by this library
 weak_library_names=''
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/global/u1/t/toshiyan/Work/Lib/cmblensplus/F90/pub/FFTW/lib'
+libdir='/global/homes/t/toshiyan/Work/Lib/cmblensplus/F90/pub/FFTW/lib'

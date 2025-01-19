@@ -1,0 +1,29 @@
+	Code to create non-Gaussian simulations of the CMB
+        --------------------------------------------------
+
+Included in this distribution is:
+
+makefile - you will need to edit this with the location of
+your HEALPIX directory, f90 compiler etc
+
+sky_ng_sim.f90 - code to simulate full-sky non-Gaussian maps
+sky_ng_sim_bin.f90 - as above, but using disjoint bins in multipole
+space with a different non-Gaussian being used in each bin.
+sky_sub.f90 - module used by the above programs
+sub_ngpdf_sho.f90 - module containing subroutines to draw
+pixel values from non-Gaussian pdf based on the eigenstates
+of a harmonic oscillator
+sub_ngpdf_powergauss.f90 - module containing subroutines to
+draw pixel values from Gaussian pdf raised to some power
+(has a much greater skewness than SHO)
+
+sky.par - example parameter file for sky_ng_sim
+sky_bin.par - example parameter file for sky_ng_sim_bin
+
+
+Integration in Healpix
+----------------------
+- in progress, sky_ng_sim and sky_ng_sin_bin will eventually be merged into a single code
+- replacement of idum parameter with iseed, to be consistent with synfast.
+- No pgplot, unless the preprocessing directive PGPLOT is given during compilation
+examples: my_ng_sim.par   and   my_ng_sim_bin.par

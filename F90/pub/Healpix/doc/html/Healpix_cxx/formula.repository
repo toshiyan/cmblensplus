@@ -1,0 +1,12 @@
+\form#0:$d (\mbox{map})/d\vartheta$
+\form#1:$(\sin\vartheta)^{-1}d(\mbox{map})/d\varphi$
+\form#2:$C_l$
+\form#3:$a_{lm}$
+\form#4:$l_{\mbox{max}}$
+\form#5:${\cal {O}}(N_{\mbox{pix}}^{3/2})$
+\form#6:$C^T_l$
+\form#7:$C^E_l$
+\form#8:$C^B_l$
+\form#9:$C^{T\times E}_l$
+\form#10:$\vartheta$
+\form#11:$\varphi$

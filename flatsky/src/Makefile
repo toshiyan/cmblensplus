@@ -15,8 +15,8 @@ FLAGS = $(FLAG) $(DBAG)
 floc = ../
 flib = ../../F90/
 FFTW = ${flib}/pub/FFTW/
-MODD = -I$(FFTW)/api -I$(flib)/mod
-LIBD = -L$(FFTW) -L$(flib)/lib
+MODD = -I$(FFTW)/include -I$(flib)/mod
+LIBD = -L$(FFTW)/lib -L$(flib)/lib
 LINK = -lfttw -lutils -lfftw3
 
 OPTION = $(MODD) $(LIBD) $(LINK)

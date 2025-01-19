@@ -1,0 +1,13 @@
+
+ The subdirectory html contains the full HTML documentation 
+ on Healpix (point your browser to [HEALPIX]/doc/html/main.htm).
+
+ The subdirectory pdf contains the full PDF documentation 
+
+ The subdirectory epub contains the EPUB documentation
+
+ See the script $HEALPIX/healpix_doc to easily access these documentations
+
+ All documentations are also available at 
+ https://healpix.sourceforge.io
+

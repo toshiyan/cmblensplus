@@ -1,0 +1,188 @@
+#!/bin/sh
+
+# -----------------------------------------------------------------
+# C HEALPix 1.2 configuration+installation script
+# Eric Hivon, Feb 2003
+# adapted from main configuration script
+# EH, Nov 2007 (v2.10): edited for shared library
+# -----------------------------------------------------------------
+# auxiliary functions:
+#   fullPath: convert relative to absolute directory names
+#   checkDir: search for installation directories and create them
+#             is necessary
+#   setDefaults: set default values of variables
+# -----------------------------------------------------------------
+
+echoLn () {
+    if [ "`uname -s`" == "Linux" -o "`uname -s`" == "Darwin" ]; then
+	echo -n "$*"
+    else
+	echo "$*\c"
+    fi
+}
+
+# -----------------------------------------------------------------
+
+findFITS () {
+    for dir in /usr/lib /usr/local/lib $1; do
+	[ -r "${dir}/lib${LIBFITS}.a" ] && FITSDIR=$dir
+    done
+}
+
+# -----------------------------------------------------------------
+
+setDefaults () {
+    CC="gcc"
+    OPT="-O2 -Wall"
+#     if [ "`uname -s`" == "Darwin" ] ; then
+# 	AR="libtool -v -r -dynamic"
+# 	PIC="-fPIC"	
+# 	SHLIB_LD=${AR}
+#     else
+	AR="ar -rsv"
+	PIC="-fPIC"
+#     fi
+    TRY="../.."
+    BASE=`cd $TRY; pwd`
+    LIBDIR=$BASE/lib
+    INCDIR=$BASE/include
+
+    LIBFITS="cfitsio"
+    FITSDIR="/usr/local/lib"
+    FITSINC="/usr/local/include"
+
+    DOSHARED=1
+}
+
+# -----------------------------------------------------------------
+
+fullPath () {
+    t='TEMP=`cd $TEMP; pwd`'
+    for d in $*; do
+	eval `echo $t | sed 's/TEMP/'$d'/g'`
+    done
+}
+
+# -----------------------------------------------------------------
+
+checkDir () {
+    l=""
+    for d in $*; do
+	[ ! -d $d ] && l="$l $d"
+    done
+    if [ "x$l" != "x" ]; then
+	echo "Warning: The following directories could not be found:"
+	for d in $l; do
+	    echo "$d"
+	done
+	echoLn "Should I attempt to create these directories (Y|n)? "
+	read answer
+	if [ "x$answer" != "xn" ]; then
+	    for d in $l; do
+		mkdir $d 1>/dev/null 2>&1
+		if [ $? -gt 0 ]; then
+		    echo "Error: Could not create directory $d"
+		    exit 1
+		fi
+	    done
+	else
+	    echo "Create installation directories first."
+	    exit 1
+	fi
+    fi
+}    
+
+# -----------------------------------------------------------------
+
+askUserMisc () {
+
+    checkDir $INCDIR $LIBDIR
+    fullPath INCDIR LIBDIR
+
+    echoLn "enter C compiler you want to use ($CC): "
+    read answer
+    [ "x$answer" != "x" ] && CC=$answer
+    
+    echoLn "enter options for C compiler ($OPT): "
+    read answer
+    [ "x$answer" != "x" ] && OPT=$answer
+    
+    echoLn "enter archive creation (and indexing) command ($AR): "
+    read answer
+    [ "x$answer" != "x" ] && AR=$answer
+    
+    echoLn "enter full name of cfitsio library (lib${LIBFITS}.a): "
+    read answer
+    [ "x$answer" != "x" ] && LIBFITS=`basename $answer ".a" | sed "s/^lib//"`
+
+    findFITS $LIBDIR
+    echoLn "enter location of cfitsio library ($FITSDIR): "
+    read answer
+    [ "x$answer" != "x" ] && FITSDIR=$answer
+
+    lib="${FITSDIR}/lib${LIBFITS}.a"
+    if [ ! -r $lib ]; then
+	echo "error: fits library $lib not found"
+	exit -1
+    fi
+
+    echoLn "enter location of cfitsio header cfitsio.h ($FITSINC): "
+    read answer
+    [ "x$answer" != "x" ] && FITSINC=$answer
+
+    echoLn "A static library is produced by default. Do you also want a shared library ?"
+    if [ $DOSHARED == 1 ]; then
+	echoLn "(Y|n) "
+	read answer
+	[ "x$answer" == "xn" -o "x$answer" == "xN" ] && DOSHARED=0
+    else
+	echoLn "(y|N) "
+	read answer
+	[ "x$answer" == "xy" -o "x$answer" == "xY" ] && DOSHARED=1
+    fi
+}
+
+# -----------------------------------------------------------------
+
+makeInstall () {
+	HERE=`pwd`
+	echo " "
+	cd subs
+	make clean
+	echo "Now trying compilation"
+	echo "make static CC=$CC OPT='$OPT' AR='AR' CFITSIO_INCDIR=$FITSINC CFITSIO_LIBDIR=$FITSDIR PIC=''"
+	      make static CC=$CC OPT="$OPT" AR="$AR" CFITSIO_INCDIR=$FITSINC CFITSIO_LIBDIR=$FITSDIR PIC=""
+	echo " "
+	echo "Will install the static library (libchealpix.a) in $LIBDIR"
+	echo " and the header file (chealpix.h) in $INCDIR"
+	echo "make install INCDIR=$INCDIR LIBDIR=$LIBDIR"
+	      make install INCDIR=$INCDIR LIBDIR=$LIBDIR
+	if [ $DOSHARED == 1 ]; then
+	    if [ "`uname -s`" == "Darwin" ]; then
+		type='dynamic'
+	    else
+		type='shared'
+	    fi
+	    make clean
+	    echo "Now trying compilation"
+	    echo "make $type CC=$CC OPT='$OPT' CFITSIO_INCDIR=$FITSINC CFITSIO_LIBDIR=$FITSDIR PIC='$PIC'"
+	           make $type CC=$CC OPT="$OPT" CFITSIO_INCDIR=$FITSINC CFITSIO_LIBDIR=$FITSDIR PIC="$PIC"
+	    echo " "
+	    echo "Will install the dynamic library in $LIBDIR"
+	    echo "make install INCDIR=$INCDIR LIBDIR=$LIBDIR"
+	          make install INCDIR=$INCDIR LIBDIR=$LIBDIR
+	fi
+	make clean
+	cd $HERE
+	echo " "
+}
+# -----------------------------------------------------------------
+
+setDefaults
+askUserMisc
+makeInstall
+
+# -----------------------------------------------------------------
+
+exit 0
+

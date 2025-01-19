@@ -1,0 +1,43 @@
+
+This directory contains data used by various HEALPix codes
+
+pixel_window_n????.fits: 
+	pixel window functions w(l) computed for l in [0,4*Nside]
+    	for Nside in {2,4,8, ..., 8192}
+	They describe the effect of the binning of the signal 
+	over finite-size pixels, affecting the angular spectral products:
+		a_lm  -> a_lm w(l)
+		C_l   -> C_l  w(l)^2
+	The temperature and polarization windows are slightly different.
+
+
+weight_ring_n?????.fits:
+	ring-based quadrature weights used to improve the 
+	accuracy of finite sum over pixels approximating integrals over the sphere.
+	Computed for 2*Nside rings, for Nside in {2,4,8, ..., 8192},
+	by the code quad_ring (not publicly available).
+	Weights for other Nside values can be computed with the HEALPix/C++ code
+	compute_weights (see Healpix/src/cxx/Healpix_cxx/compute_weights.par.txt)
+	The values stored are actually the weights minus 1.
+	Specific routines are provided to turn these lists into full sky maps
+	with 12*Nside^2 pixels.
+	The temperature and polarization weights are identical.
+
+
+weight_pixel_n?????.fits
+	pixel-based quadrature weights used to improve the 
+	accuracy of finite sum over pixels approximating integrals over the sphere.
+	Computed for (3*Nside+1)*(Nside+1)/4 non-redundant locations, 
+	for Nside in {8, ..., 2048},
+	with the HEALPix/C++ code compute_weights, 
+	which can be used to compute other Nside values (see above).
+	Note that the results are unstable for Nside < 8, 
+	and that the files get large for Nside > 2048.
+	The values stored are actually the weights minus 1.
+	Specific routines are provided to turn these lists into full sky maps
+	with 12*Nside^2 pixels.
+	The weights provided are valid for temperature and polarization.
+
+
+2018-05-24 	E. Hivon
+
