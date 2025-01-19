@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import ipywidgets as widgets
 
 
-def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. coeff.'):
+def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. coeff.',output=False):
     """
     Plot correlation coefficient of the input data [rlz,x]
     """
@@ -23,11 +23,18 @@ def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. 
     plt.pcolor(x,x,cor,vmin=zmin,vmax=zmax)
     cb = plt.colorbar()
     cb.set_label(clab,labelpad=20,rotation=270)
-    if fname!='': plt.savefig(fname+'.png')
+    if fname!='': plt.savefig(fname+'.pdf')
     plt.show()
+    if output: return cor
 
 
-def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=20,xmax=2048,ymin=None,ymax=None,xlog=False,ylog=False,xylog=False,yticks=None,grid=False,fsize=None,xlabsize=14,ylabsize=14,xlabloc=None,ylabloc=None,xticks_labsize=10,yticks_labsize=10,legend_size=10):
+def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',
+                 xmin=None,xmax=None,xlim=None,ymin=None,ymax=None,ylim=None,
+                 xlog=False,ylog=False,xylog=False,xscale=None,yscale=None,
+                 yticks=None,
+                 grid=False,fsize=None,legend_size=14,
+                 xlabsize=18,ylabsize=18,xlabloc=None,ylabloc=None,xticks_labsize=14,yticks_labsize=14
+                ):
     """
     Start to define plot environment for 1D function
     frac --- for fractional difference (add y=0,-1,1 lines)
@@ -49,10 +56,10 @@ def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=20,
     
     if xlog or xylog: plt.xscale('log')
     if ylog or xylog: plt.yscale('log')
+    if xscale is not None: plt.xscale(xscale)
+    if yscale is not None: plt.yscale(yscale)
     
     if frac:
-        if ymin is None: ymin = -5.
-        if ymax is None: ymax = 5.
         plt.axhline(0,ls='--',color='k')
         plt.axhline(1,ls='--',color='k',lw=.5)
         plt.axhline(-1,ls='--',color='k',lw=.5)
@@ -71,14 +78,17 @@ def plot_1dstyle(spc='',usetex=False,frac=False,xlab='$L$',ylab='$C_L$',xmin=20,
     plt.xlabel(xlab,fontsize=xlabsize)
     plt.ylabel(ylab,fontsize=ylabsize)
 
+    if xmin is not None and xmax is not None:
+        plt.xlim(xmin,xmax)
+    if xlim is not None:
+        plt.xlim(xlim[0],xlim[1])
     if ymin is not None and ymax is not None:
         plt.ylim(ymin,ymax)
+    if ylim is not None:
+        plt.ylim(ylim[0],ylim[1])
     
-    if spc == '':
-        plt.xlim(xmin,xmax)
-
     if spc == 'p2':
-        plt.xlim(np.sqrt(xmin),np.sqrt(xmax))
+        #plt.xlim(np.sqrt(xmin),np.sqrt(xmax))
         xs = np.array([20,50,100,200,500,1000,2000])
         plt.xticks(np.sqrt(xs),xs)
 
@@ -143,7 +153,8 @@ def hist_errorbars( data, ymin=None, ymax=None, divbymax=True, xerrs=False, *arg
 
 
 
-def view_maps(maps,min=-0.1,max=0.1,M=1.):
+def view_maps(maps,vrange=None):
+    # need "import ipywidgets as widgets"
     # plot multiple mollview with tab switch
 
     mlist = list(maps.keys())
@@ -164,11 +175,13 @@ def view_maps(maps,min=-0.1,max=0.1,M=1.):
     # start plot
     fig, ax = {}, {}
     for mi, m in enumerate(mlist):
-        #kap = M * curvedsky.utils.hp_alm2map(12*nside**2,lmax,lmax,klms[q][:lmax+1,:lmax+1])
         with out[mi]:
             fig[m], ax[m] = plt.subplots(figsize=[10,7])
             plt.sca(ax[m])
-            hp.mollview(maps[m],min=min,max=max,hold=True)
+            if vrange is not None:
+                hp.mollview(maps[m],min=vrange[0],max=vrange[1],hold=True)
+            else:
+                hp.mollview(maps[m],hold=True)
             plt.show(fig[m])
 
 

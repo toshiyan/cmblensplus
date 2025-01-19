@@ -1,2 +1,10 @@
 **/__pycache__
 **/.ipynb_checkpoints
+**/*.pkl
+**/*.txt
+**/*.so
+**/*.o
+test
+build
+docs/build
+

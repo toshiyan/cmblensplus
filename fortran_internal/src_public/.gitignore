@@ -1,0 +1,7 @@
+cfitsio
+FFTW
+LAPACK95
+lenspix
+Healpix
+*.tar.gz
+

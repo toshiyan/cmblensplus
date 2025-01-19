@@ -15,7 +15,8 @@ s1 = 20.
 #t1 = .1
 
 # load unlensed and lensed Cls
-lcl = basic.aps.read_cambcls('../data/lensedcls.dat',2,lmax,4,bb=True)/Tcmb**2
+#lcl = basic.aps.read_cambcls('../data/lensedcls.dat',2,lmax,4,bb=True)/Tcmb**2
+lcl = cmb.read_camb_cls('../data/lensedcls.dat',ftype='lens',output='array')[:,:lmax+1]
 TT  = lcl[0,:]
 n0 = (s0*np.pi/10800./Tcmb)**2 #/ cmb.beam(t0,lmax)**2
 n1 = (s1*np.pi/10800./Tcmb)**2 #/ cmb.beam(t1,lmax)**2

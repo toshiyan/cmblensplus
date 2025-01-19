@@ -5,8 +5,7 @@ import configparser
 
 #from IPython.display import clear_output
 
-
-def check_path(filename,overwrite=False,verbose=True,output='exist and is not overwritten',leave=False):
+def check_path_core(filename,overwrite,verbose,leave,output):
 
     skip = False
 
@@ -17,7 +16,24 @@ def check_path(filename,overwrite=False,verbose=True,output='exist and is not ov
             else:
                 print(filename+' '+output,end="\r")
         skip = True
-    
+
+    return skip
+ 
+
+
+def check_path(filename,overwrite=False,verbose=True,output='exist and is not overwritten',leave=False):
+
+    if isinstance(filename,str):
+        skip = check_path_core(filename,overwrite,verbose,leave,output)
+
+    if isinstance(filename,list):
+        skips = [ check_path_core(fname,overwrite,verbose,leave,output) for fname in filename ]
+        skip = all(skips)
+   
+    if isinstance(filename,dict):
+        skips = [ check_path_core(fname,overwrite,verbose,leave,output) for key, fname in filename.items() ]
+        skip = all(skips)
+ 
     return skip
 
 
@@ -41,6 +57,17 @@ def load_config(section):
 
     #//// get parameters ////#
     return config[section]
+
+
+
+def create_directory(directory_path,verbose=True):
+    try:
+        # Create the directory if it doesn't exist
+        os.makedirs(directory_path)
+        print(f"Directory '{directory_path}' created successfully.")
+    except OSError as e:
+        if verbose:
+            print(f"Error: {directory_path} - {e}")
 
 
 
