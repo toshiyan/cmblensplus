@@ -34,6 +34,7 @@ do
   if [ ${args} = "cfitsio" -o ${args} = "all" ]; then
     echo '---- Install cfitsio ----'
     cd ${cfitsio}
+    rm -rf bin lib include
     wget -d https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-4.5.0.tar.gz
     tar -xzf cfitsio-4.5.0.tar.gz
     cd cfitsio-4.5.0
@@ -45,33 +46,31 @@ do
     cd ${cwd}
   fi
 
-  # Healpix (Please install manually)
+  # Healpix
   if [ ${args} = "healpix" -o ${args} = "all" ]; then
     echo '---- Install healpix ----'
-    #cd ${healpix}
-    #make clean
-    #printf '%s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s \n %s' 3 ifort "" "" "" "" "" "" "" "" "../cfitsio"  | ./configure
-    #make; make test
-    #cd ${cwd}
     # Healpix (here, version 3.80)
-    # from this version, -lsharp option is needed for compiling external source codes
-    wget -d https://sourceforge.net/projects/healpix/files/Healpix_3.80/Healpix_3.80_2021Jun22.tar.gz 
+    # In this version, -lsharp option is needed for compiling external source codes
     rm -rf Healpix
     mkdir Healpix
+    wget -d https://sourceforge.net/projects/healpix/files/Healpix_3.80/Healpix_3.80_2021Jun22.tar.gz 
     tar xf Healpix_3.80_2021Jun22.tar.gz -C Healpix --strip-components 1
     cd Healpix
-    ## --- install libsharp --- #
-    ##edit Healpix/src/common_libraries/libsharp/configure as
+    # set path
+    healpix_path=${healpix}/lib/
+    cfitsio_path=${cfitsio}/lib/
+    export LD_LIBRARY_PATH=${healpix_path}:${cfitsio_path}:$LD_LIBRARY_PATH
+    echo "please edit bashrc.ext etc to add the following for future use:"
+    echo "export LD_LIBRARY_PATH=${healpix_path}:${cfitsio_path}:\$LD_LIBRARY_PATH"
+    # clean duplicate path
+    export LD_LIBRARY_PATH=$(echo "$LD_LIBRARY_PATH" | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed 's/:$//')
     # --- install main codes --- #
-    FC=ifort CC=gcc FITSIO=../cfitsio ./configure --auto=f90
+    FC=ifort CC=gcc FITSDIR=${cfitsio}/lib ./configure --auto=f90
     make
     make test
+    cd ${cwd}
     rm -rf Healpix_3.80_2021Jun22.tar.gz
-    # --- edit bashrc.ext (the following is an example)
-    # export LD_LIBRARY_PATH=$HOME/Work/Lib/cmblensplus/F90/pub/Healpix/lib/:$LD_LIBRARY_PATH
-
   fi
-
 
   # lenspix
   if [ ${args} = "lenspix" -o ${args} = "all" ]; then

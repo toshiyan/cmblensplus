@@ -7,6 +7,7 @@ import numpy
 import subprocess
 import os
 import glob
+import shutil
 
 
 # define module name
@@ -19,8 +20,6 @@ dir_src_utils   = dir_fortran_int + 'src_utils/'
 dir_src_dft     = dir_fortran_int + 'src_dft/'
 dir_src_hp      = dir_fortran_int + 'src_hp/'
 dir_src_matrix  = dir_fortran_int + 'src_matrix/'
-lib_fortran_int = dir_fortran_int + 'lib/'
-mod_fortran_int = dir_fortran_int + 'mod/'
 
 dir_src = {key: f"fortran_wrapped/src_{key}/" for key in modname}
 
@@ -51,16 +50,16 @@ extensions = [
         name='libbasic',
         sources=sources['basic'],
         libraries=["utils"],
-        library_dirs=[lib_fortran_int],
-        include_dirs=[mod_fortran_int, numpy.get_include()],
+        library_dirs=[dir_fortran_int+'/lib'],
+        include_dirs=[dir_fortran_int+'/mod', numpy.get_include()],
         extra_compile_args=["-O3"],
     ),
     Extension(
         name='libcurvedsky',
         sources = sources['curvedsky'], # List of Fortran files in curvedsky/src
         libraries = ['hp','matrix','utils','lenspix','healpix','sharp','cfitsio','iomp5','pthread','lapack95','lapack','refblas'],  
-        library_dirs=[lib_fortran_int,dir_healpix+'/lib',dir_cfitsio+'/lib',dir_lapack+'/lib',dir_lenspix+'/lib'],
-        include_dirs=[mod_fortran_int,dir_healpix+'/include',dir_lapack+'/mod',dir_lenspix+'/mod', numpy.get_include()],
+        library_dirs=[dir_fortran_int+'/lib',dir_healpix+'/lib',dir_cfitsio+'/lib',dir_lapack+'/lib',dir_lenspix+'/lib'],
+        include_dirs=[dir_fortran_int+'/mod',dir_healpix+'/include',dir_lapack+'/mod',dir_lenspix+'/mod', numpy.get_include()],
         #extra_compile_args=["-g", "-O0"],
         extra_compile_args=["-O3"],
         extra_link_args=[""],  # Optional: Additional linker flags
@@ -69,8 +68,8 @@ extensions = [
         name='libflatsky',
         sources=sources['flatsky'],
         libraries = ['dft','utils','fftw3'],  
-        library_dirs=[lib_fortran_int,dir_fftw+'/lib'],
-        include_dirs=[mod_fortran_int,dir_fftw+'/include',numpy.get_include()],
+        library_dirs=[dir_fortran_int+'/lib',dir_fftw+'/lib'],
+        include_dirs=[dir_fortran_int+'/mod',dir_fftw+'/include',numpy.get_include()],
         extra_compile_args=["-O3"],
     ),
 ]
@@ -81,19 +80,18 @@ class CustomBuildExt(build_ext):
     def run(self):
         # Custom function to run before compiling
         print('run make')
-        self.run_make()
-        # Generate .f90 files with f2py directive
-        self.add_f2py_directive()
-        # generate interface python files for each submodule
-        self.generate_interface()
+        # compile all local f90 files in fortran_internal to create a local static library file
+        self.compile_localf90_in_fortran_internal()
+        # Generate .f90 files from .src in ./fortran_wrapped/ with f2py directive
+        self.add_f2py_directive_in_fortran_wrapped()
+        # generate interface python files in ./cmblensplus/ for each submodule
+        self.generate_interface_to_cmblensplus()
         # Call the original build_ext.run() to proceed with the actual build process
         print('compile sources inside fortran_wapped/')
         super().run()
 
     def build_extension(self, ext):
-        
-        # Ensure the .so file is saved in the package directory
-        ext_path = self.get_ext_fullpath(ext.name)
+        ext_path = self.get_ext_fullpath(ext.name) # Ensure the .so file is saved in the package directory
         ext_dir = os.path.dirname(ext_path)
         ext_dir = os.path.join(os.getcwd(), "cmblensplus")
         os.makedirs(ext_dir, exist_ok=True)
@@ -103,29 +101,32 @@ class CustomBuildExt(build_ext):
 
         return CustomBuildExt
 
-    def run_make(self):
-        # Run Makefile to build the static libraries before continuing with setup.py
-        dirs = [dir_src_utils, dir_src_dft, dir_src_matrix, dir_src_hp]
-        for directory in dirs:
+    def compile_localf90_in_fortran_internal(self):
+        for directory in [dir_src_utils, dir_src_dft, dir_src_matrix, dir_src_hp]:
             subprocess.check_call(["make", "-C", directory])
             subprocess.check_call(["make", "install", "-C", directory])
 
-    def add_f2py_directive(self):
+    def add_f2py_directive_in_fortran_wrapped(self):
         for mod in modname:
             for srcname in sources[mod]:
                 subprocess.check_call(["python", "scripts/f2pysig.py", "-srcname", srcname.replace('.f90','.src')])
 
-    def generate_interface(self):
+    def generate_interface_to_cmblensplus(self):
         subprocess.check_call(["sh", "scripts/create_interface.sh", "all"])
     
 
 # Custom clean command
 class CustomClean(clean):
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
     def run(self):
-        super().run()
-        paths_to_clean = [
-            "build", "dist", "*.egg-info", "fortran_internal/**/*.o"
-        ]
+        #super().run()
+        paths_to_clean = ["build", "dist", "*.egg-info", "fortran_internal/**/*.o"]
         for path in paths_to_clean:
             for file_or_dir in glob.glob(path, recursive=True):
                 try:

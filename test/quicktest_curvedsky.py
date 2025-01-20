@@ -33,7 +33,7 @@ for i in range(simn):
     cl[i,:] = cs.utils.alm2cl(nalm)
     print(np.min(cl[i,:]),np.max(cl[i,:]),np.shape(cl[i,:]))
     print(np.mean(cl[i,:]/nl))
-np.savetxt('test_cl.dat',cl.T)
+#np.savetxt('test_cl.dat',cl.T)
 
 
 N = 3
@@ -42,22 +42,13 @@ cl  = np.zeros((4,lmax+1))
 
 
 # In[8]:
-
-
-cl[:,2:lmax+1] = np.loadtxt('../data/lensedcls.dat',unpack=True,usecols=(1,2,3,4))[:,:lmax-1]
+cl[:,2:lmax+1] = np.loadtxt('../example/data/lensedcls.dat',unpack=True,usecols=(1,2,3,4))[:,:lmax-1]
 print(np.shape(cl))
-
-
-# In[9]:
-
 
 Cov[0,0,:] = cl[0,:lmax+1]
 Cov[1,1,:] = cl[1,:lmax+1]
 Cov[2,2,:] = cl[2,:lmax+1]
 Cov[0,1,:] = Cov[1,0,:] = cl[3,:lmax+1]
-
-
-# In[16]:
 
 
 simn = 2  # nunmber of iterations
@@ -67,20 +58,9 @@ for i in range(simn):
     alm = cs.utils.gaussalm(Cov)
     # compute cl
     for j in range(N):
-        cls[j,i,:] = cs.utils.alm2cl(lmax,alm[j])
-    cls[3,i,:] = cs.utils.alm2cl(lmax,alm[0],alm[1])
+        cls[j,i,:] = cs.utils.alm2cl(alm[j])
+    cls[3,i,:] = cs.utils.alm2cl(alm[0],alm[1])
 mcl = np.mean(cls,axis=1)
-
-
-# In[22]:
-
-
-plt.plot(cls[2,0,:])
-plt.plot(Cov[1,0,:])
-
-
-# In[ ]:
-
 
 
 
