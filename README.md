@@ -5,19 +5,31 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
 
 # Installation
 
-  The easiest way to install the entire package is to run the shellscript: 
+  The easiest way to install the entire package is to run
 
-     ./install.sh all
+     python setup.py build
   
-  You will find modules inside "wrap/". 
+  You will find modules inside "cmblensplus/". 
 
-  Note that the install.sh file compiles the following files:  
+  Note that the setup.py file compiles the following files:  
 
-  [1] Fortran public software (located inside F90/pub/)
+  [1] Fortran public software (located inside fortran_internal/src_public/) with install.sh. This process installs FFTW, cfitsio, Healpix, and LAPACK95, and locates libraries at fortran_internal/src_public/XXX/.
 
-  FFTW, cfitsio, Healpix, LAPACK95, and Lenspix. 
+  [2] Other local Fortran codes to create libraries (fortran_internal/src_***)
 
-  [2] Fortran codes to create a wrapper
+  [3] Create f90 files inside fortran_wrapped/src_XXX/ from *.src files
+
+  [4] Compile Fortran codes inside fortran_wrapped/src_XXX/ with f2py
+
+  [5] Create interface python files inside cmblensplus/XXX/
+
+  Please also note that you should include the following path to e.g. .bashrc: 
+
+  export LD_LIBRARY_PATH=$dir_cmblensplus/fortran_internal/src_public/Healpix/lib/:$dir_cmblensplus/fortran_internal/src_public/cfitsio/lib/:$LD_LIBRARY_PATH
+  
+  where $dir_cmblensplus is a directory path to your cmblensplus location. You would also need to increase stack memory size, e.g.
+
+  ulimit -s unlimited
 
 
 # Documents and Reference

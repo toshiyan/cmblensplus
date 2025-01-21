@@ -5,11 +5,9 @@
 module delens
   use alm_tools, only: alm2map, alm2map_spin, map2alm, map2alm_spin, alm2map_der
   use constants, only: iu
-  use remap_cmb, only: simple_remapping
 
   private alm2map, alm2map_spin, map2alm, map2alm_spin, alm2map_der
   private iu
-  private simple_remapping
 
 contains 
 
@@ -201,103 +199,6 @@ subroutine phi2grad(npix,lmax,plm,grad)
 
 end subroutine phi2grad
 
-subroutine remap_tp(npix,lmax,beta,alm_in,alm_re)
-!*  Remapping CMB temperaure and polarization with a given shift vector based on a simple implementation of LensPix
-!*  This function returs X(n+beta) where n is the original direction and beta is the shift vector
-!*  The output is given by alms where alm[0,l,m] is temperature, alm[1,l,m] is E mode, and alm[2,l,m] is B mode.
-!*
-!*  Args:
-!*    :nside (int)               : Nside of input shift vector
-!*    :lmax (int)                : Maximum multipole of the input plm
-!*    :beta [pix,2] (double)     : 2D shift vector, with bounds (0:npix-1,1:2)
-!*    :alm_in [TEB,l,m] (dcmplx) : Input T/E/B alms to be remapped, with bounds (1:3,0:lmax,0:lmax).
-!*
-!*  Returns:
-!*    :alm_re [TEB,l,m] (dcmplx) : Remapped T/E/B alms, with bounds (1:3,0:lmax,0:lmax). 
-!*
-  !f2py intent(in) npix, lmax, beta, alm_in
-  !f2py intent(out) alm_re
-  !f2py depend(npix) beta
-  !f2py depend(lmax) alm_in, alm_re
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax
-  double precision, intent(in), dimension(0:npix-1,2) :: beta
-  double complex, intent(in), dimension(3,0:lmax,0:lmax) :: alm_in
-  double complex, intent(out), dimension(3,0:lmax,0:lmax) :: alm_re
-  !internal
-  integer :: nside
-  real, allocatable :: tqu(:,:)
-  complex, allocatable :: alm0(:,:,:), dvec(:)
-  double precision, allocatable :: S(:,:)
-  double complex, allocatable :: alm_t(:,:,:), alm_p(:,:,:)
-  !replace
-  !chargs :: npix -> nside
-  !add2py :: npix = 12*nside**2
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(alm0(3,0:lmax,0:lmax),dvec(0:npix-1),tqu(0:npix-1,3))
-  alm0 = alm_in !double to single
-  dvec = cmplx(beta(0:npix-1,1),beta(0:npix-1,2))
-  call simple_remapping(nside,lmax,alm0,dvec,tqu)
-  deallocate(alm0,dvec)
-
-  allocate(S(0:npix-1,3),alm_t(1,0:lmax,0:lmax),alm_p(2,0:lmax,0:lmax))
-  S = tqu !single to double
-  call map2alm(nside,lmax,lmax,S(:,1),alm_t)
-  call map2alm_spin(nside,lmax,lmax,2,S(:,2:3),alm_p)
-  alm_re(1:1,:,:) = alm_t
-  alm_re(2:3,:,:) = alm_p
-  deallocate(S,alm_t,alm_p)
-
-end subroutine remap_tp
-
-subroutine remap_tp_map(npix,lmax,beta,alm_in,map_re)
-!*  Remapping CMB temperaure and polarization with a given shift vector based on a simple implementation of LensPix
-!*  This function returs X(n+beta) where n is the original direction and beta is the shift vector
-!*  The output is given by alms where alm[0,l,m] is temperature, alm[1,l,m] is E mode, and alm[2,l,m] is B mode.
-!*
-!*  Args:
-!*    :nside (int)               : Nside of input shift vector
-!*    :lmax (int)                : Maximum multipole of the input plm
-!*    :beta [pix,2] (double)     : 2D shift vector, with bounds (0:npix-1,1:2)
-!*    :alm_in [TEB,l,m] (dcmplx) : Input T/E/B alms to be remapped, with bounds (1:3,0:lmax,0:lmax).
-!*
-!*  Returns:
-!*    :map_re [pix,TQU] (double) : Remapped T/Q/U alms, with bounds (0:lmax,0:lmax,1:3). 
-!*
-  !f2py intent(in) npix, lmax, beta, alm_in
-  !f2py intent(out) map_re
-  !f2py depend(npix) beta, map_re
-  !f2py depend(lmax) alm_in
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax
-  double precision, intent(in), dimension(0:npix-1,2) :: beta
-  double complex, intent(in), dimension(3,0:lmax,0:lmax) :: alm_in
-  double precision, intent(out), dimension(0:npix-1,3) :: map_re
-  !internal
-  integer :: nside
-  real, allocatable :: tqu(:,:)
-  complex, allocatable :: alm0(:,:,:), dvec(:)
-  !replace
-  !chargs :: npix -> nside
-  !add2py :: npix = 12*nside**2
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(alm0(3,0:lmax,0:lmax),dvec(0:npix-1),tqu(0:npix-1,3))
-  alm0 = alm_in !double to single
-  dvec = cmplx(beta(0:npix-1,1),beta(0:npix-1,2))
-  call simple_remapping(nside,lmax,alm0,dvec,tqu)
-  deallocate(alm0,dvec)
-
-  !single to double
-  map_re(:,1) = tqu(:,1) 
-  map_re(:,2:3) = tqu(:,2:3)
-
-end subroutine remap_tp_map
 
 
 end module delens

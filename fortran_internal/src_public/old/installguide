@@ -1,0 +1,88 @@
+
+This file describes how to install each public code from the source. 
+You can use install.sh file. 
+You can also install codes automatically in other ways and copy the library files to lib/ directory for each package
+
+
+Here, ${public} denotes the path to this directory.
+
+[FFTW]
+
+1: go to ${public}/FFTW/ 
+
+2: untar the tar file (e.g. fftw-3.3.8.tar) and go inside further the directory
+
+3: ./configure --prefix=${public}/FFTW/ --enable-openmp --enable-shared --enable-static; make; make install
+
+
+[CFITSIO]
+
+1: go to ${public}/cfitsio/cfitsio
+
+2: ./configure
+
+3: make
+
+4: mv libcfitsio.a ../
+
+
+[Healpix] -- has dependcy on cfitsio
+
+1: download Healpix_3.31_2016Aug26.tar.gz and extract all files under ${public}/Healpix/, then go to ${public}/Healpix/
+
+2: ./configure 
+
+Then, you will be asked to answer many questions
+Please choose the following answers: 
+ - F90 compiler: ifort (this is recommended, but other compiler works as well)
+ - openmp is no longer supported, so use qopenmp option
+ - choose cfitsio directory to ../cfitsio/
+
+3: make
+
+4: make test (to check your compilation)
+
+5: go to ${public}/Healpix/lib and rename libsharp_healpix_f.a to libsharp.a
+
+
+Instead, you can use a newer version of Healpix, but then you need to install libsharp.
+
+
+[Lenspix] -- has dependcy on Healpix and cfitsio
+
+go to ${public}/lenspix/src and type "make; make install"
+
+
+[Lapack95]
+
+--- first install Lapack
+
+1: go to ${public}/LAPACK95/ and download a file e.g. type "wget -d http://www.netlib.org/lapack/lapack.tgz"
+
+2: type "gunzip -c lapack.tgz | tar xvf -" 
+
+3: go to lapack-xxx/ and copy INSTALL/make.inc.ifort as make.inc and edit
+  FFLAGS = -fPIC -O3 -fp-model strict -assume protect_parens -recursive
+  FFLAGS_NOOPT = -fPIC -O0 -fp-model strict -assume protect_parens -recursive
+
+4: type "make" and then "mv *.a ../lib/"
+
+
+--- next install Lapack95
+
+1: go to ${public}/LAPACK95 and download a file e.g. type "wget -d http://www.netlib.org/lapack95/lapack95.tgz"
+
+2: type "gunzip -c lapack95.tgz | tar xvf -" 
+
+3: go to LAPACK95/ and edit make.inc file as
+  FC = ifort -fPIC
+  FC1 = ifort -fPIC
+
+4: go to SRC/ and type "make single_double_complex_dcomplex"
+
+5: move files
+  mv ${public}/LAPACK95/LAPACK95/lapack95.a .${public}/LAPACK95/lib/liblapack95.a
+  mv ${public}/LAPACK95/LAPACK95/lapack95_modules .${public}/LAPACK95/mod
+
+
+

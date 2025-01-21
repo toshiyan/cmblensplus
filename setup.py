@@ -28,7 +28,6 @@ dir_fftw    = dir_fortran_pub + 'FFTW/'
 dir_cfitsio = dir_fortran_pub + 'cfitsio/'
 dir_lapack  = dir_fortran_pub + 'LAPACK95/'
 dir_healpix = dir_fortran_pub + 'Healpix/'
-dir_lenspix = dir_fortran_pub + 'lenspix/'
 
 
 # define source files of each module
@@ -57,9 +56,9 @@ extensions = [
     Extension(
         name='libcurvedsky',
         sources = sources['curvedsky'], # List of Fortran files in curvedsky/src
-        libraries = ['hp','matrix','utils','lenspix','healpix','sharp','cfitsio','iomp5','pthread','lapack95','lapack','refblas'],  
-        library_dirs=[dir_fortran_int+'/lib',dir_healpix+'/lib',dir_cfitsio+'/lib',dir_lapack+'/lib',dir_lenspix+'/lib'],
-        include_dirs=[dir_fortran_int+'/mod',dir_healpix+'/include',dir_lapack+'/mod',dir_lenspix+'/mod', numpy.get_include()],
+        libraries = ['hp','matrix','utils','healpix','sharp','cfitsio','iomp5','pthread','lapack95','lapack','refblas'],  
+        library_dirs=[dir_fortran_int+'/lib',dir_healpix+'/lib',dir_cfitsio+'/lib',dir_lapack+'/lib'],
+        include_dirs=[dir_fortran_int+'/mod',dir_healpix+'/include',dir_lapack+'/mod', numpy.get_include()],
         #extra_compile_args=["-g", "-O0"],
         extra_compile_args=["-O3"],
         extra_link_args=[""],  # Optional: Additional linker flags
@@ -81,7 +80,8 @@ class CustomBuildExt(build_ext):
         # Custom function to run before compiling
         print('run make')
         # compile all local f90 files in fortran_internal to create a local static library file
-        self.compile_localf90_in_fortran_internal()
+        #self.install_public_f90_library()
+        self.install_local_f90_library()
         # Generate .f90 files from .src in ./fortran_wrapped/ with f2py directive
         self.add_f2py_directive_in_fortran_wrapped()
         # generate interface python files in ./cmblensplus/ for each submodule
@@ -101,7 +101,12 @@ class CustomBuildExt(build_ext):
 
         return CustomBuildExt
 
-    def compile_localf90_in_fortran_internal(self):
+    def install_public_f90_library(self):
+        subprocess.check_call(["cd",dir_fortran_pub])
+        subprocess.check_call(["./install.sh", "FFTW, cfitsio, healpix, lapack"])
+        subprocess.check_call(["cd","../../"])
+
+    def install_local_f90_library(self):
         for directory in [dir_src_utils, dir_src_dft, dir_src_matrix, dir_src_hp]:
             subprocess.check_call(["make", "-C", directory])
             subprocess.check_call(["make", "install", "-C", directory])
