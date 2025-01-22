@@ -32,10 +32,11 @@ subroutine dndz_sf(zn,z,a,b,zm,z0,dndz)
   double precision, intent(out), dimension(1:zn) :: dndz
   integer :: i
   double precision :: zm_temp
+  !rmargs :: zn
   !opt4py :: zm = 0
   !opt4py :: z0 = 0
-  !opt4py :: zn = None
-  !add2py :: if zn is None: zn=len(z)
+  !add2py :: zn = len(z)
+  !add2py :: if zm<=0 and z0<=0: raise SystemExit('ERROR in "dndz_sf": both zm and z0 <=0')
 
   do i = 1, zn
     if (zm>0d0.and.z0==0d0) then

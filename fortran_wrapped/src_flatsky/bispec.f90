@@ -16,10 +16,10 @@ module bispec
 contains
 
 subroutine bispec_norm(nx,ny,D,bp,dbin_max,bn,norm)
+  implicit none
   !f2py intent(in) nx, ny, dbin_max, bn, D, bp
   !f2py intent(out) norm
   !f2py depend(bn) bp, norm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny, dbin_max, bn
   double precision, intent(in), dimension(2) :: D
@@ -50,13 +50,13 @@ end subroutine bispec_norm
 
 subroutine bispec_bin(kn,bn,nx,ny,kmap,bp,dbin_max,bispec)
   !unnormalized binned bispectrum for 3D shape
+  implicit none
   !f2py intent(in) kn, bn, nx, ny, dbin_max, kmap!multipole-filteredmap, bp
   !f2py intent(out) bispec
   !f2py depend(kn) kmap!multipole-filteredmap
   !f2py depend(bn) kmap!multipole-filteredmap, bp, bispec
   !f2py depend(nx) kmap!multipole-filteredmap
   !f2py depend(ny) kmap!multipole-filteredmap
-  implicit none
   !I/O
   integer, intent(in) :: kn, bn, nx, ny, dbin_max
   double precision, intent(in), dimension(kn,bn,nx,ny) :: kmap  !multipole-filtered map
@@ -118,12 +118,12 @@ subroutine binfilter(nx,ny,D,bp,bf,bn)
 !*  Returns:
 !*    :bf[bn,nx,ny] (double) : The multipole bin binary-mask for each multipol bin
 
+  implicit none
   !f2py intent(in) nx, ny, bn, D, bp
   !f2py intent(out) bf
   !f2py depend(bn) bp, bf
   !f2py depend(nx) bf
   !f2py depend(ny) bf
-  implicit none
   integer, intent(in) :: nx, ny, bn
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(bn+1) :: bp
@@ -146,12 +146,12 @@ subroutine bispec_norm_1d(nx,ny,D,bfs,bnorm,bn)
 !*  Returns:
 !*    :bnorm[bn] (double)       : Normalization of 1D binned bispectrum at each multipole bin
 
+  implicit none
   !f2py intent(in) nx, ny, bn, D, bfs
   !f2py intent(out) bnorm
   !f2py depend(nx) bfs
   !f2py depend(ny) bfs
   !f2py depend(bn) bfs, bnorm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny, bn
   double precision, intent(in), dimension(2) :: D
@@ -192,12 +192,12 @@ subroutine bispec_bin_1d(nx,ny,D,bfs,bnorm,alm,bispec,bn)
 !*  Returns:
 !*    :bispec[bn] (double)      : 1D binned bispectrum at each multipole bin
 
+  implicit none
   !f2py intent(in) nx, ny, bn, D, bfs, bnorm, alm
   !f2py intent(out) bispec
   !f2py depend(nx) bfs, alm
   !f2py depend(ny) bfs, alm
   !f2py depend(bn) bfs, bnorm, bispec
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny, bn
   double precision, intent(in), dimension(2) :: D

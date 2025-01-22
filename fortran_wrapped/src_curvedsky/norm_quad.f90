@@ -28,11 +28,11 @@ subroutine qtt(est,lmax,rlmin,rlmax,TT,OCT,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalizations (1 is dummy except lens = 0 and curl = 1), with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, TT, OCT
   !f2py intent(out) Al
   !f2py depend(rlmax) TT, OCT
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -97,11 +97,11 @@ subroutine qte(est,lmax,rlmin,rlmax,TE,OCT,OCE,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalizations (1 is dummy except lens = 0 and curl = 1), with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, TE, OCT, OCE
   !f2py intent(out) Al
   !f2py depend(rlmax) TE, OCT, OCE
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -183,11 +183,11 @@ subroutine qtb(est,lmax,rlmin,rlmax,TE,OCT,OCB,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalizations (1 is dummy except lens = 0 and curl = 1), with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, TE, OCT, OCB
   !f2py intent(out) Al
   !f2py depend(rlmax) TE, OCT, OCB
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -253,11 +253,11 @@ subroutine qee(est,lmax,rlmin,rlmax,EE,OCE,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, EE, OCE
   !f2py intent(out) Al
   !f2py depend(rlmax) EE, OCE
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -331,11 +331,11 @@ subroutine qeb(est,lmax,rlmin,rlmax,EE,OCE,OCB,BB,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, EE, BB, OCE, OCB
   !f2py intent(out) Al
   !f2py depend(rlmax) EE, BB, OCE, OCB
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -423,11 +423,11 @@ subroutine qbb(est,lmax,rlmin,rlmax,BB,OCB,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, BB, OCB
   !f2py intent(out) Al
   !f2py depend(rlmax) BB, OCB
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -503,11 +503,11 @@ subroutine qttte(est,lmax,rlmin,rlmax,fCTT,fCTE,OCT,OCE,OCTE,Ig,Ic,lfac)
 !*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
 !*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fCTT, fCTE, OCT, OCE, OCTE
   !f2py intent(out) Ig, Ic
   !f2py depend(rlmax) fCTT, fCTE, OCT, OCE, OCTE
   !f2py depend(lmax) Ig, Ic
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -581,11 +581,11 @@ subroutine qttee(est,lmax,rlmin,rlmax,fCTT,fCEE,OCT,OCE,OCTE,Ig,Ic,lfac)
 !*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
 !*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fCTT, fCEE, OCT, OCE, OCTE
   !f2py intent(out) Ig, Ic
   !f2py depend(rlmax) fCTT, fCEE, OCT, OCE, OCTE
   !f2py depend(lmax) Ig, Ic
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -652,11 +652,11 @@ subroutine qteee(est,lmax,rlmin,rlmax,fCEE,fCTE,OCT,OCE,OCTE,Ig,Ic,lfac)
 !*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
 !*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fCEE, fCTE, OCT, OCE, OCTE
   !f2py intent(out) Ig, Ic
   !f2py depend(rlmax) fCEE, fCTE, OCT, OCE, OCTE
   !f2py depend(lmax) Ig, Ic
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -730,11 +730,11 @@ subroutine qtbeb(est,lmax,rlmin,rlmax,fCEE,fCBB,fCTE,OCT,OCE,OCB,OCTE,Ig,Ic,lfac
 !*    :Ig [l] (double) : Correlation between lensing potential estimators, with bounds (0:lmax)
 !*    :Ic [l] (double) : Correlation between curl mode estimators, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fCEE, fCBB, fCTE, OCT, OCE, OCTE, OCB
   !f2py intent(out) Ig, Ic
   !f2py depend(rlmax) fCEE, fCBB, fCTE, OCT, OCE, OCTE, OCB
   !f2py depend(lmax) Ig, Ic
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -796,10 +796,10 @@ subroutine qmv(lmax,QDO,Al,Il,MV,Nl)
 !*    :MV [l] (double):   Normalization of the MV estimator, with bounds (0:lmax)
 !*    :Nl [6,l] (double): Weights for each estimator (TT, TE, EE, TB, EB, BB=0), with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, QDO, Al, Il
   !f2py intent(out) MV, Nl
   !f2py depend(lmax) Al, Il, MV, Nl
-  implicit none
   ![input]
   integer, intent(in) :: lmax
   logical, intent(in), dimension(6) :: QDO
@@ -888,11 +888,11 @@ subroutine qall(est,QDO,lmax,rlmin,rlmax,fC,OC,Ag,Ac,Nlg,Nlc,lfac)
 !*    :Nlg [6,l] (double) : Weights for TT, TE, EE, TB, EB, and BB (=0) estimators for lensing potential, with bounds (6,0:lmax)
 !*    :Nlc [6,l] (double) : Same as Nlg but for curl mode
 !*
+  implicit none
   !f2py intent(in) est, lfac, QDO, rlmin, rlmax, lmax, fC, OC
   !f2py intent(out) Ag, Ac, Nlg, Nlc
   !f2py depend(rlmax) fC, OC
   !f2py depend(lmax) Ag, Ac, Nlg, Nlc
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -952,13 +952,13 @@ subroutine qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,Ag,Ac,iter
 !*    :Ag [l] (double) : CMB lensing potential normalization, with bounds (0:lmax)
 !*    :Ac [l] (double) : Curl mode (pseudo lensing potential) normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, elmax, rlmin, rlmax, dlmin, dlmax, CE, OCE, OCB, Cpp, iter, conv
   !f2py intent(out) Ag, Ac
   !f2py depend(elmax) CE, OCE
   !f2py depend(rlmax) OCB
   !f2py depend(dlmax) Cpp
   !f2py depend(lmax) Ag, Ac
-  implicit none
   !I/O
   integer, intent(in) :: lmax, elmax, rlmin, rlmax, dlmin, dlmax
   double precision, intent(in), dimension(0:elmax) :: CE, OCE
@@ -1022,11 +1022,11 @@ subroutine xtt(est,lmax,rlmin,rlmax,fC,OCT,Ag,lfac)
 !*  Returns:
 !*    :Ag [l] (double)   : Cross normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fC, OCT
   !f2py intent(out) Ag
   !f2py depend(rlmax) fC, OCT
   !f2py depend(lmax) Ag
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -1095,11 +1095,11 @@ subroutine xeb(est,lmax,rlmin,rlmax,EE,EB,OCE,OCB,BB,Aa)
 !*  Returns:
 !*    :Aa [l] (double) : Pol. rot. angle normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lmax, rlmin, rlmax, EE, EB, OCE, OCB, BB
   !f2py intent(out) Aa
   !f2py depend(rlmax) EE, EB, OCE, OCB, BB
   !f2py depend(lmax) Aa
-  implicit none
   !I/O
   character(*), intent(in) :: est
   integer, intent(in) :: lmax, rlmin, rlmax

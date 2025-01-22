@@ -42,8 +42,8 @@ subroutine qtt(nx,ny,D,rL,fC,T1,T2,glm,clm,gtype)
   double complex, intent(in), dimension(nx,ny) :: T1, T2
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
-  character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  character(1), intent(in) :: gtype
+  !opt4py :: gtype = ''
   ![internal]
   integer :: i, j, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -56,7 +56,7 @@ subroutine qtt(nx,ny,D,rL,fC,T1,T2,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -130,8 +130,8 @@ subroutine qte(nx,ny,D,rL,fC,T,E,glm,clm,gtype)
   double complex, intent(in), dimension(nx,ny) :: T, E
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
-  character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
+  character(1), intent(in) :: gtype
   ![internal]
   integer :: i, j, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -144,7 +144,7 @@ subroutine qte(nx,ny,D,rL,fC,T,E,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -215,8 +215,8 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,glm,clm,gtype)
   double complex, intent(in), dimension(nx,ny) :: T, B
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
-  character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  character(1), intent(in) :: gtype
+  !opt4py :: gtype = ''
   ![internal]
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -229,7 +229,7 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -288,7 +288,7 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,glm,clm,gtype)
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
   character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
   ![internal]
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -301,7 +301,7 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -360,7 +360,7 @@ subroutine qeb(nx,ny,D,rL,fC,E,B,glm,clm,gtype)
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
   character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
   !internal
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -373,7 +373,7 @@ subroutine qeb(nx,ny,D,rL,fC,E,B,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -435,7 +435,7 @@ subroutine qbb(nx,ny,D,rL,fC,B1,B2,glm,clm,gtype)
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
   character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
   !internal
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -448,7 +448,7 @@ subroutine qbb(nx,ny,D,rL,fC,B1,B2,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))

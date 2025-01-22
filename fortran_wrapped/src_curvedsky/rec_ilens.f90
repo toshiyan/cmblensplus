@@ -33,11 +33,11 @@ subroutine qte(lmax,rlmin,rlmax,fC,Tlm,Elm,glm,clm,nside_t,gtype,verbose)
 !*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
 !*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
+  implicit none 
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, gtype, fC, Tlm, Elm
   !f2py intent(out) glm, clm
   !f2py depend(rlmax) fC, Tlm, Elm
   !f2py depend(lmax) glm, clm
-  implicit none 
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t
@@ -122,11 +122,11 @@ subroutine qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,glm,clm,nside_t,gtype,verbose)
 !*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
 !*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
+  implicit none 
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, gtype, fC, Tlm, Blm
   !f2py intent(out) glm, clm
   !f2py depend(rlmax) fC, Tlm, Blm
   !f2py depend(lmax) glm, clm
-  implicit none 
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t
@@ -234,11 +234,11 @@ subroutine qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,glm,clm,nside_t,gtype,verbose)
 !*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
 !*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
+  implicit none 
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, gtype, fC, Elm1, Elm2
   !f2py intent(out) glm, clm
   !f2py depend(rlmax) fC, Elm1, Elm2
   !f2py depend(lmax) glm, clm
-  implicit none 
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t
@@ -328,11 +328,11 @@ subroutine qeb(lmax,rlmin,rlmax,fC,Elm,Blm,glm,clm,nside_t,gtype,verbose)
 !*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
 !*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, gtype, fC, Elm, Blm
   !f2py intent(out) glm, clm
   !f2py depend(rlmax) fC, Elm, Blm
   !f2py depend(lmax) glm, clm
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t
@@ -451,11 +451,11 @@ subroutine qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,glm,clm,nside_t,gtype,verbose)
 !*    :glm [l,m] (dcmplx) : CMB lensing potential, with bounds (0:lmax,0:lmax)
 !*    :clm [l,m] (dcmplx) : Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, gtype, fC, Blm1, Blm2
   !f2py intent(out) glm, clm
   !f2py depend(rlmax) fC, Blm1, Blm2
   !f2py depend(lmax) glm, clm
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t

@@ -31,6 +31,10 @@ Mpc2m = 3.08567757e22
 # CMB temperature
 Tcmb  = 2.7255e6 #K
 
+# eV -> Mpc
+eV2Mpc = 806554.815354305*3.0856775814914e22*(2*np.pi)
+
+
 # CMB 
 #mtype = ['T','E','B']
 

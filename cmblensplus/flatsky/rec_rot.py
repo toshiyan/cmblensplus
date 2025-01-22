@@ -61,7 +61,7 @@ def qee(nx,ny,D,rL,fC,E1,E2):
   """
   return libflatsky.rec_rot.qee(nx,ny,D,rL,fC,E1,E2)
 
-def qeb(nx,ny,D,rL,EE,E,B,BB):
+def qeb(nx,ny,D,rL,EE,E,B,BB=0):
   """
   Reconstructing anisotropic pol. rot. angles from EB quadratic estimator
 

@@ -28,11 +28,11 @@ subroutine qtt(nx,ny,D,rL,OT,eL,As)
 !*  Returns:
 !*    :As[lx,ly] (dcmplx) : Normalization of point source on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, OT
   !f2py intent(out) As
   !f2py depend(nx) OT, As
   !f2py depend(ny) OT, As
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL
@@ -86,11 +86,11 @@ subroutine qeb(nx,ny,D,rL,IE,IB,eL,As)
 !*  Returns:
 !*    :As[lx,ly] (dcmplx) : Normalization of point source on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, IE, IB
   !f2py intent(out) As
   !f2py depend(nx) IE, IB, As
   !f2py depend(ny) IE, IB, As
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL

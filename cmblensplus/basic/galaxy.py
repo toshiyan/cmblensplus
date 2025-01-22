@@ -1,7 +1,7 @@
 from cmblensplus import libbasic
 import numpy
 
-def dndz_sf(z,a,b,zn=None,zm=0,z0=0):
+def dndz_sf(z,a,b,zm=0,z0=0):
   """
  A model of galaxy z distribution
 
@@ -19,7 +19,8 @@ def dndz_sf(z,a,b,zn=None,zm=0,z0=0):
   Usage:
     :dndz = basic.galaxy.dndz_sf(zn,z,a,b,zm,z0):
   """
-  if zn is None: zn=len(z)
+  zn = len(z)
+  if zm<=0 and z0<=0: raise SystemExit('ERROR in "dndz_sf": both zm and z0 <=0')
   return libbasic.galaxy.dndz_sf(zn,z,a,b,zm,z0)
 
 def photoz_error(z,zi,zn=None,sigma=0.03,zbias=0.):

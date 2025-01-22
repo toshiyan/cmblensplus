@@ -1,7 +1,7 @@
 from cmblensplus import libflatsky
 import numpy
 
-def qtt(nx,ny,D,rL,fC,T1,T2,gtype):
+def qtt(nx,ny,D,rL,fC,T1,T2,gtype=''):
   """
   Reconstructing CMB lensing potential and its curl mode from the temperature quadratic estimator
 
@@ -25,7 +25,7 @@ def qtt(nx,ny,D,rL,fC,T1,T2,gtype):
   """
   return libflatsky.rec_lens.qtt(nx,ny,D,rL,fC,T1,T2,gtype)
 
-def qte(nx,ny,D,rL,fC,T,E,gtype):
+def qte(nx,ny,D,rL,fC,T,E,gtype=''):
   """
   Reconstructing CMB lensing potential and its curl mode from the suboptimal TE quadratic estimator
 
@@ -49,7 +49,7 @@ def qte(nx,ny,D,rL,fC,T,E,gtype):
   """
   return libflatsky.rec_lens.qte(nx,ny,D,rL,fC,T,E,gtype)
 
-def qtb(nx,ny,D,rL,fC,T,B,gtype):
+def qtb(nx,ny,D,rL,fC,T,B,gtype=''):
   """
   Reconstructing CMB lensing potential and its curl mode from the TB quadratic estimator
 
@@ -73,7 +73,7 @@ def qtb(nx,ny,D,rL,fC,T,B,gtype):
   """
   return libflatsky.rec_lens.qtb(nx,ny,D,rL,fC,T,B,gtype)
 
-def qee(nx,ny,D,rL,fC,E1,E2,gtype):
+def qee(nx,ny,D,rL,fC,E1,E2,gtype=''):
   """
   Reconstructing CMB lensing potential and its curl mode from the EE quadratic estimator
 
@@ -97,7 +97,7 @@ def qee(nx,ny,D,rL,fC,E1,E2,gtype):
   """
   return libflatsky.rec_lens.qee(nx,ny,D,rL,fC,E1,E2,gtype)
 
-def qeb(nx,ny,D,rL,fC,E,B,gtype):
+def qeb(nx,ny,D,rL,fC,E,B,gtype=''):
   """
   Reconstructing CMB lensing potential and its curl mode from the EB quadratic estimator
 
@@ -121,7 +121,7 @@ def qeb(nx,ny,D,rL,fC,E,B,gtype):
   """
   return libflatsky.rec_lens.qeb(nx,ny,D,rL,fC,E,B,gtype)
 
-def qbb(nx,ny,D,rL,fC,B1,B2,gtype):
+def qbb(nx,ny,D,rL,fC,B1,B2,gtype=''):
   """
   Reconstructing CMB lensing potential and its curl mode from the BB quadratic estimator
 

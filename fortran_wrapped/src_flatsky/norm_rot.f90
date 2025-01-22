@@ -33,11 +33,11 @@ subroutine qeb(nx,ny,D,rL,IE,IB,EE,eL,Aa,BB)
 !*  Returns:
 !*    :Aa[lx,ly] (dcmplx) : Normalization of anisotropic pol. rot. angles on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, eL, D, EE, IE, IB, BB
   !f2py intent(out) Aa
   !f2py depend(nx) EE, IE, IB, Aa, BB
   !f2py depend(ny) EE, IE, IB, Aa, BB
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL, eL
@@ -45,8 +45,8 @@ subroutine qeb(nx,ny,D,rL,IE,IB,EE,eL,Aa,BB)
   double precision, intent(in), dimension(nx,ny) :: EE, IE, IB
   double precision, intent(out), dimension(nx,ny) :: Aa
   !(optional)
-  double precision, intent(in), optional, dimension(nx,ny) :: BB
-  !f2py double precision :: BB = 0
+  double precision, intent(in), dimension(nx,ny) :: BB
+  !opt4py :: BB = 0
   !internal
   integer :: i, j, nn(2)
   double precision, dimension(nx,ny) :: els, lmask, Aaa
@@ -71,7 +71,7 @@ subroutine qeb(nx,ny,D,rL,IE,IB,EE,eL,Aa,BB)
   call dft(Al,nn,D,1)
   Al = dble(Al)
 
-  if (present(BB).and.sum(abs(BB))/=0d0) then
+  if (sum(abs(BB))/=0d0) then
     !BB^2 part
     X1 = lmask*IE
     X2 = lmask*IE*ei2p**2

@@ -29,11 +29,11 @@ subroutine qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,alm,nside_t,verbose)
 !*  Returns:
 !*    :alm [l,m] (dcmplx) : Amplitude modulation alm, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, fC, Tlm1, Tlm2
   !f2py intent(out) alm
   !f2py depend(rlmax) fC, Tlm1, Tlm2
   !f2py depend(lmax) alm
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t
@@ -92,11 +92,11 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside_t,verbose)
 !*  Returns:
 !*    :alm [l,m] (dcmplx) : Amplitude modulation alm, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, fCE, Elm, Blm
   !f2py intent(out) alm
   !f2py depend(rlmax) fCE, Elm, Blm
   !f2py depend(lmax) alm
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t

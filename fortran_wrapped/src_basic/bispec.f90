@@ -33,12 +33,12 @@ subroutine cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,zn,kn,cl,pktype,cltype,dNdz,wdel)
 !*  Returns:
 !*    :cl[l] (double) : power spectrum from LSS contributions at [lmin,lmax]
 !*
+  implicit none
   !f2py intent(in) cpmodel, pktype, cltype, lmax, zn, kn, zs, z, dz, dNdz, k, pk0, wdel
   !f2py intent(out) cl
   !f2py depend(zn) z, dz, dNdz, wdel
   !f2py depend(kn) k, pk0
   !f2py depend(lmax) wdel, cl
-  implicit none
   !I/O
   character(8), intent(in) :: cpmodel, pktype, cltype
   integer, intent(in) :: lmax, zn, kn
@@ -96,13 +96,13 @@ subroutine bispeclens(shap,cpmodel,model,z,dz,zs,lmin,lmax,k,pk0,lan,kan,bl0,bl1
 !*    :bl0[l] (double) : lensing bispectrum from LSS contributions at [lmin,lmax]
 !*    :bl1[l] (double) : lensing bispectrum from post-Born contributions at [lmin,lmax]
 !*
+  implicit none
   !f2py intent(in) shap, cpmodel, model, pktype, ltype, btype, lmin, lmax, zn, kn, zs, lan, kan, z, dz, dNdz, k, pk0, wdel
   !f2py intent(out) bl0, bl1
   !f2py depend(zn) z, dz, dNdz, wdel
   !f2py depend(kn) k, pk0
   !f2py depend(lmax) wdel, bl0, bl1
   !f2py depend(lmin) bl0, bl1
-  implicit none
   !I/O
   character(8), intent(in) :: shap, cpmodel, model, pktype, ltype, btype
   integer, intent(in) :: lmin, lmax, zn, kn
@@ -184,13 +184,13 @@ subroutine bispeclens_bin(shap,cpmodel,model,z,dz,zn,zs,lmin,lmax,bn,k,pk0,kn,la
 !*    :bl0[bn] (double) : binned lensing bispectrum from LSS contributions
 !*    :bl1[bn] (double) : binned lensing bispectrum from post-Born contributions
 !*
+  implicit none
   !f2py intent(in) shap, cpmodel, model, pktype, btype, lmin, lmax, zn, bn, kn, zs, lan, kan, z, dz, dNdz, k, pk0, wdel
   !f2py intent(out) bc, bl0, bl1
   !f2py depend(zn) z, dz, dNdz, wdel
   !f2py depend(kn) k, pk0
   !f2py depend(lmax) wdel
   !f2py depend(bn) bc, bl0, bl1
-  implicit none
   !I/O
   character(8), intent(in) :: shap, cpmodel, model, pktype, btype
   integer, intent(in) :: lmin, lmax, zn, bn, kn
@@ -290,12 +290,12 @@ subroutine bispeclens_snr(cpmodel,model,z,dz,zn,zs,lmin,lmax,cl,k,pk0,kn,snr,pkt
 !*  Returns:
 !*    :snr[2] (double) : total SNR amd LSS-only SNR
 !*
+  implicit none
   !f2py intent(in) cpmodel, model, pktype, btype, lmin, lmax, zn, kn, ro, zs, z, dz, dNdz, k, pk0, cl, cgg, wdel
   !f2py intent(out) snr
   !f2py depend(zn) z, dz, dNdz, wdel
   !f2py depend(kn) k, pk0
   !f2py depend(lmax) cl, cgg, wdel
-  implicit none
   !I/O
   character(8), intent(in) :: cpmodel, model, pktype, btype
   integer, intent(in) :: lmin, lmax, zn, kn, ro
@@ -356,11 +356,11 @@ subroutine bispeclens_gauss_bin(shap,bn,lmin,lmax,cl,bc,bl)
 !*    :bc[bn] (double) : multipole bin centers
 !*    :bl[bn] (double) : binned bispectrum
 !*
+  implicit none
   !f2py intent(in) shap, lmin, lmax, bn, cl
   !f2py intent(out) bc, bl
   !f2py depend(lmax) cl
   !f2py depend(bn) bc, bl
-  implicit none
   !I/O
   character(4), intent(in) :: shap
   integer, intent(in) :: lmin, lmax, bn
@@ -420,10 +420,10 @@ subroutine zpoints(zmin,zmax,zn,z,dz,zspace)
 !*    :z[zn] (double)  : redshifts
 !*    :dz[zn] (double) : redshift intervals
 !*
+  implicit none
   !f2py intent(in) zn, zspace, zmin, zmax
   !f2py intent(out) z, dz
   !f2py depend(zn) z, dz
-  implicit none
   !I/O
   integer, intent(in) :: zn, zspace
   double precision, intent(in) :: zmin, zmax
@@ -462,13 +462,13 @@ subroutine skewspeclens(cpmodel,model,z,dz,zs,ols,lmin,lmax,k,pk0,bn,zn,kn,skew,
 !*    :skew[3,2,l] (double)  : skew-spectrum (S0, S1, S2) from LSS and PB contributions, separately
 !*
   !f2py intent(in) cpmodel, model, pktype, btype, bn, lmin, lmax, sn, kn, zs, z, dz, dNdz, theta, Om, H0, w0, wa, mnu, ns, ols, k, pk0, wdel, pb, verbose
+  implicit none
   !f2py intent(in) cpmodel, model, pktype, btype, bn, lmin, lmax, zn, kn, zs, z, dz, dNdz, theta, Om, H0, w0, wa, mnu, ns, ols, k, pk0, wdel, pb, verbose
   !f2py intent(out) skew
   !f2py depend(zn) z, dz, dNdz, wdel
   !f2py depend(bn) ols, skew
   !f2py depend(kn) k, pk0
   !f2py depend(lmax) wdel
-  implicit none
   !I/O
   character(8), intent(in) :: cpmodel, model, pktype, btype
   integer, intent(in) :: bn, lmin, lmax, zn, kn

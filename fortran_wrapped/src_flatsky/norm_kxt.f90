@@ -29,11 +29,11 @@ subroutine qtt(nx,ny,D,rL,OT,TT,eL,Akt)
 !*  Returns:
 !*    :Akt[lx,ly] (dcmplx) : Lensing-tau cross normalization on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, OT, TT
   !f2py intent(out) Akt
   !f2py depend(nx) OT, TT, Akt
   !f2py depend(ny) OT, TT, Akt
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL

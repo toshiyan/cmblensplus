@@ -20,12 +20,9 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !* The filtering would work if the noise variance is not significantly varied with scale (multipole). 
 !* Please make sure that your input maps are beam-convolved. 
 !* This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
+!* Note that n is for temperature only (n=1), polarization only (n=2) or both (n=3), mn is the number of frequency maps.
 !*
 !* Args:
-!*    :n (int) : Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
-!*    :mn (int) : Number of frequencies
-!*    :nside (int) : Nside of input map
-!*    :lmax (int) : Maximum multipole of the input cl
 !*    :cl[n,l] (double) : Theory signal power spectrum, with bounds (0:n-1,0:lmax)
 !*    :bl[mn,l] (double) : Beam spectrum, with bounds (0:mn-1,0:lmax)
 !*    :iNcov[n,mn,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:mn-1,0:npix-1)
@@ -46,6 +43,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
 !* Returns:
 !*    :xlm[n,l,m] (dcmplx) : C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, filter, stat, n, mn, npix, lmax, chn, ro, lmaxs, nsides, itns, eps, cl, bl, inl, iNcov, maps
   !f2py intent(out) xlm
   !f2py depend(chn) lmaxs, nsides, itns, eps
@@ -53,7 +51,6 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !f2py depend(lmax) cl, bl, inl, xlm
   !f2py depend(mn) bl, inl, iNcov, maps
   !f2py depend(npix) iNcov, maps
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   character(1), intent(in) :: filter
@@ -73,8 +70,7 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   integer(8) :: t1, t2, t_rate, t_max
   double precision, allocatable :: clh(:,:,:,:), nij(:,:)
   double complex, allocatable :: b(:,:,:)
-  !replace
-  !chargs :: npix -> nside
+  !rmargs :: n, mn, npix, lmax
   !opt4py :: chn = 1
   !opt4py :: lmaxs = [0]
   !opt4py :: nsides = [0]
@@ -85,7 +81,10 @@ subroutine cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,xlm,chn,lmaxs,nsides,it
   !opt4py :: ro = 50
   !opt4py :: stat = ''
   !opt4py :: inl = None
-  !add2py :: npix = 12*nside**2
+  !add2py :: n = len(cl[:,0])
+  !add2py :: mn = len(bl[:,0])
+  !add2py :: npix = len(maps[0,0,:])
+  !add2py :: lmax = len(cl[0,:]) - 1
   !add2py :: if inl is None: inl = 0*iNcov[:,:,:lmax+1]
 
   if (stat/='')  then 
@@ -193,9 +192,6 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
 !* Computing the inverse-variance weighted multipole, (C+N)^-1 x kappa, for multiple mass-tracers of kappa maps. 
 !*
 !* Args:
-!*    :n (int) : Number of input kappa maps to be combined
-!*    :nside (int) : Nside of input maps
-!*    :lmax (int) : Maximum multipole of the input cl
 !*    :cov[n,n,l] (double) : Signal covariance matrix for each multipole, with bounds (0:n-1,0:n-1,0:lmax)
 !*    :iNcov[n,pix] (double) : Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
 !*    :maps[n,pix] (double) : Input kappa maps, with bouds (0:n-1,0:npix-1)
@@ -214,13 +210,13 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
 !* Returns:
 !*    :xlm[n,l,m] (dcmplx) : Wiener filtered multipoles, with bounds (n,0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, stat, n, npix, lmax, chn, ro, lmaxs, nsides, itns, cov, eps, inl, iNcov, maps
   !f2py intent(out) xlm
   !f2py depend(chn) lmaxs, nsides, itns, eps
   !f2py depend(n) cov, inl, iNcov, maps, xlm
   !f2py depend(lmax) cov, inl, xlm
   !f2py depend(npix) iNcov, maps
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   character(100), intent(in) :: stat
@@ -231,10 +227,7 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   double precision, intent(in), dimension(n,0:lmax) :: inl
   double precision, intent(in), dimension(n,0:npix-1) :: iNcov, maps
   double complex, intent(out), dimension(n,0:lmax,0:lmax) :: xlm
-  !opt4py :: chn = 1
-  !opt4py :: lmaxs = [0]
-  !opt4py :: nsides = [0]
-  !opt4py :: itns = [1]
+  !opt4py :: chn = 1, lmaxs = [0], nsides = [0], itns = [1]
   !opt4py :: eps = [1e-6]
   !opt4py :: verbose = False
   !opt4py :: ro = 50
@@ -247,9 +240,10 @@ subroutine cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,xlm,chn,lmaxs,nsides,itns,e
   integer(8) :: t1, t2, t_rate, t_max
   double precision, allocatable :: nij(:,:)
   double complex, allocatable, dimension(:,:,:) :: b, alm
-  !replace
-  !chargs :: npix -> nside
-  !add2py :: npix = 12*nside**2
+  !rmargs :: n, mn, npix, lmax
+  !add2py :: n = len(cov[:,0,0])
+  !add2py :: lmax = len(cov[0,0,:]) - 1
+  !add2py :: npix = len(maps[0,:])
   !add2py :: if inl  is None: inl  = 0*iNcov[:,:lmax+1]
 
   if (stat/='')  then 
@@ -367,6 +361,7 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
 !* Returns:
 !*    :xlm[n,l,m] (dcmplx) : C-inverse or Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, filter, stat, n, mn0, mn1, npix0, npix1, lmax, chn, ro, reducmn, lmaxs, nsides0, nsides1, itns, eps, cl, bl0, bl1, iNcov0, maps0, iNcov1, maps1, inl
   !f2py intent(out) xlm
   !f2py depend(chn) lmaxs, nsides0, nsides1, itns, eps
@@ -376,7 +371,6 @@ subroutine cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNco
   !f2py depend(mn1) bl1, iNcov1, maps1, inl
   !f2py depend(npix0) iNcov0, maps0
   !f2py depend(npix1) iNcov1, maps1
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   character(1), intent(in) :: filter

@@ -70,7 +70,7 @@ def elarrays(nx,ny,D):
   """
   return libflatsky.utils.elarrays(nx,ny,D)
 
-def elmask(nx,ny,D,lmin,lmax,lxcut,lycut):
+def elmask(nx,ny,D,lmin=0,lmax=1000,lxcut=0,lycut=0):
   """
   Return mask in 2D Fourier space. The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
 
@@ -90,7 +90,7 @@ def elmask(nx,ny,D,lmin,lmax,lxcut,lycut):
   """
   return libflatsky.utils.elmask(nx,ny,D,lmin,lmax,lxcut,lycut)
 
-def alm2bcl(bn,oL,nx,ny,D,alm1,alm2,spc):
+def alm2bcl(bn,oL,nx,ny,D,alm1,alm2=None,spc=''):
   """
   Compute angular power spectrum from Fourier modes, with multipole binning
  
@@ -111,9 +111,10 @@ def alm2bcl(bn,oL,nx,ny,D,alm1,alm2,spc):
   Usage:
     :Cb = flatsky.utils.alm2bcl(bn,oL,nx,ny,D,alm1,alm2,spc):
   """
+  if alm2 is None: alm2 = alm1
   return libflatsky.utils.alm2bcl(bn,oL,nx,ny,D,alm1,alm2,spc)
 
-def c2d2bcl(nx,ny,D,c2d,bn,oL,spc):
+def c2d2bcl(nx,ny,D,c2d,bn,oL,spc=''):
   """
   Return 1D angular power spectrum with multipole binning from a 2D power spectrum
 
@@ -135,7 +136,7 @@ def c2d2bcl(nx,ny,D,c2d,bn,oL,spc):
   """
   return libflatsky.utils.c2d2bcl(nx,ny,D,c2d,bn,oL,spc)
 
-def cl2c2d(nx,ny,D,lmin,lmax,Cl,method):
+def cl2c2d(nx,ny,D,lmin,lmax,Cl,method='linear'):
   """
   Assign values of 1D angular power spectrum on to 2D grid with linear interpolation
 
@@ -157,7 +158,7 @@ def cl2c2d(nx,ny,D,lmin,lmax,Cl,method):
   """
   return libflatsky.utils.cl2c2d(nx,ny,D,lmin,lmax,Cl,method)
 
-def cb2c2d(bn,bc,nx,ny,D,lmin,lmax,Cb,method):
+def cb2c2d(bn,bc,nx,ny,D,lmin,lmax,Cb,method=''):
   """
   Assign values of 1D angular power spectrum on to 2D grid with linear interpolation
 
@@ -222,7 +223,7 @@ def gauss2alm(nx,ny,D,lmin,lmax,TT,TE,EE):
   """
   return libflatsky.utils.gauss2alm(nx,ny,D,lmin,lmax,TT,TE,EE)
 
-def window_sin(nx,ny,D,ap,cut):
+def window_sin(nx,ny,D,ap=1,cut=1):
   """
   Return a sin window function.
 

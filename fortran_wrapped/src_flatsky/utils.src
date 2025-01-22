@@ -152,11 +152,11 @@ subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(out), dimension(nx,ny) :: lmask
-  double precision, intent(in), optional :: lmin, lmax, lxcut, lycut
-  !f2py integer :: lmin  = 0
-  !f2py integer :: lmax  = 1000
-  !f2py integer :: lxcut = 0
-  !f2py integer :: lycut = 0
+  double precision, intent(in) :: lmin, lmax, lxcut, lycut
+  !opt4py :: lmin  = 0
+  !opt4py :: lmax  = 1000
+  !opt4py :: lxcut = 0
+  !opt4py :: lycut = 0
   integer :: i, j
   double precision :: els(nx,ny), elx(nx,ny), ely(nx,ny)
 
@@ -165,10 +165,10 @@ subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
   lmask = 1d0
   do i = 1, nx
     do j = 1, ny
-      if (present(lmin).and.els(i,j)<lmin)        lmask(i,j) = 0d0
-      if (present(lmax).and.els(i,j)>lmax)        lmask(i,j) = 0d0
-      if (present(lxcut).and.abs(elx(i,j))<lxcut) lmask(i,j) = 0d0
-      if (present(lycut).and.abs(ely(i,j))<lycut) lmask(i,j) = 0d0
+      if (els(i,j)<lmin)        lmask(i,j) = 0d0
+      if (els(i,j)>lmax)        lmask(i,j) = 0d0
+      if (abs(elx(i,j))<lxcut) lmask(i,j) = 0d0
+      if (abs(ely(i,j))<lycut) lmask(i,j) = 0d0
     end do
   end do
 
@@ -200,31 +200,25 @@ subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
   double precision, intent(in), dimension(2) :: D
   double complex, intent(in), dimension(nx,ny) :: alm1
   !optional
-  character(*), intent(in), optional :: spc
-  double complex, intent(in), dimension(nx,ny), optional :: alm2
-  !f2py character(*) :: spc=''
-  !f2py double complex :: alm2 = 0
-  !docstr :: alm2 = alm1
+  character(*), intent(in) :: spc
+  double complex, intent(in), dimension(nx,ny) :: alm2
+  !opt4py :: spc = ''
+  !opt4py :: alm2 = None
+  !add2py :: if alm2 is None: alm2 = alm1
   !outputs
   double precision, intent(out), dimension(bn) :: Cb
   !internal
   character(8) :: spc0
   double precision, allocatable :: C(:,:)
-  double complex, allocatable :: alm0(:,:)
 
-  spc0  = ''
-  if (present(spc))  spc0 = spc
+  spc0 = spc
 
   ! 2D power spectrum
-  allocate(C(nx,ny),alm0(nx,ny))
-  alm0 = alm1
-  if (present(alm2).and.sum(abs(alm2))==0) alm0 = alm1
-  if (present(alm2).and.sum(abs(alm2))/=0) alm0 = alm2
-  C = (alm1*conjg(alm0)+alm0*conjg(alm1))*0.5d0/(D(1)*D(2)) 
-  deallocate(alm0)
+  allocate(C(nx,ny))
+  C = (alm1*conjg(alm2)+alm2*conjg(alm1))*0.5d0/(D(1)*D(2)) 
 
   ! to 1D power spectrum
-  call c2d2bcl(nx,ny,D,C,bn,oL,Cb,spc=spc0)
+  call c2d2bcl(nx,ny,D,C,bn,oL,Cb,spc0)
 
   deallocate(C)
 
@@ -255,16 +249,14 @@ subroutine c2d2bcl(nx,ny,D,c2d,bn,oL,Cb,spc)
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(nx,ny) :: c2d
   double precision, intent(out), dimension(bn) :: Cb
-  !optional
-  character(*), intent(in), optional :: spc
-  !f2py character(*) :: spc=''
+  character(*), intent(in) :: spc
   !internal
   character(8) :: spc0
   double precision :: bp(bn+1), b(bn), els(nx,ny), lmask(nx,ny)
   double precision, dimension(bn) :: vAb
+  !opt4py :: spc = ''
 
-  spc0 = ''
-  if (present(spc)) spc0 = spc
+  spc0 = spc
 
   call binned_ells(oL,bp,b,spc0)
 
@@ -300,8 +292,8 @@ subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d,method)
   double precision, intent(in), dimension(0:lmax) :: Cl
   double precision, intent(out), dimension(nx,ny) :: c2d
   !optional
-  character(*), intent(in), optional :: method
-  !f2py character(*) :: method='linear'
+  character(*), intent(in) :: method
+  !opt4py :: method = 'linear'
   !internal
   logical :: p
   integer :: i, j, l0, l1
@@ -358,22 +350,21 @@ subroutine cb2c2d(bn,bc,nx,ny,D,lmin,lmax,Cb,C2d,method)
   double precision, intent(in), dimension(bn) :: bc, Cb
   double precision, intent(out), dimension(nx,ny) :: C2d
   !optional
-  character(*), intent(in), optional :: method
-  !f2py character(*) :: method=''
+  character(*), intent(in) :: method
+  !opt4py :: method = ''
   !internal
   character(8) :: m
   double precision, allocatable :: Cl(:)
 
   allocate(Cl(0:lmax)); Cl=0d0
 
-  m = ''
-  if(present(method)) m   = method
+  m   = method
 
   !interpolate Cb -> Cl
   call cb2cl(bc,Cb,Cl(1:lmax),method=m)
 
   !interpolate Cl -> C2d
-  call cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
+  call cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d,method)
 
   deallocate(Cl)
 
@@ -560,9 +551,9 @@ subroutine window_sin(nx,ny,D,W,ap,cut)
   double precision, intent(in), dimension(2) :: D
   double precision, intent(out), dimension(nx,ny) :: W
   !optional
-  double precision, intent(in), optional :: ap, cut
-  !f2py double precision :: ap = 1
-  !f2py double precision :: cut = 1
+  double precision, intent(in) :: ap, cut
+  !opt4py :: ap = 1
+  !opt4py :: cut = 1
   !internal
   integer :: i, j
   double precision :: a, c, xi, xj, sx ,sy
@@ -570,11 +561,8 @@ subroutine window_sin(nx,ny,D,W,ap,cut)
   sx = D(1)/dble(nx)
   sy = D(2)/dble(ny)
 
-  a  = 1d0
-  if (present(ap)) a = ap
-
-  c  = 1d0
-  if (present(cut)) c = cut
+  a  = ap
+  c  = cut
 
   do i = 1, nx
     do j = 1, ny

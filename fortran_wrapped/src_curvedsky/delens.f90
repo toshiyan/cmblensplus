@@ -31,12 +31,12 @@ subroutine lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,lBlm,nside_t,gtype)
 !*  Returns:
 !*    :lBlm [l,m] (dcmplx): Lensing B-mode alm, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, elmin, elmax, plmin, plmax, wElm, wplm!wienerfilteredphialm, nside_t, gtype
   !f2py intent(out) lBlm
   !f2py depend(elmax) wElm
   !f2py depend(plmax) wplm!wienerfilteredphialm
   !f2py depend(lmax) lBlm
-  implicit none
   !I/O
   integer, intent(in) :: lmax, elmin, elmax, plmin, plmax
   double complex, intent(in), dimension(0:elmax,0:elmax)  :: wElm
@@ -123,11 +123,11 @@ subroutine shiftvec(npix,lmax,plm,beta,nremap)
 !*  Returns:
 !*    :beta [pix,2] (double): 2D shift vector, with bounds (0:npix-1,1:2)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, plm, nremap
   !f2py intent(out) beta
   !f2py depend(lmax) plm
   !f2py depend(npix) beta
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: plm
@@ -173,11 +173,11 @@ subroutine phi2grad(npix,lmax,plm,grad)
 !*  Returns:
 !*    :grad [pix,2] (double): 2D deflection vector, with bounds (0:npix-1,1:2)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, plm
   !f2py intent(out) grad
   !f2py depend(lmax) plm
   !f2py depend(npix) grad
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: plm

@@ -1,6 +1,6 @@
 # Flatsky lensing normalization from an asymmetric quadratic estimator
 import numpy as np
-import basic
+from cmblensplus import basic
 import cmb
 
 Tcmb  = 2.726e6    # CMB temperature

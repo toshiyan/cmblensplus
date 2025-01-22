@@ -27,10 +27,10 @@ subroutine make_quad_gauss(lmax,alm,qlm)
 !*  Returns:
 !*    :qlm [l,m] (dcmplx) : Output harmonic coefficients of the non-Gaussian fields, with bounds (0:lmax,0:lmax).
 !*
+  implicit none
   !f2py intent(in) lmax, alm
   !f2py intent(out) qlm
   !f2py depend(lmax) alm, qlm
-  implicit none
   !I/O
   integer, intent(in) :: lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm
@@ -68,10 +68,10 @@ subroutine bispec_norm(bn,bp,norm,bstype,bst,sL)
 !*  Returns:
 !*    :norm [bin] (double) : Normalization of the binned reduced bispectrum at each bin, with bounds (bn)
 !*
+  implicit none
   !f2py intent(in) bn, bp, bstype, bst, sL
   !f2py intent(out) norm
   !f2py depend(bn) bp, norm
-  implicit none
   !I/O
   integer, intent(in) :: bn
   double precision, intent(in), dimension(bn+1) :: bp
@@ -152,11 +152,11 @@ subroutine bispec_bin(bn,bp,lmax,alm,bis,bstype,bst,sL)
 !*  Returns:
 !*    :bis [bin] (double) : The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
 !*
+  implicit none
   !f2py intent(in) bn, lmax, bp, alm, bstype, bst, sL
   !f2py intent(out) bis
   !f2py depend(bn) bp, bis
   !f2py depend(lmax) alm
-  implicit none
   !I/O
   integer, intent(in) :: bn, lmax
   double precision, intent(in), dimension(bn+1) :: bp
@@ -232,12 +232,12 @@ subroutine xbispec_bin(bn,bp,lmax,n,alm,bis,bstype,bst,sL)
 !*  Returns:
 !*    :bis [bin] (double) : The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
 !*
+  implicit none
   !f2py intent(in) bstype, bn, lmax, bst, n, sL, bp, alm
   !f2py intent(out) bis
   !f2py depend(bn) bp, bis
   !f2py depend(lmax) alm
   !f2py depend(n) alm
-  implicit none
   !I/O
   character(4), intent(in) :: bstype
   integer, intent(in) :: bn, lmax, bst, n

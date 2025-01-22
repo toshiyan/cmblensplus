@@ -45,10 +45,10 @@ subroutine gauss1alm(lmax,cl,alm,lmin)
 !*  Returns:
 !*    :alm [l,m] (dcmplx) : Random Gaussian alm, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, lmin, cl
   !f2py intent(out) alm
   !f2py depend(lmax) cl, alm
-  implicit none
   !I/O
   integer, intent(in) :: lmax, lmin
   double precision, intent(in), dimension(0:lmax) :: cl
@@ -87,10 +87,10 @@ subroutine gauss2alm(lmax,cl1,cl2,xl,alm,lmin,flm)
 !*  Returns:
 !*    :alm [2,l,m] (dcmplx): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, lmin, cl1, cl2, xl, flm
   !f2py intent(out) alm
   !f2py depend(lmax) cl1, cl2, xl, flm, alm
-  implicit none
   !I/O
   integer, intent(in) :: lmax, lmin
   double precision, intent(in), dimension(0:lmax) :: cl1, cl2, xl
@@ -158,10 +158,10 @@ subroutine gaussTEB(lmax,TT,EE,BB,TE,alm,lmin)
 !*  Returns:
 !*    :alm [3,l,m] (dcmplx): Random Gaussian T/E/B alms, with bounds (3,0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, lmin, TT, EE, BB, TE
   !f2py intent(out) alm
   !f2py depend(lmax) TT, EE, BB, TE, alm
-  implicit none
   !I/O
   integer, intent(in) :: lmax, lmin
   double precision, intent(in), dimension(0:lmax) :: TT, EE, BB, TE
@@ -201,11 +201,11 @@ subroutine gaussalm(n,lmax,cl,alm,ilm)
 !*  Returns:
 !*    :alm [i,l,m] (dcmplx): Random Gaussian alms, with bounds (n,0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) n, lmax, cl, ilm
   !f2py intent(out) alm
   !f2py depend(n) cl, alm
   !f2py depend(lmax) cl, ilm, alm
-  implicit none
   !I/O
   integer, intent(in) :: n, lmax
   double precision, intent(in), dimension(n,n,0:lmax) :: cl
@@ -271,10 +271,10 @@ subroutine get_baseline(npix,nside_subpatch,QU,blmap)
 !*  Returns:
 !*    :blmap [pix,2] (double): baseline maps, with bounds (0:npix-1,2)
 !*
+  implicit none
   !f2py intent(in) npix, nside_subpatch, QU
   !f2py intent(out) blmap
   !f2py depend(npix) QU, blmap
-  implicit none
   !I/O
   integer, intent(in) :: npix, nside_subpatch
   double precision, intent(in), dimension(0:npix-1,2) :: QU
@@ -329,9 +329,9 @@ subroutine get_winmap(nside_large,nside_small,ipix_pix,apod,win_out)
 !*  Returns:
 !*    :wind_out (double) : aporization window at ipix_pix 
 !*
+  implicit none
   !f2py intent(in) nside_large, nside_small, ipix_pix, apod
   !f2py intent(out) win_out
-  implicit none
   !I/O
   integer, intent(in) :: nside_large, nside_small,ipix_pix
   double precision, intent(in)  :: apod
@@ -361,9 +361,9 @@ subroutine get_apod_window(s,a,w)
 !*  Returns:
 !*    :w (double) : Aporization window
 !*
+  implicit none
   !f2py intent(in) s, a
   !f2py intent(out) w
-  implicit none
   !I/O
   double precision, intent(in) :: s, a
   double precision, intent(out) :: w
@@ -393,11 +393,11 @@ subroutine eb_separate(npix,lmax,W,Q,U,Elm,Blm)
 !*  Returns:
 !*    :Elm/Blm[l,m]  (dcmplx) : Seperated E/B modes, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, W, Q, U
   !f2py intent(out) Elm, Blm
   !f2py depend(npix) W, Q, U
   !f2py depend(lmax) Elm, Blm
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax
   double precision, intent(in), dimension(0:npix-1) :: W, Q, U
@@ -491,10 +491,10 @@ subroutine alm2cl(lmax,cl,alm1,alm2)
 !*  Returns:
 !*    :cl [l] (double) : Auto or cross angular power spectrum, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, alm1, alm2
   !f2py intent(out) cl
   !f2py depend(lmax) alm1, cl, alm2
-  implicit none
   !I/O
   integer, intent(in) :: lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
@@ -528,11 +528,11 @@ subroutine alm2bcl(bn,lmax,cb,alm1,alm2,spc)
 !*  Returns:
 !*    :cb [bin] (double) : Auto or cross angular power spectrum with multipole binning, with bounds (0:bn-1)
 !*
+  implicit none
   !f2py intent(in) bn, lmax, alm1, spc, alm2
   !f2py intent(out) cb
   !f2py depend(lmax) alm1, alm2
   !f2py depend(bn) cb
-  implicit none
   integer, intent(in) :: bn, lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
   double precision, intent(out), dimension(bn) :: cb
@@ -569,10 +569,10 @@ subroutine alm2rho(lmax,rho,alm1,alm2)
 !*  Returns:
 !*    :rho [l] (double) : Auto or cross angular power spectrum, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, alm1, alm2
   !f2py intent(out) rho
   !f2py depend(lmax) alm1, alm2, rho
-  implicit none
   !I/O
   integer, intent(in) :: lmax
   double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
@@ -605,11 +605,11 @@ subroutine alm2cov(n,lmax,cov,alm)
 !*  Returns:
 !*    :cov [n,n,l] (double) : Auto and cross angular power spectra between alm[i] and alm[j]
 !*
+  implicit none
   !f2py intent(in) lmax, n, alm
   !f2py intent(out) cov
   !f2py depend(lmax) alm, cov
   !f2py depend(n) alm, cov
-  implicit none
   !I/O
   integer, intent(in) :: lmax, n
   double complex, intent(in), dimension(n,0:lmax,0:lmax) :: alm
@@ -643,10 +643,10 @@ subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
 !*  Returns:
 !*    :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
 !*
+  implicit none
   !f2py intent(in) npix, ascale, rmask, order, holeminsize
   !f2py intent(out) amask
   !f2py depend(npix) rmask, amask
-  implicit none
   !I/O
   integer, intent(in) :: npix
   double precision, intent(in) :: ascale
@@ -717,12 +717,12 @@ subroutine hp_alm2map(npix,lmax,mmax,alm,map)
 !*  Returns:
 !*    :map [pix] (double) : Transformed map, with bounds (0:npix-1)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, mmax, alm
   !f2py intent(out) map
   !f2py depend(lmax) alm
   !f2py depend(mmax) alm
   !f2py depend(npix) map
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax, mmax
   double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
@@ -759,12 +759,12 @@ subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
 !*    :map0 [pix] (double): Real part of the transformed map (Q-like map), with bounds (0:npix-1)
 !*    :map1 [pix] (double): Imaginary part of the transformed map (U-like map), with bounds (0:npix-1)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, mmax, spin, elm, blm
   !f2py intent(out) map0, map1
   !f2py depend(lmax) elm, blm
   !f2py depend(mmax) elm, blm
   !f2py depend(npix) map0, map1
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax, mmax, spin
   double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
@@ -802,12 +802,12 @@ subroutine hp_map2alm(npix,lmax,mmax,map,alm)
 !*  Returns:
 !*    :alm [l,m] (dcmplx): Harmonic coefficient obtained from the input map, with bounds (0:lmax,0:mmax)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, mmax, map
   !f2py intent(out) alm
   !f2py depend(npix) map
   !f2py depend(lmax) alm
   !f2py depend(mmax) alm
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax, mmax
   double precision, intent(in), dimension(0:npix-1) :: map
@@ -841,12 +841,12 @@ subroutine hp_map2alm_spin(npix,lmax,mmax,spin,map0,map1,alm)
 !*  Returns:
 !*    :alm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the input map, with bounds (2,0:lmax,0:mmax)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, mmax, spin, map0, map1
   !f2py intent(out) alm
   !f2py depend(npix) map0, map1
   !f2py depend(lmax) alm
   !f2py depend(mmax) alm
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax, mmax, spin
   double precision, intent(in), dimension(0:npix-1) :: map0, map1
@@ -877,11 +877,11 @@ subroutine map_mul_lfunc(npix,imap,lmax,lfunc,omap)
 !*  Returns:
 !*    :omap [pix] (double)  : Output map, with bounds (0:12*nside**2-1)
 !*
+  implicit none
   !f2py intent(in) lmax, npix, imap, lfunc
   !f2py intent(out) omap
   !f2py depend(npix) imap, omap
   !f2py depend(lmax) lfunc
-  implicit none
   !I/O
   integer, intent(in) :: lmax, npix
   double precision, intent(in), dimension(0:npix-1) :: imap
@@ -916,12 +916,12 @@ subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
 !*  Returns:
 !*    :wlm [l,m] (dcmplx) : Harmonic coefficient of the window-multiplied map, with bounds (0:lmax,0:mmax)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, mmax, alm, win
   !f2py intent(out) wlm
   !f2py depend(lmax) alm, wlm
   !f2py depend(mmax) alm, wlm
   !f2py depend(npix) win
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax, mmax
   double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
@@ -962,12 +962,12 @@ subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
 !*  Returns:
 !*    :wlm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the window-multiplied map, with bounds (2,0:lmax,0:mmax)
 !*
+  implicit none
   !f2py intent(in) npix, lmax, mmax, spin, elm, blm, win
   !f2py intent(out) wlm
   !f2py depend(lmax) elm, blm, wlm
   !f2py depend(mmax) elm, blm, wlm
   !f2py depend(npix) win
-  implicit none
   !I/O
   integer, intent(in) :: npix, lmax, mmax, spin
   double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
@@ -1006,11 +1006,11 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 !*  Returns:
 !*    :almpix [l,m] (dcmplx): Healpix alm, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmpy, lmax, almpy
   !f2py intent(out) almpix
   !f2py depend(lmpy) almpy
   !f2py depend(lmax) almpix
-  implicit none
   integer, intent(in) :: lmpy, lmax
   double complex, intent(in), dimension(0:lmpy-1) :: almpy
   double complex, intent(out), dimension(0:lmax,0:lmax) :: almpix
@@ -1041,10 +1041,10 @@ subroutine cosin_healpix(npix,cosin)
 !*    :cosin[pix] (double) : cosin(theta), with bounds (0:npix-1)
 !*
   !I/O
+  implicit none
   !f2py intent(in) npix
   !f2py intent(out) cosin
   !f2py depend(npix) cosin
-  implicit none
   integer, intent(in) :: npix
   double precision, intent(out), dimension(0:npix-1) :: cosin
   !internal
@@ -1079,10 +1079,10 @@ subroutine load_defangle_takahashi(fname,npix,theta,phi,verbose)
 !*    :theta[pix] (double) : theta, with bounds (0:npix-1)
 !*    :phi[pix] (double)   : phi, with bounds (0:npix-1)
 !*
+  implicit none
   !f2py intent(in) fname, npix, verbose
   !f2py intent(out) theta, phi
   !f2py depend(npix) theta, phi
-  implicit none
   character(*), intent(in) :: fname
   integer, intent(in) :: npix
   logical, intent(in) :: verbose
@@ -1123,10 +1123,10 @@ subroutine polcoord2angle(npix,theta,phi,angle,verbose)
 !*  Returns:
 !*    :angle[pix,2] (double) : deflection angle vector containing two components, with bounds (0:npix-1,1:2)
 !*
+  implicit none
   !f2py intent(in) npix, verbose, theta, phi
   !f2py intent(out) angle
   !f2py depend(npix) theta, phi, angle
-  implicit none
   integer, intent(in) :: npix
   logical, intent(in) :: verbose
   double precision, intent(in), dimension(0:npix-1) :: theta, phi
@@ -1191,10 +1191,10 @@ subroutine polcoord2angle_alm(nside,lmax,theta,phi,glm,clm,verbose)
 !*    :glm[l,m] (dcmplx) : gradient mode, with bounds (0:lmax,0:lmax)
 !*    :clm[l,m] (dcmplx) : curl mode, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, nside, lmax, theta, phi
   !f2py intent(out) glm, clm
   !f2py depend(lmax) glm, clm
-  implicit none
   logical, intent(in) :: verbose
   integer, intent(in) :: nside, lmax
   double precision, intent(in), dimension(:) :: theta, phi
@@ -1247,11 +1247,11 @@ subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
 !*  Returns:
 !*    :V [bin,type] (double): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
 !*
+  implicit none 
   !f2py intent(in) lmax, bn, nu, walm, nside
   !f2py intent(out) V
   !f2py depend(bn) nu, V
   !f2py depend(lmax) walm
-  implicit none 
   !I/O
   integer, intent(in) :: lmax, bn
   double precision, intent(in), dimension(bn) :: nu
@@ -1323,10 +1323,10 @@ subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
 !*  Returns:
 !*    :gmap [pix,zbin] (double): The galaxy number density map at each zbin
 !*
+  implicit none
   !f2py intent(in) fname, btype, zn, ngz, zi, b0, a, b, zm, sz, zbias
   !f2py intent(out) gmap
   !f2py depend(zn) ngz, zi, gmap
-  implicit none
   character(*), intent(in) :: fname, btype
   integer, intent(in) :: zn
   double precision, intent(in), dimension(1:zn) :: ngz

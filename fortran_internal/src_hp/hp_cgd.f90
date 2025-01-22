@@ -400,7 +400,6 @@ subroutine matmul_rhs(ytype,n,mn,lmax,cv,RHS)
 
   allocate(alm(n,0:lmax,0:lmax))
   RHS = 0d0
-  write(*,*) 'B'
   do mi = 1, mn
     npix = size(cv(mi)%nij,dim=2)
     select case(ytype)

@@ -29,11 +29,11 @@ subroutine qtt(nx,ny,D,rL,OT,TT,eL,At)
 !*  Returns:
 !*    :At[lx,ly] (dcmplx) : Normalization of patchy tau on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, OT, TT
   !f2py intent(out) At
   !f2py depend(nx) OT, TT, At
   !f2py depend(ny) OT, TT, At
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL
@@ -90,11 +90,11 @@ subroutine qeb(nx,ny,D,rL,IE,IB,EE,eL,At)
 !*  Returns:
 !*    :At[lx,ly] (dcmplx) : Normalization of patchy tau on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, IE, IB, EE
   !f2py intent(out) At
   !f2py depend(nx) IE, IB, EE, At
   !f2py depend(ny) IE, IB, EE, At
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL

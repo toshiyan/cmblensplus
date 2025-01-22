@@ -29,11 +29,11 @@ subroutine qte(nx,ny,D,rL,fC,T,E,alm)
 !*  Returns:
 !*    :alm[lx,ly] (dcmplx) : 2D Fourier modes of anisotropic pol. rot. angles, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T, E
   !f2py intent(out) alm
   !f2py depend(nx) fC, T, E, alm
   !f2py depend(ny) fC, T, E, alm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -78,11 +78,11 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,alm)
 !*  Returns:
 !*    :alm[lx,ly] (dcmplx) : 2D Fourier modes of anisotropic pol. rot. angles, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T, B
   !f2py intent(out) alm
   !f2py depend(nx) fC, T, B, alm
   !f2py depend(ny) fC, T, B, alm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -127,11 +127,11 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,alm)
 !*  Returns:
 !*    :alm[lx,ly] (dcmplx): 2D Fourier modes of anisotropic pol. rot. angles, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, E1, E2
   !f2py intent(out) alm
   !f2py depend(nx) fC, E1, E2, alm
   !f2py depend(ny) fC, E1, E2, alm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -179,11 +179,11 @@ subroutine qeb(nx,ny,D,rL,EE,E,B,alm,BB)
 !*  Returns:
 !*    :alm[lx,ly] (dcmplx) : 2D Fourier modes of anisotropic pol. rot. angles, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, EE, E, B, BB
   !f2py intent(out) alm
   !f2py depend(nx) EE, E, B, alm, BB
   !f2py depend(ny) EE, E, B, alm, BB
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -193,7 +193,7 @@ subroutine qeb(nx,ny,D,rL,EE,E,B,alm,BB)
   double complex, intent(out), dimension(nx,ny) :: alm
   !(optional)
   double precision, intent(in), optional, dimension(nx,ny) :: BB
-  !f2py double precision :: BB = 0
+  !opt4py :: BB = 0
   !internal
   integer :: nn(2)
   double precision, dimension(nx,ny) :: lmask, els
@@ -213,7 +213,7 @@ subroutine qeb(nx,ny,D,rL,EE,E,B,alm,BB)
   alm1 = 2d0*dble(wE*wB)
   call dft(alm1,nn,D,1)
 
-  if (present(BB).and.sum(abs(BB))/=0d0) then
+  if (sum(abs(BB))/=0d0) then
     !filtering
     wE = lmask*E*ei2p
     wB = lmask*BB*B*conjg(ei2p)

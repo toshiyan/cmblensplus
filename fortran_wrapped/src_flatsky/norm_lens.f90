@@ -30,11 +30,11 @@ subroutine qtt(nx,ny,D,rL,OT,TT,eL,Ag,Ac)
 !*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
 !*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, OT, TT
   !f2py intent(out) Ag, Ac
   !f2py depend(nx) OT, TT, Ag, Ac
   !f2py depend(ny) OT, TT, Ag, Ac
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL
@@ -112,11 +112,11 @@ subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
 !*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
 !*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, TE, OT, OE
   !f2py intent(out) Ag, Ac
   !f2py depend(nx) TE, OT, OE, Ag, Ac
   !f2py depend(ny) TE, OT, OE, Ag, Ac
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL
@@ -217,11 +217,11 @@ subroutine qtb(nx,ny,D,OT,OB,TE,rL,eL,Ag,Ac)
 !*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
 !*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, TE, OT, OB
   !f2py intent(out) Ag, Ac
   !f2py depend(nx) TE, OT, OB, Ag, Ac
   !f2py depend(ny) TE, OT, OB, Ag, Ac
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL
@@ -300,11 +300,11 @@ subroutine qee(nx,ny,D,OE,EE,rL,eL,Ag,Ac)
 !*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
 !*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, EE, OE
   !f2py intent(out) Ag, Ac
   !f2py depend(nx) EE, OE, Ag, Ac
   !f2py depend(ny) EE, OE, Ag, Ac
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL
@@ -396,11 +396,11 @@ subroutine qeb(nx,ny,D,OE,OB,EE,rL,eL,Ag,Ac)
 !*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
 !*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, eL, rL, D, EE, OE, OB
   !f2py intent(out) Ag, Ac
   !f2py depend(nx) EE, OE, OB, Ag, Ac
   !f2py depend(ny) EE, OE, OB, Ag, Ac
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: eL, rL

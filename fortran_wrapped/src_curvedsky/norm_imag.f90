@@ -27,11 +27,11 @@ subroutine qte(est,lmax,rlmin,rlmax,TB,OCT,OCE,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, TB, OCT, OCE
   !f2py intent(out) Al
   !f2py depend(rlmax) TB, OCT, OCE
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -91,11 +91,11 @@ subroutine qtb(est,lmax,rlmin,rlmax,TB,OCT,OCB,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, TB, OCT, OCB
   !f2py intent(out) Al
   !f2py depend(rlmax) TB, OCT, OCB
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -163,11 +163,11 @@ subroutine qee(est,lmax,rlmin,rlmax,fC,OCE,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fC, OCE
   !f2py intent(out) Al
   !f2py depend(rlmax) fC, OCE
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -230,11 +230,11 @@ subroutine qeb(est,lmax,rlmin,rlmax,fC,OCE,OCB,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fC, OCE, OCB
   !f2py intent(out) Al
   !f2py depend(rlmax) fC, OCE, OCB
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -302,11 +302,11 @@ subroutine qbb(est,lmax,rlmin,rlmax,fC,OCB,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fC, OCB
   !f2py intent(out) Al
   !f2py depend(rlmax) fC, OCB
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac
@@ -368,11 +368,11 @@ subroutine qbb_asym(est,lmax,rlmin,rlmax,fC,OCB1,OCB2,Al,lfac)
 !*  Returns:
 !*    :Al [2,l] (double) : Normalization, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) est, lfac, lmax, rlmin, rlmax, fC, OCB1, OCB2
   !f2py intent(out) Al
   !f2py depend(rlmax) fC, OCB1, OCB2
   !f2py depend(lmax) Al
-  implicit none
   !I/O
   character(*), intent(in) :: est
   character(1), intent(in) :: lfac

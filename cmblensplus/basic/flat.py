@@ -1,7 +1,7 @@
 from cmblensplus import libbasic
 import numpy
 
-def alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,gln,gle,lxcut):
+def alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,gln=100,gle=1e-14,lxcut=0):
   """
   Compute flat-sky quadratic estimator normalization
   CAUTION: This code interpolates the input Cl at the non-integer multipole by simply Cl(int(ell)) which leads to a small discrepancy in the normalization computed from the FFT-based method (which uses linear interpolation) and from this code. It is desireble to use the FFT-based normalization if you want to normalize the simulation results.
@@ -27,14 +27,14 @@ def alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,gln,gle,lxcut):
   """
   return libbasic.flat.alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,gln,gle,lxcut)
 
-def alxy_asym(qest,qtype,lmax,rlmin,rlmax,fC,AA,BB,AB,gln,gle,lxcut):
+def alxy_asym(qest,qtype,lmax,rlmin,rlmax,fC,AA,BB,AB,gln=100,gle=1e-14,lxcut=0):
   """
   Usage:
     :Ag,Ac = basic.flat.alxy_asym(qest,qtype,lmax,rlmin,rlmax,fC,AA,BB,AB,gln,gle,lxcut):
   """
   return libbasic.flat.alxy_asym(qest,qtype,lmax,rlmin,rlmax,fC,AA,BB,AB,gln,gle,lxcut)
 
-def bbxy(lmax,rlmin,rlmax,XX,YY,weight,gln,gle):
+def bbxy(lmax,rlmin,rlmax,XX,YY,weight='lensing',gln=100,gle=1e-14):
   """
   Usage:
     :BB = basic.flat.bbxy(lmax,rlmin,rlmax,XX,YY,weight,gln,gle):

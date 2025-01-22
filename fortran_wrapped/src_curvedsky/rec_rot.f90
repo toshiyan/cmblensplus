@@ -29,11 +29,11 @@ subroutine qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,alm,nside_t,verbose)
 !*  Returns:
 !*    :alm [l,m] (dcmplx) : Rotation angle alm, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, fCE, Elm, Blm
   !f2py intent(out) alm
   !f2py depend(rlmax) fCE, Elm, Blm
   !f2py depend(lmax) alm
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t

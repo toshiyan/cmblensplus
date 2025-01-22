@@ -29,11 +29,11 @@ subroutine wigner_3j(l2,l3,m2,m3,w3j)
 !*    :bl0[l] (double) : lensing bispectrum from LSS contributions at [lmin,lmax]
 !*    :bl1[l] (double) : lensing bispectrum from post-Born contributions at [lmin,lmax]
 !*
+  implicit none
   !f2py intent(in) l2, l3, m2, m3
   !f2py intent(out) w3j
   !f2py depend(l2) w3j
   !f2py depend(l3) w3j
-  implicit none
   !I/O
   integer, intent(in) :: l2, l3, m2, m3
   double precision, intent(out), dimension(0:l2+l3) :: w3j

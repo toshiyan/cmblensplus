@@ -31,22 +31,22 @@ subroutine alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,Ag,Ac,gln,gle,lxcut)
 !*  Returns:
 !*    :Ag/Ac[l] (double) : normalization for even and odd estimator pairs
 !*
+  implicit none
   !f2py intent(in) qest, qtype, lmax, rlmin, rlmax, fC, W1, W2, gln, lxcut, gle
   !f2py intent(out) Ag, Ac
   !f2py depend(rlmax) fC, W1, W2
   !f2py depend(lmax) Ag, Ac
-  implicit none
   !I/O
   character(*), intent(in) :: qest, qtype
   integer, intent(in) :: lmax, rlmin, rlmax
   double precision, intent(in), dimension(0:rlmax) :: fC, W1, W2
   double precision, intent(out), dimension(0:lmax) :: Ag, Ac
   !optional
-  integer, intent(in), optional :: gln, lxcut
-  double precision, intent(in), optional :: gle
-  !f2py integer :: gln = 100
-  !f2py integer :: lxcut = 0
-  !f2py double precision :: gle = 1e-14
+  integer, intent(in) :: gln, lxcut
+  double precision, intent(in) :: gle
+  !opt4py :: gln = 100
+  !opt4py :: lxcut = 0
+  !opt4py :: gle = 1e-14
 
   Ag(0) = 0d0
   Ac(0) = 0d0
@@ -55,22 +55,22 @@ subroutine alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,Ag,Ac,gln,gle,lxcut)
 end subroutine alxy
 
 subroutine alxy_asym(qest,qtype,lmax,rlmin,rlmax,fC,AA,BB,AB,Ag,Ac,gln,gle,lxcut)
+  implicit none
   !f2py intent(in) qest, qtype, lmax, rlmin, rlmax, fC, AA, BB, AB, gln, lxcut, gle
   !f2py intent(out) Ag, Ac
   !f2py depend(rlmax) fC, AA, BB, AB
   !f2py depend(lmax) Ag, Ac
-  implicit none
   !I/O
   character(*), intent(in) :: qest, qtype
   integer, intent(in) :: lmax, rlmin, rlmax
   double precision, intent(in), dimension(0:rlmax) :: fC, AA, BB, AB
   double precision, intent(out), dimension(0:lmax) :: Ag, Ac
   !optional
-  integer, intent(in), optional :: gln, lxcut
-  double precision, intent(in), optional :: gle
-  !f2py integer :: gln = 100
-  !f2py integer :: lxcut = 0
-  !f2py double precision :: gle = 1e-14
+  integer, intent(in) :: gln, lxcut
+  double precision, intent(in) :: gle
+  !opt4py :: gln = 100
+  !opt4py :: lxcut = 0
+  !opt4py :: gle = 1e-14
 
   Ag(0) = 0d0
   Ac(0) = 0d0
@@ -79,22 +79,22 @@ subroutine alxy_asym(qest,qtype,lmax,rlmin,rlmax,fC,AA,BB,AB,Ag,Ac,gln,gle,lxcut
 end subroutine alxy_asym
 
 subroutine bbxy(lmax,rlmin,rlmax,XX,YY,BB,weight,gln,gle)
+  implicit none
   !f2py intent(in) lmax, rlmin, rlmax, XX, YY, weight, gln, gle
   !f2py intent(out) BB
   !f2py depend(rlmax) XX, YY
   !f2py depend(lmax) BB
-  implicit none
   !I/O
   integer, intent(in) :: lmax, rlmin, rlmax
   double precision, intent(in), dimension(0:rlmax) :: XX, YY
   double precision, intent(out), dimension(2,0:lmax) :: BB
   !optional
-  character(*), intent(in), optional :: weight
-  integer, intent(in), optional :: gln
-  double precision, intent(in), optional :: gle
-  !f2py character(*) :: weight = 'lensing'
-  !f2py integer :: gln = 100
-  !f2py double precision :: gle = 1e-14
+  character(*), intent(in) :: weight
+  integer, intent(in) :: gln
+  double precision, intent(in) :: gle
+  !opt4py :: weight = 'lensing'
+  !opt4py :: gln = 100
+  !opt4py :: gle = 1e-14
 
   call bbxy_flat((/rlmin,rlmax/),(/1,lmax/),BB,XX,YY,weight,gln,gle)
 

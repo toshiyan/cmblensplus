@@ -80,7 +80,8 @@ for srcname in args.list:
 
         #//// modify slines ////#
         # first add original lines until implicit none
-        indice = int(np.where(np.char.find(slines[1:], 'implicit none') >= 0)[0])
+        #indice = int(np.where(np.char.find(slines[1:], 'implicit none') >= 0)[0])
+        indice = next((i for i, line in enumerate(slines[1:], 1) if 'implicit none' in line), None)
         for line in slines[1:indice+1]:
             modified_slines.append(line)
 

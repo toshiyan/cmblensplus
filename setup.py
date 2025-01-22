@@ -1,14 +1,19 @@
-from distutils.errors import DistutilsError
+from setuptools import Command, setup, Extension
+#from setuptools.command.build_py import build_py as _build
+#from setuptools.command.build_ext import build_ext
 from numpy.distutils.core import setup, Extension # python v3.12 and later does not have this function...
-from numpy.distutils.command.build_ext import build_ext
-from distutils.command.clean import clean
-from setuptools import Command
+from numpy.distutils.command.build_ext import build_ext as _build
+#from setuptools.command.clean import clean
 import numpy
 import subprocess
 import os
 import glob
 import shutil
 
+
+os.environ['F90'] = 'ifort'
+os.environ['F77'] = 'ifort'
+os.environ['F90FLAGS'] = '-O3'  # Add optimization flags for Intel Fortran
 
 # define module name
 modname = ['basic','curvedsky','flatsky']
@@ -74,7 +79,8 @@ extensions = [
 ]
 
 
-class CustomBuildExt(build_ext):
+#class CustomBuildExt(build_ext):
+class CustomBuildExt(_build):
     
     def run(self):
         # Custom function to run before compiling
@@ -121,16 +127,19 @@ class CustomBuildExt(build_ext):
     
 
 # Custom clean command
-class CustomClean(clean):
+class CustomClean(Command):
+
+    user_options = []  # Required attribute: empty list for no options
 
     def initialize_options(self):
+        """Set default values for options (required)."""
         pass
 
     def finalize_options(self):
+        """Post-process options (required)."""
         pass
 
     def run(self):
-        #super().run()
         paths_to_clean = ["build", "dist", "*.egg-info", "fortran_internal/**/*.o"]
         for path in paths_to_clean:
             for file_or_dir in glob.glob(path, recursive=True):

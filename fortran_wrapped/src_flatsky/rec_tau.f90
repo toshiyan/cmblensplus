@@ -29,11 +29,11 @@ subroutine qtt(nx,ny,D,rL,fC,T1,T2,tlm)
 !*  Returns:
 !*    :tlm[lx,ly] (dcmplx): 2D Fourier modes of patchy tau, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T1, T2
   !f2py intent(out) tlm
   !f2py depend(nx) fC, T1, T2, tlm
   !f2py depend(ny) fC, T1, T2, tlm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -78,11 +78,11 @@ subroutine qte(nx,ny,D,rL,fC,T,E,tlm)
 !*  Returns:
 !*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T, E
   !f2py intent(out) tlm
   !f2py depend(nx) fC, T, E, tlm
   !f2py depend(ny) fC, T, E, tlm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -131,11 +131,11 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,tlm)
 !*  Returns:
 !*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T, B
   !f2py intent(out) tlm
   !f2py depend(nx) fC, T, B, tlm
   !f2py depend(ny) fC, T, B, tlm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -180,11 +180,11 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,tlm)
 !*  Returns:
 !*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, E1, E2
   !f2py intent(out) tlm
   !f2py depend(nx) fC, E1, E2, tlm
   !f2py depend(ny) fC, E1, E2, tlm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -230,11 +230,11 @@ subroutine qeb(nx,ny,D,rL,fE,fB,E,B,tlm)
 !*  Returns:
 !*    :tlm[lx,ly] (dcmplx) : 2D Fourier modes of patchy tau, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fE, fB, E, B
   !f2py intent(out) tlm
   !f2py depend(nx) fE, fB, E, B, tlm
   !f2py depend(ny) fE, fB, E, B, tlm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL

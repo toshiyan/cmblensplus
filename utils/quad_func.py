@@ -560,8 +560,8 @@ class quad():
                 glm *= self.Ag[q][:,None]
             clm *= self.Ac[q][:,None]
 
-            cl[q][0,:] = curvedsky.utils.alm2cl(Lmax,glm)/(2*self.wn[4]*self.n0sim**2)
-            cl[q][1,:] = curvedsky.utils.alm2cl(Lmax,clm)/(2*self.wn[4]*self.n0sim**2)
+            cl[q][0,:] = curvedsky.utils.alm2cl(glm)/(2*self.wn[4]*self.n0sim**2)
+            cl[q][1,:] = curvedsky.utils.alm2cl(clm)/(2*self.wn[4]*self.n0sim**2)
 
             # MV
             if q in self.qMV and 'MV' in self.qlist:
@@ -609,8 +609,8 @@ class quad():
                     glm *= self.Ag[q][:,None]
                 clm *= self.Ac[q][:,None]
 
-                cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm)/(2*self.wn[4]*self.n0sim)
-                cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm)/(2*self.wn[4]*self.n0sim)
+                cl[q][0,:] += curvedsky.utils.alm2cl(glm)/(2*self.wn[4]*self.n0sim)
+                cl[q][1,:] += curvedsky.utils.alm2cl(clm)/(2*self.wn[4]*self.n0sim)
 
                 # MV
                 if q in self.qMV and 'MV' in self.qlist:
@@ -644,13 +644,13 @@ class quad():
                 # compute aps
                 rcl = np.zeros((4,self.rlmax+1))
                 if 'TT' in self.qlist or 'TE' in self.qlist or 'TB' in self.qlist: 
-                    rcl[0,:] = curvedsky.utils.alm2cl(self.rlmax,alm['T'])
+                    rcl[0,:] = curvedsky.utils.alm2cl(alm['T'])
                 if 'TE' in self.qlist or 'EE' in self.qlist or 'EB' in self.qlist: 
-                    rcl[1,:] = curvedsky.utils.alm2cl(self.rlmax,alm['E'])
+                    rcl[1,:] = curvedsky.utils.alm2cl(alm['E'])
                 if 'TB' in self.qlist or 'EB' in self.qlist or 'BB' in self.qlist: 
-                    rcl[2,:] = curvedsky.utils.alm2cl(self.rlmax,alm['B'])
+                    rcl[2,:] = curvedsky.utils.alm2cl(alm['B'])
                 if 'TE' in self.qlist: 
-                    rcl[3,:] = curvedsky.utils.alm2cl(self.rlmax,alm['T'],alm['E'])
+                    rcl[3,:] = curvedsky.utils.alm2cl(alm['T'],alm['E'])
         
             rcl[np.where(rcl==0)] = 1e30 # a large number
 
@@ -826,8 +826,8 @@ class quad():
                         glm *= self.Ag[q][:,None]
                     clm *= self.Ac[q][:,None]
 
-                    cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm)
-                    cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm)
+                    cl[q][0,:] += curvedsky.utils.alm2cl(glm)
+                    cl[q][1,:] += curvedsky.utils.alm2cl(clm)
 
                     # MV
                     if q in self.qMV and 'MV' in qlist:
@@ -950,8 +950,8 @@ class quad():
             # compute mf cls
             if self.verbose:  print('cl for mean field bias')
             cl = np.zeros((2,Lmax+1))
-            cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg)/self.wn[4]
-            cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc)/self.wn[4]
+            cl[0,:] = curvedsky.utils.alm2cl(mfg)/self.wn[4]
+            cl[1,:] = curvedsky.utils.alm2cl(mfc)/self.wn[4]
             np.savetxt(self.f[q].MFcl,np.concatenate((self.l[None,:],cl)).T)
 
 
@@ -1001,8 +1001,8 @@ class quad():
                 mfg, mfc = pickle.load(open(self.f[q].mfalm[i],"rb"))
 
                 cl = np.zeros((2,Lmax+1))
-                cl[0,:] = curvedsky.utils.alm2cl(Lmax,mfg) / self.wn[4]
-                cl[1,:] = curvedsky.utils.alm2cl(Lmax,mfc) / self.wn[4]
+                cl[0,:] = curvedsky.utils.alm2cl(mfg) / self.wn[4]
+                cl[1,:] = curvedsky.utils.alm2cl(mfc) / self.wn[4]
                 np.savetxt(self.f[q].mfcl[i],np.concatenate((self.l[None,:],cl)).T)
 
 
@@ -1138,8 +1138,8 @@ class quad_cross(): # for phi cross-spectrum between two different CMB data
                 clm0 *= qobj0.Ac[q][:,None]
                 clm1 *= qobj1.Ac[q][:,None]
 
-                cl[q][0,:] += curvedsky.utils.alm2cl(self.olmax,glm0,glm1)/(2*self.wn[4]*self.n0sim)
-                cl[q][1,:] += curvedsky.utils.alm2cl(self.olmax,clm0,clm1)/(2*self.wn[4]*self.n0sim)
+                cl[q][0,:] += curvedsky.utils.alm2cl(glm0,glm1)/(2*self.wn[4]*self.n0sim)
+                cl[q][1,:] += curvedsky.utils.alm2cl(clm0,clm1)/(2*self.wn[4]*self.n0sim)
 
 
         for q in self.qlist:
@@ -1198,8 +1198,8 @@ class quad_cross(): # for phi cross-spectrum between two different CMB data
                     clm0 *= qobj0.Ac[q][:,None]
                     clm1 *= qobj1.Ac[q][:,None]
 
-                    cl[q][0,:] += curvedsky.utils.alm2cl(Lmax,glm0,glm1)
-                    cl[q][1,:] += curvedsky.utils.alm2cl(Lmax,clm0,clm1)
+                    cl[q][0,:] += curvedsky.utils.alm2cl(glm0,glm1)
+                    cl[q][1,:] += curvedsky.utils.alm2cl(clm0,clm1)
 
 
             if self.rdsim>0:

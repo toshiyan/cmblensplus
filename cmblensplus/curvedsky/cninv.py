@@ -1,18 +1,15 @@
 from cmblensplus import libcurvedsky
 import numpy
 
-def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],filter='W',inl=None,verbose=False,ro=50,stat=''):
+def cnfilter_freq(cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],filter='W',inl=None,verbose=False,ro=50,stat=''):
   """
  Combining multiple frequency CMB maps optimally. 
  The filtering would work if the noise variance is not significantly varied with scale (multipole). 
  Please make sure that your input maps are beam-convolved. 
  This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
+ Note that n is for temperature only (n=1), polarization only (n=2) or both (n=3), mn is the number of frequency maps.
 
  Args:
-    :n (*int*): Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
-    :mn (*int*): Number of frequencies
-    :nside (*int*): Nside of input map
-    :lmax (*int*): Maximum multipole of the input cl
     :cl[*n,l*] (*double*): Theory signal power spectrum, with bounds (0:n-1,0:lmax)
     :bl[*mn,l*] (*double*): Beam spectrum, with bounds (0:mn-1,0:lmax)
     :iNcov[*n,mn,pix*] (*double*): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:mn-1,0:npix-1)
@@ -34,20 +31,20 @@ def cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],it
     :xlm[*n,l,m*] (*dcmplx*): C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 
   Usage:
-    :xlm = curvedsky.cninv.cnfilter_freq(n,mn,nside,lmax,cl,bl,iNcov,maps,chn,lmaxs,nsides,itns,eps,filter,inl,verbose,ro,stat):
+    :xlm = curvedsky.cninv.cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,chn,lmaxs,nsides,itns,eps,filter,inl,verbose,ro,stat):
   """
-  npix = 12*nside**2
+  n = len(cl[:,0])
+  mn = len(bl[:,0])
+  npix = len(maps[0,0,:])
+  lmax = len(cl[0,:]) - 1
   if inl is None: inl = 0*iNcov[:,:,:lmax+1]
   return libcurvedsky.cninv.cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,chn,lmaxs,nsides,itns,eps,filter,inl,verbose,ro,stat)
 
-def cnfilter_kappa(n,nside,lmax,cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],inl=None,verbose=False,ro=50,stat=''):
+def cnfilter_kappa(cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],inl=None,verbose=False,ro=50,stat=''):
   """
  Computing the inverse-variance weighted multipole, (C+N)^-1 x kappa, for multiple mass-tracers of kappa maps. 
 
  Args:
-    :n (*int*): Number of input kappa maps to be combined
-    :nside (*int*): Nside of input maps
-    :lmax (*int*): Maximum multipole of the input cl
     :cov[*n,n,l*] (*double*): Signal covariance matrix for each multipole, with bounds (0:n-1,0:n-1,0:lmax)
     :iNcov[*n,pix*] (*double*): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
     :maps[*n,pix*] (*double*): Input kappa maps, with bouds (0:n-1,0:npix-1)
@@ -67,9 +64,11 @@ def cnfilter_kappa(n,nside,lmax,cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[
     :xlm[*n,l,m*] (*dcmplx*): Wiener filtered multipoles, with bounds (n,0:lmax,0:lmax)
 
   Usage:
-    :xlm = curvedsky.cninv.cnfilter_kappa(n,nside,lmax,cov,iNcov,maps,chn,lmaxs,nsides,itns,eps,inl,verbose,ro,stat):
+    :xlm = curvedsky.cninv.cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,chn,lmaxs,nsides,itns,eps,inl,verbose,ro,stat):
   """
-  npix = 12*nside**2
+  n = len(cov[:,0,0])
+  lmax = len(cov[0,0,:]) - 1
+  npix = len(maps[0,:])
   if inl  is None: inl  = 0*iNcov[:,:lmax+1]
   return libcurvedsky.cninv.cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,chn,lmaxs,nsides,itns,eps,inl,verbose,ro,stat)
 

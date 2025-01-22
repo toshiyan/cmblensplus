@@ -31,10 +31,10 @@ subroutine hubble(z,H0,Om,Ov,w0,wa,zn,Hz,divc)
 !*  Returns:
 !*    :Hz[zn] (double) : The expansion rate, H(z), divided by c or not. 
 !*
+  implicit none
   !f2py intent(in) zn, divc, H0, Om, Ov, w0, wa, z
   !f2py intent(out) Hz
   !f2py depend(zn) z, Hz
-  implicit none
   integer, intent(in) :: zn
   logical, intent(in) :: divc
   double precision, intent(in) :: H0, Om, Ov, w0, wa
@@ -75,10 +75,10 @@ subroutine dhubble_dz(z,H0,Om,Ov,w0,wa,zn,dHdz)
 !*  Returns:
 !*    :dHdz[zn] (double) : The derivative of the expansion rate, dH(z)/dz. 
 !*
+  implicit none
   !f2py intent(in) zn, H0, Om, Ov, w0, wa, z
   !f2py intent(out) dHdz
   !f2py depend(zn) z, dHdz
-  implicit none
   !I/O
   integer, intent(in) :: zn
   double precision, intent(in) :: H0, Om, Ov, w0, wa
@@ -118,10 +118,10 @@ subroutine dist2z(rz,H0,Om,Ov,w0,wa,zn,z)
 !*  Returns:
 !*    :z[zn] (double)  : Redshift
 !*
+  implicit none
   !f2py intent(in) zn, H0, Om, Ov, w0, wa, rz
   !f2py intent(out) z
   !f2py depend(zn) rz, z
-  implicit none
   !I/O
   integer, intent(in) :: zn
   double precision, intent(in) :: H0, Om, Ov, w0, wa
@@ -161,10 +161,10 @@ subroutine dist_comoving(z,H0,Om,Ov,w0,wa,zn,rz)
 !*  Returns:
 !*    :rz[zn] (double) : Comoving distance [Mpc]
 !*
+  implicit none
   !f2py intent(in) zn, H0, Om, Ov, w0, wa, z
   !f2py intent(out) rz
   !f2py depend(zn) z, rz
-  implicit none
   !I/O
   integer, intent(in) :: zn
   double precision, intent(in) :: H0, Om, Ov, w0, wa
@@ -204,10 +204,10 @@ subroutine dist_luminosity(z,H0,Om,Ov,w0,wa,zn,DLz)
 !*  Returns:
 !*    :DLz[zn] (double) : Luminosity distance [Mpc]
 !*
+  implicit none
   !f2py intent(in) zn, H0, Om, Ov, w0, wa, z
   !f2py intent(out) DLz
   !f2py depend(zn) z, DLz
-  implicit none
   !I/O
   integer, intent(in) :: zn
   double precision, intent(in) :: H0, Om, Ov, w0, wa
@@ -248,10 +248,10 @@ subroutine growth_factor(z,H0,Om,Ov,w0,wa,zn,Dz,normed)
 !*  Returns:
 !*    :Dz[zn] (double) : Growth factor
 !*
+  implicit none
   !f2py intent(in) normed, zn, H0, Om, Ov, w0, wa, z
   !f2py intent(out) Dz
   !f2py depend(zn) z, Dz
-  implicit none
   !I/O
   logical, intent(in) :: normed
   integer, intent(in) :: zn
@@ -298,10 +298,10 @@ subroutine growth_rate(z,H0,Om,Ov,w0,wa,zn,fz)
 !*  Returns:
 !*    :fz[zn] (double) : Growth rate
 !*
+  implicit none
   !f2py intent(in) zn, H0, Om, Ov, w0, wa, z
   !f2py intent(out) fz
   !f2py depend(zn) z, fz
-  implicit none
   integer, intent(in) :: zn
   double precision, intent(in) :: H0, Om, Ov, w0, wa
   double precision, intent(in), dimension(0:zn-1) :: z
@@ -339,9 +339,9 @@ subroutine nz_gw(z,Cz,Hz,ntype,dotn0,Tobs,nz)
 !*
 !*  Returns:
 !*    :nz (double) : distribution function at z
+  implicit none
   !f2py intent(in) ntype, z, Cz, Hz, dotn0, Tobs
   !f2py intent(out) nz
-  implicit none
   !I/O
   character(4), intent(in) :: ntype
   double precision, intent(in) :: z, Cz, Hz
@@ -358,10 +358,10 @@ subroutine nz_gw(z,Cz,Hz,ntype,dotn0,Tobs,nz)
 end subroutine nz_gw
 
 subroutine drate_dz(z,zn,ntype,dndz)
+  implicit none
   !f2py intent(in) ntype, zn, z
   !f2py intent(out) dndz
   !f2py depend(zn) z, dndz
-  implicit none
   character(4), intent(in) :: ntype
   integer, intent(in) :: zn
   double precision, intent(in), dimension(0:zn-1) :: z

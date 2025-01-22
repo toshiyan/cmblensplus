@@ -29,11 +29,11 @@ subroutine qtt(nx,ny,D,rL,T1,T2,slm)
 !*  Returns:
 !*    :slm[lx,ly] (dcmplx): 2D Fourier modes of point source fields, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, T1, T2
   !f2py intent(out) slm
   !f2py depend(nx) T1, T2, slm
   !f2py depend(ny) T1, T2, slm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -77,11 +77,11 @@ subroutine qte(nx,ny,D,rL,T,E,slm)
 !*  Returns:
 !*    :slm[lx,ly] (dcmplx) : 2D Fourier modes of point source fields, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, T, E
   !f2py intent(out) slm
   !f2py depend(nx) T, E, slm
   !f2py depend(ny) T, E, slm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -129,11 +129,11 @@ subroutine qtb(nx,ny,D,rL,T,B,slm)
 !*  Returns:
 !*    :slm[lx,ly] (dcmplx) : 2D Fourier modes of point source fields, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, T, B
   !f2py intent(out) slm
   !f2py depend(nx) T, B, slm
   !f2py depend(ny) T, B, slm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -177,11 +177,11 @@ subroutine qee(nx,ny,D,rL,E1,E2,slm)
 !*  Returns:
 !*    :slm[lx,ly] (dcmplx) : 2D Fourier modes of point source fields, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, E1, E2
   !f2py intent(out) slm
   !f2py depend(nx) E1, E2, slm
   !f2py depend(ny) E1, E2, slm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -225,11 +225,11 @@ subroutine qeb(nx,ny,D,rL,E,B,slm)
 !*  Returns:
 !*    :slm[lx,ly] (dcmplx) : 2D Fourier modes of point source fields, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, E, B
   !f2py intent(out) slm
   !f2py depend(nx) E, B, slm
   !f2py depend(ny) E, B, slm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL

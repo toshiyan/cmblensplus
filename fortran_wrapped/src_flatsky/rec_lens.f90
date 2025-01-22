@@ -33,11 +33,11 @@ subroutine qtt(nx,ny,D,rL,fC,T1,T2,glm,clm,gtype)
 !*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
 !*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T1, T2, gtype
   !f2py intent(out) glm, clm
   !f2py depend(nx) fC, T1, T2, glm, clm
   !f2py depend(ny) fC, T1, T2, glm, clm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -46,8 +46,8 @@ subroutine qtt(nx,ny,D,rL,fC,T1,T2,glm,clm,gtype)
   double complex, intent(in), dimension(nx,ny) :: T1, T2
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
-  character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  character(1), intent(in) :: gtype
+  !opt4py :: gtype = ''
   ![internal]
   integer :: i, j, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -60,7 +60,7 @@ subroutine qtt(nx,ny,D,rL,fC,T1,T2,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -124,11 +124,11 @@ subroutine qte(nx,ny,D,rL,fC,T,E,glm,clm,gtype)
 !*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
 !*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T, E, gtype
   !f2py intent(out) glm, clm
   !f2py depend(nx) fC, T, E, glm, clm
   !f2py depend(ny) fC, T, E, glm, clm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -137,8 +137,8 @@ subroutine qte(nx,ny,D,rL,fC,T,E,glm,clm,gtype)
   double complex, intent(in), dimension(nx,ny) :: T, E
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
-  character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
+  character(1), intent(in) :: gtype
   ![internal]
   integer :: i, j, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -151,7 +151,7 @@ subroutine qte(nx,ny,D,rL,fC,T,E,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -212,11 +212,11 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,glm,clm,gtype)
 !*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
 !*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, T, B, gtype
   !f2py intent(out) glm, clm
   !f2py depend(nx) fC, T, B, glm, clm
   !f2py depend(ny) fC, T, B, glm, clm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -225,8 +225,8 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,glm,clm,gtype)
   double complex, intent(in), dimension(nx,ny) :: T, B
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
-  character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  character(1), intent(in) :: gtype
+  !opt4py :: gtype = ''
   ![internal]
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -239,7 +239,7 @@ subroutine qtb(nx,ny,D,rL,fC,T,B,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -287,11 +287,11 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,glm,clm,gtype)
 !*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
 !*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, E1, E2, gtype
   !f2py intent(out) glm, clm
   !f2py depend(nx) fC, E1, E2, glm, clm
   !f2py depend(ny) fC, E1, E2, glm, clm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -301,7 +301,7 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,glm,clm,gtype)
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
   character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
   ![internal]
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -314,7 +314,7 @@ subroutine qee(nx,ny,D,rL,fC,E1,E2,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -362,11 +362,11 @@ subroutine qeb(nx,ny,D,rL,fC,E,B,glm,clm,gtype)
 !*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
 !*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, E, B, gtype
   !f2py intent(out) glm, clm
   !f2py depend(nx) fC, E, B, glm, clm
   !f2py depend(ny) fC, E, B, glm, clm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -376,7 +376,7 @@ subroutine qeb(nx,ny,D,rL,fC,E,B,glm,clm,gtype)
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
   character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
   !internal
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -389,7 +389,7 @@ subroutine qeb(nx,ny,D,rL,fC,E,B,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))
@@ -440,11 +440,11 @@ subroutine qbb(nx,ny,D,rL,fC,B1,B2,glm,clm,gtype)
 !*    :glm[lx,ly] (dcmplx) : 2D Fourier modes of CMB lensing potential, with bounds (nx,ny)
 !*    :clm[lx,ly] (dcmplx) : 2D Fourier modes of Curl mode (pseudo lensing potential), with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, rL, D, fC, B1, B2, gtype
   !f2py intent(out) glm, clm
   !f2py depend(nx) fC, B1, B2, glm, clm
   !f2py depend(ny) fC, B1, B2, glm, clm
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   integer, intent(in), dimension(2) :: rL
@@ -454,7 +454,7 @@ subroutine qbb(nx,ny,D,rL,fC,B1,B2,glm,clm,gtype)
   double complex, intent(out), dimension(nx,ny) :: glm, clm
   !(optional)
   character(1), intent(in), optional :: gtype
-  !f2py character(1) :: gtype = ''
+  !opt4py :: gtype = ''
   !internal
   integer :: i, n, nn(2)
   double precision, allocatable :: lmask(:,:), lx(:,:), ly(:,:), els(:,:), li(:,:)
@@ -467,7 +467,7 @@ subroutine qbb(nx,ny,D,rL,fC,B1,B2,glm,clm,gtype)
 
   ! kappa factor
   li = -2d0*li**2
-  if(.not.present(gtype).or.gtype/='k') li = 1d0
+  if(gtype/='k') li = 1d0
 
   ! filtering
   allocate(lmask(nx,ny))

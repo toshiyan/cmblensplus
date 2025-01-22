@@ -1,7 +1,7 @@
 from cmblensplus import libflatsky
 import numpy
 
-def qeb(nx,ny,D,rL,IE,IB,EE,eL,BB):
+def qeb(nx,ny,D,rL,IE,IB,EE,eL,BB=0):
   """
   Normalization of the EB quadratic estimator for anisotropic pol. rot. angles
 

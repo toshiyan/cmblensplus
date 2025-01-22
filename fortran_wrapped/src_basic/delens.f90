@@ -30,12 +30,12 @@ subroutine lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,CB,gtype)
 !*  Returns:
 !*    :CB[l] (double) : Lensing B-mode power spectrum, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) gtype, lmax, elmin, elmax, klmin, klmax, CE, WE, Cm, Wm
   !f2py intent(out) CB
   !f2py depend(elmax) CE, WE
   !f2py depend(klmax) Cm, Wm
   !f2py depend(lmax) CB
-  implicit none
   !I/O
   character(*), intent(in) :: gtype
   integer, intent(in) :: lmax, elmin, elmax, klmin, klmax
@@ -77,11 +77,11 @@ subroutine lensingbb(lmax,dlmin,dlmax,CE,Cp,CB)
 !*  Returns:
 !*    :CB[l] (double) : Lensing B-mode power spectrum, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, dlmin, dlmax, CE, Cp
   !f2py intent(out) CB
   !f2py depend(dlmax) CE, Cp
   !f2py depend(lmax) CB
-  implicit none
   !I/O
   integer, intent(in) :: lmax, dlmin, dlmax
   double precision, intent(in), dimension(0:dlmax) :: CE, Cp
@@ -109,11 +109,11 @@ subroutine delensbias_dom(lmax,dlmin,dlmax,CE,CB,Cp,NP1,NP2,Ag,DB)
 !*  Returns:
 !*    :DB[l] (double) : Lensing B-mode power spectrum, with bounds (0:lmax)
 !*
+  implicit none
   !f2py intent(in) lmax, dlmin, dlmax, CE, CB, Cp, NP1, NP2, Ag
   !f2py intent(out) DB
   !f2py depend(dlmax) CE, CB, Cp, NP1, NP2, Ag
   !f2py depend(lmax) DB
-  implicit none
   !I/O
   integer, intent(in) :: lmax, dlmin, dlmax
   double precision, intent(in), dimension(0:dlmax) :: CE,CB,Cp,NP1,NP2,Ag

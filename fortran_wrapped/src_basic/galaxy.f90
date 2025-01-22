@@ -24,10 +24,10 @@ subroutine dndz_sf(zn,z,a,b,zm,z0,dndz)
 !*  Returns:
 !*    :dndz[zn] (double) : galaxy z distribution
 !*
+  implicit none
   !f2py intent(in) zn, a, b, zm, z0, z
   !f2py intent(out) dndz
   !f2py depend(zn) dndz
-  implicit none
   integer, intent(in) :: zn
   double precision, intent(in) :: a, b, zm, z0
   !integer :: temp_arg ! this argument is removed by f2py since it appears in the size of an input array argument
@@ -35,10 +35,11 @@ subroutine dndz_sf(zn,z,a,b,zm,z0,dndz)
   double precision, intent(out), dimension(1:zn) :: dndz
   integer :: i
   double precision :: zm_temp
+  !rmargs :: zn
   !opt4py :: zm = 0
   !opt4py :: z0 = 0
-  !opt4py :: zn = None
-  !add2py :: if zn is None: zn=len(z)
+  !add2py :: zn = len(z)
+  !add2py :: if zm<=0 and z0<=0: raise SystemExit('ERROR in "dndz_sf": both zm and z0 <=0')
 
   do i = 1, zn
     if (zm>0d0.and.z0==0d0) then
@@ -66,10 +67,10 @@ subroutine photoz_error(zn,z,zi,sigma,zbias,pz)
 !*  Returns:
 !*    :pz[zn] (double) : photoz error function
 !*
+  implicit none
   !f2py intent(in) zn, sigma, zbias, zi, z
   !f2py intent(out) pz
   !f2py depend(zn) pz
-  implicit none
   integer, intent(in) :: zn
   double precision, intent(in) :: sigma, zbias
   double precision, intent(in), dimension(1:2) :: zi
@@ -102,10 +103,10 @@ subroutine zbin(zn,a,b,zm,zb,z0,verbose)
 !*  Returns:
 !*    :zb[zn+1] (double) : z-intervals
 !*
+  implicit none
   !f2py intent(in) verbose, zn, a, b, zm, z0
   !f2py intent(out) zb
   !f2py depend(zn) zb
-  implicit none
   logical, intent(in) :: verbose
   integer, intent(in) :: zn
   double precision, intent(in) :: a, b, zm, z0
@@ -146,10 +147,10 @@ subroutine frac(zn,zb,a,b,zm,nfrac,zbias,sigma,verbose)
 !*  Returns:
 !*    :nfrac[zn] (double) : fraction of galaxy number at each bin, defined by int_zi^zi+1 dz N(z)/int dz N(z) 
 !*
+  implicit none
   !f2py intent(in) verbose, zn, a, b, zm, sigma, zbias, zb
   !f2py intent(out) nfrac
   !f2py depend(zn) nfrac
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: zn

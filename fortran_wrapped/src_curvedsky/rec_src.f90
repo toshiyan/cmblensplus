@@ -28,11 +28,11 @@ subroutine qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,slm,nside_t,verbose)
 !*  Returns:
 !*    :slm [l,m] (dcmplx) : Point-source alm, with bounds (0:lmax,0:lmax)
 !*
+  implicit none
   !f2py intent(in) verbose, lmax, rlmin, rlmax, nside_t, Tlm1, Tlm2
   !f2py intent(out) slm
   !f2py depend(rlmax) Tlm1, Tlm2
   !f2py depend(lmax) slm
-  implicit none
   !I/O
   logical, intent(in) :: verbose
   integer, intent(in) :: lmax, rlmin, rlmax, nside_t

@@ -35,11 +35,11 @@ subroutine map2alm(nx,ny,D,map,alm)
 !*  Returns:
 !*    :alm[x,y] (dcmplx) : Fourier modes on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, D, map
   !f2py intent(out) alm
   !f2py depend(nx) map, alm
   !f2py depend(ny) map, alm
-  implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(nx,ny) :: map
@@ -65,11 +65,11 @@ subroutine alm2map(nx,ny,D,alm,map)
 !*  Returns:
 !*    :map[x,y] (double) : Map on 2D grid, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, D, alm
   !f2py intent(out) map
   !f2py depend(nx) alm, map
   !f2py depend(ny) alm, map
-  implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
   double complex, intent(in), dimension(nx,ny) :: alm
@@ -94,11 +94,11 @@ subroutine el2d(nx,ny,D,els)
 !*  Returns:
 !*    :els[nx,ny] (double):  absolute value of Fourier mode, (Lx**2+Ly**2)**0.5, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, D
   !f2py intent(out) els
   !f2py depend(nx) els
   !f2py depend(ny) els
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
@@ -131,11 +131,11 @@ subroutine elarrays(nx,ny,D,elx,ely,els,eli)
 !*    :els[nx,ny] (double) : absolute value of Fourier mode, (Lx**2+Ly**2)**0.5, with bounds (nx,ny)
 !*    :eli[nx,ny] (double) : inverse of els, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, D
   !f2py intent(out) elx, ely, els, eli
   !f2py depend(nx) elx, ely, els, eli
   !f2py depend(ny) elx, ely, els, eli
-  implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(out), dimension(nx,ny) :: elx, ely, els, eli
@@ -158,19 +158,19 @@ subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
 !*  Returns:
 !*    :lmask[nx,ny] (double) : Mask, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, D, lmin, lmax, lxcut, lycut
   !f2py intent(out) lmask
   !f2py depend(nx) lmask
   !f2py depend(ny) lmask
-  implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(out), dimension(nx,ny) :: lmask
-  double precision, intent(in), optional :: lmin, lmax, lxcut, lycut
-  !f2py integer :: lmin  = 0
-  !f2py integer :: lmax  = 1000
-  !f2py integer :: lxcut = 0
-  !f2py integer :: lycut = 0
+  double precision, intent(in) :: lmin, lmax, lxcut, lycut
+  !opt4py :: lmin  = 0
+  !opt4py :: lmax  = 1000
+  !opt4py :: lxcut = 0
+  !opt4py :: lycut = 0
   integer :: i, j
   double precision :: els(nx,ny), elx(nx,ny), ely(nx,ny)
 
@@ -179,10 +179,10 @@ subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
   lmask = 1d0
   do i = 1, nx
     do j = 1, ny
-      if (present(lmin).and.els(i,j)<lmin)        lmask(i,j) = 0d0
-      if (present(lmax).and.els(i,j)>lmax)        lmask(i,j) = 0d0
-      if (present(lxcut).and.abs(elx(i,j))<lxcut) lmask(i,j) = 0d0
-      if (present(lycut).and.abs(ely(i,j))<lycut) lmask(i,j) = 0d0
+      if (els(i,j)<lmin)        lmask(i,j) = 0d0
+      if (els(i,j)>lmax)        lmask(i,j) = 0d0
+      if (abs(elx(i,j))<lxcut) lmask(i,j) = 0d0
+      if (abs(ely(i,j))<lycut) lmask(i,j) = 0d0
     end do
   end do
 
@@ -205,43 +205,37 @@ subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
 !*  Returns:
 !*    :Cb[bin] (double) : angular power spectrum with multipole binning, with bounds (bn)
 !*
+  implicit none
   !f2py intent(in) bn, nx, ny, oL, D, alm1, spc, alm2
   !f2py intent(out) Cb
   !f2py depend(nx) alm1, alm2
   !f2py depend(ny) alm1, alm2
   !f2py depend(bn) Cb
-  implicit none
   !inputs
   integer, intent(in) :: bn, nx, ny
   integer, intent(in), dimension(2) :: oL
   double precision, intent(in), dimension(2) :: D
   double complex, intent(in), dimension(nx,ny) :: alm1
   !optional
-  character(*), intent(in), optional :: spc
-  double complex, intent(in), dimension(nx,ny), optional :: alm2
-  !f2py character(*) :: spc=''
-  !f2py double complex :: alm2 = 0
-  !docstr :: alm2 = alm1
+  character(*), intent(in) :: spc
+  double complex, intent(in), dimension(nx,ny) :: alm2
+  !opt4py :: spc = ''
+  !opt4py :: alm2 = None
+  !add2py :: if alm2 is None: alm2 = alm1
   !outputs
   double precision, intent(out), dimension(bn) :: Cb
   !internal
   character(8) :: spc0
   double precision, allocatable :: C(:,:)
-  double complex, allocatable :: alm0(:,:)
 
-  spc0  = ''
-  if (present(spc))  spc0 = spc
+  spc0 = spc
 
   ! 2D power spectrum
-  allocate(C(nx,ny),alm0(nx,ny))
-  alm0 = alm1
-  if (present(alm2).and.sum(abs(alm2))==0) alm0 = alm1
-  if (present(alm2).and.sum(abs(alm2))/=0) alm0 = alm2
-  C = (alm1*conjg(alm0)+alm0*conjg(alm1))*0.5d0/(D(1)*D(2)) 
-  deallocate(alm0)
+  allocate(C(nx,ny))
+  C = (alm1*conjg(alm2)+alm2*conjg(alm1))*0.5d0/(D(1)*D(2)) 
 
   ! to 1D power spectrum
-  call c2d2bcl(nx,ny,D,C,bn,oL,Cb,spc=spc0)
+  call c2d2bcl(nx,ny,D,C,bn,oL,Cb,spc0)
 
   deallocate(C)
 
@@ -264,28 +258,26 @@ subroutine c2d2bcl(nx,ny,D,c2d,bn,oL,Cb,spc)
 !*  Returns:
 !*    :Cb[bin] (double) : angular power spectrum with multipole binning, with bounds (bn)
 !*
+  implicit none
   !f2py intent(in) bn, nx, ny, oL, D, c2d, spc
   !f2py intent(out) Cb
   !f2py depend(nx) c2d
   !f2py depend(ny) c2d
   !f2py depend(bn) Cb
-  implicit none
   !I/O
   integer, intent(in) :: bn, nx, ny
   integer, intent(in), dimension(2) :: oL
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(nx,ny) :: c2d
   double precision, intent(out), dimension(bn) :: Cb
-  !optional
-  character(*), intent(in), optional :: spc
-  !f2py character(*) :: spc=''
+  character(*), intent(in) :: spc
   !internal
   character(8) :: spc0
   double precision :: bp(bn+1), b(bn), els(nx,ny), lmask(nx,ny)
   double precision, dimension(bn) :: vAb
+  !opt4py :: spc = ''
 
-  spc0 = ''
-  if (present(spc)) spc0 = spc
+  spc0 = spc
 
   call binned_ells(oL,bp,b,spc0)
 
@@ -311,20 +303,20 @@ subroutine cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d,method)
 !*  Returns:
 !*    :c2d[nx,ny] (double): 2D power spectrum, with bounds (nx,ny)
 !* 
+  implicit none
   !f2py intent(in) nx, ny, lmin, lmax, D, Cl, method
   !f2py intent(out) c2d
   !f2py depend(lmax) Cl
   !f2py depend(nx) c2d
   !f2py depend(ny) c2d
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny, lmin, lmax
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(0:lmax) :: Cl
   double precision, intent(out), dimension(nx,ny) :: c2d
   !optional
-  character(*), intent(in), optional :: method
-  !f2py character(*) :: method='linear'
+  character(*), intent(in) :: method
+  !opt4py :: method = 'linear'
   !internal
   logical :: p
   integer :: i, j, l0, l1
@@ -373,34 +365,33 @@ subroutine cb2c2d(bn,bc,nx,ny,D,lmin,lmax,Cb,C2d,method)
 !*  Returns:
 !*    :c2d[nx,ny] (double): 2D power spectrum, with bounds (nx,ny)
 !* 
+  implicit none
   !f2py intent(in) bn, nx, ny, lmin, lmax, D, bc, Cb, method
   !f2py intent(out) C2d
   !f2py depend(bn) bc, Cb
   !f2py depend(nx) C2d
   !f2py depend(ny) C2d
-  implicit none
   !I/O
   integer, intent(in) :: bn, nx, ny, lmin, lmax
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(bn) :: bc, Cb
   double precision, intent(out), dimension(nx,ny) :: C2d
   !optional
-  character(*), intent(in), optional :: method
-  !f2py character(*) :: method=''
+  character(*), intent(in) :: method
+  !opt4py :: method = ''
   !internal
   character(8) :: m
   double precision, allocatable :: Cl(:)
 
   allocate(Cl(0:lmax)); Cl=0d0
 
-  m = ''
-  if(present(method)) m   = method
+  m   = method
 
   !interpolate Cb -> Cl
   call cb2cl(bc,Cb,Cl(1:lmax),method=m)
 
   !interpolate Cl -> C2d
-  call cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d)
+  call cl2c2d(nx,ny,D,lmin,lmax,Cl,c2d,method)
 
   deallocate(Cl)
 
@@ -419,12 +410,12 @@ subroutine gauss1alm(nx,ny,D,lmin,lmax,Cl,alm)
 !*  Returns:
 !*    :alm[lx,ly] (dcmplx): random gaussian fields on 2D Fourier plane, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) lmin, lmax, nx, ny, D, Cl
   !f2py intent(out) alm
   !f2py depend(lmax) Cl
   !f2py depend(nx) alm
   !f2py depend(ny) alm
-  implicit none
   integer, intent(in) :: lmin, lmax, nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(0:lmax) :: Cl
@@ -534,12 +525,12 @@ subroutine gauss2alm(nx,ny,D,lmin,lmax,TT,TE,EE,tlm,elm)
 !*    :tlm[lx,ly] (dcmplx): the 1st random gaussian fields on 2D Fourier plane, with bounds (nx,ny)
 !*    :elm[lx,ly] (dcmplx): the 2nd random gaussian fields on 2D Fourier plane, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, lmin, lmax, D, TT, TE, EE
   !f2py intent(out) tlm, elm
   !f2py depend(lmax) TT, TE, EE
   !f2py depend(nx) tlm, elm
   !f2py depend(ny) tlm, elm
-  implicit none
   integer, intent(in) :: nx, ny, lmin, lmax
   double precision, intent(in), dimension(2) :: D
   double precision, intent(in), dimension(0:lmax) :: TT, TE, EE
@@ -584,19 +575,19 @@ subroutine window_sin(nx,ny,D,W,ap,cut)
 !*  Return:
 !*    :W[x,y] (double): Window function, with bounds (nx,ny)
 !*
+  implicit none
   !f2py intent(in) nx, ny, D, ap, cut
   !f2py intent(out) W
   !f2py depend(nx) W
   !f2py depend(ny) W
-  implicit none
   !I/O
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(out), dimension(nx,ny) :: W
   !optional
-  double precision, intent(in), optional :: ap, cut
-  !f2py double precision :: ap = 1
-  !f2py double precision :: cut = 1
+  double precision, intent(in) :: ap, cut
+  !opt4py :: ap = 1
+  !opt4py :: cut = 1
   !internal
   integer :: i, j
   double precision :: a, c, xi, xj, sx ,sy
@@ -604,11 +595,8 @@ subroutine window_sin(nx,ny,D,W,ap,cut)
   sx = D(1)/dble(nx)
   sy = D(2)/dble(ny)
 
-  a  = 1d0
-  if (present(ap)) a = ap
-
-  c  = 1d0
-  if (present(cut)) c = cut
+  a  = ap
+  c  = cut
 
   do i = 1, nx
     do j = 1, ny
@@ -621,12 +609,12 @@ subroutine window_sin(nx,ny,D,W,ap,cut)
 end subroutine window_sin
 
 subroutine window_norm(nx,ny,wind,num,wn)
+  implicit none
   !f2py intent(in) nx, ny, num, wind
   !f2py intent(out) wn
   !f2py depend(nx) wind
   !f2py depend(ny) wind
   !f2py depend(num) wn
-  implicit none
   integer, intent(in) :: nx, ny, num
   double precision, intent(in), dimension(nx,ny) :: wind
   double precision, intent(out), dimension(0:num) :: wn
@@ -640,12 +628,12 @@ subroutine window_norm(nx,ny,wind,num,wn)
 end subroutine window_norm
 
 subroutine window_norm_x(nx,ny,W1,W2,num,Wn)
+  implicit none
   !f2py intent(in) nx, ny, num, W1, W2
   !f2py intent(out) Wn
   !f2py depend(nx) W1, W2
   !f2py depend(ny) W1, W2
   !f2py depend(num) Wn
-  implicit none
   integer, intent(in) :: nx, ny, num
   double precision, intent(in), dimension(nx,ny) :: W1, W2
   double precision, intent(out), dimension(0:num,0:num) :: Wn
@@ -660,11 +648,11 @@ subroutine window_norm_x(nx,ny,W1,W2,num,Wn)
 end subroutine window_norm_x
 
 subroutine rotation(nx,ny,rot,QU,rQU,rtype)
+  implicit none
   !f2py intent(in) rtype, nx, ny, rot, QU
   !f2py intent(out) rQU
   !f2py depend(nx) rot, QU, rQU
   !f2py depend(ny) rot, QU, rQU
-  implicit none
   character(*), intent(in) :: rtype
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(nx,ny) :: rot
@@ -689,11 +677,11 @@ subroutine rotation(nx,ny,rot,QU,rQU,rtype)
 end subroutine rotation
 
 subroutine get_angle(nx,ny,D,theta,phi)
+  implicit none
   !f2py intent(in) nx, ny, D
   !f2py intent(out) theta, phi
   !f2py depend(ny) theta
   !f2py depend(nx) phi
-  implicit none
   integer, intent(in) :: nx, ny
   double precision, intent(in), dimension(2) :: D
   double precision, intent(out), dimension(ny) :: theta
@@ -710,13 +698,13 @@ subroutine get_angle(nx,ny,D,theta,phi)
 end subroutine get_angle
 
 subroutine cutmap(ox,oy,cx,cy,omap,cmap)
+  implicit none
   !f2py intent(in) ox, oy, cx, cy, omap
   !f2py intent(out) cmap
   !f2py depend(ox) omap
   !f2py depend(oy) omap
   !f2py depend(cx) cmap
   !f2py depend(cy) cmap
-  implicit none
   integer, intent(in) :: ox, oy, cx, cy
   double precision, intent(in), dimension(ox,oy) :: omap
   double precision, intent(out), dimension(cx,cy) :: cmap
