@@ -10,6 +10,9 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
      python setup.py build
   
   You will find modules inside "cmblensplus/". 
+  You may also need to run
+
+     python setup.py install
 
   Note that the setup.py file compiles the following files:  
 
@@ -25,11 +28,12 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
 
   Please also note that you should include the following path to e.g. .bashrc: 
 
-  export LD_LIBRARY_PATH=$dir_cmblensplus/fortran_internal/src_public/Healpix/lib/:$dir_cmblensplus/fortran_internal/src_public/cfitsio/lib/:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=$dir_cmblensplus/fortran_internal/src_public/Healpix/lib/:$dir_cmblensplus/fortran_internal/src_public/cfitsio/lib/:$LD_LIBRARY_PATH
+    export PYTHONPATH=$dir_cmblensplus/:$dir_cmblensplus/utils/:$PYTHONPATH
   
   where $dir_cmblensplus is a directory path to your cmblensplus location. You would also need to increase stack memory size, e.g.
 
-  ulimit -s unlimited
+    ulimit -s unlimited
 
 
 # Documents and Reference
