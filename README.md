@@ -5,19 +5,13 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
 
 # Installation
 
-  The easiest way to install the entire package is to run the shellscript: 
+  [1] Please first change the directory path of cmblensplus in sh/setup.sh
 
-     ./install.sh all
+  [2] Please install public fortran package located inside F90/pub/, i.e., FFTW, cfitsio, Healpix, LAPACK95, and Lenspix. 
   
+  [3] Install the package by running ./install.sh wrap
+
   You will find modules inside "wrap/". 
-
-  Note that the install.sh file compiles the following files:  
-
-  [1] Fortran public software (located inside F90/pub/)
-
-  FFTW, cfitsio, Healpix, LAPACK95, and Lenspix. 
-
-  [2] Fortran codes to create a wrapper
 
 
 # Documents and Reference
