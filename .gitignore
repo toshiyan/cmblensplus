@@ -4,6 +4,8 @@
 **/*.txt
 **/*.so
 **/*.o
+**/*.a
+**/*.m
 test
 build
 docs/build

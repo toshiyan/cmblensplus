@@ -1,7 +1,7 @@
 # Build the f2py extension module
 
 # Name of the Python extension module.
-basic_module_name = 'basic'
+basic_module_name = 'libbasic'
 
 # Base names of .src files in this directory.
 basic_src_names = [ 'wigner_funcs', 'bispec', 'flat', 'delens', 'galaxy', 'cosmofuncs', ]
@@ -73,7 +73,7 @@ py.extension_module(
     basic_generated_f90,
     numpy_f2py_src / 'fortranobject.c',
   ],
-  subdir: 'cmblensplus',
+  subdir: 'cmblensplus/basic/',
 
   include_directories: [
     inc_fortran_internal,

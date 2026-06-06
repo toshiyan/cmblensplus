@@ -1,4 +1,4 @@
-from cmblensplus import libflatsky
+from cmblensplus import flatsky
 import numpy
 
 def map2alm(nx,ny,D,map):

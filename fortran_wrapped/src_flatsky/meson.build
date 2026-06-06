@@ -1,7 +1,7 @@
 # Build the f2py extension module
 
 # Name of the Python extension module.
-flatsky_module_name = 'flatsky'
+flatsky_module_name = 'libflatsky'
 
 # Base names of .src files in this directory.
 flatsky_src_names = [ 'utils', 'bispec', 'rec_lens', 'norm_lens', 'rec_rot', 'norm_rot', 'rec_tau', 'norm_tau', 'rec_src', 'norm_src', 'norm_kxt', 'norm_kxs', ]
@@ -73,7 +73,7 @@ py.extension_module(
     flatsky_generated_f90,
     numpy_f2py_src / 'fortranobject.c',
   ],
-  subdir: 'cmblensplus',
+  subdir: 'cmblensplus/flatsky/',
 
   include_directories: [
     inc_fortran_internal,

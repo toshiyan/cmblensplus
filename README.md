@@ -7,12 +7,12 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
 
   The easiest way to install the entire package is to run
 
-     python setup.py build
+     env -u PYTHONPATH python -m pip install --no-build-isolation --no-cache-dir -e ".[dev]"
   
   You will find modules inside "cmblensplus/". 
-  You may also need to run
 
-     python setup.py install
+  Dependencies:
+    numpy scipy matplotlib astropy healpy ducc0 meson ninja meson-python pkg-config compilers ipykernel pip tqdm
 
   Note that the setup.py file compiles the following files:  
 
