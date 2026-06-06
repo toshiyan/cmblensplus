@@ -1,22 +1,42 @@
 [build-system]
-requires = ["setuptools <= 59.8.0","numpy"]
-build-backend = "setuptools.build_meta"
+requires = [
+  "meson-python>=0.16",
+  "meson>=1.4",
+  "ninja",
+  "numpy",
+]
+build-backend = "mesonpy"
 
 [project]
 name = "cmblensplus"
-version = "0.0.1"
-authors = [
-  { name="Toshiya Namikawa", email="toshiya.namikawa@ipmu.jp" },
-]
+version = "0.1.0"
 description = "cmblensplus"
 readme = "README.md"
-requires-python = ">=3.7"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: Linux",
-]
+requires-python = ">=3.11"
 license = "MIT"
-license-files = ["LICEN[CS]E*"]
+authors = [
+  { name = "Toshiya Namikawa", email = "toshiya.namikawa@ipmu.jp" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: POSIX :: Linux",
+]
+dependencies = [
+  "numpy",
+  "scipy",
+  "ducc0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "black",
+  "mypy",
+  "ipython",
+  "build",
+]
 
 [project.urls]
 Homepage = "https://github.com/toshiyan/cmblensplus"

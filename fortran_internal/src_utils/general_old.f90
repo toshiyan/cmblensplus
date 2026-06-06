@@ -4,9 +4,8 @@
 
 module general
   implicit none
-  integer, parameter :: dlc = kind(0d0)
   double precision, parameter :: pi = 3.1415926535897932384626433832795d0
-  complex(dlc), parameter :: iu = (0d0,1d0)
+  double complex, parameter :: iu = (0d0,1d0)
 
   !* Gauss-Legendre Quadrature
   type gauss_legendre_params
@@ -55,34 +54,9 @@ module general
     module procedure vec2mat_dble, vec2mat_cmplx, vec2mat_diag
   end interface 
 
-  private dlc, pi, iu
+  private pi, iu
 
 contains
-
-
-!//////////////////////////////////////////////////////////////////////////////!
-! Small helper functions
-!//////////////////////////////////////////////////////////////////////////////!
-
-logical function is_true(flag) result(tf)
-  implicit none
-  logical, intent(in), optional :: flag
-
-  tf = .false.
-  if (present(flag)) tf = flag
-end function is_true
-
-function output_status(ow) result(st)
-  implicit none
-  logical, intent(in), optional :: ow
-  character(8) :: st
-
-  if (.not. present(ow)) then
-    st = 'new'
-  else
-    st = 'replace'
-  end if
-end function output_status
 
 
 !//////////////////////////////////////////////////////////////////////////////!
@@ -101,7 +75,7 @@ subroutine check_error(condition,msg0,msg1,ou)
     u = 6
     if (present(ou))  u = ou
     write(u,*) 'error: ', trim(msg0)
-    if (present(msg1)) write(u,*) trim(msg1)
+    if (present(msg1)) write(*,*), trim(msg1)
     stop
   end if
 
@@ -238,9 +212,7 @@ subroutine loadtxt_1d_d(f,d1,d2,d3,d4,d5,d6,d7,fsize,rows,usecols)
   end if
 
   allocate(dat(cn,ln))
-  do n = 1, ln
-    read(20,*) dat(:,n)
-  end do
+  read(20,*) ((dat(1:cn,n)),n=1,ln)
   close(20)
 
   r = [1,ln]
@@ -269,11 +241,11 @@ subroutine loadtxt_1d_c(f,dat,usecols,fsize,debug)
   logical ,intent(in), optional :: debug
   integer, intent(in), optional :: usecols(:), fsize(1:2)
   character(*), intent(in) :: f
-  complex(dlc), intent(out) :: dat(:)
+  double complex, intent(out) :: dat(:)
   !internal
   integer :: n, cn, ln
   double precision, allocatable :: rdat(:,:)
-  complex(dlc) :: r
+  double complex :: r
 
   open(unit=20,file=trim(f),status='old')
 
@@ -288,9 +260,7 @@ subroutine loadtxt_1d_c(f,dat,usecols,fsize,debug)
 
   allocate(rdat(cn,ln))
   if (present(debug)) write(*,*) 'reading', trim(f)
-  do n = 1, ln
-    read(20,*) rdat(:,n)
-  end do
+  read(20,*) ((rdat(1:cn,n)),n=1,ln)
   dat = rdat(1,:) + iu*rdat(2,:)
   close(20)
   deallocate(rdat)
@@ -323,15 +293,13 @@ subroutine loadtxt_2d_d(f,d,fsize,rows,usecols,trans,debug)
 
   if (present(debug)) write(*,*) 'reading', trim(f)
   allocate(dat(cn,ln))
-  do n = 1, ln
-    read(20,*) dat(:,n)
-  end do
+  read(20,*) ((dat(1:cn,n)),n=1,ln)
   close(20)
 
   r = [1,ln]
   if (present(rows)) r = rows
 
-  if (is_true(trans)) then
+  if (present(trans).and.trans) then
     n1 = size(d,dim=2)
     n2 = size(d,dim=1)
   else
@@ -345,7 +313,7 @@ subroutine loadtxt_2d_d(f,d,fsize,rows,usecols,trans,debug)
   if (present(usecols)) c = usecols
   call loadtxt_checklines(f,r,n2)
   call loadtxt_checkcols(f,c,cn)
-  if (is_true(trans)) then
+  if (present(trans).and.trans) then
     do n = 1, n1
       d(:,n) = dat(c(n),r(1):r(2))
     end do
@@ -365,12 +333,12 @@ subroutine loadtxt_2d_c(f,d,fsize,rows,usecols,trans)
   logical, intent(in), optional :: trans
   integer, intent(in), optional :: fsize(1:2), rows(:), usecols(:)
   character(*), intent(in) :: f
-  complex(dlc), intent(out) :: d(:,:)
+  double complex, intent(out) :: d(:,:)
   !internal
   integer :: m, n, i, n1, n2, cn, ln, r(2)
   integer, allocatable :: c(:)
   double precision, allocatable :: rdat(:,:)
-  complex(dlc), allocatable :: dat(:,:)
+  double complex, allocatable :: dat(:,:)
 
   open(unit=20,file=trim(f),status='old')
 
@@ -383,9 +351,7 @@ subroutine loadtxt_2d_c(f,d,fsize,rows,usecols,trans)
   end if
 
   allocate(dat(cn/2,ln),rdat(cn,ln))
-  do n = 1, ln
-    read(20,*) rdat(:,n)
-  end do
+  read(20,*) ((rdat(1:cn,n)),n=1,ln)
   do i = 1, cn/2
     dat(i,1:ln) = [((rdat(2*i-1,n)+iu*rdat(2*i,n)),n=1,ln)]
   end do
@@ -395,7 +361,7 @@ subroutine loadtxt_2d_c(f,d,fsize,rows,usecols,trans)
   r = [1,ln]
   if (present(rows)) r = rows
 
-  if (is_true(trans)) then
+  if (present(trans).and.trans) then
     n1 = size(d,dim=2)
     n2 = size(d,dim=1)
   else
@@ -408,7 +374,7 @@ subroutine loadtxt_2d_c(f,d,fsize,rows,usecols,trans)
   if (present(usecols)) c = usecols
   call loadtxt_checklines(f,r,n2)
   call loadtxt_checkcols(f,c,cn)
-  if (is_true(trans)) then
+  if (present(trans).and.trans) then
     do n = 1, n1
       d(:,n) = dat(c(n),r(1):r(2))
     end do
@@ -460,7 +426,7 @@ subroutine ifexist_chorg(fname)
   logical :: fexist
 
   inquire(file=trim(fname),exist=fexist)
-  if (fexist) call execute_command_line('cp '//trim(fname)//' '//trim(fname)//'.tmp')
+  if (fexist)  call system('cp '//trim(fname)//' '//trim(fname)//'.tmp')
 
 end subroutine ifexist_chorg
 
@@ -471,7 +437,7 @@ subroutine ifexist_rmorg(fname)
   logical :: fexist
 
   inquire(file=trim(fname),exist=fexist)
-  if (fexist) call execute_command_line('rm -rf '//trim(fname)//' '//trim(fname)//'.tmp')
+  if (fexist)  call system('rm -rf '//trim(fname)//' '//trim(fname)//'.tmp')
 
 end subroutine ifexist_rmorg
 
@@ -506,8 +472,8 @@ subroutine savetxt_assign_c(d,dat,n)
 !* subroutine for savetxt_1d_c
   implicit none
   integer, intent(in) :: n
-  complex(dlc), intent(in)  :: d(:)
-  complex(dlc), intent(out) :: dat(:)
+  double complex, intent(in)  :: d(:)
+  double complex, intent(out) :: dat(:)
 
   if (size(d)/=size(dat)) then
     write(*,*) 'error (savetxt): data '//str(n)//' size should be equal'
@@ -578,9 +544,12 @@ subroutine savetxt_1d_d(f,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16
   if (present(d16))  call savetxt_assign_d(d16,dat(m(16),:),16)
 
   ! output
-  st = output_status(ow)
-  if (present(ow)) then
-    if (.not. ow) call ifexist_chorg(f)
+  if (present(ow).and.ow==.true.) then
+    st = 'replace'
+  else if (present(ow).and.ow==.false.) then
+    call ifexist_chorg(f)
+  else
+    st = 'new'
   end if
   open(unit=20,file=trim(f),status=st)
   write(20,'('//str(n)//'(E'//str(a0)//'.'//str(a1)//',1X))') ((dat(1:n,i)),i=1,l)
@@ -597,12 +566,12 @@ subroutine savetxt_1d_c(f,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16
   logical, intent(in), optional :: ow
   character(*), intent(in) :: f
   integer, intent(in), optional :: ac
-  complex(dlc), dimension(:), intent(in) :: d1
-  complex(dlc), dimension(:), intent(in), optional :: d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16
+  double complex, dimension(:), intent(in) :: d1
+  double complex, dimension(:), intent(in), optional :: d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16
   !internal
   character(8) :: st
   integer :: i, l, n, a0, a1, m(16)
-  complex(dlc), allocatable :: dat(:,:)
+  double complex, allocatable :: dat(:,:)
 
   !set output format
   a0 = 14
@@ -651,10 +620,14 @@ subroutine savetxt_1d_c(f,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16
   if (present(d16))  call savetxt_assign_c(d16,dat(m(16),:),16)
 
   ! output
-  st = output_status(ow)
-  if (present(ow)) then
-    if (.not. ow) call ifexist_chorg(f)
+  if (present(ow).and.ow==.true.) then
+    st = 'replace'
+  else if (present(ow).and.ow==.false.) then
+    call ifexist_chorg(f)
+  else
+    st = 'new'
   end if
+
   open(unit=20,file=trim(f),status=st)
   write(20,'('//str(2*n)//'(E'//str(a0)//'.'//str(a1)//',1X))') ((dat(1:n,i)),i=1,l)
   close(20)
@@ -714,9 +687,12 @@ subroutine savetxt_2d_d(f,d1,d2,d3,d4,d5,ac,ow)
   end if
 
   ! output
-  st = output_status(ow)
-  if (present(ow)) then
-    if (.not. ow) call ifexist_chorg(f)
+  if (present(ow).and.ow==.true.) then
+    st = 'replace'
+  else if (present(ow).and.ow==.false.) then
+    call ifexist_chorg(f)
+  else
+    st = 'new'
   end if
   open(unit=20,file=trim(f),status=st)
   write(20,'('//str(n)//'(E'//str(a0)//'.'//str(a1)//',1X))') ((dat(1:n,i)),i=1,l)
@@ -733,12 +709,12 @@ subroutine savetxt_2d_c(f,d1,d2,d3,d4,d5,ac,ow)
   logical, intent(in), optional :: ow
   character(*), intent(in) :: f
   integer, intent(in), optional :: ac
-  complex(dlc), dimension(:,:), intent(in) :: d1
-  complex(dlc), dimension(:,:), intent(in), optional :: d2, d3, d4, d5
+  double complex, dimension(:,:), intent(in) :: d1
+  double complex, dimension(:,:), intent(in), optional :: d2, d3, d4, d5
   !internal
   character(8) :: st
   integer :: i, l, n, m(5), a0, a1
-  complex(dlc), allocatable :: dat(:,:)
+  double complex, allocatable :: dat(:,:)
 
   ! set output format
   a0 = 14
@@ -777,9 +753,12 @@ subroutine savetxt_2d_c(f,d1,d2,d3,d4,d5,ac,ow)
   end if
 
   ! output
-  st = output_status(ow)
-  if (present(ow)) then
-    if (.not. ow) call ifexist_chorg(f)
+  if (present(ow).and.ow==.true.) then
+    st = 'replace'
+  else if (present(ow).and.ow==.false.) then
+    call ifexist_chorg(f)
+  else
+    st = 'new'
   end if
   open(unit=20,file=trim(f),status=st)
   write(20,'('//str(2*n)//'(E'//str(a0)//'.'//str(a1)//',1X))') ((dat(1:n,i)),i=1,l)
@@ -1154,7 +1133,7 @@ subroutine get_histogram(hist,a1,a2,f,x)
   hist = 0
   do b = 1, bn
     do i = 1, xn
-      if (bp(b-1) < k(i) .and. k(i) <= bp(b)) hist(b) = hist(b) + h(i)
+      if(bp(b-1)<k(i).and.k(i)<=bp(b)) hist(b) = hist(b) + h(i)
     end do
   end do
   hist = hist/dble(xn)
@@ -1315,10 +1294,10 @@ subroutine multigrid_obscov(Cov,CovM,npix,mpix,s,nn,symmetric)
   allocate(a(s,2),b(s,2))
   do mi = 1, mpix
     do mj = 1, mpix
-      if (sym .and. mj < mi) cycle
+      if(sym.and.mj<mi) cycle
       a = label(mi-1,:,:)
       b = label(mj-1,:,:)
-      if (mi == 1 .and. mj == 1) write(*,*) a(:,:)
+      if(mi==1.and.mj==1) write(*,*) a(:,:)
       x = 0d0
       do si = 1, s
         do sj = 1, s
@@ -1330,7 +1309,7 @@ subroutine multigrid_obscov(Cov,CovM,npix,mpix,s,nn,symmetric)
         end do
       end do
 11    CovM(mi,mj) = x/dble(s**4)
-      if (sym .and. mi /= mj) CovM(mj,mi) = CovM(mi,mj)
+      if(sym.and..not.mi==mj) CovM(mj,mi) = CovM(mi,mj)
     end do
   end do  
   deallocate(label,a,b)
@@ -1378,8 +1357,8 @@ end function vec2mat_dble
 
 function vec2mat_cmplx(a,b) result(M)
   implicit none
-  complex(dlc), intent(in) :: a(:), b(:)
-  complex(dlc) :: M(size(a),size(b))
+  double complex, intent(in) :: a(:), b(:)
+  double complex :: M(size(a),size(b))
   integer :: i,j
 
   do i = 1, size(a)

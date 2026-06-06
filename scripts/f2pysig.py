@@ -6,22 +6,30 @@ import argparse
 import re
 import numpy as np
 
-# read libname and modulename
-parser = argparse.ArgumentParser(description='modify f90 for f2py')
-parser.add_argument('-srcname','--list',nargs='+',default='')
+# read libname, modulename, and output
+parser = argparse.ArgumentParser(description="modify f90 for f2py")
+parser.add_argument("-srcname", "--list", nargs="+", default=[])
+parser.add_argument("-o", "--output", default=None)
 args = parser.parse_args()
+
+if args.output is not None and len(args.list) != 1:
+    raise SystemExit("--output can be used only with one input file")
 
 # loop over modules
 for srcname in args.list:
 
     # initial import
-    mod = srcname.replace('.src','.f90')
-    if mod==srcname:
+    if args.output is None:
+        mod = srcname.replace(".src", ".f90")
+    else:
+        mod = args.output
+
+    if mod == srcname:
         raise SystemExit("cannot overwrite input file")
 
     f = open(mod,'w')
 
-    # open a file and read all lines
+    # open a source file and read all lines
     g = open(srcname)
     lines = g.readlines()
     g.close()
