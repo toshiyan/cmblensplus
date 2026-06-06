@@ -1,40 +1,66 @@
 #////////////////////////////////////////////////////#
-# * Makefile
+# * Makefile for libdft.a
 #////////////////////////////////////////////////////#
 
-## libfile ##
 target = libdft.a
 
-## Complier and options ##
-FC = ifort
-FLAG = -O3 -fpp -fPIC
-#DBAG = -check all -std -gen_interfaces -fpe0 -ftrapuv -traceback
-FLAGS = $(FLAG) $(DBAG)
+# compiler and options
+FC ?= ifort
 
-## Directories ##
+# Select Fortran preprocessor flag depending on compiler.
+# - ifort / ifx: use -fpp
+# - gfortran: use -cpp
+FC_BASENAME := $(notdir $(FC))
+
+ifeq ($(findstring gfortran,$(FC_BASENAME)),gfortran)
+  FPPFLAG ?= -cpp
+else ifeq ($(findstring ifx,$(FC_BASENAME)),ifx)
+  FPPFLAG ?= -fpp
+else ifeq ($(findstring ifort,$(FC_BASENAME)),ifort)
+  FPPFLAG ?= -fpp
+else
+  FPPFLAG ?= -cpp
+endif
+
+OPTFLAGS ?= -O3
+PICFLAG ?= -fPIC
+INCLUDES ?= -I../mod
+
+# Meson may override this:
+#   make FC=... FFLAGS="..."
+FFLAGS ?= $(OPTFLAGS) $(FPPFLAG) $(PICFLAG) $(INCLUDES) $(DBAG)
+
+
+# Optional extra include/library flags.
+LDFLAGS ?=
+LIBS ?=
+
+# Directories.
 flib = ../
-FFTW = ${flib}/src_public/FFTW/
-MODD = -I$(FFTW)/include -I$(flib)/mod
-LIBD = -L$(FFTW)/lib -L$(flib)/lib
-LINK = -lutils -lfftw3
+MODDIR = $(flib)/mod
+LIBDIR = $(flib)/lib
 
-OPTION = $(MODD) $(LIBD) $(LINK)
+OBJ = fftw.o fft_utils.o
 
-OBJ = fftw.o fft_utils.o #fft_remap.o
+.PHONY: all install clean remove
+
+all: $(target)
 
 $(target): $(OBJ)
-	ar cr $@ $^
+	ar crs $@ $^
 
 %.o: %.f90
-	$(FC) $(FLAGS) $(OPTION) -c $*.f90
+	$(FC) $(FFLAGS) -c $<
 
-install:
-	mv *.mod ${flib}/mod; mv $(target) ${flib}/lib/
+install: $(target)
+	cp *.mod $(MODDIR)/
+	cp $(target) $(LIBDIR)/
 
 clean:
 	rm -f *.o *.mod *.a
 
-SRC=$(wildcard *.f90)
-remove:
-	rm -f $(patsubst %.f90, ${flib}/mod/%.mod, $(SRC))
+SRC = $(wildcard *.f90)
 
+remove:
+	rm -f $(patsubst %.f90,$(MODDIR)/%.mod,$(SRC))
+	rm -f $(LIBDIR)/$(target)

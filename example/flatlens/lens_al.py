@@ -1,8 +1,7 @@
 # Flatsky lensing reconstruction normalization
 # - This code compute normalization of estiamtors
 import numpy as np
-import flatsky
-import basic
+from cmblensplus import flatsky, basic
 
 Tcmb = 2.726e6    # CMB temperature
 lmax = 3000       # maximum multipole of output normalization

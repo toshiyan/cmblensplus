@@ -1,62 +1,35 @@
-# Project definition.
-# First argument is the project name. Second argument declares the languages used by the build.
-# Here we need C because f2py generates C wrapper code, and Fortran because basic/flatsky are Fortran extensions.
+
 project(
   'cmblensplus',
   ['c', 'fortran'],
   version: '0.1.0',
   default_options: [
-    # Build optimized binaries by default.
-    # For debugging, this can be changed to 'debug'.
     'buildtype=release',
-
-    # Keep compiler warnings moderate.
-    # Increase this if you want stricter checks.
     'warning_level=1',
   ],
 )
 
-# Load Meson's Python module.
-# This provides helper functions for Python packages and extension modules.
-py_mod = import('python')
+# ---------------------------------------------------------------------------
+# Python / NumPy / compiler setup
+# ---------------------------------------------------------------------------
 
-# Find the Python interpreter used for this build.
-# pure: false means this package can contain compiled extension modules.
+py_mod = import('python')
 py = py_mod.find_installation(pure: false)
 
-# Load Meson's filesystem helper module.
-# This is useful for path handling and file checks.
-fs = import('fs')
-
-# Absolute path to the source tree root.
-# Use this for command arguments or external library paths,
-# but do not pass source-tree absolute paths to include_directories().
 project_root = meson.project_source_root()
+fc = meson.get_compiler('fortran')
+fc_cmd = fc.cmd_array()[0]
 
-# Absolute path to the build tree root.
-# Meson writes generated files here, not into the source tree.
-project_build_root = meson.project_build_root()
-
-# Path to the script that converts .src files into .f90 files
-# with f2py directives inserted.
-#
-# Use files() here instead of project_root / ...
-# so Meson treats this as a source file in the project.
+# Script used to convert .src files into .f90 files with f2py directives.
 f2pysig = files('scripts/f2pysig.py')[0]
 
-# Ask Python where NumPy's C headers are installed.
-# This is needed to compile f2py-generated C wrapper code.
-# This path is outside the project source tree, so it is OK as an absolute path.
+# NumPy headers and f2py support sources.
 numpy_inc = run_command(
   py,
   ['-c', 'import numpy; print(numpy.get_include())'],
   check: true,
 ).stdout().strip()
 
-# Ask Python where NumPy's f2py support sources are installed.
-# This directory contains fortranobject.c and fortranobject.h,
-# which are required when building f2py extension modules manually.
-# This path is outside the project source tree, so it is OK as an absolute path.
 numpy_f2py_src = run_command(
   py,
   [
@@ -66,10 +39,6 @@ numpy_f2py_src = run_command(
   check: true,
 ).stdout().strip()
 
-# Create a Meson include directory object for NumPy and f2py headers.
-# Subdirectories can reuse this variable when building libbasic/libflatsky.
-#
-# These are external include directories, not project source-tree directories.
 numpy_dep = declare_dependency(
   compile_args: [
     '-I' + numpy_inc,
@@ -77,49 +46,66 @@ numpy_dep = declare_dependency(
   ],
 )
 
-# Get the Fortran compiler object.
-# Subdirectories can use this to find Fortran libraries.
-fc = meson.get_compiler('fortran')
-
-# Path to the legacy/internal Fortran source root.
-# This absolute path is fine for passing to find_library() dirs,
-# but not for include_directories().
-fortran_internal_root = project_root / 'fortran_internal'
-
-# Directory where internal Fortran static/shared libraries are expected.
-# For example:
-#   fortran_internal/lib/libutils.a
-#   fortran_internal/lib/libdft.a
+# Internal Fortran module directory.
 #
-# This is used by fc.find_library(..., dirs: [...]).
+# The legacy Makefiles install .mod files into:
+#   fortran_internal/mod
+inc_fortran_internal = include_directories(
+  'fortran_internal/mod',
+)
+
+# ---------------------------------------------------------------------------
+# External dependencies
+# ---------------------------------------------------------------------------
+
+# FFTW is required by fortran_internal/src_dft and flatsky wrappers.
+#
+# In conda/HPC/system environments, this is usually found via pkg-config.
+# If pkg-config metadata is unavailable, fall back to direct library lookup.
+fftw_dep = dependency('fftw3', required: false)
+
+if not fftw_dep.found()
+  fftw_dep = fc.find_library('fftw3', required: true)
+endif
+
+# FFTW compile flags for the legacy src_dft Makefile.
+#
+# dependency('fftw3') passes include flags to Meson targets, but not to external
+# Makefile invocations. Therefore we explicitly query pkg-config when available.
+fftw_pkg_cflags = run_command(
+  'pkg-config',
+  '--cflags',
+  'fftw3',
+  check: false,
+).stdout().strip()
+
+# ---------------------------------------------------------------------------
+# Legacy internal Fortran libraries
+# ---------------------------------------------------------------------------
+#
+# The old build system builds internal Fortran libraries with Makefiles:
+#
+#   fortran_internal/src_utils -> libutils.a + constants.mod, general.mod, ...
+#   fortran_internal/src_dft   -> libdft.a   + fftw.mod, dft-related modules
+#
+# The dft library depends on modules produced by utils, e.g. constants.mod.
+# Therefore the build order must be:
+#
+#   libutils.a first
+#   libdft.a second
+#   f2py extension modules last
+#
+# Meson formally tracks the copied build-tree .a files as custom_target outputs.
+# The .mod files are side effects installed into fortran_internal/mod by the
+# legacy Makefiles.
+
 fortran_internal_lib_dir = project_root / 'fortran_internal' / 'lib'
 
-# Directory containing the old Makefile for libutils.
-# This Makefile builds Fortran utility routines used by libbasic.
+# ---- libutils.a ------------------------------------------------------------
+
 fortran_internal_src_utils_dir = project_root / 'fortran_internal' / 'src_utils'
+fortran_internal_utils_lib = fortran_internal_lib_dir / 'libutils.a'
 
-# Expected location of libutils.a after:
-#   make -C fortran_internal/src_utils install
-#
-# This is the legacy install location used by the old build system.
-fortran_internal_utils_lib = project_root / 'fortran_internal' / 'lib' / 'libutils.a'
-
-# Fortran compiler selected by Meson.
-# In your py_dev environment this is likely:
-#   x86_64-conda-linux-gnu-gfortran
-fc_cmd = fc.cmd_array()[0]
-
-# Build libutils.a and install .mod files using the existing Makefile.
-#
-# This runs:
-#   make -C fortran_internal/src_utils FC=<meson fortran compiler>
-#   make -C fortran_internal/src_utils install FC=<meson fortran compiler>
-#
-# Expected side effects:
-#   fortran_internal/mod/*.mod
-#   fortran_internal/lib/libutils.a
-#
-# Meson formally tracks only the copied build-tree libutils.a.
 utils_lib_target = custom_target(
   'fortran_internal_libutils',
   output: 'libutils.a',
@@ -135,41 +121,72 @@ utils_lib_target = custom_target(
   install: false,
 )
 
-# Build-tree copy of libutils.a used for linking libbasic.
 utils_lib_path = meson.current_build_dir() / 'libutils.a'
 
+# ---- libdft.a --------------------------------------------------------------
+#
+# src_dft/fftw.f90 uses modules from src_utils.
+# Therefore dft_lib_target must depend on utils_lib_target.
 
-# Create an include directory object for internal Fortran module files.
-#
-# IMPORTANT:
-# Do not use:
-#   include_directories(fortran_internal_root / 'mod')
-#
-# because Meson rejects absolute paths into the source tree.
-# Use a path relative to this meson.build file instead.
-inc_fortran_internal = include_directories(
-  'fortran_internal/mod',
+fortran_internal_src_dft_dir = project_root / 'fortran_internal' / 'src_dft'
+fortran_internal_dft_lib = fortran_internal_lib_dir / 'libdft.a'
+
+dft_fflags = '-O3 -cpp -fPIC -I../mod ' + fftw_pkg_cflags
+
+dft_lib_target = custom_target(
+  'fortran_internal_libdft',
+  output: 'libdft.a',
+  command: [
+    'sh', '-c',
+    'srcdir="$1"; libsrc="$2"; libout="$3"; fc="$4"; fflags="$5"; make -C "$srcdir" FC="$fc" FFLAGS="$fflags" && make -C "$srcdir" install FC="$fc" FFLAGS="$fflags" && cp "$libsrc" "$libout"',
+    'sh',
+    fortran_internal_src_dft_dir,
+    fortran_internal_dft_lib,
+    '@OUTPUT@',
+    fc_cmd,
+    dft_fflags,
+  ],
+  depends: [
+    utils_lib_target,
+  ],
+  install: false,
 )
 
-# Install the top-level Python package file:
-#   cmblensplus/__init__.py
-#
-# This ensures:
-#   import cmblensplus
-# works after installation.
+dft_lib_path = meson.current_build_dir() / 'libdft.a'
+
+# ---------------------------------------------------------------------------
+# Python package installation
+# ---------------------------------------------------------------------------
+
 py.install_sources(
   'cmblensplus/__init__.py',
   subdir: 'cmblensplus',
 )
 
-# Install the pure-Python curvedsky package.
-# The file list is handled inside cmblensplus/curvedsky/meson.build.
 subdir('cmblensplus/curvedsky')
 
-# Build and install the f2py extension module for basic.
-# The .src -> .f90 generation and libbasic build rules live there.
-subdir('fortran_wrapped/src_basic')
+# ---------------------------------------------------------------------------
+# f2py extension modules
+# ---------------------------------------------------------------------------
+#
+# These subdirectories use the variables defined above:
+#
+#   py
+#   f2pysig
+#   numpy_dep
+#   numpy_f2py_src
+#   inc_fortran_internal
+#   utils_lib_target
+#   utils_lib_path
+#   dft_lib_target
+#   dft_lib_path
+#   fftw_dep
+#
+# In particular:
+#
+#   src_basic   should depend on utils_lib_target.
+#   src_flatsky should depend on both utils_lib_target and dft_lib_target.
 
-# Build and install the f2py extension module for flatsky.
-# The .src -> .f90 generation and libflatsky build rules live there.
+subdir('fortran_wrapped/src_basic')
 subdir('fortran_wrapped/src_flatsky')
+

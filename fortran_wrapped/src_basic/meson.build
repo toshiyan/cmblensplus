@@ -1,58 +1,25 @@
-# Build the f2py extension module:
-#   libbasic
-#
-# This file is read from the top-level meson.build via:
-#   subdir('fortran_wrapped/src_basic')
-#
-# Variables assumed to be defined in the top-level meson.build:
-#   py
-#   fc
-#   f2pysig
-#   numpy_f2py_src
-#   inc_numpy
-#   inc_fortran_internal
-#   fortran_internal_lib_dir
-
+# Build the f2py extension module
 
 # Name of the Python extension module.
-# This preserves the old import style:
-#   import libbasic
-basic_module_name = 'libbasic'
-
+basic_module_name = 'basic'
 
 # Base names of .src files in this directory.
-# Old setup.py used:
-#   wigner_funcs, bispec, flat, delens, galaxy, cosmofuncs
-#
-# Each name corresponds to:
-#   <name>.src  -> generated <name>.f90
-basic_src_names = [
-  'wigner_funcs',
-  'bispec',
-  'flat',
-  'delens',
-  'galaxy',
-  'cosmofuncs',
-]
+basic_src_names = [ 'wigner_funcs', 'bispec', 'flat', 'delens', 'galaxy', 'cosmofuncs', ]
 
+
+# --------------------------------------------------------------------------- 
+# Step 1: .src -> .f90 
+# ---------------------------------------------------------------------------
 
 # Convert each .src file into a generated .f90 file.
-#
-# The generated .f90 files are written into Meson's build directory,
-# not into the source tree.
 basic_generated_f90 = []
 
 foreach name : basic_src_names
   basic_generated_f90 += custom_target(
     'basic_' + name + '_generated_f90',
-
-    # Input file, for example:
-    #   wigner_funcs.src
-    input: name + '.src',
-
-    # Output file in the build directory, for example:
-    #   wigner_funcs.f90
-    output: name + '.f90',
+    
+    input: name + '.src', # input file
+    output: name + '.f90', # output file
 
     # Run:
     #   python scripts/f2pysig.py -srcname <input> -o <output>
@@ -62,28 +29,51 @@ foreach name : basic_src_names
       '-srcname', '@INPUT@',
       '-o', '@OUTPUT@',
     ],
+    depends: [
+      utils_lib_target,
+    ],
   )
 endforeach
 
 
+# ---------------------------------------------------------------------------
+# Step 2: generated .f90 -> f2py C/F90 wrapper sources
+# ---------------------------------------------------------------------------
 
-# Build the Python extension module.
-#
-# This creates something like:
-#   libbasic.cpython-313-x86_64-linux-gnu.so
-#
-# It can be imported as:
-#   import libbasic
+basic_f2py_wrappers = custom_target(
+  'basic_f2py_wrappers',
+  input: basic_generated_f90,
+  output: [
+    'basicmodule.c',
+    'basic-f2pywrappers2.f90',
+  ],
+  command: [
+    py,
+    '-m', 'numpy.f2py',
+    '--lower',
+    '-m', basic_module_name,
+    '@INPUT@',
+    '--build-dir', '@OUTDIR@',
+  ],
+  depends: [
+    utils_lib_target,
+  ],
+)
+
+
+# ---------------------------------------------------------------------------
+# Step 3: build Python extension module
+# ---------------------------------------------------------------------------
+
 py.extension_module(
   basic_module_name,
-
   # Sources for the extension:
-  #   1. generated Fortran files from .src
-  #   2. NumPy f2py runtime C source
   [
+    basic_f2py_wrappers,
     basic_generated_f90,
     numpy_f2py_src / 'fortranobject.c',
   ],
+  subdir: 'cmblensplus',
 
   include_directories: [
     inc_fortran_internal,
@@ -94,9 +84,6 @@ py.extension_module(
   ],
 
   # Link directly to the libutils.a that Meson copied into the build dir.
-  #
-  # We do not use fc.find_library('utils') because libutils.a does not exist
-  # at Meson configure time. It is created later by utils_lib_target.
   link_args: [
     utils_lib_path,
   ],
