@@ -109,6 +109,76 @@ contains
 !    = \int dxdy Delta(x,y)
 !
 
+subroutine ulm_to_ulphi(lmax,ulm,ulphi)
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax
+  complex(dlc), intent(in) :: ulm(0:lmax,0:lmax)
+  complex(dlc), intent(out) :: ulphi(0:lmax,0:lmax)
+  !internal
+  integer :: l, nphi, m, s, k, plan(8)
+  double precision :: theta
+  complex(dlc) :: f
+  complex(dlc), allocatable :: inbuf(:), outbuf(:)
+
+  ulphi = 0d0
+  
+  do l = 1, lmax
+
+    nphi = l+1
+  
+    allocate(inbuf(0:nphi-1), outbuf(0:nphi-1))
+  
+    call dfftw_plan_dft_1d(plan, nphi, inbuf, outbuf, -1, FFTW_ESTIMATE)
+
+    ! ulm^even
+    inbuf = 0d0
+    do s = 1, l
+      m = 2*s-l-1
+      if (m<0) then
+        inbuf(s) = iu**(-m) * (-1)**m*conjg(ulm(l,-m))  !use complex conjugate for m<0
+      else
+        inbuf(s) = iu**(-m) * ulm(l,m)
+      end if
+    end do
+
+    call dfftw_execute_dft(plan, inbuf, outbuf)
+
+    do k = 0, l
+      ulphi(l,k) = (-1)**k * outbuf(k)
+    end do
+
+    ! ulm^odd
+    inbuf = 0d0
+    do s = 0, l
+      m = 2*s-l
+      if (m<0) then
+        inbuf(s) = iu**(-m) * (-1)**m*conjg(ulm(l,-m))  !use complex conjugate for m<0
+      else
+        inbuf(s) = iu**(-m) * ulm(l,m)
+      end if
+    end do
+
+    call dfftw_execute_dft(plan, inbuf, outbuf)
+
+    do k = 0, l
+      theta = pi*k/dble(nphi)
+      ulphi(l,k) = ulphi(l,k) + (-1)**k * outbuf(k) * (dcos(theta)+iu*dsin(theta))
+    end do
+
+    ulphi(l,:) = ulphi(l,:) * dsqrt(4d0*pi/(2d0*l+1d0))
+    
+    call dfftw_destroy_plan(plan)
+    call dfftw_cleanup()
+
+    deallocate(inbuf, outbuf)
+
+  end do
+
+
+end subroutine ulm_to_ulphi
+
+
 subroutine dft_2darray(map,nn,D,trans)
 !* note (Jan 28, 2015)
 ! Even after FT and inverse FT, the resultant map has tiny error 
@@ -134,9 +204,9 @@ subroutine dft_2darray(map,nn,D,trans)
     end do
   end do
 
-  call DFFTW_PLAN_dft_2D(plan,nn(1),nn(2),amap,amap,trans,FFTW_ESTIMATE)
-  call DFFTW_EXEcutE_dft(plan,amap,amap)
-  call DFFTW_DESTROY_PLAN(plan)
+  call dfftw_plan_dft_2D(plan,nn(1),nn(2),amap,amap,trans,FFTW_ESTIMATE)
+  call dfftw_execute_dft(plan,amap,amap)
+  call dfftw_destroy_plan(plan)
 
   ! phase factor
   f = 1d0

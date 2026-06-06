@@ -8,7 +8,7 @@ module utils
   use general,   only: check_positive
   use grid2d,    only: elxy, elarray, elarrays_1d, elarrays_2d, wap, make_lmask
   use pstool,    only: binned_ells, power_binning, cb2cl
-  use fftw,      only: dft
+  use fftw,      only: dft, ulm_to_ulphi
   implicit none
 
   private check_positive
@@ -16,7 +16,7 @@ module utils
   private iu, pi, dlc
   private elxy, elarray, elarrays_1d, elarrays_2d, wap, make_lmask
   private binned_ells, power_binning, cb2cl
-  private dft
+  private dft, ulm_to_ulphi
 
 
 contains 
@@ -145,7 +145,8 @@ subroutine elarrays(nx,ny,D,elx,ely,els,eli)
 end subroutine elarrays
 
 subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
-!*  Return mask in 2D Fourier space. The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
+!*  Return mask in 2D Fourier space. 
+!*  The lmask is unity at lmin<=|L|<=lmax, |Lx|>=lxcut, |Ly|>=lycut, and otherwize zero. 
 !*
 !*  Args: 
 !*    :nx, ny (int):  number of Lx and Ly grids
@@ -187,6 +188,182 @@ subroutine elmask(nx,ny,D,lmask,lmin,lmax,lxcut,lycut)
   end do
 
 end subroutine elmask
+
+subroutine ulm_flat(nx,ny,D,lmax,ulm,ul2d,alpha,deapod)
+!*  Return u(lx,ly) from the harmonic coefficients, u_{l,m}
+!* 
+!*  Args:
+!*    :nn[xy] (int):  number of Lx and Ly grids
+!*    :D[xy] (double):  map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :ulm[l,m] (dcmplx):  harmonic coefficients with size [0:lmax,0:lmax]
+!*
+!*  Args (optional):
+!*    :deapod (bool): turn on deapodization (True, default) or not.
+!*  
+!*  Returns:
+!*    :ul2d[nx,ny] (dcmplx):  converted harmonic coefficients on 2D grid, with bounds (nx,ny)
+!*
+  implicit none
+  !f2py intent(in) nx, ny, lmax, alpha, D, ulm, deapod
+  !f2py intent(out) ul2d
+  !f2py depend(lmax) ulm
+  !f2py depend(nx) ul2d
+  !f2py depend(ny) ul2d
+  !I/O
+  integer, intent(in) :: nx, ny, lmax
+  double precision, intent(in) :: alpha
+  double precision, intent(in), dimension(2) :: D
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: ulm
+  double complex, intent(out), dimension(nx,ny) :: ul2d
+  logical, intent(in) :: deapod
+  !opt4py :: lmax = 0
+  !opt4py :: alpha = 1.0
+  !opt4py :: deapod = True
+  !add2py :: if lmax == 0: lmax = len(ulm[:,0]) - 1
+  !internal
+  double complex, dimension(0:lmax,0:lmax) :: ulphi
+  double precision, dimension(nx,ny) :: uxy2d, uxy2d_d
+  double complex, dimension(nx,ny) :: ul2d_int
+  
+  call ulm_to_ulphi(lmax,ulm,ulphi)
+  call lphi_to_cartesian(nx,ny,D,lmax,ulphi,ul2d_int)
+
+  if (deapod) then
+    call alm2map(nx,ny,D,ul2d_int,uxy2d)
+    call deapodization_bilinear(nx,ny,D,uxy2d,alpha,uxy2d_d)
+    call map2alm(nx,ny,D,uxy2d_d,ul2d)
+  else
+    ul2d = ul2d_int
+  end if
+
+end subroutine ulm_flat
+
+subroutine ulm2ulphi(lmax,ulm,ulphi)
+!*  Return u(l,phi_l) from the harmonic coefficients, u_{l,m}. 
+!* 
+!*  Args:
+!*    :ulm[l,m] (dcmplx):  harmonic coefficients with size [0:lmax,0:lmax]
+!*  
+!*  Returns:
+!*    :ulphi[l,phi] (dcmplx):  converted harmonic coefficients on 2D grid, with bounds [0:lmax,0:lmax]
+!*
+  implicit none
+  !f2py intent(in) lmax, ulm
+  !f2py intent(out) ulphi
+  !f2py depend(lmax) ulm, ulphi
+  !I/O
+  integer, intent(in) :: lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: ulm
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: ulphi
+  !opt4py :: lmax = 0
+  !add2py :: if lmax == 0: lmax = len(ulm[:,0]) - 1
+  
+  call ulm_to_ulphi(lmax,ulm,ulphi)
+
+end subroutine ulm2ulphi
+
+subroutine lphi_to_cartesian(nx,ny,D,lmax,ulphi,ul2d)
+  implicit none
+  !f2py intent(in) nx, ny, lmax, D, ulphi
+  !f2py intent(out) ul2d
+  !f2py depend(lmax) ulphi
+  !f2py depend(nx) ul2d
+  !f2py depend(ny) ul2d
+  integer, intent(in) :: nx, ny, lmax
+  double precision, intent(in), dimension(2) :: D
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: ulphi
+  double complex, intent(out), dimension(nx,ny) :: ul2d
+  logical :: conj
+  integer :: i, j, nphi, l0, l1, j0, j1
+  double precision :: lx, ly, el, tl, theta, jrf, tphi
+  double complex :: u00, u01, u10, u11, u0, u1
+
+  ul2d = 0d0
+  do i=1, nx
+    lx = elxy(i,nx,D(1))
+    do j = 1, ny
+      ly = elxy(j,ny,D(2))
+
+      if (lx==0.and.ly==0) cycle
+      el = dsqrt(lx**2+ly**2)
+      if (el>lmax+1) cycle
+      
+      theta = atan2(ly,lx)
+      if (theta < 0.d0)  theta = theta + 2*pi
+      conj = .False.
+      if (theta > pi) then ! complex conjugate
+        theta = theta - pi
+        conj = .True.
+      end if
+
+      l0 = floor(el)
+      l1 = l0+1
+      tl = el - dble(l0)
+
+      ! phi to fractional index in [0, nphi)
+      nphi = l0+1
+      jrf  = theta * (nphi / pi)
+      j0   = modulo(int(floor(jrf)), nphi)
+      j1   = modulo(j0+1, nphi)
+      tphi = jrf - floor(jrf)
+
+      ! gather neighbors
+      u00 = ulphi(l0,j0)
+      u01 = ulphi(l0,j1)
+      u10 = ulphi(l1,j0)
+      u11 = ulphi(l1,j1)
+
+      ! bilinear blend
+      u0  = (1d0-tphi)*u00 + tphi*u01
+      u1  = (1d0-tphi)*u10 + tphi*u11
+
+      if (conj) then 
+        ul2d(i,j) = conjg( (1d0-tl)*u0 + tl*u1 )
+      else
+        ul2d(i,j) = (1d0-tl)*u0 + tl*u1
+      end if
+
+    end do
+  end do
+
+end subroutine lphi_to_cartesian
+
+subroutine deapodization_bilinear(nx,ny,D,imap,alpha,dmap)
+  implicit none
+  !f2py intent(in) nx, ny, alpha, D, imap
+  !f2py intent(out) dmap
+  !f2py depend(nx) imap, dmap
+  !f2py depend(ny) imap, dmap
+  integer, intent(in) :: nx, ny
+  double precision, intent(in) :: alpha
+  double precision, intent(in), dimension(2) :: D
+  double precision, intent(in), dimension(nx,ny) :: imap
+  double precision, intent(out), dimension(nx,ny) :: dmap
+  integer :: i, j
+  double precision :: xi, yj, sx, sy
+
+  do i=1, nx
+    xi = (i - nx*0.5) / (alpha*nx)
+    if (xi == 0d0) then
+      sx = 1d0
+    else
+      sx = sin(pi*xi)/(pi*xi)
+    end if
+
+    do j=1, ny
+      yj = (j - ny*0.5) / (alpha*ny)
+      if (yj == 0d0) then
+        sy = 1d0
+      else
+        sy = sin(pi*yj)/(pi*yj)
+      end if
+
+      dmap(i,j) = imap(i,j) / (sx*sy)**2
+
+    end do
+  end do
+
+end subroutine deapodization_bilinear
 
 subroutine alm2bcl(bn,oL,nx,ny,D,Cb,alm1,alm2,spc)
 !*  Compute angular power spectrum from Fourier modes, with multipole binning

@@ -132,16 +132,16 @@ def ext_docstring(f,slines):
     for line in slines:
         if '!*' in line:
             # argument type to italic
-            if ':' in line:
-                line = line.replace('(int)','(*int*)')
-                line = line.replace('(double)','(*double*)')
-                line = line.replace('(dcmplx)','(*dcmplx*)')
-                line = line.replace('(str)','(*str*)')
-                line = line.replace('(bool)','(*bool*)')
-                line = line.replace('[','[*')
-                line = line.replace(']','*]')
+            #if ':' in line:
+            #    line = line.replace('(int)','(*int*)')
+            #    line = line.replace('(double)','(*double*)')
+            #    line = line.replace('(dcmplx)','(*dcmplx*)')
+            #    line = line.replace('(str)','(*str*)')
+            #    line = line.replace('(bool)','(*bool*)')
+            #    line = line.replace('[','[*')
+            #    line = line.replace(']','*]')
             # remove space between ) and :
-            if '*)' in line:
+            if any(x in line for x in ['(int)','(double)','(dcmplx)','(str)','(bool)']):
                 line = '   '+" ".join(line.split())
                 line = line.replace(') :','):')+'\n'
             line = line.replace('!*','')
@@ -256,8 +256,8 @@ for mod in modname:
         ext_docstring(f,slines)
 
         # add example
-        f.write('  Usage:\n')
-        f.write('    :'+','.join(pout)+' = '+hunc+':\n')
+        #f.write('  Usage:\n')
+        #f.write('    :'+','.join(pout)+' = '+hunc+':\n')
         f.write('  """\n')
         #for p in pops:
         #    f.write('  if '+p[0]+' is None: '+p[0]+'='+p[1]+'\n')

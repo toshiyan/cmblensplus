@@ -23,7 +23,6 @@ class multipole_binning:
         self.lmax = lmax
         self.lstart = lstart
         self.imax = int(self.lmax-self.lstart)  # index of l=lmax
-        #self.bp, self.bc = basic.aps.binning(n,[lmin,lmax],spc=spc)
         self.bp, self.bc = binned_ells(n,lmin,lmax,spc)
 
 
@@ -36,7 +35,7 @@ def binned_ells(n,lmin,lmax,spc=''):
         sys.exit('ell minimum should be > 0 for spacing')
 
     if spc == '':
-        dl = (lmax-lmin)/n
+        dl = (lmax+1-lmin)/n
         bp = np.array( [ lmin+dl*i for i in range(n+1) ] )
 
     if spc == 'log':
@@ -55,7 +54,7 @@ def binned_ells(n,lmin,lmax,spc=''):
         dl = (lmax**(1./3.)-lmin**(1./3.))/n
         bp = np.array( [ (lmin**3+dl*i)**3 for i in range(n+1) ] )
     
-    bc = np.array( [ (bp[i]+bp[i-1])/2. for i in range(1,n+1)] ) 
+    bc = np.array( [ (bp[i]-1+bp[i-1])/2. for i in range(1,n+1)] ) 
     
     return bp, bc
     

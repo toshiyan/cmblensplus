@@ -11,8 +11,8 @@ import glob
 import shutil
 
 
-os.environ['F90'] = 'ifort'
-os.environ['F77'] = 'ifort'
+os.environ['F90'] = 'ifx'
+os.environ['F77'] = 'ifx'
 os.environ['F90FLAGS'] = '-O3'  # Add optimization flags for Intel Fortran
 
 # define module name

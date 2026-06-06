@@ -68,13 +68,15 @@ def calc_cmb_aps(lmax,cltype=[],H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,t
     results = camb.get_results(pars)
 
     #read lensed CMB aps (TT,EE,BB,TE)
-    ucl, lcl = None, None
+    ucl, lcl, ckk = None, None, None
     l = np.linspace(0,lmax,lmax+1)
     if 'unlens' in cltype:
         ucl = results.get_unlensed_scalar_cls().T[:,:lmax+1] * 2*np.pi/(l[None,:]**2+l[None,:]+1e-30)
     if 'lens' in cltype:
         lcl = results.get_lensed_scalar_cls().T[:,:lmax+1] * 2*np.pi/(l[None,:]**2+l[None,:]+1e-30)
-    return ucl, lcl
+    if 'clkk' in cltype:
+        ckk = results.get_lens_potential_cls(lmax=lmax)*np.pi/2.
+    return ucl, lcl, ckk
         
 
 def calc_phi_aps(Lmax,H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,As=2e-9,ns=0.965,ac=1,lsamp=1,lens_ac=5):

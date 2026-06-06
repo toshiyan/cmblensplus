@@ -43,7 +43,7 @@ class statistics:
         dxi = np.array([self.scl[i,:]-np.mean(np.delete(self.scl,i,0),axis=0) for i in range(n)])
         sX2 = np.array([np.dot(dxi[i,:],np.dot(np.linalg.inv(np.cov(np.delete(dxi,i,0),rowvar=0)),dxi[i,:])) for i in range(n)])
         # output
-        self.px2 = (sX2>oX2).sum()/np.float(n)
+        self.px2 = (sX2>oX2).sum()/float(n)
         self.ox2 = oX2
         self.sx2 = sX2
         self.mx2 = np.mean(sX2)
@@ -60,7 +60,7 @@ class statistics:
         dxi = np.array([self.scl[i,:]-np.mean(np.delete(self.scl,i,0),axis=0) for i in range(n)])
         sX1 = np.array([np.sum(dxi[i,:]/np.std(np.delete(self.scl,i,0),axis=0)) for i in range(n)])
         # output
-        px1 = (sX1>oX1).sum()/np.float(n)
+        px1 = (sX1>oX1).sum()/float(n)
         if twoside:
             self.px1 = 1.-2*np.abs(px1-0.5)
         else:
@@ -139,7 +139,7 @@ class statistics:
         self.mA = mA
         self.sA = sA
         self.oA = oA
-        self.p  = (A>oA).sum()/np.float(len(A))
+        self.p  = (A>oA).sum()/float(len(A))
         self.MA = np.median(A)
 
         if twoside:

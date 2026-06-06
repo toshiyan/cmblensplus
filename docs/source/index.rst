@@ -23,8 +23,8 @@ Documents
 
 The following documents show derivation of equations used for the modules
 
-* `Curvedsky mode-coupling reconstruction, bispectrum, etc <https://toshiyan.github.io/clpdoc/doc/Computing__Curved_sky_code.pdf>`_
-* `Flatsky implementation of quadratic estimators and delensing <https://toshiyan.github.io/clpdoc/doc/Doc_Flatsky_Analysis.pdf>`_
+* `Curvedsky mode-coupling reconstruction, bispectrum, etc <https://toshiyan.github.io/clpdoc/note/Computing__Curved_sky_code.pdf>`_
+* `Flatsky implementation of quadratic estimators and delensing <https://toshiyan.github.io/clpdoc/note/Doc_Flatsky_Analysis.pdf>`_
 
 
 Modules

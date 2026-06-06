@@ -949,7 +949,6 @@ subroutine qeb_iter(lmax,elmax,rlmin,rlmax,dlmin,dlmax,CE,OCE,OCB,Cpp,Ag,Ac,iter
     !convergence check using gradient mode
     if (n>=2) then
       ratio = (sum(Ag)/sum(Al(1,:))-1d0)/dble(dlmax)
-      write(*,*) n, ratio
     end if
     Ag = Al(1,:)
     Ac = Al(2,:)

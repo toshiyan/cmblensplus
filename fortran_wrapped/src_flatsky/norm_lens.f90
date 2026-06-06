@@ -96,6 +96,182 @@ subroutine qtt(nx,ny,D,rL,OT,TT,eL,Ag,Ac)
 
 end subroutine qtt
 
+subroutine n0tt(nx,ny,D,rL,OT0,OT1,TT,eL,Ag,Ac)
+!*  Normalization of the temperature quadratic estimator for CMB lensing potential and its curl mode
+!*
+!*  Args:
+!*    :nx, ny (int)          : Number of Lx and Ly grids
+!*    :D[xy] (double)        : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)           : Minimum and maximum multipole of CMB for reconstruction
+!*    :OT0/1[lx,ly] (double) : Inverse of Observed temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :TT[lx,ly] (double)    : Theory temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)           : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
+!*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
+!*
+  implicit none
+  !f2py intent(in) nx, ny, eL, rL, D, OT0, OT1, TT
+  !f2py intent(out) Ag, Ac
+  !f2py depend(nx) OT0, OT1, TT, Ag, Ac
+  !f2py depend(ny) OT0, OT1, TT, Ag, Ac
+  !I/O
+  integer, intent(in) :: nx, ny
+  integer, intent(in), dimension(2) :: eL, rL
+  double precision, intent(in), dimension(2) :: D
+  double precision, intent(in), dimension(nx,ny) :: OT0, OT1
+  double precision, intent(in), dimension(nx,ny) :: TT
+  double precision, intent(out), dimension(nx,ny) :: Ag, Ac
+  !internal
+  integer :: i, j, nn(2)
+  double precision, allocatable, dimension(:,:) :: lmask, lx, ly
+  double complex, allocatable, dimension(:,:) :: A0, A1, Axx0, Axy0, Ayy0, Bx0, By0, Axx1, Axy1, Ayy1, Bx1, By1, xx, xy, yy
+
+  nn = (/nx,ny/)
+
+  allocate(lx(nx,ny),ly(nx,ny),lmask(nx,ny))
+  allocate(A0(nx,ny),Axx0(nx,ny),Axy0(nx,ny),Ayy0(nx,ny),Bx0(nx,ny),By0(nx,ny))
+  allocate(A1(nx,ny),Axx1(nx,ny),Axy1(nx,ny),Ayy1(nx,ny),Bx1(nx,ny),By1(nx,ny))
+  allocate(xx(nx,ny),xy(nx,ny),yy(nx,ny))
+
+  call elarrays_2d(nn,D,elx=lx,ely=ly)
+
+  ! filtering
+  call make_lmask(nn,D,rL,lmask)
+  
+  Axx0 = lmask * lx**2 * TT**2 * OT0
+  Axy0 = lmask * lx*ly * TT**2 * OT0
+  Ayy0 = lmask * ly**2 * TT**2 * OT0
+  Axx1 = lmask * lx**2 * TT**2 * OT1
+  Axy1 = lmask * lx*ly * TT**2 * OT1
+  Ayy1 = lmask * ly**2 * TT**2 * OT1
+  A0   = lmask * OT0
+  A1   = lmask * OT1
+  Bx0  = lmask * lx * TT * OT0
+  Bx1  = lmask * lx * TT * OT1
+  By0  = lmask * ly * TT * OT0
+  By1  = lmask * ly * TT * OT1
+
+  ! convolution
+  call dft(Axx0,nn,D,-1)
+  call dft(Axy0,nn,D,-1)
+  call dft(Ayy0,nn,D,-1)
+  call dft(Axx1,nn,D,-1)
+  call dft(Axy1,nn,D,-1)
+  call dft(Ayy1,nn,D,-1)
+  call dft(A0,nn,D,-1)
+  call dft(A1,nn,D,-1)
+  call dft(Bx0,nn,D,-1)
+  call dft(By0,nn,D,-1)
+  call dft(Bx1,nn,D,-1)
+  call dft(By1,nn,D,-1)
+  xx = A0*Axx1 + 2*Bx0*Bx1 + A1*Axx0
+  xy = 2*A0*Axy1 + 2*(Bx0*By1+Bx1*By0) + 2*A1*Axy0
+  yy = A0*Ayy1 + 2*By0*By1 + A1*Ayy0
+
+  call dft(xx,nn,D,1)
+  call dft(xy,nn,D,1)
+  call dft(yy,nn,D,1)
+
+  ! normalization
+  call make_lmask(nn,D,eL,lmask)
+  Ag = lmask * (lx**2*xx + lx*ly*xy + ly**2*yy) / ( D(1)**2*D(2)**2 * 4 )
+  Ac = lmask * (ly**2*xx - lx*ly*xy + lx**2*yy) / ( D(1)**2*D(2)**2 * 4 )
+  
+  deallocate(lx,ly,lmask)
+  deallocate(A0,Axx0,Axy0,Ayy0,Bx0,By0,A1,Axx1,Axy1,Ayy1,Bx1,By1,xx,xy,yy)
+
+end subroutine n0tt
+
+subroutine n0ttc(nx,ny,D,rL,OT0,OT1,TT,eL,Ag,Ac)
+!*  Normalization of the temperature quadratic estimator for CMB lensing potential and its curl mode
+!*
+!*  Args:
+!*    :nx, ny (int)          : Number of Lx and Ly grids
+!*    :D[xy] (double)        : Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
+!*    :rL[2] (int)           : Minimum and maximum multipole of CMB for reconstruction
+!*    :OT0/1[lx,ly] (dcmplx) : Inverse of Observed temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :TT[lx,ly] (double)    : Theory temperature power spectrum on 2D grid, with bounds (nx,ny)
+!*    :eL[2] (int)           : Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+!*
+!*  Returns:
+!*    :Ag[lx,ly] (dcmplx) : Normalization of CMB lensing potential on 2D grid, with bounds (nx,ny)
+!*    :Ac[lx,ly] (dcmplx) : Normalization of Curl mode (pseudo lensing potential) on 2D grid, with bounds (nx,ny)
+!*
+  implicit none
+  !f2py intent(in) nx, ny, eL, rL, D, OT0, OT1, TT
+  !f2py intent(out) Ag, Ac
+  !f2py depend(nx) OT0, OT1, TT, Ag, Ac
+  !f2py depend(ny) OT0, OT1, TT, Ag, Ac
+  !I/O
+  integer, intent(in) :: nx, ny
+  integer, intent(in), dimension(2) :: eL, rL
+  double precision, intent(in), dimension(2) :: D
+  double complex, intent(in), dimension(nx,ny) :: OT0, OT1
+  double precision, intent(in), dimension(nx,ny) :: TT
+  double precision, intent(out), dimension(nx,ny) :: Ag, Ac
+  !internal
+  integer :: i, j, nn(2)
+  double precision, allocatable, dimension(:,:) :: lmask, lx, ly
+  double complex, allocatable, dimension(:,:) :: A0, A1, Axx0, Axy0, Ayy0, Bx0, By0, Axx1, Axy1, Ayy1, Bx1, By1, xx, xy, yy
+
+  nn = (/nx,ny/)
+
+  allocate(lx(nx,ny),ly(nx,ny),lmask(nx,ny))
+  allocate(A0(nx,ny),Axx0(nx,ny),Axy0(nx,ny),Ayy0(nx,ny),Bx0(nx,ny),By0(nx,ny))
+  allocate(A1(nx,ny),Axx1(nx,ny),Axy1(nx,ny),Ayy1(nx,ny),Bx1(nx,ny),By1(nx,ny))
+  allocate(xx(nx,ny),xy(nx,ny),yy(nx,ny))
+
+  call elarrays_2d(nn,D,elx=lx,ely=ly)
+
+  ! filtering
+  call make_lmask(nn,D,rL,lmask)
+  
+  Axx0 = lmask * lx**2 * TT**2 * OT0
+  Axy0 = lmask * lx*ly * TT**2 * OT0
+  Ayy0 = lmask * ly**2 * TT**2 * OT0
+  Axx1 = lmask * lx**2 * TT**2 * OT1
+  Axy1 = lmask * lx*ly * TT**2 * OT1
+  Ayy1 = lmask * ly**2 * TT**2 * OT1
+  A0   = lmask * OT0
+  A1   = lmask * OT1
+  Bx0  = lmask * lx * TT * OT0
+  Bx1  = lmask * lx * TT * OT1
+  By0  = lmask * ly * TT * OT0
+  By1  = lmask * ly * TT * OT1
+
+  ! convolution
+  call dft(Axx0,nn,D,-1)
+  call dft(Axy0,nn,D,-1)
+  call dft(Ayy0,nn,D,-1)
+  call dft(Axx1,nn,D,-1)
+  call dft(Axy1,nn,D,-1)
+  call dft(Ayy1,nn,D,-1)
+  call dft(A0,nn,D,-1)
+  call dft(A1,nn,D,-1)
+  call dft(Bx0,nn,D,-1)
+  call dft(By0,nn,D,-1)
+  call dft(Bx1,nn,D,-1)
+  call dft(By1,nn,D,-1)
+  xx = A0*Axx1 + 2*Bx0*Bx1 + A1*Axx0
+  xy = 2*A0*Axy1 + 2*(Bx0*By1+Bx1*By0) + 2*A1*Axy0
+  yy = A0*Ayy1 + 2*By0*By1 + A1*Ayy0
+
+  call dft(xx,nn,D,1)
+  call dft(xy,nn,D,1)
+  call dft(yy,nn,D,1)
+
+  ! normalization
+  call make_lmask(nn,D,eL,lmask)
+  Ag = lmask * (lx**2*xx + lx*ly*xy + ly**2*yy) / ( D(1)**2*D(2)**2 * 4 )
+  Ac = lmask * (ly**2*xx - lx*ly*xy + lx**2*yy) / ( D(1)**2*D(2)**2 * 4 )
+  
+  deallocate(lx,ly,lmask)
+  deallocate(A0,Axx0,Axy0,Ayy0,Bx0,By0,A1,Axx1,Axy1,Ayy1,Bx1,By1,xx,xy,yy)
+
+end subroutine n0ttc
+
 subroutine qte(nx,ny,D,rL,OT,OE,TE,eL,Ag,Ac)
 !*  Normalization of the TE quadratic estimator for CMB lensing potential and its curl mode
 !*

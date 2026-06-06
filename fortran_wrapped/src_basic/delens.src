@@ -15,10 +15,8 @@ subroutine lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,CB,gtype)
 !*
 !*  Args:
 !*    :lmax (int)     : Maximum multipole of output spectrum
-!*    :elmin (int)    : Minimum multipole of E
-!*    :elmax (int)    : Maximum multipole of E
-!*    :klmin (int)    : Minimum multipole of lensing mass
-!*    :klmax (int)    : Maximum multipole of lensing mass
+!*    :elmin/elmax (int) : Minimum/Maximum multipole of E-modes
+!*    :klmin/klmax (int) : Minimum/Maximum multipole of lensing potential or kappa
 !*    :CE[l] (double) : Power spectrum of E-mode, with bounds (0:dlmax)
 !*    :Cp[l] (double) : Power spectrum of lensing pontential, with bounds (0:dlmax)
 !*    :WE[l] (double) : Wiener filter of E-mode, with bounds (0:dlmax)

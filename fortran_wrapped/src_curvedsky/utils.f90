@@ -259,6 +259,64 @@ subroutine gaussalm(n,lmax,cl,alm,ilm)
 
 end subroutine gaussalm
 
+subroutine subpatch_mask(npix_full,nside_sub,ipix_sub,mask,ascale)
+!*  Calculate a mask for a patched map.
+!*
+!*  Args:
+!*    :nside_full (int): Nside of full map
+!*    :nside_sub (int) : Nside of a patch map
+!*    :ipix_sub (int)  : Healpix pixel index of a patch map
+!*    :ascale (dble)   : apodization scale (nothing, 1) to (full, 0)
+!*
+!*  Returns:
+!*    :mask [pix] (double) : mask map with bounds (0:npix-1,2)
+!*
+  implicit none
+  !f2py intent(in) npix_full, nside_sub, ipix_sub, ascale
+  !f2py intent(out) mask
+  !f2py depend(npix_full) mask
+  !I/O
+  integer, intent(in) :: npix_full, nside_sub, ipix_sub
+  double precision, intent(in)  :: ascale
+  double precision, intent(out), dimension(0:npix_full-1) :: mask
+  !internal
+  integer :: i, j, nside_full
+  double precision :: theta, phi, theta_cent, phi_cent, dtheta, win_out
+  !chargs :: npix_full -> nside_full
+  !add2py :: npix_full = 12*nside_full**2
+
+  nside_full   = int(sqrt(npix_full/12d0))
+
+  mask = 0d0
+
+  do i = 0, npix_full-1
+
+    !identify patch
+    call pix2ang_ring(nside_full, i, theta, phi)
+    call ang2pix_ring(nside_sub, theta, phi, j)
+
+    if (j==ipix_sub) then
+
+      mask(i) = 1d0
+      !center coordinate of the patch
+      call pix2ang_ring(nside_sub, ipix_sub, theta_cent, phi_cent)
+
+      !compute distance from edge of the patch
+      dtheta = dacos(dcos(theta)*dcos(theta_cent) &
+        + dsin(theta)*dcos(phi)*dsin(theta_cent)*dcos(phi_cent)  &
+        + dsin(theta)*dsin(phi)*dsin(theta_cent)*dsin(phi_cent) )
+
+      !compute value of apodized window at this pixel
+      call get_apod_window( dtheta, ascale, win_out)
+      mask(i) = win_out
+
+    end if
+
+  end do
+
+
+end subroutine subpatch_mask
+
 subroutine get_baseline(npix,nside_subpatch,QU,blmap)
 !*  Calculate baseline of each subpatch. The subpatches have the same size.
 !*  Written by Ryo Nagata.

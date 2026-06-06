@@ -4,7 +4,7 @@ Installation Guide
 Requirements
 ------------
 
-The package depends on Fortran Libraries, FFTW, HEALPix, cfitsio and LensPix. 
+The package depends on Fortran Libraries, FFTW, HEALPix, cfitsio and LAPACK. 
 Source code for those is included with this package. You also need F2py and a fortran compiler to compile Fortran sources.
 Note that the F90 sources are written assuming the intel Fortran compiler. 
 
@@ -20,18 +20,16 @@ Install
 
     module load intel
 
-    export LD_LIBRARY_PATH=${path-to-cmblensplus}/F90/pub/Healpix/lib/:${path-to-cmblensplus}/F90/pub/cfitsio/:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=${path-to-cmblensplus}/fortran_internal/src_public/Healpix/lib/:${path-to-cmblensplus}/fortran_internal/src_public/cfitsio/lib/:$LD_LIBRARY_PATH
     
-    export PYTHONPATH=${path-to-cmblensplus}/utils/:${path-to-cmblensplus}/wrap/:$PYTHONPATH
+    export PYTHONPATH=${path-to-cmblensplus}/utils/:${path-to-cmblensplus}/:$PYTHONPATH
 
 
-2) ./install.sh all 
+2) python setup.py build
 
-The install.sh script automatically install the public codes (FFTW, cfitsio, Healpix, Lenspix, and Lapack) at F90/pub/, and then the local sources at F90/. 
+This automatically install the public codes (FFTW, cfitsio, Healpix, and Lapack), and then the local sources. 
 Then the script produces python modules using f2py. 
-The python modules can be found in wrap/ for python 3.
-(wrap_py2 for python 2 is no longer supported)
-
+The python modules can be found in cmblensplus/.
 
 
 Tips
@@ -43,7 +41,7 @@ Tips
 
 - Segmentation fault after installing everything
 
-  Some Healpix subroutine has a problem. One quick solution is to set "ulimit -s unlimited"
+  Some Healpix subroutine causes a problem of stack memory size. One quick solution is to set "ulimit -s unlimited"
 
 
 
