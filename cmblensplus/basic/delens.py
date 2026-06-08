@@ -1,4 +1,4 @@
-from cmblensplus import libbasic
+from . import libbasic
 import numpy
 
 def lintemplate(lmax,elmin,elmax,klmin,klmax,CE,Cm,WE,Wm,gtype='p'):

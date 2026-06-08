@@ -1,4 +1,4 @@
-from cmblensplus import libflatsky
+from . import libflatsky
 import numpy
 
 def qtt(nx,ny,D,rL,T1,T2):

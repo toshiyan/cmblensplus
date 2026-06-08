@@ -1,4 +1,4 @@
-import libflatsky
+from . import libflatsky
 
 def dft1d(map0,nx,ny,npix,D,trans,map1):
   """

@@ -1,5 +1,7 @@
-from cmblensplus import libcurvedsky
+
 import numpy
+from ._core import qe_lens
+
 
 def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,gtype='',verbose=False):
   """
@@ -22,7 +24,7 @@ def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential) alm, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t,gtype,verbose)
+  return qe_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t,gtype,verbose)
 
 def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t=0,gtype='',verbose=False):
   """
@@ -45,7 +47,7 @@ def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t,gtype,verbose)
+  return rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t,gtype,verbose)
 
 def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t=0,gtype='',verbose=False):
   """
@@ -68,7 +70,7 @@ def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t,gtype,verbose)
+  return rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t,gtype,verbose)
 
 def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t=0,gtype='',verbose=False):
   """
@@ -91,7 +93,7 @@ def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t,gtype,verbose)
+  return rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t,gtype,verbose)
 
 def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t=0,gtype='',verbose=False):
   """
@@ -114,7 +116,7 @@ def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t,gtype,verbose)
+  return rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t,gtype,verbose)
 
 def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t=0,gtype='',verbose=False):
   """
@@ -137,5 +139,5 @@ def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t,gtype,verbose)
+  return rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t,gtype,verbose)
 

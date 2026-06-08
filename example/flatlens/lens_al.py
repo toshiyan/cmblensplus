@@ -3,21 +3,7 @@
 import numpy as np
 import cmb
 import binning as bins
-import cmblensplus
-import cmblensplus.flatsky as cflat
-
 from cmblensplus import flatsky, basic
-
-import sys, os
-print("Python executable:")
-print(sys.executable)
-print("\nPYTHONPATH:")
-print(os.environ.get("PYTHONPATH"))
-print("\ncmblensplus loaded from:")
-print(cmblensplus.__file__)
-print(flatsky.__file__)
-print(cflat.__file__)
-
 
 Tcmb = 2.726e6    # CMB temperature
 lmax = 3000       # maximum multipole of output normalization
@@ -38,14 +24,14 @@ iee[2:] = 1./lcl[1,2:]
 ibb[2:] = 1./lcl[2,2:]
 
 # binned multipoles
-mb = bins.multipole_binning(100,lmin=oL[0],lmax=oL[1])
+mb = bins.multipole_binning(bn,lmin=oL[0],lmax=oL[1])
 
 # multipoles on grids
 lx, ly, el, il = flatsky.utils.elarrays(nx,ny,D)
 kl = el*(el+1.)/2.
 
 # assign 1d cl on 2d grind
-cltt = flatsky.utils.cl2c2d(nx,ny,D,2,lmax,lcl[0,:],'linear')
+cltt = flatsky.utils.cl2c2d(nx,ny,D,2,lmax,lcl[0,:])
 clee = flatsky.utils.cl2c2d(nx,ny,D,2,lmax,lcl[1,:])
 clte = flatsky.utils.cl2c2d(nx,ny,D,2,lmax,lcl[3,:])
 iltt = flatsky.utils.cl2c2d(nx,ny,D,2,lmax,itt)

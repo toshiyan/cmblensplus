@@ -44,8 +44,8 @@ flatsky_f2py_wrappers = custom_target(
   'flatsky_f2py_wrappers',
   input: flatsky_generated_f90,
   output: [
-    'flatskymodule.c',
-    'flatsky-f2pywrappers2.f90',
+    flatsky_module_name + 'module.c',
+    flatsky_module_name + '-f2pywrappers2.f90',
   ],
   command: [
     py,

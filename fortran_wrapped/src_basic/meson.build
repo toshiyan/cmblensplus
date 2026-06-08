@@ -44,8 +44,8 @@ basic_f2py_wrappers = custom_target(
   'basic_f2py_wrappers',
   input: basic_generated_f90,
   output: [
-    'basicmodule.c',
-    'basic-f2pywrappers2.f90',
+    basic_module_name + 'module.c',
+    basic_module_name + '-f2pywrappers2.f90',
   ],
   command: [
     py,

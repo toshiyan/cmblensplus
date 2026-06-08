@@ -163,7 +163,10 @@ py.install_sources(
   subdir: 'cmblensplus',
 )
 
+subdir('cmblensplus/basic')
 subdir('cmblensplus/curvedsky')
+subdir('cmblensplus/flatsky')
+
 
 # ---------------------------------------------------------------------------
 # f2py extension modules
@@ -189,4 +192,5 @@ subdir('cmblensplus/curvedsky')
 
 subdir('fortran_wrapped/src_basic')
 subdir('fortran_wrapped/src_flatsky')
+
 
