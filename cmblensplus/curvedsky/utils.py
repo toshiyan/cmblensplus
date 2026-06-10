@@ -1,5 +1,6 @@
-from cmblensplus import libcurvedsky
-import numpy
+from ._core import sht_ducc0 as sht
+from . import libcurvedsky
+import numpy as np
 
 def gauss1alm(cl,lmin=2):
   """
@@ -36,9 +37,9 @@ def gauss2alm(cl1,cl2,xl,lmin=2,flm=None):
     :alm [2,l,m] (dcmplx): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
 
   """
-  if flm is None: flm = numpy.zeros((lmax+1,lmax+1),dtype=numpy.complex128)
+  if flm is None: flm = np.zeros((lmax+1,lmax+1),dtype=np.complex128)
   lmax = len(cl1) - 1
-  if numpy.any(xl[lmin:]**2/cl1[lmin:]/cl2[lmin:]>1): raise SystemExit('ERROR in "gauss2alm": correlation coefficient is larger than 1')
+  if np.any(xl[lmin:]**2/cl1[lmin:]/cl2[lmin:]>1): raise SystemExit('ERROR in "gauss2alm": correlation coefficient is larger than 1')
   return libcurvedsky.utils.gauss2alm(lmax,cl1,cl2,xl,lmin,flm)
 
 def gaussTEB(TT,EE,BB,TE,lmin=2):
@@ -59,10 +60,10 @@ def gaussTEB(TT,EE,BB,TE,lmin=2):
 
   """
   lmax = len(TT) - 1
-  if numpy.any(TT[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": TT[lmin:] should be positive')
-  if numpy.any(EE[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": EE[lmin:] should be positive')
-  if numpy.any(BB[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": BB[lmin:] should be positive')
-  if numpy.any(TE[2:]**2/TT[2:]/EE[2:]>1): raise SystemExit('ERROR in "gaussTEB": correlation coefficient is larger than 1')
+  if np.any(TT[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": TT[lmin:] should be positive')
+  if np.any(EE[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": EE[lmin:] should be positive')
+  if np.any(BB[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": BB[lmin:] should be positive')
+  if np.any(TE[2:]**2/TT[2:]/EE[2:]>1): raise SystemExit('ERROR in "gaussTEB": correlation coefficient is larger than 1')
   return libcurvedsky.utils.gaussteb(lmax,TT,EE,BB,TE,lmin)
 
 def gaussalm(cl,n=None,lmax=None,ilm=None):
@@ -98,8 +99,8 @@ def subpatch_mask(nside_full,nside_sub,ipix_sub,ascale):
     :mask [pix] (double): mask map with bounds (0:npix-1,2)
 
   """
-  npix_full = 12*nside_full**2
-  return libcurvedsky.utils.subpatch_mask(npix_full,nside_sub,ipix_sub,ascale)
+  #npix_full = 12*nside_full**2
+  #return lib_utils.subpatch_mask(npix_full,nside_sub,ipix_sub,ascale)
 
 def get_baseline(npix,nside_subpatch,QU):
   """
@@ -115,7 +116,7 @@ def get_baseline(npix,nside_subpatch,QU):
     :blmap [pix,2] (double): baseline maps, with bounds (0:npix-1,2)
 
   """
-  return libcurvedsky.utils.get_baseline(npix,nside_subpatch,QU)
+  #return lib_utils.get_baseline(npix,nside_subpatch,QU)
 
 def get_winmap(nside_large,nside_small,ipix_pix,apod):
   """
@@ -132,7 +133,7 @@ def get_winmap(nside_large,nside_small,ipix_pix,apod):
     :wind_out (double): aporization window at ipix_pix
 
   """
-  return libcurvedsky.utils.get_winmap(nside_large,nside_small,ipix_pix,apod)
+  #return lib_utils.get_winmap(nside_large,nside_small,ipix_pix,apod)
 
 def get_apod_window(s,a):
   """
@@ -146,7 +147,7 @@ def get_apod_window(s,a):
     :w (double): Aporization window
 
   """
-  return libcurvedsky.utils.get_apod_window(s,a)
+  #return lib_utils.get_apod_window(s,a)
 
 def eb_separate(lmax,W,Q,U):
   """
@@ -161,8 +162,8 @@ def eb_separate(lmax,W,Q,U):
     :Elm/Blm[l,m] (dcmplx): Seperated E/B modes, with bounds (0:lmax,0:lmax)
 
   """
-  npix = len(W)
-  return libcurvedsky.utils.eb_separate(npix,lmax,W,Q,U)
+  #npix = len(W)
+  #return sht.eb_separate(npix,lmax,W,Q,U)
 
 def alm2cl(alm1,alm2=None):
   """
@@ -248,10 +249,10 @@ def apodize(rmask,ascale,order=1,holeminsize=0):
     :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
 
   """
-  npix = len(rmask)
-  return libcurvedsky.utils.apodize(npix,rmask,ascale,order,holeminsize)
+  #npix = len(rmask)
+  #return lib_utils.apodize(npix,rmask,ascale,order,holeminsize)
 
-def hp_alm2map(nside,alm):
+def hp_alm2map(nside,alm,nthreads=16):
   """
   Ylm transform of the map to alm with the healpix (l,m) order
 
@@ -263,12 +264,9 @@ def hp_alm2map(nside,alm):
     :map [pix] (double): Transformed map, with bounds (0:npix-1)
 
   """
-  lmax = len(alm[:,0]) - 1
-  mmax = len(alm[0,:]) - 1
-  npix = 12*nside**2
-  return libcurvedsky.utils.hp_alm2map(npix,lmax,mmax,alm)
+  return sht.alm2map(nside,alm,nthreads=nthreads)
 
-def hp_alm2map_spin(nside,spin,elm,blm):
+def hp_alm2map_spin(nside,spin,elm,blm,nthreads=16):
   """
   Ylm transform of the map to alm with the healpix (l,m) order
 
@@ -283,12 +281,9 @@ def hp_alm2map_spin(nside,spin,elm,blm):
     :map1 [pix] (double): Imaginary part of the transformed map (U-like map), with bounds (0:npix-1)
 
   """
-  lmax = len(elm[:,0]) - 1
-  mmax = len(elm[0,:]) - 1
-  npix = 12*nside**2
-  return libcurvedsky.utils.hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm)
+  return sht.alm2map_spin(nside,spin,np.asarray([elm,blm]),nthreads=nthreads)
 
-def hp_map2alm(lmax,mmax,map):
+def hp_map2alm(lmax,mmax,map,nthreads=16):
   """
   Ylm transform of the map to alm with the healpix (l,m) order
 
@@ -301,10 +296,9 @@ def hp_map2alm(lmax,mmax,map):
     :alm [l,m] (dcmplx): Harmonic coefficient obtained from the input map, with bounds (0:lmax,0:mmax)
 
   """
-  npix = len(map)
-  return libcurvedsky.utils.hp_map2alm(npix,lmax,mmax,map)
+  return sht.map2alm(lmax,mmax,map,nthreads=nthreads)
 
-def hp_map2alm_spin(lmax,mmax,spin,map0,map1):
+def hp_map2alm_spin(lmax,mmax,spin,map0,map1,nthreads=16):
   """
   Spin Ylm transform of the map ( = map0 + i map1 ) to alm with the healpix (l,m) order. For example, if map0=Q, map1=U and spin=2, 
   the alm contains E-mode and B-mode. 
@@ -320,8 +314,7 @@ def hp_map2alm_spin(lmax,mmax,spin,map0,map1):
     :alm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the input map, with bounds (2,0:lmax,0:mmax)
 
   """
-  npix = len(map0)
-  return libcurvedsky.utils.hp_map2alm_spin(npix,lmax,mmax,spin,map0,map1)
+  return sht.map2alm_spin(lmax,mmax,spin,np.asarray([map0,map1]),nthreads=nthreads)
 
 def map_mul_lfunc(imap,lfunc):
   """
@@ -335,63 +328,90 @@ def map_mul_lfunc(imap,lfunc):
     :omap [pix] (double): Output map, with bounds (0:12*nside**2-1)
 
   """
-  lmax = len(lfunc) - 1
-  npix = len(imap)
-  return libcurvedsky.utils.map_mul_lfunc(npix,imap,lmax,lfunc)
+  #lmax = len(lfunc) - 1
+  #npix = len(imap)
+  #return lib_utils.map_mul_lfunc(npix,imap,lmax,lfunc)
 
-def mulwin(alm,win):
-  """
-  Multiply window to a map obtained from alm
+def mulwin(alm,win,nthreads=0):
+    """
+    Multiply window to a map obtained from alm
 
-  Args:
-    :alm [l,m] (dcmplx): Harmonic coefficient to be multiplied at window, with bounds (0:lmax,0:mmax)
-    :win [pix] (double): Transformed map, with bounds (0:npix-1)
+    Args:
+        :alm [l,m] (dcmplx): Harmonic coefficient to be multiplied at window, with bounds (0:lmax,0:mmax)
+        :win [pix] (double): Window map, with bounds (0:npix-1)
 
-  Returns:
-    :wlm [l,m] (dcmplx): Harmonic coefficient of the window-multiplied map, with bounds (0:lmax,0:mmax)
+    Returns:
+        :wlm [l,m] (dcmplx): Harmonic coefficient of the window-multiplied map, with bounds (0:lmax,0:mmax)
 
-  """
-  npix = len(win)
-  lmax = len(alm[:,0]) - 1
-  mmax = len(alm[0,:]) - 1
-  return libcurvedsky.utils.mulwin(npix,lmax,mmax,alm,win)
+    """
+    
+    nside = int(np.sqrt(len(win) / 12))
+    lmax  = len(alm[:,0]) - 1
+    mmax  = len(alm[0,:]) - 1
 
-def mulwin_spin(elm,blm,win,spin=2):
-  """
-  Multiply window to a map obtained from alm
+    map_in = sht.alm2map(nside, alm, nthreads=nthreads)
+    map_w  = win * map_in
+    
+    return sht.map2alm(lmax, lmax, map_w, nthreads=nthreads)
 
-  Args:
-    :elm [l,m] (dcmplx): Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
-    :blm [l,m] (dcmplx): Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
-    :win [pix] (double): Transformed map, with bounds (0:npix-1)
 
-  Args (Optional):
-    :spin (int): Spin of the transform, default to 2
+def mulwin_spin(alm,win,spin=2,nthreads=0):
+    """
+    Multiply window to a map obtained from alm
 
-  Returns:
-    :wlm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the window-multiplied map, with bounds (2,0:lmax,0:mmax)
+    Args:
+        :alm [2,l,m] (dcmplx): Spin-s E/B-like harmonic coefficients to be transformed to a map, with bounds (2,0:lmax,0:mmax)
+        :win [pix] (double):   Window map, with bounds (0:npix-1)
 
-  """
-  npix = len(win)
-  lmax = len(elm[:,0]) - 1
-  mmax = len(elm[0,:]) - 1
-  return libcurvedsky.utils.mulwin_spin(npix,lmax,mmax,spin,elm,blm,win)
+    Args (Optional):
+        :spin (int): Spin of the transform, default to 2
+
+    Returns:
+        :wlm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the window-multiplied map, with bounds (2,0:lmax,0:mmax)
+
+    """
+  
+    nside = int(np.sqrt(len(win) / 12))
+    lmax  = len(alm[0,:,0]) - 1
+    mmax  = len(alm[0,0,:]) - 1
+
+    map_in = sht.alm2map_spin(nside, spin, alm, nthreads=nthreads)
+    map_w  = win * map_in
+    
+    return sht.map2alm_spin(lmax, lmax, spin, map_w, nthreads=nthreads)
+
 
 def lm_healpy2healpix(almpy):
-  """
-  Transform healpy alm to healpix alm
+    """
+    Transform healpy alm to healpix alm
 
-  Args:
-    :lmax (int): Maximum multipole of the input/output alm satisfying 2 x lmpy = (lmax+1) x (lmax+2)
-    :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
+    Args:
+        :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
 
-  Returns:
-    :almpix [l,m] (dcmplx): Healpix alm, with bounds (0:lmax,0:lmax)
+    Returns:
+        :almpix [l,m] (dcmplx): Healpix alm, with bounds (0:lmax,0:lmax)
 
-  """
-  lmpy = len(almpy)
-  lmax = int((-3.+numpy.sqrt(1.+8.*lmpy))/2.)
-  return libcurvedsky.utils.lm_healpy2healpix(lmpy,almpy,lmax)
+    """
+    lmpy = len(almpy)
+    lmax = int((-3.+np.sqrt(1.+8.*lmpy))/2.)
+    return libcurvedsky.utils.lm_healpy2healpix(lmpy,almpy,lmax)
+
+
+def lm_healpix2healpy(almpix):
+    """
+    Transform healpy alm to healpix alm
+
+    Args:
+        :almpix [l,m] (dcmplx): Healpix alm, with bounds (0:lmax,0:lmax)
+
+    Returns:
+        :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
+
+    """
+    lmpy = int((lmax+1)*(lmax+2)/2.)
+    lmax = len(alm[:,0]) - 1
+    return libcurvedsky.utils.lm_healpy2healpix(lmax,almpix,lmpy)
+    
 
 def cosin_healpix(nside):
   """
@@ -404,8 +424,8 @@ def cosin_healpix(nside):
     :cosin[pix] (double): cosin(theta), with bounds (0:npix-1)
 
   """
-  npix = 12*nside**2
-  return libcurvedsky.utils.cosin_healpix(npix)
+  #npix = 12*nside**2
+  #return lib_utils.cosin_healpix(npix)
 
 def load_defangle_takahashi(fname,npix,verbose=False):
   """
@@ -442,7 +462,7 @@ def polcoord2angle(npix,theta,phi,verbose=False):
     :angle[pix,2] (double): deflection angle vector containing two components, with bounds (0:npix-1,1:2)
 
   """
-  return libcurvedsky.utils.polcoord2angle(npix,theta,phi,verbose)
+  #return lib_utils.polcoord2angle(npix,theta,phi,verbose)
 
 def polcoord2angle_alm(nside,lmax,theta,phi,verbose=False):
   """
@@ -462,7 +482,7 @@ def polcoord2angle_alm(nside,lmax,theta,phi,verbose=False):
     :clm[l,m] (dcmplx): curl mode, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.utils.polcoord2angle_alm(nside,lmax,theta,phi,verbose)
+  #return lib_utils.polcoord2angle_alm(nside,lmax,theta,phi,verbose)
 
 def calc_mfs(bn,nu,lmax,walm,nside=0):
   """
@@ -481,7 +501,7 @@ def calc_mfs(bn,nu,lmax,walm,nside=0):
     :V [bin,type] (double): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
 
   """
-  return libcurvedsky.utils.calc_mfs(bn,nu,lmax,walm,nside)
+  #return lib_utils.calc_mfs(bn,nu,lmax,walm,nside)
 
 def mock_galaxy_takahashi(fname,zn,ngz,zi,b0=1.0,btype='sqrtz',a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0):
   """

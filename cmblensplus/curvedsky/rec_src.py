@@ -1,7 +1,6 @@
-from cmblensplus import libcurvedsky
-import numpy
+from ._core import lib_rec_src
 
-def qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,nside_t=0,verbose=False):
+def qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,nside_t=0,verbose=False,nthreads=0):
   """
   Reconstructing point sources from the temperature quadratic estimator
 
@@ -19,5 +18,5 @@ def qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,nside_t=0,verbose=False):
     :slm [l,m] (dcmplx): Point-source alm, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_src.qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,nside_t,verbose)
+  return lib_rec_src.qtt(lmax,rlmin,rlmax,Tlm1,Tlm2,nside_t,verbose,nthreads=nthreads)
 

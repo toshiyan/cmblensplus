@@ -1,5 +1,4 @@
-from cmblensplus import libcurvedsky
-import numpy
+from ._core import lib_rec_iamp
 
 def qeb(lmax,rlmin,rlmax,EB,Elm,Blm,nside_t=0,verbose=False):
   """
@@ -20,5 +19,5 @@ def qeb(lmax,rlmin,rlmax,EB,Elm,Blm,nside_t=0,verbose=False):
     :alm [l,m] (dcmplx): Reconstructed alm, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_iamp.qeb(lmax,rlmin,rlmax,EB,Elm,Blm,nside_t,verbose)
+  return lib_rec_iamp.qeb(lmax,rlmin,rlmax,EB,Elm,Blm,nside_t,verbose)
 

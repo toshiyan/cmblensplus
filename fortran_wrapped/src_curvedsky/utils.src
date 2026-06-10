@@ -1,0 +1,605 @@
+!////////////////////////////////////////////////////!
+! Utils for curvedsky analysis
+!////////////////////////////////////////////////////!
+
+module utils
+  !from F90/src_utils
+  use random,    only: InitRandom, poisson, gaussian1
+  use constants, only: pi, iu
+  use general,   only: str, matrix_diag_tri
+  use pstool,    only: binned_ells, power_binning
+  use utilsgal,  only: nz_SF_scal, pz_SF_scal, gbias
+  implicit none
+
+  private initrandom, gaussian1, poisson
+  private pi, iu
+  private str, matrix_diag_tri
+  private binned_ells, power_binning
+  private nz_SF_scal, pz_SF_scal, gbias
+
+contains
+
+
+subroutine gauss1alm(lmax,cl,alm,lmin)
+!*  Generating alm as a random Gaussian field whose power spectrum is cl. The output alm is given by a 2D array.
+!*
+!*  Args:
+!*    :cl [l] (double) : Angular power spectrum, with bounds (0:lmax)
+!*
+!*  Args(optional):
+!*    :lmin (int)      : Minimum multipole of output alm (default: 2)
+!*
+!*  Returns:
+!*    :alm [l,m] (dcmplx) : Random Gaussian alm, with bounds (0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, lmin
+  double precision, intent(in), dimension(0:lmax) :: cl
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: alm
+  !internal
+  integer :: l, m
+  !rmargs :: lmax
+  !opt4py :: lmin = 2
+  !add2py :: lmax = len(cl) - 1
+  !add2py :: if cl[lmin] <= 0: raise SystemExit('ERROR in "gauss1alm": cl[lmin] should be positive')
+  
+  call initrandom(-1)
+
+  alm = 0
+  do l = lmin, lmax
+    alm(l,0) = gaussian1()* dsqrt(cl(l))
+    do m = 1, l
+      alm(l,m) = cmplx(gaussian1(),gaussian1())*dsqrt(cl(l)/2d0)
+    end do 
+  end do
+
+end subroutine gauss1alm
+
+
+subroutine gauss2alm(lmax,cl1,cl2,xl,alm,lmin,flm)
+!*  Generating two alms as random Gaussian fields whose power spectra are cl1, cl2 and the cross spectrum is xl.
+!*
+!*  Args:
+!*    :cl1 [l] (double) : Angular power spectrum of the 1st alm, with bounds (0:lmax)
+!*    :cl2 [l] (double) : Angular power spectrum of the 2nd alm, with bounds (0:lmax)
+!*    :xl [l] (double)  : Cross-power spectrum between alm1 and alm2, with bounds (0:lmax)
+!*
+!*  Args(optional):
+!*    :lmin (int)         : Minimum multipole of output alm (default: 2)
+!*    :flm [l,m] (dcmplx) : Constrained realiation of alms whose power spectrum is cl1
+!*
+!*  Returns:
+!*    :alm [2,l,m] (dcmplx): Random Gaussian alms, with bounds (2,0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, lmin
+  double precision, intent(in), dimension(0:lmax) :: cl1, cl2, xl
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: flm
+  double complex, intent(out), dimension(2,0:lmax,0:lmax) :: alm
+  !internal
+  integer :: l, m
+  double precision :: tamp, corr, xamp
+  double complex, allocatable :: talm(:,:)
+  !rmargs :: lmax
+  !opt4py :: lmin = 2
+  !opt4py :: flm = None
+  !add2py :: if flm is None: flm = numpy.zeros((lmax+1,lmax+1),dtype=numpy.complex128)
+  !add2py :: lmax = len(cl1) - 1
+  !add2py :: if numpy.any(xl[lmin:]**2/cl1[lmin:]/cl2[lmin:]>1): raise SystemExit('ERROR in "gauss2alm": correlation coefficient is larger than 1')
+
+  !initialize
+  alm = 0
+
+  if (sum(abs(flm)) == 0d0) then
+    !generate alm from cl1
+    allocate(talm(0:lmax,0:lmax))
+    call gauss1alm(lmax,cl1,talm,lmin)
+    alm(1,:,:) = talm
+    deallocate(talm)
+  else
+    alm(1,:,:) = flm
+  end if
+
+  !generate correlated alm
+  call initrandom(-1)
+  do l = lmin, lmax
+    if (cl1(l)<=0d0) then
+        write(*,*) 'error (gauss2alm): negative input cl1'
+        stop
+    end if
+    corr = xl(l)/cl1(l)
+    if (cl2(l)<corr*xl(l)) then
+        write(*,*) 'error (gauss2alm): correlation coefficient > 1 at specific multipole'
+        stop
+    end if
+    xamp = sqrt(cl2(l) - corr*xl(l))
+    !m=0
+    alm(2,l,0) = corr*alm(1,l,0) + Gaussian1()*xamp
+    !m/=0
+    do m = 1, l
+      alm(2,l,m) = corr*alm(1,l,m) + cmplx(Gaussian1(),Gaussian1())*xamp/sqrt(2d0)
+    end do
+  end do
+
+end subroutine gauss2alm
+
+
+subroutine gaussTEB(lmax,TT,EE,BB,TE,alm,lmin)
+!*  Generating T/E/B alms as random Gaussian fields whose power spectra are TT, EE, BB and the cross spectrum is TE.
+!*
+!*  Args:
+!*    :TT [l] (double) : Angular power spectrum of temperature, with bounds (0:lmax)
+!*    :EE [l] (double) : Angular power spectrum of E mode, with bounds (0:lmax)
+!*    :BB [l] (double) : Angular power spectrum of B mode, with bounds (0:lmax)
+!*    :TE [l] (double) : TE cross-power spectrum, with bounds (0:lmax)
+!*
+!*  Args(optional):
+!*    :lmin (int)      : Minimum multipole of output alm (default: 2)
+!*
+!*  Returns:
+!*    :alm [3,l,m] (dcmplx): Random Gaussian T/E/B alms, with bounds (3,0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, lmin
+  double precision, intent(in), dimension(0:lmax) :: TT, EE, BB, TE
+  double complex, intent(out), dimension(3,0:lmax,0:lmax) :: alm
+  !internal
+  double complex, allocatable, dimension(:,:) :: almb
+  double complex, allocatable, dimension(:,:,:) :: almte
+  !rmargs :: lmax
+  !opt4py :: lmin = 2
+  !add2py :: lmax = len(TT) - 1
+  !add2py :: if numpy.any(TT[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": TT[lmin:] should be positive')
+  !add2py :: if numpy.any(EE[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": EE[lmin:] should be positive')
+  !add2py :: if numpy.any(BB[lmin:]<=0): raise SystemExit('ERROR in "gaussTEB": BB[lmin:] should be positive')
+  !add2py :: if numpy.any(TE[2:]**2/TT[2:]/EE[2:]>1): raise SystemExit('ERROR in "gaussTEB": correlation coefficient is larger than 1')
+  
+  allocate(almte(2,0:lmax,0:lmax),almb(0:lmax,0:lmax))
+  almb = 0d0
+  call gauss2alm(lmax,TT,EE,TE,almte,lmin,almb)
+  alm(1:2,:,:) = almte
+  deallocate(almte)
+  
+  call gauss1alm(lmax,BB,almb,2) !lmin=2 for polarization
+  alm(3,:,:) = almb
+  deallocate(almb)
+
+end subroutine gaussTEB
+
+
+subroutine gaussalm(n,lmax,cl,alm,ilm)
+!*  Generating alms as random Gaussian fields whose covariance is given by cl[i,j].
+!*
+!*  Args:
+!*    :cl [i,j,l] (double) : Covariance between the gaussian fields, with bounds (n,n,0:lmax)
+!*
+!*  Args(optional):
+!*    :ilm [l,m] (dcmplx)  : Input alm for the cl[0,0] element (default to None). The other alms are generated to be correlated with ilm. 
+!*
+!*  Returns:
+!*    :alm [i,l,m] (dcmplx): Random Gaussian alms, with bounds (n,0:lmax,0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: n, lmax
+  double precision, intent(in), dimension(n,n,0:lmax) :: cl
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: ilm
+  double complex, intent(out), dimension(n,0:lmax,0:lmax) :: alm
+  !integer
+  integer :: l, m, i
+  double precision :: prod, sumilm
+  double precision, dimension(n,n) :: A
+  double complex, dimension(n) :: g
+  !rmargs :: n, lmax
+  !opt4py :: n = None
+  !opt4py :: lmax = None
+  !opt4py :: ilm = None
+  !add2py :: if n is None:    n    = len(cl[:,0,0])
+  !add2py :: if lmax is None: lmax = len(cl[0,0,:]) - 1
+  !add2py :: if ilm is None:  ilm  = [[0 for x in range(lmax+1)] for y in range(lmax+1)] 
+
+  alm = 0d0
+  call initrandom(-1)
+
+  sumilm = sum(ilm)
+
+  do l = 1, lmax
+
+    ! check diagonal
+    prod = 1d0
+    do i = 1, n
+      prod = prod * cl(i,i,l)
+    end do
+    if (prod==0d0) cycle
+
+    call matrix_diag_tri(n,cl(:,:,l),A)
+
+    do i = 1, n
+      g(i) = Gaussian1()
+      if (sumilm/=0 .and. i==1 .and. A(1,1)/=0d0)  g(1) = ilm(l,0)/A(1,1) ! replace to ilm
+      alm(i,l,0) = sum(g(1:i)*A(i,1:i))
+    end do
+
+    do m = 1, l
+
+      do i = 1, n
+        g(i) = cmplx(Gaussian1(),Gaussian1())/dsqrt(2d0)
+        if (sumilm/=0 .and. i==1 .and. A(1,1)/=0d0)  g(1) = ilm(l,m)/A(1,1) ! replace to ilm
+        alm(i,l,m) = sum(g(1:i)*A(i,1:i))
+      end do
+
+    end do
+  end do
+
+end subroutine gaussalm
+
+
+subroutine get_apod_window(s,a,w)
+!*  A sine apodization window
+!*
+!*  Args:
+!*    :s (double) : Distance from the center of the window
+!*    :a (double) : Apodization length, nothing (a=1) to all (a=0)
+!*
+!*  Returns:
+!*    :w (double) : Aporization window
+!*
+  implicit none
+  !I/O
+  double precision, intent(in) :: s, a
+  double precision, intent(out) :: w
+  !internal
+  double precision :: s_in,s_out,s0
+
+  s_out = 1d0
+  s_in  = s_out*a
+  if ( s < s_in  ) then 
+    w=1d0
+  else if ( s > s_out ) then
+    w=0d0
+  else
+    w=(s_out-s)/(s_out-s_in)-dsin(2d0*pi*(s_out-s)/(s_out-s_in))/2d0/pi
+  end if
+
+end subroutine get_apod_window
+
+
+subroutine alm2cl(lmax,cl,alm1,alm2)
+!*  From alm to angular power spectrum
+!*
+!*  Args:
+!*    :alm1 [l,m] (dcmplx)  : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Args(optional):
+!*    :alm2 [l,m] (dcmplx)  : 2nd harmonic coefficient, with bounds (0:lmax,0:lmax), default to alm1
+!*
+!*  Returns:
+!*    :cl [l] (double) : Auto or cross angular power spectrum, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
+  double precision, intent(out), dimension(0:lmax) :: cl
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm2
+  !intenral
+  integer :: l
+  !rmargs :: lmax
+  !opt4py :: alm2 = None
+  !add2py :: lmax = len(alm1[:,0]) - 1
+  !add2py :: if alm2 is None:  alm2 = alm1
+
+  cl = 0d0
+  do l = 1, lmax
+    cl(l) = ( dble(alm1(l,0)*alm2(l,0)) + 2.*sum(alm1(l,1:l)*conjg(alm2(l,1:l))))/(2.*l+1.)
+  end do
+
+end subroutine alm2cl
+
+
+subroutine alm2bcl(bn,lmax,cb,alm1,alm2,spc)
+!*  From alm to angular power spectrum with multipole binning
+!*
+!*  Args:
+!*    :bn (int)             : Number of multipole bins
+!*    :alm1 [l,m] (dcmplx)  : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Args(optional):
+!*    :alm2 [l,m] (dcmplx)  : 2nd harmonic coefficient, with bounds (0:lmax,0:lmax), default to alm1
+!*    :spc (str) : Specify bin spacing, '' = linear (default), 'log' = log spacing, 'log10' = log10 spacing, 'p2' = power of 2 spacing, 'p3' = power of 3 spacing
+!*
+!*  Returns:
+!*    :cb [bin] (double) : Auto or cross angular power spectrum with multipole binning, with bounds (0:bn-1)
+!*
+  implicit none
+  integer, intent(in) :: bn, lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
+  double precision, intent(out), dimension(bn) :: cb
+  character(4), intent(in) :: spc
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm2
+  !internal
+  integer :: npix, eL(2)
+  double precision, allocatable :: Cl(:), bp(:)
+  !rmargs :: lmax
+  !opt4py :: spc = ''
+  !opt4py :: alm2 = None
+  !add2py :: lmax = len(alm1[:,0]) - 1
+  !add2py :: if alm2 is None:  alm2 = alm1
+
+  eL = (/1,lmax/)
+
+  allocate(cl(0:lmax))
+  call alm2cl(lmax,cl,alm1,alm2)
+
+  allocate(bp(bn+1))
+  call binned_ells(eL,bp,spc=spc)
+  call power_binning(bp,eL,cl(1:lmax),Cb)
+  deallocate(bp,Cl)
+
+end subroutine alm2bcl
+
+
+subroutine alm2rho(lmax,rho,alm1,alm2)
+!*  Compute correlation coefficients between two alms
+!*
+!*  Args:
+!*    :alm1 [l,m] (dcmplx)  : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*    :alm2 [l,m] (dcmplx)  : 2nd harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :rho [l] (double) : Auto or cross angular power spectrum, with bounds (0:lmax)
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm1
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: alm2
+  double precision, intent(out), dimension(0:lmax) :: rho
+  !intenral
+  integer :: l
+  double precision :: cl(3,0:lmax)
+  !rmargs :: lmax
+  !add2py :: lmax = len(alm1[:,0]) - 1
+
+  call alm2cl(lmax,cl(1,:),alm1,alm1)
+  call alm2cl(lmax,cl(2,:),alm2,alm2)
+  call alm2cl(lmax,cl(3,:),alm1,alm2)
+  
+  rho = 0d0
+  do l = 0, lmax
+    if (cl(1,l)*cl(2,l)==0d0)  cycle
+    rho(l) = cl(3,l)**2/(cl(1,l)*cl(2,l))
+  end do
+
+end subroutine alm2rho
+
+
+subroutine alm2cov(n,lmax,cov,alm)
+!*  Compute correlation coefficients between two alms
+!*
+!*  Args:
+!*    :alm [n,l,m] (dcmplx) : 1st harmonic coefficient, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :cov [n,n,l] (double) : Auto and cross angular power spectra between alm[i] and alm[j]
+!*
+  implicit none
+  !I/O
+  integer, intent(in) :: lmax, n
+  double complex, intent(in), dimension(n,0:lmax,0:lmax) :: alm
+  double precision, intent(out), dimension(n,n,0:lmax) :: cov
+  !intenral
+  integer :: i1, i2
+  !rmargs :: n, lmax
+  !add2py :: n = len(alm[:,0,0])
+  !add2py :: lmax = len(alm[0,:,0]) - 1
+
+  do i1 = 1, n
+    do i2 = i1, n
+      call alm2cl(lmax,cov(i1,i2,:),alm(i1,:,:),alm(i2,:,:))
+      cov(i2,i1,:) = cov(i1,i2,:)
+    end do
+  end do
+
+end subroutine alm2cov
+
+
+subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
+!*  Transform healpy alm to healpix alm
+!*
+!*  Args:
+!*    :lmax (int)           : Maximum multipole of the input/output alm satisfying 2 x lmpy = (lmax+1) x (lmax+2)
+!*    :almpy[index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
+!*
+!*  Returns:
+!*    :almpix [l,m] (dcmplx): Healpix alm, with bounds (0:lmax,0:lmax)
+!*
+  implicit none
+  integer, intent(in) :: lmpy, lmax
+  double complex, intent(in), dimension(0:lmpy-1) :: almpy
+  double complex, intent(out), dimension(0:lmax,0:lmax) :: almpix
+  integer :: l, m, i
+  !rmargs :: lmpy, lmax
+  !add2py :: lmpy = len(almpy)
+  !add2py :: lmax = int((-3.+numpy.sqrt(1.+8.*lmpy))/2.)
+
+  !i = m*(lmax+1) - m(m-1)/2 + (l-m)
+  almpix = 0d0
+  if (2*lmpy/=(lmax+1)*(lmax+2)) stop 'error (lm_healpy2healpix): size of almpy is inconsistent with that of almpix'
+  do m = 0, lmax
+    do l = m, lmax
+      i = m*lmax - int(m*(m-1d0)/2d0) + l
+      almpix(l,m) = almpy(i)
+    end do
+  end do
+
+end subroutine lm_healpy2healpix
+
+
+subroutine lm_healpix2healpy(lmax,almpix,lmpy,almpy)
+!*  Transform healpix alm to healpy alm
+!*
+!*  Args:
+!*    :lmax (int)            : Maximum multipole of the input/output alm satisfying 2 x lmpy = (lmax+1) x (lmax+2)
+!*    :almpix[l,m] (dcmplx)  : Healpix alm, with bounds (0:lmax,0:lmax)
+!*
+!*  Returns:
+!*    :almpy [index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
+!*
+  implicit none
+  integer, intent(in) :: lmpy, lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: almpix
+  double complex, intent(out), dimension(0:lmpy-1) :: almpy
+  integer :: l, m, i
+
+  almpy = 0d0
+  do m = 0, lmax
+    do l = m, lmax
+      i = m*lmax - int(m*(m-1d0)/2d0) + l
+      almpy(i) = almpix(l,m)
+    end do
+  end do
+
+end subroutine lm_healpix2healpy
+
+
+subroutine load_defangle_takahashi(fname,npix,theta,phi,verbose)
+!*  Read theta and phi coordinates at source plane obtained by Takahashi et al. (2017)
+!*
+!*  Args:
+!*    :fname (str) : file name
+!*    :npix (int) : Number of pixels of theta and phi data
+!*
+!*  Args (optional):
+!*    :verbose (bool) : output messages, default to False
+!*
+!*  Returns:
+!*    :theta[pix] (double) : theta, with bounds (0:npix-1)
+!*    :phi[pix] (double)   : phi, with bounds (0:npix-1)
+!*
+  implicit none
+  character(*), intent(in) :: fname
+  integer, intent(in) :: npix
+  logical, intent(in) :: verbose
+  double precision, intent(out), dimension(0:npix-1) :: theta, phi
+  !internal
+  integer :: nside, rnpix, n
+  !opt4py :: verbose = False
+
+  if (verbose) write(*,*) 'read deflection map'
+  
+  open(12,file=fname,status='old',form='unformatted')
+  read(12) nside, rnpix
+  
+  if (verbose) write(*,*) nside, rnpix
+  if (npix/=rnpix) stop 'input npix is inconsistent with data file'
+
+  if (verbose) write(*,*) 'read data'
+  
+  read(12) (theta(n),n=0,npix-1)
+  read(12) (phi(n),n=0,npix-1)
+  
+  close(12)
+
+end subroutine load_defangle_takahashi
+
+
+subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
+!*  Compute galaxy overdensity map from dark matter density map of Takahashi et al. (2017). 
+!*  The galaxy z distribution is assumed to have the functional form given by Eq.(7) of https://arxiv.org/abs/1810.03346
+!*
+!*  Args:
+!*    :fname (str)         : Filename of density map
+!*    :zn (int)            : Number of tomographic bins
+!*    :ngz[zn] (double)    : Total number of galaxies at each z-bin
+!*    :zi[zn+1] (double)   : Redshift intervals of the tomographic bins
+!*
+!*  Args(optional): 
+!*    :a (double)          : galaxy distribution shape parameter
+!*    :b (double)          : galaxy distribution shape parameter
+!*    :zm (double)         : mean redshift of galaxy distribution
+!*    :b0 (double)         : constant galaxy bias at z=0
+!*
+!*  Returns:
+!*    :gmap [pix,zbin] (double): The galaxy number density map at each zbin
+!*
+  implicit none
+  character(*), intent(in) :: fname, btype
+  integer, intent(in) :: zn
+  double precision, intent(in), dimension(1:zn) :: ngz
+  double precision, intent(in), dimension(1:zn+1) :: zi
+  double precision, intent(in) :: b0, a, b, zm, sz, zbias
+  double precision, intent(out), dimension(0:201326591,zn) :: gmap
+  !internal
+  integer :: npix, nside, kplane, ngal
+  integer :: ipix, i, j, k
+  real(4) :: zk
+  real(4), allocatable :: deltam(:)
+  double precision :: z(42), dn(42), omegam, norm, mu, mu_mean
+  !opt4py :: a = 2.0
+  !opt4py :: b = 1.0
+  !opt4py :: zm = 1.0
+  !opt4py :: sz = 0.0
+  !opt4py :: zbias = 0.0
+  !opt4py :: b0 = 1.0
+  !opt4py :: btype = 'sqrtz'
+ 
+  ! simulation parameters
+  nside  = 4096
+  npix   = 12*nside**2
+  omegam = 0.279d0
+
+  dn     = 0d0
+  gmap   = 0d0
+
+  do j = 1, zn
+
+      write(*,*) 'zi =', j
+
+      ! normalization
+      open(12,file=fname,status='old',form='unformatted')
+      do k = 1, 42
+        read(12) kplane, zk !index of lens plane and redshift
+        z(k)  = zk
+        if (z(k)<6d0) dn(k) = 5.004d-2*dsqrt(omegam*(1d0+z(k))**3+(1d0-omegam))*nz_SF_scal(z(k),a,b,zm)*pz_SF_scal(z(k),zi(j:j+1),sz,zbias)
+      end do
+      norm = ngz(j)/sum(dn)
+
+      allocate(deltam(0:npix-1))
+
+      do k = 1, 42
+
+        write(*,*) k
+        read(12) kplane
+        read(12) deltam(0:npix-1) ! delta^m at the lens plane
+
+        if (z(k)>=6d0) cycle
+
+        mu_mean = norm*dn(k)/dble(npix) ! mean number density of galaxies at kth plane
+
+        do ipix = 0, npix-1
+          mu = mu_mean * ( 1d0 + b0*gbias(z(k),btype)*deltam(ipix) )
+          if (mu>0.) then
+            call poisson(mu,ngal)
+          else
+            ngal = 0
+          end if
+          gmap(ipix,j) = gmap(ipix,j) + real(ngal)
+        end do
+
+      end do
+
+      close(12)
+
+      deallocate(deltam)
+
+  end do
+
+end subroutine mock_galaxy_takahashi
+
+
+end module utils
+

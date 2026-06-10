@@ -1,9 +1,8 @@
 
-import numpy
-from ._core import qe_lens
+from ._core import lib_rec_lens
 
 
-def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,gtype='',verbose=False):
+def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,gtype='',verbose=False,nthreads=0):
   """
   Reconstructing CMB lensing potential and its curl mode from the temperature quadratic estimator
 
@@ -24,9 +23,9 @@ def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential) alm, with bounds (0:lmax,0:lmax)
 
   """
-  return qe_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t,gtype,verbose)
+  return lib_rec_lens.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t,gtype,verbose,nthreads=nthreads)
 
-def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t=0,gtype='',verbose=False):
+def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t=0,gtype='',verbose=False,nthreads=0):
   """
   Reconstructing CMB lensing potential and its curl mode from the TE quadratic estimator
 
@@ -47,9 +46,9 @@ def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t,gtype,verbose)
+  return lib_rec_lens.qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t,gtype,verbose,nthreads=nthreads)
 
-def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t=0,gtype='',verbose=False):
+def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t=0,gtype='',verbose=False,nthreads=0):
   """
   Reconstructing CMB lensing potential and its curl mode from the TB quadratic estimator
 
@@ -70,9 +69,9 @@ def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t,gtype,verbose)
+  return lib_rec_lens.qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t,gtype,verbose,nthreads=nthreads)
 
-def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t=0,gtype='',verbose=False):
+def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t=0,gtype='',verbose=False,nthreads=0):
   """
   Reconstructing CMB lensing potential and its curl mode from the EE quadratic estimator
 
@@ -93,9 +92,9 @@ def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t,gtype,verbose)
+  return lib_rec_lens.qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t,gtype,verbose,nthreads=nthreads)
 
-def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t=0,gtype='',verbose=False):
+def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t=0,gtype='',verbose=False,nthreads=0):
   """
   Reconstructing CMB lensing potential and its curl mode from the EB quadratic estimator
 
@@ -116,9 +115,9 @@ def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t,gtype,verbose)
+  return lib_rec_lens.qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t,gtype,verbose,nthreads=nthreads)
 
-def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t=0,gtype='',verbose=False):
+def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t=0,gtype='',verbose=False,nthreads=0):
   """
   Reconstructing CMB lensing potential and its curl mode from the BB quadratic estimator
 
@@ -139,5 +138,5 @@ def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t=0,gtype='',verbose=False):
     :clm [l,m] (dcmplx): Curl mode (pseudo lensing potential), with bounds (0:lmax,0:lmax)
 
   """
-  return rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t,gtype,verbose)
+  return lib_rec_lens.qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t,gtype,verbose,nthreads=nthreads)
 

@@ -1,7 +1,6 @@
-from cmblensplus import libcurvedsky
-import numpy
+from ._core import lib_rec_tau
 
-def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,verbose=False):
+def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,verbose=False,nthreads=0):
   """
   Reconstructing inhomogeneous tau from the temperature quadratic estimator
 
@@ -20,9 +19,9 @@ def qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t=0,verbose=False):
     :alm [l,m] (dcmplx): Amplitude modulation alm, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_tau.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t,verbose)
+  return lib_rec_tau.qtt(lmax,rlmin,rlmax,fC,Tlm1,Tlm2,nside_t,verbose,nthreads=nthreads)
 
-def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t=0,verbose=False):
+def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t=0,verbose=False,nthreads=0):
   """
   Reconstructing amplitude modulation from the EB quadratic estimator
 
@@ -41,5 +40,5 @@ def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t=0,verbose=False):
     :alm [l,m] (dcmplx): Amplitude modulation alm, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_tau.qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t,verbose)
+  return lib_rec_tau.qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t,verbose,nthreads=nthreads)
 

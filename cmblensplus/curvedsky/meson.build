@@ -27,3 +27,21 @@ py.install_sources(
   # Install destination inside the Python package.
   subdir: 'cmblensplus/curvedsky',
 )
+
+
+# Install private pure-Python backend modules replacing libcurvedsky.
+py.install_sources(
+  '_core/__init__.py',
+  '_core/lib_bispec.py',
+  '_core/lib_cninv.py',
+  '_core/lib_delens.py',
+  '_core/lib_rec_iamp.py',
+  '_core/lib_rec_ilens.py',
+  '_core/lib_rec_lens.py',
+  '_core/lib_rec_rot.py',
+  '_core/lib_rec_src.py',
+  '_core/lib_rec_tau.py',
+  '_core/lib_utils.py',
+  '_core/sht_ducc0.py',
+  subdir: 'cmblensplus/curvedsky/_core',
+)

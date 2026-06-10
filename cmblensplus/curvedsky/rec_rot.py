@@ -1,7 +1,7 @@
-from cmblensplus import libcurvedsky
+from ._core import lib_rec_rot
 import numpy
 
-def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t=0,verbose=False):
+def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t=0,verbose=False,nthreads=0):
   """
   Reconstructing pol rotation angle from the EB quadratic estimator
 
@@ -20,5 +20,5 @@ def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t=0,verbose=False):
     :alm [l,m] (dcmplx): Rotation angle alm, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.rec_rot.qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t,verbose)
+  return lib_rec_rot.qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t,verbose,nthreads=nthreads)
 

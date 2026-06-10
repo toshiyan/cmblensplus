@@ -1,7 +1,7 @@
-from cmblensplus import libcurvedsky
 import numpy
+from ._core import lib_bispec
 
-def make_quad_gauss(alm):
+def make_quad_gauss(alm,bst=1):
   """
   Return a non-Gaussian alm. The corresponding non-Gaussian field is defined as
 
@@ -16,8 +16,7 @@ def make_quad_gauss(alm):
     :qlm [l,m] (dcmplx): Output harmonic coefficients of the non-Gaussian fields, with bounds (0:lmax,0:lmax).
 
   """
-  lmax = len(alm[:,0]) - 1
-  return libcurvedsky.bispec.make_quad_gauss(lmax,alm)
+  return lib_bispec.make_quad_gauss(alm,bst=bst)
 
 def bispec_norm(bp,bstype='equi',bst=2,sL=None):
   """
@@ -37,7 +36,7 @@ def bispec_norm(bp,bstype='equi',bst=2,sL=None):
   """
   if sL is None: sL = numpy.zeros(2)
   bn = len(bp) - 1
-  return libcurvedsky.bispec.bispec_norm(bn,bp,bstype,bst,sL)
+  return lib_bispec.bispec_norm(bn,bp,bstype,bst,sL)
 
 def bispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
   """
@@ -59,7 +58,7 @@ def bispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
   if sL is None: sL = numpy.zeros(2)
   bn = len(bp) - 1
   lmax = len(alm[:,0]) - 1
-  return libcurvedsky.bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
+  return lib_bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
 
 def xbispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
   """
@@ -82,5 +81,5 @@ def xbispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
   bn = len(bp) - 1
   n = len(alm[:,0,0])
   lmax = len(alm[0,:,0]) - 1
-  return libcurvedsky.bispec.xbispec_bin(bn,bp,lmax,n,alm,bstype,bst,sL)
+  return lib_bispec.xbispec_bin(bn,bp,lmax,n,alm,bstype,bst,sL)
 

@@ -82,22 +82,7 @@ fftw_pkg_cflags = run_command(
 # ---------------------------------------------------------------------------
 # Legacy internal Fortran libraries
 # ---------------------------------------------------------------------------
-#
-# The old build system builds internal Fortran libraries with Makefiles:
-#
-#   fortran_internal/src_utils -> libutils.a + constants.mod, general.mod, ...
-#   fortran_internal/src_dft   -> libdft.a   + fftw.mod, dft-related modules
-#
-# The dft library depends on modules produced by utils, e.g. constants.mod.
-# Therefore the build order must be:
-#
-#   libutils.a first
-#   libdft.a second
-#   f2py extension modules last
-#
-# Meson formally tracks the copied build-tree .a files as custom_target outputs.
-# The .mod files are side effects installed into fortran_internal/mod by the
-# legacy Makefiles.
+
 
 fortran_internal_lib_dir = project_root / 'fortran_internal' / 'lib'
 
@@ -171,26 +156,9 @@ subdir('cmblensplus/flatsky')
 # ---------------------------------------------------------------------------
 # f2py extension modules
 # ---------------------------------------------------------------------------
-#
-# These subdirectories use the variables defined above:
-#
-#   py
-#   f2pysig
-#   numpy_dep
-#   numpy_f2py_src
-#   inc_fortran_internal
-#   utils_lib_target
-#   utils_lib_path
-#   dft_lib_target
-#   dft_lib_path
-#   fftw_dep
-#
-# In particular:
-#
-#   src_basic   should depend on utils_lib_target.
-#   src_flatsky should depend on both utils_lib_target and dft_lib_target.
 
 subdir('fortran_wrapped/src_basic')
 subdir('fortran_wrapped/src_flatsky')
+subdir('fortran_wrapped/src_curvedsky')
 
 
