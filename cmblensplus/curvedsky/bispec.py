@@ -18,7 +18,7 @@ def make_quad_gauss(alm,bst=1):
   """
   return lib_bispec.make_quad_gauss(alm,bst=bst)
 
-def bispec_norm(bp,bstype='equi',bst=2,sL=None):
+def bispec_norm(bp,bstype='equi',bst=2,sL=None,nthreads=0):
   """
   Return normalization of the binned reduced bispectrum for a given multipole bin
 
@@ -34,11 +34,9 @@ def bispec_norm(bp,bstype='equi',bst=2,sL=None):
     :norm [bin] (double): Normalization of the binned reduced bispectrum at each bin, with bounds (bn)
 
   """
-  if sL is None: sL = numpy.zeros(2)
-  bn = len(bp) - 1
-  return lib_bispec.bispec_norm(bn,bp,bstype,bst,sL)
+  return lib_bispec.bispec_norm(bp,bstype=bstype,bst=bst,sL=sL,nthreads=nthreads)
 
-def bispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
+def bispec_bin(bp,alm,bstype='equi',bst=2,sL=None,nthreads=0):
   """
   Return the unnormalized binned reduced bispectrum for a given multipole bin
 
@@ -55,12 +53,9 @@ def bispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
     :bis [bin] (double): The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
 
   """
-  if sL is None: sL = numpy.zeros(2)
-  bn = len(bp) - 1
-  lmax = len(alm[:,0]) - 1
-  return lib_bispec.bispec_bin(bn,bp,lmax,alm,bstype,bst,sL)
+  return lib_bispec.bispec_bin(bp,alm,bstype,bst,sL,nthreads=nthreads)
 
-def xbispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
+def xbispec_bin(bp,alm,bstype='equi',bst=2,sL=None,nthreads=0):
   """
   Return the unnormalized binned reduced cross-bispectrum for a given multipole bin
 
@@ -77,9 +72,5 @@ def xbispec_bin(bp,alm,bstype='equi',bst=2,sL=None):
     :bis [bin] (double): The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
 
   """
-  if sL is None: sL = numpy.zeros(2)
-  bn = len(bp) - 1
-  n = len(alm[:,0,0])
-  lmax = len(alm[0,:,0]) - 1
-  return lib_bispec.xbispec_bin(bn,bp,lmax,n,alm,bstype,bst,sL)
+  return lib_bispec.xbispec_bin(bp,alm,bstype,bst,sL,nthreads=nthreads)
 

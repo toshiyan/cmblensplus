@@ -5,6 +5,10 @@ from .sht_ducc0 import alm2map, map2alm
 PI = np.pi
 
 
+#////////////////////////////////////////////////////////////////////////////////#
+# Internal functions
+#////////////////////////////////////////////////////////////////////////////////#
+
 def _default_bin_pair(bp: np.ndarray):
     return np.asarray(bp[:2], dtype=np.int64)
 
@@ -65,6 +69,10 @@ def _map_product_sum(kmap: np.ndarray, n: int) -> float:
     raise ValueError("n should satisfy 1 <= n <= 3")
 
 
+#////////////////////////////////////////////////////////////////////////////////#
+# Core function for bispectrum calculation
+#////////////////////////////////////////////////////////////////////////////////#
+
 def equi(lmin: int, lmax: int, alm: np.ndarray, bst: int = 2, nthreads: int = 0) -> float:
     """Equilateral shape, b[l,l,l], for a single alm."""
     nside = _nside_from_lmax(lmax, bst)
@@ -76,11 +84,7 @@ def fold(lmin: int, lmax: int, alm: np.ndarray, bst: int = 2, nthreads: int = 0)
     """Folded shape, b[l,l/2,l/2], for a single alm."""
     nside = _nside_from_lmax(lmax, bst)
     kmap1 = alm2map(nside, _filtered_alm(alm, lmin, lmax), nthreads=nthreads)
-    kmap2 = alm2map(
-        nside,
-        _filtered_alm(alm, max(2, int(lmin / 2.0)), int(lmax / 2.0), out_lmax=lmax),
-        nthreads=nthreads,
-    )
+    kmap2 = alm2map(nside, _filtered_alm(alm, max(2, int(lmin / 2.0)), int(lmax / 2.0), out_lmax=lmax), nthreads=nthreads)
     return float(np.sum(kmap1 * kmap2 ** 2) * (4.0 * PI) / kmap1.size)
 
 
@@ -184,6 +188,9 @@ def xisos(eL: np.ndarray, aL: np.ndarray, l1: int, alm: np.ndarray, bst: int = 2
     return _map_product_sum(kmaps, n) * (4.0 * PI) / kmaps.shape[1]
 
 
+#////////////////////////////////////////////////////////////////////////////////#
+# Interface of core bispectrum function
+#////////////////////////////////////////////////////////////////////////////////#
 
 def make_quad_gauss(alm, bst=1, nthreads=0):
     """

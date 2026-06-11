@@ -42,6 +42,7 @@ py.install_sources(
   '_core/lib_rec_src.py',
   '_core/lib_rec_tau.py',
   '_core/lib_utils.py',
+  '_core/cgd.py',
   '_core/sht_ducc0.py',
   subdir: 'cmblensplus/curvedsky/_core',
 )

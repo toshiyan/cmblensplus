@@ -1,10 +1,9 @@
 
-from __future__ import annotations
-
 import time
 import numpy as np
 import healpy as hp
-from .hp_cgd import ( MgCovmat, set_mgchain, clhalf, coarse_invmatrix, cg_algorithm, correct_filtering, matmul_rhs, )
+from .cgd import ( MgCovmat, set_mgchain, coarse_invmatrix, cg_algorithm, matmul_rhs, )
+from .. import libcurvedsky # wrapped fortran sources
 
 
 def _nside_from_npix(npix: int) -> int:
@@ -22,9 +21,7 @@ def ud_grade_invnoise(map_in: np.ndarray, nside_out: int, order_in: str = "RING"
     averaging.
     """
     return np.asarray(
-        hp.ud_grade(np.asarray(map_in, dtype=float), nside_out=nside_out,
-                    order_in=order_in, order_out=order_out, power=-2),
-        dtype=float,
+        hp.ud_grade(np.asarray(map_in, dtype=float), nside_out=nside_out, order_in=order_in, order_out=order_out, power=-2), dtype=float,
     )
 
 
@@ -81,9 +78,9 @@ def cnfilter_freq(cl: np.ndarray, bl: np.ndarray, iNcov: np.ndarray, maps: np.nd
     eps = _as_1d_param(eps, chn, 1e-6, float, "eps")
     itns = _as_1d_param(itns, chn, 1, int, "itns")
     if chn == 1:
-        ilmaxs = np.array([lmax], dtype=int)
+        ilmaxs  = np.array([lmax], dtype=int)
         insides = np.full((1, mn), _nside_from_npix(npix), dtype=int)
-        mnmaxs = np.array([mn], dtype=int)
+        mnmaxs  = np.array([mn], dtype=int)
     else:
         lmaxs = _as_1d_param(lmaxs, chn, 0, int, "lmaxs")
         nsides = _as_1d_param(nsides, chn, 0, int, "nsides")
@@ -96,7 +93,7 @@ def cnfilter_freq(cl: np.ndarray, bl: np.ndarray, iNcov: np.ndarray, maps: np.nd
         mnmaxs = np.full(chn, mn, dtype=int)
         mnmaxs[1:] = 1
 
-    clh = clhalf(cl, bl)
+    clh = libcurvedsky.utils.clhalf(cl, bl)
     mgc = set_mgchain("cmb", chn, mn, mnmaxs, ilmaxs, insides, itns, eps, verbose, ro)
 
     for mi in range(mn):
@@ -134,7 +131,7 @@ def cnfilter_freq(cl: np.ndarray, bl: np.ndarray, iNcov: np.ndarray, maps: np.nd
     xlm = cg_algorithm(n, lmax, b, mgc, 0)
     if stat or verbose:
         print("real time:", time.time() - t1)
-    return correct_filtering(cl, xlm, filter)
+    return libcurvedsky.utils.correct_filtering(cl, xlm, filter)
 
 
 def cnfilter_kappa(cov: np.ndarray, iNcov: np.ndarray, maps: np.ndarray,
@@ -157,10 +154,10 @@ def cnfilter_kappa(cov: np.ndarray, iNcov: np.ndarray, maps: np.ndarray,
     eps = _as_1d_param(eps, chn, 1e-6, float, "eps")
     itns = _as_1d_param(itns, chn, 1, int, "itns")
     if chn == 1:
-        ilmaxs = np.array([lmax], dtype=int)
+        ilmaxs  = np.array([lmax], dtype=int)
         insides = np.full((1, 1), _nside_from_npix(npix), dtype=int)
     else:
-        lmaxs = _as_1d_param(lmaxs, chn, 0, int, "lmaxs")
+        lmaxs  = _as_1d_param(lmaxs, chn, 0, int, "lmaxs")
         nsides = _as_1d_param(nsides, chn, 0, int, "nsides")
         if lmax != int(lmaxs[0]):
             raise ValueError(f"input lmax is wrong: {lmax},{lmaxs[0]}")
@@ -227,18 +224,18 @@ def cnfilter_freq_nside(cl: np.ndarray, bl0: np.ndarray, bl1: np.ndarray, iNcov0
         inl = np.asarray(inl, dtype=float)
 
     bl = np.concatenate([bl0, bl1], axis=0)
-    clh = clhalf(cl, bl)
+    clh = libcurvedsky.utils.clhalf(cl, bl)
 
-    eps = _as_1d_param(eps, chn, 1e-6, float, "eps")
-    itns = _as_1d_param(itns, chn, 1, int, "itns")
+    eps    = _as_1d_param(eps, chn, 1e-6, float, "eps")
+    itns   = _as_1d_param(itns, chn, 1, int, "itns")
     mnmaxs = np.full(chn, mn, dtype=int)
     if chn == 1:
-        ilmaxs = np.array([lmax], dtype=int)
+        ilmaxs  = np.array([lmax], dtype=int)
         insides = np.empty((1, mn), dtype=int)
         insides[0, :mn0] = _nside_from_npix(npix0)
         insides[0, mn0:] = _nside_from_npix(npix1)
     else:
-        lmaxs = _as_1d_param(lmaxs, chn, 0, int, "lmaxs")
+        lmaxs   = _as_1d_param(lmaxs, chn, 0, int, "lmaxs")
         nsides0 = _as_1d_param(nsides0, chn, 0, int, "nsides0")
         nsides1 = _as_1d_param(nsides1, chn, 0, int, "nsides1")
         if lmax != int(lmaxs[0]):
@@ -327,4 +324,4 @@ def cnfilter_freq_nside(cl: np.ndarray, bl0: np.ndarray, bl1: np.ndarray, iNcov0
     xlm = cg_algorithm(n, lmax, b, mgc, 0)
     if stat or verbose:
         print("real time:", time.time() - t1)
-    return correct_filtering(cl, xlm, filter)
+    return libcurvedsky.utils.correct_filtering(cl, xlm, filter)

@@ -1,9 +1,9 @@
 
-from __future__ import annotations
-from dataclasses import dataclass, field
 import numpy as np
+from dataclasses import dataclass, field
 from . import sht_ducc0 as sht
-from .lib_utils import trans_alm2array_1d
+from .. import libcurvedsky # wrapped fortran sources
+
 
 @dataclass
 class MgCovmat:
@@ -40,8 +40,7 @@ def set_mgchain(ytype: str, chn: int, mn: int, mnmaxs, lmaxs, nsides, itns, eps,
     eps = np.asarray(eps, dtype=float)
     if nsides.shape != (chn, mn):
         raise ValueError(f"nsides must have shape ({chn}, {mn}), got {nsides.shape}")
-    mgc = MgChain(ytype=ytype, n=chn, mnmax=mnmaxs, nside=nsides, lmax=lmaxs,
-                  itn=itns, eps=eps, verbose=verbose, ro=ro)
+    mgc = MgChain(ytype=ytype, n=chn, mnmax=mnmaxs, nside=nsides, lmax=lmaxs, itn=itns, eps=eps, verbose=verbose, ro=ro)
     mgc.npix = 12 * nsides**2
     mgc.lsp = int(lmaxs[-1])
     mgc.cv = [[MgCovmat() for _ in range(mn)] for _ in range(chn)]
@@ -57,106 +56,17 @@ def set_mgchain(ytype: str, chn: int, mn: int, mnmaxs, lmaxs, nsides, itns, eps,
     return mgc
 
 
-def clhalf(cl: np.ndarray, bl: np.ndarray) -> np.ndarray:
-    """Compute beam-convolved sqrt signal spectrum, clh[n,n,mn,l]."""
-    cl = np.asarray(cl, dtype=float)
-    bl = np.asarray(bl, dtype=float)
-
-    n, lmax1 = cl.shape
-    mn = bl.shape[0]
-
-    clh = np.zeros((n, n, mn, lmax1), dtype=float)
-
-    # sqrt_cl[n, l]
-    sqrt_cl = np.zeros_like(cl)
-    mask = cl > 0.0
-    sqrt_cl[mask] = np.sqrt(cl[mask])
-
-    # ell=0
-    sqrt_cl[:, 0] = 0.0
-
-    # diagonal
-    idx = np.arange(n)
-    clh[idx, idx, :, :] = sqrt_cl[:, None, :] * bl[None, :, :]
-
-    return clh
-
-
-def correct_filtering(cl: np.ndarray, xlm: np.ndarray, filter: str = "W") -> np.ndarray:
-    """Apply final C-inverse ('') or Wiener ('W') normalization."""
-    cl = np.asarray(cl, dtype=float)
-    out = np.asarray(xlm, dtype=np.complex128).copy()
-
-    n, lmax1 = cl.shape
-    ell_idx, m_idx = np.tril_indices(lmax1)
-
-    # ell>=1
-    use = ell_idx >= 1
-    ell_idx = ell_idx[use]
-    m_idx = m_idx[use]
-
-    factors = np.ones((n, len(ell_idx)), dtype=float)
-
-    selected_cl = cl[:, ell_idx]
-    invalid = selected_cl <= 0.0
-    valid = ~invalid
-
-    factors[invalid] = 0.0
-
-    if filter == "":
-        factors[valid] = 1.0 / np.sqrt(selected_cl[valid])
-    elif filter == "W":
-        factors[valid] = np.sqrt(selected_cl[valid])
-    else:
-        raise ValueError(f"unknown filter: {filter!r}")
-
-    out[:, ell_idx, m_idx] *= factors
-
-    return out
-
-
-def densemat_multi(r: np.ndarray, imat: np.ndarray, lmax: int | None = None) -> np.ndarray:
-    """Multiply a dense matrix by packed alm coefficients exactly."""
-    r = np.asarray(r, dtype=np.complex128)
-
-    n = r.shape[0]
-    if lmax is None:
-        lmax = r.shape[1] - 1
-
-    arr = trans_alm2array_1d_fast(r[:, : lmax + 1, : lmax + 1])
-    y = np.asarray(imat, dtype=np.complex128) @ arr
-
-    x = np.zeros_like(r)
-    x[:, : lmax + 1, : lmax + 1] = trans_array2alm_1d_fast(y, n, lmax)
-
-    return x
-
-
-def coarse_invmatrix(mgc: MgChain, n: int, lmax: int) -> None:
-    mn = int(mgc.mnmax[-1])
-    mgc.matn = n * (lmax + 1) * (lmax + 2) // 2
-    a0 = np.zeros((mgc.matn, mgc.matn), dtype=np.complex128)
-    i = 0
-    for ni in range(n):
-        for ell in range(lmax + 1):
-            for m in range(ell + 1):
-                x = np.zeros((n, lmax + 1, lmax + 1), dtype=np.complex128)
-                x[ni, ell, m] = 1.0
-                mx = matmul_lhs(mgc.ytype, n, mn, lmax, mgc.cv[-1][:mn], x)
-                col0 = trans_alm2array_1d(mx, mgc.matn)
-                if m != 0:
-                    x.fill(0.0)
-                    x[ni, ell, m] = 1j
-                    mx = matmul_lhs(mgc.ytype, n, mn, lmax, mgc.cv[-1][:mn], x)
-                    col1 = trans_alm2array_1d(mx, mgc.matn)
-                    col0 = (col0 + col1 / 1j) / 2.0
-                a0[:, i] = col0
-                i += 1
-    mgc.imat = np.linalg.inv(a0)
-
-
-def cg_algorithm(n: int, lmax: int, b: np.ndarray, mgc: MgChain, chain: int = 0, ratio: np.ndarray | None = None) -> np.ndarray:
-    """Conjugate-gradient solver for A x = b. chain is zero-based."""
+def cg_algorithm(
+    n: int, 
+    lmax: int, 
+    b: np.ndarray, 
+    mgc: MgChain, 
+    chain: int = 0, 
+    ratio: np.ndarray | None = None
+) -> np.ndarray:
+    """
+    Conjugate-gradient solver for A x = b. chain is zero-based.
+    """
     lmaxch = int(mgc.lmax[chain])
     if lmax != lmaxch:
         raise ValueError("lmax is inconsistent")
@@ -215,12 +125,15 @@ def cg_algorithm(n: int, lmax: int, b: np.ndarray, mgc: MgChain, chain: int = 0,
 
 
 def precondition(n: int, lmax: int, r: np.ndarray, mgc: MgChain, chain: int) -> np.ndarray:
+    """
+    Precondition matrix for conjugate-gradient decent
+    """
     if mgc.n == 1:
         return mgc.pmat[:, : lmax + 1, : lmax + 1] * r
     x = np.zeros_like(r)
     lmax0 = int(mgc.lmax[chain + 1])
     if chain + 1 == mgc.n - 1:
-        x[:, : lmax0 + 1, : lmax0 + 1] = densemat_multi(r[:, : lmax0 + 1, : lmax0 + 1], mgc.imat, lmax0)
+        x[:, : lmax0 + 1, : lmax0 + 1] = libcurvedsky.utils.densemat_multi(r[:, : lmax0 + 1, : lmax0 + 1], mgc.imat, lmax0)
     else:
         x[:, : lmax0 + 1, : lmax0 + 1] = cg_algorithm(n, lmax0, r[:, : lmax0 + 1, : lmax0 + 1], mgc, chain + 1)
     if lmax0 + 1 <= int(mgc.lmax[chain]):
@@ -346,3 +259,28 @@ def matmul_cov_alm(cov: np.ndarray, x: np.ndarray) -> np.ndarray:
     for ell in range(lmax1):
         out[:, ell, : ell + 1] = cov[:, :, ell] @ x[:, ell, : ell + 1]
     return out
+
+
+def coarse_invmatrix(mgc: MgChain, n: int, lmax: int) -> None:
+    mn = int(mgc.mnmax[-1])
+    mgc.matn = n * (lmax + 1) * (lmax + 2) // 2
+    a0 = np.zeros((mgc.matn, mgc.matn), dtype=np.complex128)
+    i = 0
+    for ni in range(n):
+        for ell in range(lmax + 1):
+            for m in range(ell + 1):
+                x = np.zeros((n, lmax + 1, lmax + 1), dtype=np.complex128)
+                x[ni, ell, m] = 1.0
+                mx = matmul_lhs(mgc.ytype, n, mn, lmax, mgc.cv[-1][:mn], x)
+                col0 = libcurvedsky.utils.trans_alm2array_1d(mx, mgc.matn)
+                if m != 0:
+                    x.fill(0.0)
+                    x[ni, ell, m] = 1j
+                    mx = matmul_lhs(mgc.ytype, n, mn, lmax, mgc.cv[-1][:mn], x)
+                    col1 = libcurvedsky.utils.trans_alm2array_1d(mx, mgc.matn)
+                    col0 = (col0 + col1 / 1j) / 2.0
+                a0[:, i] = col0
+                i += 1
+    mgc.imat = np.linalg.inv(a0)
+
+

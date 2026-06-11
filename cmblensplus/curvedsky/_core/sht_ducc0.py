@@ -1,6 +1,6 @@
 import numpy as np
 import ducc0
-from .. import libcurvedsky
+from .. import libcurvedsky # wrapped fortran sources
 
 
 def alm2map(nside: int, alm: Array, nthreads=0) -> Array:
@@ -91,3 +91,60 @@ def map2alm_spin(lmax: int, mmax: int, spin: int, map_in: Array, nthreads=0, max
     alm1 = libcurvedsky.utils.lm_healpy2healpix(lmpy,almpy[1],lmax)
 
     return np.asarray([alm0, alm1]) * 4*np.pi/(12*nside**2)
+
+
+
+def alm2map_der1(nside, alm, nthreads=0):
+    """
+      der[0] = d f / d theta
+      der[1] = derivative with respect to phi direction
+    """
+    # extract maximum multipole
+    lmax = len(alm[:,0]) - 1
+    mmax = len(alm[0,:]) - 1
+
+    # convert alm 2D array to alm 1D array
+    lmpy  = int((lmax+1)*(lmax+2)/2.)
+    almpy = libcurvedsky.utils.lm_healpix2healpy(lmax,alm,lmpy)
+
+    # preparation for SHT
+    alm_ducc = np.asarray(almpy, dtype=np.complex128).reshape(1, -1)
+
+    hb   = ducc0.healpix.Healpix_Base(nside, "RING")
+    info = hb.sht_info()
+    der  = ducc0.sht.synthesis_deriv1(alm=alm,lmax=lmax,mmax=mmax,nthreads=nthreads,**info)
+
+    return der[0], der[1]
+    
+
+def alm2map_der2(nside, alm):
+    """
+    Compute covariant Hessian components on the sphere from scalar alm.
+
+    Returns
+    -------
+    Htt, Htp, Hpp : ndarray
+        Covariant Hessian components in local orthonormal basis.
+    """
+    alm  = np.asarray(alm, dtype=np.complex128)
+    lmax = len(alm[:,0]) - 1
+    l    = np.arange(lmax + 1, dtype=np.float64)
+
+    # Trace part: Laplacian
+    lap_alm = -l*(l+1.) * alm
+    T = alm2map(nside,lap_alm)
+    
+    # Spin-2 trace-free part
+    n2 = np.sqrt( np.maximum( (l-1.)*l*(l+1.)*(l+2.), 0.) )
+    s2_alm_e = n2 * alm
+    s2_alm_b = np.zeros_like(s2_alm_e)
+    S2_re, S2_im = alm2map_spin(nside,2,np.array([s2_alm_e, s2_alm_b]))
+
+    D = S2_re
+    Htp = 0.5 * S2_im
+    Htt = 0.5 * (T + D)
+    Hpp = 0.5 * (T - D)
+
+    return Htt, Htp, Hpp
+
+

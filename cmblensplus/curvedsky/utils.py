@@ -2,6 +2,7 @@ from ._core import sht_ducc0 as sht
 from . import libcurvedsky
 import numpy as np
 
+
 def gauss1alm(cl,lmin=2):
   """
   Generating alm as a random Gaussian field whose power spectrum is cl. The output alm is given by a 2D array.
@@ -20,6 +21,7 @@ def gauss1alm(cl,lmin=2):
   if cl[lmin] <= 0: raise SystemExit('ERROR in "gauss1alm": cl[lmin] should be positive')
   return libcurvedsky.utils.gauss1alm(lmax,cl,lmin)
 
+    
 def gauss2alm(cl1,cl2,xl,lmin=2,flm=None):
   """
   Generating two alms as random Gaussian fields whose power spectra are cl1, cl2 and the cross spectrum is xl.
@@ -42,6 +44,7 @@ def gauss2alm(cl1,cl2,xl,lmin=2,flm=None):
   if np.any(xl[lmin:]**2/cl1[lmin:]/cl2[lmin:]>1): raise SystemExit('ERROR in "gauss2alm": correlation coefficient is larger than 1')
   return libcurvedsky.utils.gauss2alm(lmax,cl1,cl2,xl,lmin,flm)
 
+    
 def gaussTEB(TT,EE,BB,TE,lmin=2):
   """
   Generating T/E/B alms as random Gaussian fields whose power spectra are TT, EE, BB and the cross spectrum is TE.
@@ -86,84 +89,81 @@ def gaussalm(cl,n=None,lmax=None,ilm=None):
   return libcurvedsky.utils.gaussalm(n,lmax,cl,ilm)
 
 def subpatch_mask(nside_full,nside_sub,ipix_sub,ascale):
-  """
-  Calculate a mask for a patched map.
+    """
+    Calculate a mask for a patched map.
 
-  Args:
-    :nside_full (int): Nside of full map
-    :nside_sub (int): Nside of a patch map
-    :ipix_sub (int): Healpix pixel index of a patch map
-    :ascale (dble)   : apodization scale (nothing, 1) to (full, 0)
+    Args:
+        :nside_full (int): Nside of full map
+        :nside_sub (int): Nside of a patch map
+        :ipix_sub (int): Healpix pixel index of a patch map
+        :ascale (dble)   : apodization scale (nothing, 1) to (full, 0)
 
-  Returns:
-    :mask [pix] (double): mask map with bounds (0:npix-1,2)
+    Returns:
+        :mask [pix] (double): mask map with bounds (0:npix-1,2)
 
-  """
-  #npix_full = 12*nside_full**2
-  #return lib_utils.subpatch_mask(npix_full,nside_sub,ipix_sub,ascale)
+    """
+    return lib_utils.subpatch_mask(nside_full,nside_sub,ipix_sub,ascale)
+
 
 def get_baseline(npix,nside_subpatch,QU):
-  """
-  Calculate baseline of each subpatch. The subpatches have the same size.
-  Written by Ryo Nagata.
+    """
+    Calculate baseline of each subpatch. The subpatches have the same size.
 
-  Args:
-    :npix (int): pixel number of the full map
-    :nside_subpatch (int): Nside of sub patch
-    :QU [pix,2] (double): Q/U maps, with bounds (0:npix-1,2)
+    Args:
+        :npix (int): pixel number of the full map
+        :nside_subpatch (int): Nside of sub patch
+        :QU [pix,2] (double): Q/U maps, with bounds (0:npix-1,2)
 
-  Returns:
-    :blmap [pix,2] (double): baseline maps, with bounds (0:npix-1,2)
+    Returns:
+        :blmap [pix,2] (double): baseline maps, with bounds (0:npix-1,2)
 
-  """
-  #return lib_utils.get_baseline(npix,nside_subpatch,QU)
+    """
+    return lib_utils.get_baseline(npix,nside_subpatch,QU)
 
 def get_winmap(nside_large,nside_small,ipix_pix,apod):
-  """
-  Return apodization window for subpatch.
-  Written by Ryo Nagata.
+    """
+    Return apodization window for subpatch.
 
-  Args:
-    :nside_large (int): Nside of sub patch
-    :nside_small (int): full Nside
-    :ipix_pix (int): pixel index of full map
-    :apod (double): apodization length
+    Args:
+        :nside_large (int): Nside of sub patch
+        :nside_small (int): full Nside
+        :ipix_pix (int): pixel index of full map
+        :apod (double): apodization length
 
-  Returns:
-    :wind_out (double): aporization window at ipix_pix
+    Returns:
+        :wind_out (double): aporization window at ipix_pix
 
-  """
-  #return lib_utils.get_winmap(nside_large,nside_small,ipix_pix,apod)
+    """
+    return lib_utils.get_winmap(nside_large,nside_small,ipix_pix,apod)
 
 def get_apod_window(s,a):
-  """
-  A sine apodization window
+    """
+    A sine apodization window
 
-  Args:
-    :s (double): Distance from the center of the window
-    :a (double): Apodization length, nothing (a=1) to all (a=0)
+    Args:
+        :s (double): Distance from the center of the window
+        :a (double): Apodization length, nothing (a=1) to all (a=0)
 
-  Returns:
-    :w (double): Aporization window
+    Returns:
+        :w (double): Aporization window
 
-  """
-  #return lib_utils.get_apod_window(s,a)
+    """
+      return lib_utils.apod_window(s,a)
 
 def eb_separate(lmax,W,Q,U):
-  """
-  E/B mode seperation based on the chi-field estimator. See e.g. Sec.III.2 of arXiv:1305.7441 for numerical implimentation.
+    """
+    E/B mode seperation based on the chi-field estimator. See e.g. Sec.III.2 of arXiv:1305.7441 for numerical implimentation.
 
-  Args:
-    :lmax (int): Maximum multipole used for the harmonic transform internally
-    :W[pix] (double): Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1)
-    :Q/U[pix] (double): Input Q/U map already multiplied by W, with bounds (0:npix-1)
+    Args:
+        :lmax (int): Maximum multipole used for the harmonic transform internally
+        :W[pix] (double): Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1)
+        :Q/U[pix] (double): Input Q/U map already multiplied by W, with bounds (0:npix-1)
 
-  Returns:
-    :Elm/Blm[l,m] (dcmplx): Seperated E/B modes, with bounds (0:lmax,0:lmax)
+    Returns:
+        :Elm/Blm[l,m] (dcmplx): Seperated E/B modes, with bounds (0:lmax,0:lmax)
 
-  """
-  #npix = len(W)
-  #return sht.eb_separate(npix,lmax,W,Q,U)
+    """
+    return sht.eb_separate(lmax,W,Q,U)
 
 def alm2cl(alm1,alm2=None):
   """
@@ -234,25 +234,25 @@ def alm2cov(alm):
   return libcurvedsky.utils.alm2cov(n,lmax,alm)
 
 def apodize(rmask,ascale,order=1,holeminsize=0):
-  """
-  Compute apodized window function. Partially use Healpix's process_mask code.
+    """
+    Compute apodized window function. Partially use Healpix's process_mask code.
 
-  Args:
-    :rmask[pix] (double): Input window function, with bounds (0:pix-1). Pixels at rmask=0 is considered as masked pixels.
-    :ascale (double): Apodization length [deg] from the closest masked pixel
+    Args:
+        :rmask[pix] (double): Input window function, with bounds (0:pix-1). Pixels at rmask=0 is considered as masked pixels.
+        :ascale (double): Apodization length [deg] from the closest masked pixel
 
-  Args(optional):
-    :order (int): Pixel order, 1 for RING (default), otherwize NESTED
-    :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size is filled), default to 0
+    Args(optional):
+        :order (int): Pixel order, 1 for RING (default), otherwize NESTED
+        :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size is filled), default to 0
 
-  Returns:
-    :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
+    Returns:
+        :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
 
-  """
-  #npix = len(rmask)
-  #return lib_utils.apodize(npix,rmask,ascale,order,holeminsize)
+    """
+    return lib_utils.apodize(rmask,ascale,order,holeminsize)
 
-def hp_alm2map(nside,alm,nthreads=16):
+
+def hp_alm2map(nside,alm,nthreads=0):
   """
   Ylm transform of the map to alm with the healpix (l,m) order
 
@@ -266,7 +266,7 @@ def hp_alm2map(nside,alm,nthreads=16):
   """
   return sht.alm2map(nside,alm,nthreads=nthreads)
 
-def hp_alm2map_spin(nside,spin,elm,blm,nthreads=16):
+def hp_alm2map_spin(nside,spin,elm,blm,nthreads=0):
   """
   Ylm transform of the map to alm with the healpix (l,m) order
 
@@ -283,7 +283,7 @@ def hp_alm2map_spin(nside,spin,elm,blm,nthreads=16):
   """
   return sht.alm2map_spin(nside,spin,np.asarray([elm,blm]),nthreads=nthreads)
 
-def hp_map2alm(lmax,mmax,map,nthreads=16):
+def hp_map2alm(lmax,mmax,map,nthreads=0):
   """
   Ylm transform of the map to alm with the healpix (l,m) order
 
@@ -298,7 +298,7 @@ def hp_map2alm(lmax,mmax,map,nthreads=16):
   """
   return sht.map2alm(lmax,mmax,map,nthreads=nthreads)
 
-def hp_map2alm_spin(lmax,mmax,spin,map0,map1,nthreads=16):
+def hp_map2alm_spin(lmax,mmax,spin,map0,map1,nthreads=0):
   """
   Spin Ylm transform of the map ( = map0 + i map1 ) to alm with the healpix (l,m) order. For example, if map0=Q, map1=U and spin=2, 
   the alm contains E-mode and B-mode. 
@@ -317,20 +317,18 @@ def hp_map2alm_spin(lmax,mmax,spin,map0,map1,nthreads=16):
   return sht.map2alm_spin(lmax,mmax,spin,np.asarray([map0,map1]),nthreads=nthreads)
 
 def map_mul_lfunc(imap,lfunc):
-  """
-  Convert map to alm, multiply a function to alm and convert back again to map
+    """
+    Convert map to alm, multiply a function to alm and convert back again to map
 
-  Args:
-    :imap [pix] (double): Input map, with bounds (0:12*nside**2-1)
-    :lfunc [l] (double): 1D spectrum to be multiplied to alm, with bounds (0:lmax)
+    Args:
+        :imap [pix] (double): Input map, with bounds (0:12*nside**2-1)
+        :lfunc [l] (double): 1D spectrum to be multiplied to alm, with bounds (0:lmax)
 
-  Returns:
-    :omap [pix] (double): Output map, with bounds (0:12*nside**2-1)
+    Returns:
+        :omap [pix] (double): Output map, with bounds (0:12*nside**2-1)
 
-  """
-  #lmax = len(lfunc) - 1
-  #npix = len(imap)
-  #return lib_utils.map_mul_lfunc(npix,imap,lmax,lfunc)
+    """
+    return lib_utils.map_mul_lfunc(imap,lfunc)
 
 def mulwin(alm,win,nthreads=0):
     """
@@ -399,7 +397,7 @@ def lm_healpy2healpix(almpy):
 
 def lm_healpix2healpy(almpix):
     """
-    Transform healpy alm to healpix alm
+    Transform healpix alm to healpy alm
 
     Args:
         :almpix [l,m] (dcmplx): Healpix alm, with bounds (0:lmax,0:lmax)
@@ -414,115 +412,129 @@ def lm_healpix2healpy(almpix):
     
 
 def cosin_healpix(nside):
-  """
-  Return cos(theta) as a function of the Healpix pixel index
+    """
+    Return cos(theta) as a function of the Healpix pixel index
 
-  Args:
-    :nside (int): Nside of the desired map
+    Args:
+        :nside (int): Nside of the desired map
 
-  Returns:
-    :cosin[pix] (double): cosin(theta), with bounds (0:npix-1)
+    Returns:
+        :cosin[pix] (double): cosin(theta), with bounds (0:npix-1)
 
-  """
-  #npix = 12*nside**2
-  #return lib_utils.cosin_healpix(npix)
+    """
+    return lib_utils.cosin_healpix(nside)
+
+
+def calc_mfs(nu,walm,nside=0):
+    """
+    Compute 2D Minkowski functionals from a given alm
+
+    Args:
+        :nu [bin] (double): Nu bins, with bounds (bn)
+        :walm [l,m] (dcmplx): Alm with filtering, possibly divided by the map variance, with bounds (0:lmax,0:lmax)
+
+    Args(optional): 
+        :nside (int): Nside of the intermediate map, default to the closest power of 2 to 3xlmax
+
+    Returns:
+        :V [bin,type] (double): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
+
+    """
+    nu = np.asarray(nu, dtype=np.float64)
+
+    # Determine lmax and convert alm if needed
+    walm = np.asarray(walm)
+    lmax = walm.shape[0] - 1
+    if nside == 0:
+        nside_t = 2 ** int(np.log(float(3 * lmax)) / np.log(2.0))
+    else:
+        nside_t = int(nside)
+
+    der0 = sht.alm2map(nside_t, walm)
+    der1 = sht.alm2map_der1(nside_t, walm)
+    der2 = sht.alm2map_der2(nside_t, walm)
+
+    return lib_utils.calc_mfs_from_derivatives(nu, der0, der1, der2)
+
 
 def load_defangle_takahashi(fname,npix,verbose=False):
-  """
-  Read theta and phi coordinates at source plane obtained by Takahashi et al. (2017)
+    """
+    Read theta and phi coordinates at source plane obtained by Takahashi et al. (2017)
 
-  Args:
-    :fname (str): file name
-    :npix (int): Number of pixels of theta and phi data
+    Args:
+        :fname (str): file name
+        :npix (int): Number of pixels of theta and phi data
 
-  Args (optional):
-    :verbose (bool): output messages, default to False
+    Args (optional):
+        :verbose (bool): output messages, default to False
 
-  Returns:
-    :theta[pix] (double): theta, with bounds (0:npix-1)
-    :phi[pix] (double): phi, with bounds (0:npix-1)
+    Returns:
+        :theta[pix] (double): theta, with bounds (0:npix-1)
+        :phi[pix] (double): phi, with bounds (0:npix-1)
 
-  """
-  return libcurvedsky.utils.load_defangle_takahashi(fname,npix,verbose)
+    """
+      return libcurvedsky.utils.load_defangle_takahashi(fname,npix,verbose)
 
-def polcoord2angle(npix,theta,phi,verbose=False):
-  """
-  Converting theta and phi coordinates at source plane to deflection angle.
-  The algorithm is provided by Takashi Hamana and Ryuichi Takahashi.
 
-  Args:
-    :npix (int): Number of pixels of theta and phi data
-    :theta[pix] (double): theta, with bounds (0:npix-1)
-    :phi[pix] (double): phi, with bounds (0:npix-1)
+def polcoord2angle(theta,phi,verbose=False):
+    """
+    Converting theta and phi coordinates at source plane to deflection angle.
 
-  Args (optional):
-    :verbose (bool): output messages, default to False
+    Args:
+        :npix (int): Number of pixels of theta and phi data
+        :theta[pix] (double): theta, with bounds (0:npix-1)
+        :phi[pix] (double): phi, with bounds (0:npix-1)
 
-  Returns:
-    :angle[pix,2] (double): deflection angle vector containing two components, with bounds (0:npix-1,1:2)
+    Args (optional):
+        :verbose (bool): output messages, default to False
 
-  """
-  #return lib_utils.polcoord2angle(npix,theta,phi,verbose)
+    Returns:
+        :angle[2,pix] (double): deflection angle vector containing two components, with bounds (1:2,0:npix-1)
 
-def polcoord2angle_alm(nside,lmax,theta,phi,verbose=False):
-  """
-  Converting theta and phi coordinates at source plane to deflection angle.
+    """
+    return lib_utils.polcoord2angle(theta,phi,verbose~verbose)
 
-  Args:
-    :npix (int): Number of pixels of theta and phi data
-    :lmax (int): Maximum multipole of alms for gradient and curl modes
-    :theta[pix] (double): theta, with bounds (0:npix-1)
-    :phi[pix] (double): phi, with bounds (0:npix-1)
 
-  Args (optional):
-    :verbose (bool): output messages, default to False
+def polcoord2angle_alm(lmax,theta,phi,verbose=False):
+    """
+    Converting theta and phi coordinates at source plane to deflection angle.
 
-  Returns:
-    :glm[l,m] (dcmplx): gradient mode, with bounds (0:lmax,0:lmax)
-    :clm[l,m] (dcmplx): curl mode, with bounds (0:lmax,0:lmax)
+    Args:
+        :lmax (int): Maximum multipole of alms for gradient and curl modes
+        :theta[pix] (double): theta, with bounds (0:npix-1)
+        :phi[pix] (double): phi, with bounds (0:npix-1)
 
-  """
-  #return lib_utils.polcoord2angle_alm(nside,lmax,theta,phi,verbose)
+    Args (optional):
+        :verbose (bool): output messages, default to False
 
-def calc_mfs(bn,nu,lmax,walm,nside=0):
-  """
-  Compute 2D Minkowski functionals from a given alm
+    Returns:
+        :glm[l,m] (dcmplx): gradient mode, with bounds (0:lmax,0:lmax)
+        :clm[l,m] (dcmplx): curl mode, with bounds (0:lmax,0:lmax)
 
-  Args:
-    :bn (int): Number of nu bins
-    :nu [bin] (double): Nu bins, with bounds (bn)
-    :lmax (int): Maximum multipole of the input walm
-    :walm [l,m] (dcmplx): Alm with filtering, possibly divided by the map variance, with bounds (0:lmax,0:lmax)
+    """
+    return lib_utils.polcoord2angle_alm(lmax,theta,phi,verbose=verbose)
 
-  Args(optional): 
-    :nside (int): Nside of the intermediate map, default to the closest power of 2 to 3xlmax
-
-  Returns:
-    :V [bin,type] (double): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
-
-  """
-  #return lib_utils.calc_mfs(bn,nu,lmax,walm,nside)
 
 def mock_galaxy_takahashi(fname,zn,ngz,zi,b0=1.0,btype='sqrtz',a=2.0,b=1.0,zm=1.0,sz=0.0,zbias=0.0):
-  """
-  Compute galaxy overdensity map from dark matter density map of Takahashi et al. (2017). 
-  The galaxy z distribution is assumed to have the functional form given by Eq.(7) of https://arxiv.org/abs/1810.03346
+    """
+    Compute galaxy overdensity map from dark matter density map of Takahashi et al. (2017). 
+    The galaxy z distribution is assumed to have the functional form given by Eq.(7) of https://arxiv.org/abs/1810.03346
 
-  Args:
-    :fname (str): Filename of density map
-    :zn (int): Number of tomographic bins
-    :ngz[zn] (double): Total number of galaxies at each z-bin
-    :zi[zn+1] (double): Redshift intervals of the tomographic bins
+    Args:
+        :fname (str): Filename of density map
+        :zn (int): Number of tomographic bins
+        :ngz[zn] (double): Total number of galaxies at each z-bin
+        :zi[zn+1] (double): Redshift intervals of the tomographic bins
 
-  Args(optional): 
-    :a (double): galaxy distribution shape parameter
-    :b (double): galaxy distribution shape parameter
-    :zm (double): mean redshift of galaxy distribution
-    :b0 (double): constant galaxy bias at z=0
+    Args(optional): 
+        :a (double): galaxy distribution shape parameter
+        :b (double): galaxy distribution shape parameter
+        :zm (double): mean redshift of galaxy distribution
+        :b0 (double): constant galaxy bias at z=0
 
-  Returns:
-    :gmap [pix,zbin] (double): The galaxy number density map at each zbin
+    Returns:
+        :gmap [pix,zbin] (double): The galaxy number density map at each zbin
 
-  """
-  return libcurvedsky.utils.mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias)
+    """
+    return libcurvedsky.utils.mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias)
 

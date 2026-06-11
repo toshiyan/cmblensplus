@@ -6,14 +6,14 @@ module utils
   !from F90/src_utils
   use random,    only: InitRandom, poisson, gaussian1
   use constants, only: pi, iu
-  use general,   only: str, matrix_diag_tri
+  use general,   only: str, matrix_diag_tri, check_error
   use pstool,    only: binned_ells, power_binning
   use utilsgal,  only: nz_SF_scal, pz_SF_scal, gbias
   implicit none
 
   private initrandom, gaussian1, poisson
   private pi, iu
-  private str, matrix_diag_tri
+  private str, matrix_diag_tri, check_error
   private binned_ells, power_binning
   private nz_SF_scal, pz_SF_scal, gbias
 
@@ -407,6 +407,17 @@ subroutine alm2cov(n,lmax,cov,alm)
 end subroutine alm2cov
 
 
+subroutine lmpy2lmax(lmpy,lmax)
+    !obtain lmax from a length of a healpy array
+    implicit none 
+    integer, intent(in) :: lmpy
+    integer, intent(out) :: lmax
+
+    lmax = int((-3d0+dsqrt(1d0+8*lmpy))/2d0)
+
+end subroutine lmpy2lmax
+
+
 subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 !*  Transform healpy alm to healpix alm
 !*
@@ -599,6 +610,170 @@ subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
   end do
 
 end subroutine mock_galaxy_takahashi
+
+
+
+!##################################################!
+! For internal use of python code
+!##################################################!
+
+
+!//////////////////////////////////////////////////!
+! Internal function used for conjugate-gradient decent
+!//////////////////////////////////////////////////!
+
+
+subroutine clhalf(n,mn,lmax,cl,bl,clh)
+  !Compute C^{1/2} for diagonal C
+  implicit none
+  integer, intent(in) :: n, mn, lmax
+  double precision, intent(in) :: cl(n,0:lmax), bl(mn,0:lmax)
+  double precision, intent(out) :: clh(n,n,mn,0:lmax)
+  integer :: ni, l, mi
+
+  clh = 0d0
+  do ni = 1, n
+        do l = 1, lmax
+            do mi = 1, mn
+                if (cl(ni,l)<=0d0) cycle
+                clh(ni,ni,mi,l) = dsqrt(cl(ni,l))*bl(mi,l)
+            end do
+        end do
+  end do
+
+end subroutine clhalf
+
+
+subroutine correct_filtering(n,lmax,cl,filter,xlm)
+  !Final correction to the output of conjugate-gradient decent solver
+  implicit none
+  character(*), intent(in) :: filter
+  integer, intent(in) :: n, lmax
+  double precision, intent(in) :: cl(n,0:lmax)
+  double complex, intent(inout) :: xlm(n,0:lmax,0:lmax)
+  integer :: l, ni
+  
+  do l = 1, lmax
+        do ni = 1, n
+            if (cl(ni,l)<=0d0)  then
+                xlm(ni,l,0:l) = 0d0
+                cycle
+            end if
+            if (filter=='')   xlm(ni,l,0:l) = xlm(ni,l,0:l)/dsqrt(cl(ni,l))
+            if (filter=='W')  xlm(ni,l,0:l) = xlm(ni,l,0:l)*dsqrt(cl(ni,l))
+        end do
+  end do
+
+end subroutine correct_filtering
+
+
+subroutine densemat_multi(n,lmax,arrn,r,imat,x)
+  ! multiply a matrix exactly
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in) :: r(1:n,0:lmax,0:lmax)
+  double complex, intent(in) :: imat(1:arrn,1:arrn)
+  double complex, intent(out) :: x(1:n,0:lmax,0:lmax)
+  integer :: i, j, l, m, p, q, ni, nj
+
+  x = 0d0
+  i = 0
+  do ni = 1, n
+        do l = 0, lmax
+            do m = 0, l
+                i = i + 1
+                if (i>arrn) stop 'error'
+                j = 0
+                x(ni,l,m) = 0d0
+                do nj = 1, n
+                    do p = 0, lmax
+                        do q = 0, p
+                            j = j + 1
+                            if (j>arrn) stop 'error'
+                            x(ni,l,m) = x(ni,l,m) + imat(i,j)*r(nj,p,q)
+                        end do
+                    end do
+                end do
+            end do
+        end do
+  end do
+
+end subroutine densemat_multi
+
+
+subroutine trans_alm2array_1d(n,lmax,arrn,alm,arr)
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in) :: alm(1:n,0:lmax,0:lmax)
+  double complex, intent(out) :: arr(1:arrn)
+  integer :: i, l, m, ni
+
+  arr = 0d0
+  i = 0
+  do ni = 1, n
+    do l = 0, lmax
+      do m = 0, l
+        i = i + 1
+        call check_error(i>arrn,'wrong size')
+        arr(i) = alm(ni,l,m)
+      end do
+    end do
+  end do
+
+end subroutine trans_alm2array_1d
+
+
+subroutine trans_array2alm_1d(n,arrn,lmax,arr,alm)
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in)  :: arr(1:arrn)
+  double complex, intent(out) :: alm(1:n,0:lmax,0:lmax)
+  integer :: i, l, m, ni
+
+  alm = 0d0
+  i = 0
+  do ni = 1, n
+    do l = 0, lmax
+      do m = 0, l
+        i = i + 1
+        call check_error(i>arrn,'wrong size (F90/src_hp/hp_utils.f90.trans_array2alm_1d)','i='//str(i)//',arrn='//str(arrn))
+        alm(ni,l,m) = arr(i)
+      end do
+    end do
+  end do
+
+end subroutine trans_array2alm_1d
+
+
+subroutine trans_array2alm_2d(n,lmax,arrn,arr,alm)
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in)  :: arr(1:arrn,1:arrn)
+  double complex, intent(out) :: alm(1:n,0:lmax,0:lmax,1:n,0:lmax,0:lmax)
+  integer :: i, j, l, m, p, q, ni, nj
+
+  alm = 0d0
+  i = 0
+  do ni = 1, n
+    do l = 0, lmax
+      do m = 0, l
+        i = i + 1
+        call check_error(i>arrn,'wrong size (F90/src_hp/hp_utils.f90.trans_array2alm_2d)')
+        j = 0
+        do nj = 1, n
+          do p = 0, lmax
+            do q = 0, p
+              j = j + 1
+              call check_error(j>arrn,'wrong size (F90/src_hp/hp_utils.f90.trans_array2alm_2d)')
+              alm(ni,l,m,nj,p,q) = arr(i,j)
+            end do
+          end do
+        end do
+      end do
+    end do
+  end do
+
+end subroutine trans_array2alm_2d
 
 
 end module utils

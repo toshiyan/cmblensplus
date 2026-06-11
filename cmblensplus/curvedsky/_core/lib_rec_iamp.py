@@ -3,7 +3,6 @@ from .sht_ducc0 import alm2map_spin, map2alm
 
 
 def _default_nside(lmax: int) -> int:
-    """Fortran default: ``2**int(log(lmax)/log(2))``."""
     if int(lmax) < 1:
         return 1
     return 2 ** int(np.log(float(lmax)) / np.log(2.0))
@@ -76,8 +75,6 @@ def qeb(
 
     xlm_scalar = np.asarray(map2alm(lmax, lmax, mp, nthreads=nthreads), dtype=np.complex128)
 
-    if verbose:
-        print("compute reconstructed fields")
     alm = np.zeros((lmax + 1, lmax + 1), dtype=np.complex128)
     for ell in range(1, lmax + 1):
         alm[ell, : ell + 1] = -2.0 * xlm_scalar[ell, : ell + 1]

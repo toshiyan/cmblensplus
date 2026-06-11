@@ -31,11 +31,7 @@ def _ilk(lmax: int, gtype: str) -> np.ndarray:
     return ilk
 
 
-def _finish_lensing_outputs(
-    lmax: int,
-    gtype: str,
-    zlm: np.ndarray,
-) -> tuple[ComplexArray, ComplexArray]:
+def _finish_lensing_outputs(lmax, gtype, zlm):
     ilk = _ilk(lmax, gtype)
     glm = np.zeros((lmax + 1, lmax + 1), dtype=np.complex128)
     clm = np.zeros((lmax + 1, lmax + 1), dtype=np.complex128)
@@ -46,27 +42,16 @@ def _finish_lensing_outputs(
     return glm, clm
 
 
-def qte(
-    lmax: int,
-    rlmin: int,
-    rlmax: int,
-    fC: np.ndarray,
-    Tlm: np.ndarray,
-    Elm: np.ndarray,
-    nside_t: int = 0,
-    gtype: str = "",
-    verbose: bool = False,
-    nthreads: int = 0,
-):
+def qte(lmax: int, rlmin: int, rlmax: int, fC: np.ndarray, Tlm: np.ndarray, Elm: np.ndarray, nside_t=0, gtype="", verbose=False, nthreads=0):
     """Imaginary lensing TE quadratic estimator. Returns ``(glm, clm)``."""
-    lmax = int(lmax)
+    lmax  = int(lmax)
     rlmin = int(rlmin)
     rlmax = int(rlmax)
     nside = int(nside_t) if int(nside_t) != 0 else _default_nside(lmax)
     if verbose:
         print(f"calc qTE ilens estimator with nside= {nside}")
 
-    fC = _validate_spectrum("fC", fC, rlmax)
+    fC  = _validate_spectrum("fC", fC, rlmax)
     Tlm = _validate_square_alm("Tlm", Tlm, rlmax)
     Elm = _validate_square_alm("Elm", Elm, rlmax)
 
@@ -91,27 +76,16 @@ def qte(
     return _finish_lensing_outputs(lmax, gtype, zlm)
 
 
-def qtb(
-    lmax: int,
-    rlmin: int,
-    rlmax: int,
-    fC: np.ndarray,
-    Tlm: np.ndarray,
-    Blm: np.ndarray,
-    nside_t: int = 0,
-    gtype: str = "",
-    verbose: bool = False,
-    nthreads: int = 0,
-):
+def qtb(lmax: int, rlmin: int, rlmax: int, fC: np.ndarray, Tlm: np.ndarray, Blm: np.ndarray, nside_t=0, gtype="", verbose=False, nthreads=0):
     """Imaginary lensing TB quadratic estimator. Returns ``(glm, clm)``."""
-    lmax = int(lmax)
+    lmax  = int(lmax)
     rlmin = int(rlmin)
     rlmax = int(rlmax)
     nside = int(nside_t) if int(nside_t) != 0 else _default_nside(lmax)
     if verbose:
         print(f"calc qTB ilens estimator with nside= {nside}")
 
-    fC = _validate_spectrum("fC", fC, rlmax)
+    fC  = _validate_spectrum("fC", fC, rlmax)
     Tlm = _validate_square_alm("Tlm", Tlm, rlmax)
     Blm = _validate_square_alm("Blm", Blm, rlmax)
 
@@ -146,27 +120,16 @@ def qtb(
     return _finish_lensing_outputs(lmax, gtype, zlm)
 
 
-def qee(
-    lmax: int,
-    rlmin: int,
-    rlmax: int,
-    fC: np.ndarray,
-    Elm1: np.ndarray,
-    Elm2: np.ndarray,
-    nside_t: int = 0,
-    gtype: str = "",
-    verbose: bool = False,
-    nthreads: int = 0,
-):
+def qee(lmax: int, rlmin: int, rlmax: int, fC: np.ndarray, Elm1: np.ndarray, Elm2: np.ndarray, nside_t=0, gtype="", verbose=False, nthreads=0):
     """Imaginary lensing EE quadratic estimator. Returns ``(glm, clm)``."""
-    lmax = int(lmax)
+    lmax  = int(lmax)
     rlmin = int(rlmin)
     rlmax = int(rlmax)
     nside = int(nside_t) if int(nside_t) != 0 else _default_nside(lmax)
     if verbose:
         print(f"calc qEE ilens estimator with nside= {nside}")
 
-    fC = _validate_spectrum("fC", fC, rlmax)
+    fC   = _validate_spectrum("fC", fC, rlmax)
     Elm1 = _validate_square_alm("Elm1", Elm1, rlmax)
     Elm2 = _validate_square_alm("Elm2", Elm2, rlmax)
 
@@ -176,7 +139,7 @@ def qee(
     A = np.asarray(alm2map_spin(nside, 2, alm, nthreads=nthreads), dtype=np.float64)
 
     alm1 = np.zeros_like(alm)
-    blm = np.zeros_like(alm)
+    blm  = np.zeros_like(alm)
     for ell in range(max(0, rlmin), rlmax + 1):
         alm1[0, ell, : ell + 1] = fC[ell] * Elm2[ell, : ell + 1] * np.sqrt(float((ell + 2) * (ell - 1)))
         # Preserves the factor used in rec_ilens.f90: sqrt((l-1)*(l+3)).
@@ -192,27 +155,16 @@ def qee(
     return _finish_lensing_outputs(lmax, gtype, zlm)
 
 
-def qeb(
-    lmax: int,
-    rlmin: int,
-    rlmax: int,
-    fC: np.ndarray,
-    Elm: np.ndarray,
-    Blm: np.ndarray,
-    nside_t: int = 0,
-    gtype: str = "",
-    verbose: bool = False,
-    nthreads: int = 0,
-):
+def qeb(lmax: int, rlmin: int, rlmax: int, fC: np.ndarray, Elm: np.ndarray, Blm: np.ndarray, nside_t=0, gtype="", verbose=False, nthreads=0):
     """Imaginary lensing EB quadratic estimator. Returns ``(glm, clm)``."""
-    lmax = int(lmax)
+    lmax  = int(lmax)
     rlmin = int(rlmin)
     rlmax = int(rlmax)
     nside = int(nside_t) if int(nside_t) != 0 else _default_nside(lmax)
     if verbose:
         print(f"calc qEB ilens estimator with nside= {nside}")
 
-    fC = _validate_spectrum("fC", fC, rlmax)
+    fC  = _validate_spectrum("fC", fC, rlmax)
     Elm = _validate_square_alm("Elm", Elm, rlmax)
     Blm = _validate_square_alm("Blm", Blm, rlmax)
 
@@ -256,27 +208,16 @@ def qeb(
     return _finish_lensing_outputs(lmax, gtype, zlm)
 
 
-def qbb(
-    lmax: int,
-    rlmin: int,
-    rlmax: int,
-    fC: np.ndarray,
-    Blm1: np.ndarray,
-    Blm2: np.ndarray,
-    nside_t: int = 0,
-    gtype: str = "",
-    verbose: bool = False,
-    nthreads: int = 0,
-):
+def qbb(lmax: int, rlmin: int, rlmax: int, fC: np.ndarray, Blm1: np.ndarray, Blm2: np.ndarray, nside_t=0, gtype="", verbose=False, nthreads=0):
     """Imaginary lensing BB quadratic estimator. Returns ``(glm, clm)``."""
-    lmax = int(lmax)
+    lmax  = int(lmax)
     rlmin = int(rlmin)
     rlmax = int(rlmax)
     nside = int(nside_t) if int(nside_t) != 0 else _default_nside(lmax)
     if verbose:
         print(f"calc qBB ilens estimator with nside= {nside}")
 
-    fC = _validate_spectrum("fC", fC, rlmax)
+    fC   = _validate_spectrum("fC", fC, rlmax)
     Blm1 = _validate_square_alm("Blm1", Blm1, rlmax)
     Blm2 = _validate_square_alm("Blm2", Blm2, rlmax)
 
