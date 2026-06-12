@@ -39,7 +39,7 @@ Then install the package with the optional `flatsky` module enabled:
 
 ```bash
 python -m pip install -Csetup-args=-Dflatsky=true \
-  "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@dev_ducc0"
+  "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@main"
 ```
 
 For an editable install with the optional `flatsky` module enabled, use:
