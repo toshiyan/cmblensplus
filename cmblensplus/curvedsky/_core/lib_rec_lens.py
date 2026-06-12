@@ -54,8 +54,18 @@ def qte(lmax,rlmin,rlmax,fC,Tlm,Elm,nside_t=0,gtype='',verbose=False,nthreads=0)
     A = sht.alm2map_spin(nside, 2, alm1, nthreads=nthreads)
 
     ell = np.arange(rlmax + 1, dtype=np.float64)
-    w1 = fC * np.sqrt((ell + 2.0) * (ell - 1.0))
-    w3 = fC * np.sqrt((ell - 2.0) * (ell + 3.0))
+    x1 = (ell + 2.0) * (ell - 1.0)
+    x3 = (ell - 2.0) * (ell + 3.0)
+
+    s1 = np.zeros_like(x1, dtype=float)
+    s3 = np.zeros_like(x3, dtype=float)
+
+    np.sqrt(x1, out=s1, where=(x1 >= 0.0))
+    np.sqrt(x3, out=s3, where=(x3 >= 0.0))
+
+    w1 = fC * s1
+    w3 = fC * s3
+
     alm1 = utils._fill_component('spin', 0, Tlm, rlmin, rlmax, w1)
     alm3 = utils._fill_component('spin', 0, Tlm, rlmin, rlmax, w3)
     A1 = sht.alm2map_spin(nside, 1, alm1, nthreads=nthreads)
@@ -96,8 +106,17 @@ def qtb(lmax,rlmin,rlmax,fC,Tlm,Blm,nside_t=0,gtype='',verbose=False,nthreads=0)
     A = sht.alm2map_spin(nside, 2, alm1, nthreads=nthreads)
 
     ell = np.arange(rlmax + 1, dtype=np.float64)
-    w1 = fC * np.sqrt((ell + 2.0) * (ell - 1.0))
-    w3 = fC * np.sqrt((ell - 2.0) * (ell + 3.0))
+    x1 = (ell + 2.0) * (ell - 1.0)
+    x3 = (ell - 2.0) * (ell + 3.0)
+
+    s1 = np.zeros_like(x1, dtype=float)
+    s3 = np.zeros_like(x3, dtype=float)
+
+    np.sqrt(x1, out=s1, where=(x1 >= 0.0))
+    np.sqrt(x3, out=s3, where=(x3 >= 0.0))
+
+    w1 = fC * s1
+    w3 = fC * s3
     alm1 = utils._fill_component('spin', 0, Tlm, rlmin, rlmax, w1)
     alm3 = utils._fill_component('spin', 0, Tlm, rlmin, rlmax, w3)
     A1 = sht.alm2map_spin(nside, 1, alm1, nthreads=nthreads)
@@ -128,8 +147,17 @@ def qee(lmax,rlmin,rlmax,fC,Elm1,Elm2,nside_t=0,gtype='',verbose=False,nthreads=
     A = sht.alm2map_spin(nside, 2, alm, nthreads=nthreads)
 
     ell = np.arange(rlmax + 1, dtype=np.float64)
-    w1 = fC * np.sqrt((ell + 2.0) * (ell - 1.0))
-    w3 = fC * np.sqrt((ell - 2.0) * (ell + 3.0))
+    x1 = (ell + 2.0) * (ell - 1.0)
+    x3 = (ell - 2.0) * (ell + 3.0)
+
+    s1 = np.zeros_like(x1, dtype=float)
+    s3 = np.zeros_like(x3, dtype=float)
+
+    np.sqrt(x1, out=s1, where=(x1 >= 0.0))
+    np.sqrt(x3, out=s3, where=(x3 >= 0.0))
+
+    w1 = fC * s1
+    w3 = fC * s3
 
     alm = utils._fill_component('spin', 0, Elm2, rlmin, rlmax, w1)
     blm = utils._fill_component('spin', 0, Elm2, rlmin, rlmax, w3)
@@ -161,8 +189,17 @@ def qeb(lmax,rlmin,rlmax,fC,Elm,Blm,nside_t=0,gtype='',verbose=False,nthreads=0)
     A = sht.alm2map_spin(nside, 2, alm1, nthreads=nthreads)
 
     ell = np.arange(rlmax + 1, dtype=np.float64)
-    w1 = fC * np.sqrt((ell + 2.0) * (ell - 1.0))
-    w3 = fC * np.sqrt((ell - 2.0) * (ell + 3.0))
+    x1 = (ell + 2.0) * (ell - 1.0)
+    x3 = (ell - 2.0) * (ell + 3.0)
+
+    s1 = np.zeros_like(x1, dtype=float)
+    s3 = np.zeros_like(x3, dtype=float)
+
+    np.sqrt(x1, out=s1, where=(x1 >= 0.0))
+    np.sqrt(x3, out=s3, where=(x3 >= 0.0))
+
+    w1 = fC * s1
+    w3 = fC * s3
     alm1 = utils._fill_component('spin', 0, Elm, rlmin, rlmax, w1)
     alm3 = utils._fill_component('spin', 0, Elm, rlmin, rlmax, w3)
     A1 = sht.alm2map_spin(nside, 1, alm1, nthreads=nthreads)
@@ -193,8 +230,17 @@ def qbb(lmax,rlmin,rlmax,fC,Blm1,Blm2,nside_t=0,gtype='',verbose=False,nthreads=
     A = sht.alm2map_spin(nside, 2, alm1, nthreads=nthreads)
 
     ell = np.arange(rlmax + 1, dtype=np.float64)
-    w1 = fC * np.sqrt((ell + 2.0) * (ell - 1.0))
-    w3 = fC * np.sqrt((ell - 2.0) * (ell + 3.0))
+    x1 = (ell + 2.0) * (ell - 1.0)
+    x3 = (ell - 2.0) * (ell + 3.0)
+
+    s1 = np.zeros_like(x1, dtype=float)
+    s3 = np.zeros_like(x3, dtype=float)
+
+    np.sqrt(x1, out=s1, where=(x1 >= 0.0))
+    np.sqrt(x3, out=s3, where=(x3 >= 0.0))
+
+    w1 = fC * s1
+    w3 = fC * s3
     alm1 = utils._fill_component('spin', 1, Blm2, rlmin, rlmax, w1)
     alm3 = utils._fill_component('spin', 1, Blm2, rlmin, rlmax, w3)
     A1 = sht.alm2map_spin(nside, 1, alm1, nthreads=nthreads)
