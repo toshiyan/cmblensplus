@@ -45,7 +45,7 @@ def _nside_from_lmax(lmax: int, bst: int) -> int:
     return int(bst) * 2 ** int(np.log(float(lmax)) / np.log(2.0))
 
 
-def _filtered_alm(alm: np.ndarray, lmin: int, lmax: int, out_lmax: Optional[int] = None,) -> np.ndarray:
+def _filtered_alm(alm, lmin, lmax, out_lmax = None,):
     """Return an alm array containing only lmin <= l <= lmax."""
     if out_lmax is None:
         out_lmax = lmax
