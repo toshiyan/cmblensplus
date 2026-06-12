@@ -9,7 +9,7 @@ Installation on NERSC systems is straightforward.
 The default installation builds the `basic` module and installs the pure-Python `curvedsky` and `utils` modules. This default installation does not require external Fortran libraries.
 
 ```bash
-python -m pip install "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@dev_ducc0"
+python -m pip install "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@main"
 ```
 
 For an editable install from a local checkout, run the following command from the top-level source directory:
@@ -38,8 +38,7 @@ export CC=cc
 Then install the package with the optional `flatsky` module enabled:
 
 ```bash
-python -m pip install \
-  -Csetup-args=-Dflatsky=true \
+python -m pip install -Csetup-args=-Dflatsky=true \
   "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@dev_ducc0"
 ```
 
