@@ -5,6 +5,7 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
 
 # Installation
 
+  Please load FFTW module in your environment first. 
   The easiest way to install the entire package is to run
     
     python -m pip install "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@dev_ducc0"
@@ -18,26 +19,13 @@ This package contains a wrapper for Python, to reconstruct lensing potential, co
   Dependencies:
     numpy scipy matplotlib astropy healpy ducc0 meson ninja meson-python pkg-config compilers ipykernel pip tqdm
 
-  Note that the setup.py file compiles the following files:  
+  Note that the installation process is as follows:  
 
-  [1] Fortran public software (located inside fortran_internal/src_public/) with install.sh. This process installs FFTW, cfitsio, Healpix, and LAPACK95, and locates libraries at fortran_internal/src_public/XXX/.
-
-  [2] Other local Fortran codes to create libraries (fortran_internal/src_***)
-
-  [3] Create f90 files inside fortran_wrapped/src_XXX/ from *.src files
+  [2] Compile local Fortran codes to create libraries (fortran_internal/src_***)
 
   [4] Compile Fortran codes inside fortran_wrapped/src_XXX/ with f2py
 
-  [5] Create interface python files inside cmblensplus/XXX/
-
-  Please also note that you should include the following path to e.g. .bashrc: 
-
-    export LD_LIBRARY_PATH=$dir_cmblensplus/fortran_internal/src_public/Healpix/lib/:$dir_cmblensplus/fortran_internal/src_public/cfitsio/lib/:$LD_LIBRARY_PATH
-    export PYTHONPATH=$dir_cmblensplus/:$dir_cmblensplus/utils/:$PYTHONPATH
-  
-  where $dir_cmblensplus is a directory path to your cmblensplus location. You would also need to increase stack memory size, e.g.
-
-    ulimit -s unlimited
+  [5] Compile python module files inside cmblensplus/XXX/
 
 
 # Documents and Reference
@@ -89,7 +77,7 @@ You can find example codes inside "example" directory.
 
 # Acknowledgement
 
-The library software uses the following public codes: FFTW, HEALPix, LAPACK, CFITSIO, LensPix. 
+The library software uses the following public Fortran codes: FFTW. 
 
 # Contact
 
