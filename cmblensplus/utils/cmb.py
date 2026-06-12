@@ -10,8 +10,7 @@ import cmblensplus.basic as basic
 #import cmblensplus.curvedsky as curvedsky
 
 # from cmblensplus/utils
-import constant as c
-import misctools
+from . import constant as c, misctools
 
 # for pickle (to be removed)
 #import cPickle as pickle
