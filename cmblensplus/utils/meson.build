@@ -9,7 +9,7 @@ py.install_sources(
     'delens_func.py',
     'maptools.py',
     'misctools.py',
-    'quad_func.py'
+    'quad_func.py',
     'plottools.py',
     'reionization.py',
     'sim_takahashi.py',
