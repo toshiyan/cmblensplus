@@ -60,18 +60,8 @@ The main dependencies are:
 ```text
 numpy
 scipy
-matplotlib
-astropy
-healpy
 ducc0
-meson
-ninja
-meson-python
-pkg-config
-compilers
-ipykernel
-pip
-tqdm
+healpy
 ```
 
 Some example Jupyter notebooks use `pytempura` to compute the quadratic estimator normalization:

@@ -46,11 +46,11 @@ def qeb(lmax, rlmin, rlmax, fCE, Elm, Blm, nside_t=0, verbose=False, nthreads=0)
 
     # B spin-2 map
     almB = utils._fill_component("spin", 1, Blm, rlmin, rlmax)
-    A = sht.alm2map_spin(nside, 2, almB[0], nthreads=nthreads)
+    A = sht.alm2map_spin(nside, 2, almB, nthreads=nthreads)
 
     # fCE * E spin-2 map
     almE = utils._fill_component("spin", 0, Elm, rlmin, rlmax, fCE)
-    A2 = sht.alm2map_spin(nside, 2, almE[0], nthreads=nthreads)
+    A2 = sht.alm2map_spin(nside, 2, almE, nthreads=nthreads)
 
     # convolution:
     map0 = A[0] * A2[0] + A[1] * A2[1]

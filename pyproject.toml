@@ -25,6 +25,7 @@ dependencies = [
   "numpy",
   "scipy",
   "ducc0",
+  "healpy",
 ]
 
 [project.optional-dependencies]
@@ -41,5 +42,4 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/toshiyan/cmblensplus"
 Documentation = "https://toshiyan.github.io/clpdoc/html/"
-
 
