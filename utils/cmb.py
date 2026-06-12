@@ -7,7 +7,7 @@ import tqdm
 
 # from cmblensplus/wrap
 import cmblensplus.basic as basic
-import cmblensplus.curvedsky as curvedsky
+#import cmblensplus.curvedsky as curvedsky
 
 # from cmblensplus/utils
 import constant as c

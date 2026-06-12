@@ -1,5 +1,7 @@
-from cmblensplus import libcurvedsky
-import numpy
+
+from . import libcurvedsky as lib_norm
+# to be replaced with pytempura
+
 
 def qte(est,lmax,rlmin,rlmax,TB,OCT,OCE,lfac=''):
   """
@@ -19,7 +21,7 @@ def qte(est,lmax,rlmin,rlmax,TB,OCT,OCE,lfac=''):
     :Al [2,l] (double): Normalization, with bounds (0:lmax)
 
   """
-  return libcurvedsky.norm_imag.qte(est,lmax,rlmin,rlmax,TB,OCT,OCE,lfac)
+  return lib_norm.norm_imag.qte(est,lmax,rlmin,rlmax,TB,OCT,OCE,lfac)
 
 def qtb(est,lmax,rlmin,rlmax,TB,OCT,OCB,lfac=''):
   """
@@ -39,7 +41,7 @@ def qtb(est,lmax,rlmin,rlmax,TB,OCT,OCB,lfac=''):
     :Al [2,l] (double): Normalization, with bounds (0:lmax)
 
   """
-  return libcurvedsky.norm_imag.qtb(est,lmax,rlmin,rlmax,TB,OCT,OCB,lfac)
+  return lib_norm.norm_imag.qtb(est,lmax,rlmin,rlmax,TB,OCT,OCB,lfac)
 
 def qee(est,lmax,rlmin,rlmax,fC,OCE,lfac=''):
   """
@@ -58,7 +60,7 @@ def qee(est,lmax,rlmin,rlmax,fC,OCE,lfac=''):
     :Al [2,l] (double): Normalization, with bounds (0:lmax)
 
   """
-  return libcurvedsky.norm_imag.qee(est,lmax,rlmin,rlmax,fC,OCE,lfac)
+  return lib_norm.norm_imag.qee(est,lmax,rlmin,rlmax,fC,OCE,lfac)
 
 def qeb(est,lmax,rlmin,rlmax,fC,OCE,OCB,lfac=''):
   """
@@ -78,7 +80,7 @@ def qeb(est,lmax,rlmin,rlmax,fC,OCE,OCB,lfac=''):
     :Al [2,l] (double): Normalization, with bounds (0:lmax)
 
   """
-  return libcurvedsky.norm_imag.qeb(est,lmax,rlmin,rlmax,fC,OCE,OCB,lfac)
+  return lib_norm.norm_imag.qeb(est,lmax,rlmin,rlmax,fC,OCE,OCB,lfac)
 
 def qbb(est,lmax,rlmin,rlmax,fC,OCB,lfac=''):
   """
@@ -97,7 +99,7 @@ def qbb(est,lmax,rlmin,rlmax,fC,OCB,lfac=''):
     :Al [2,l] (double): Normalization, with bounds (0:lmax)
 
   """
-  return libcurvedsky.norm_imag.qbb(est,lmax,rlmin,rlmax,fC,OCB,lfac)
+  return lib_norm.norm_imag.qbb(est,lmax,rlmin,rlmax,fC,OCB,lfac)
 
 def qbb_asym(est,lmax,rlmin,rlmax,fC,OCB1,OCB2,lfac=''):
   """
@@ -116,5 +118,5 @@ def qbb_asym(est,lmax,rlmin,rlmax,fC,OCB1,OCB2,lfac=''):
     :Al [2,l] (double): Normalization, with bounds (0:lmax)
 
   """
-  return libcurvedsky.norm_imag.qbb_asym(est,lmax,rlmin,rlmax,fC,OCB1,OCB2,lfac)
+  return lib_norm.norm_imag.qbb_asym(est,lmax,rlmin,rlmax,fC,OCB1,OCB2,lfac)
 

@@ -1,4 +1,4 @@
-from cmblensplus import libbasic
+from . import libbasic
 import numpy
 
 def wigner_3j(l2,l3,m2,m3):

@@ -1,4 +1,4 @@
-from cmblensplus import libbasic
+from . import libbasic
 import numpy
 
 def hubble(z,H0=70.,Om=0.3,Ov=0.7,w0=-1.,wa=0.,divc=False):

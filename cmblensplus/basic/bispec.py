@@ -1,4 +1,4 @@
-from cmblensplus import libbasic
+from . import libbasic
 import numpy
 
 def cl_flat(cpmodel,z,dz,zs,lmax,k,pk0,pktype='T12',cltype='kk',dNdz=None,wdel=None):

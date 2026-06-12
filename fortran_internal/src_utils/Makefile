@@ -5,11 +5,29 @@
 ## libfile ##
 target = libutils.a
 
-# complier and options
-FC = ifort
-FLAG = -O3 -fpp -fPIC
+# compiler and options
+FC ?= ifort
+
+# Select Fortran preprocessor flag depending on compiler.
+# - ifort / ifx: use -fpp
+# - gfortran: use -cpp
+FC_BASENAME := $(notdir $(FC))
+
+ifeq ($(findstring gfortran,$(FC_BASENAME)),gfortran)
+  FPPFLAG = -cpp
+else ifeq ($(findstring ifx,$(FC_BASENAME)),ifx)
+  FPPFLAG = -fpp
+else ifeq ($(findstring ifort,$(FC_BASENAME)),ifort)
+  FPPFLAG = -fpp
+else
+  # Default to gfortran-style preprocessing.
+  FPPFLAG = -cpp
+endif
+
+FLAG = -O3 $(FPPFLAG) -fPIC
 #DBAG = -check all -std -gen_interfaces -fpe0 -ftrapuv -traceback
 FLAGS = $(FLAG) $(DBAG)
+
 
 # directories
 flib = ../
@@ -29,7 +47,7 @@ $(target): $(OBJ)
 	$(FC) $(FLAGS) $(OPTION) -c $*.f90
 
 install:
-	mv *.mod ${flib}/mod; mv $(target) ${flib}/lib/
+	cp *.mod ${flib}/mod; cp $(target) ${flib}/lib/
 
 clean:
 	rm -f *.o *.mod *.a

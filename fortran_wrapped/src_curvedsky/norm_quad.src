@@ -4,7 +4,6 @@
 
 module norm_quad
   use alkernel, only: kernels_lens, kernels_tau, kernels_rot, kernels_lenstau, get_lfac
-  !from basic
   use delensing
   implicit none
 

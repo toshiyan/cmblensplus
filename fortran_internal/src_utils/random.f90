@@ -1,6 +1,10 @@
 !////////////////////////////////////////////////////!
-! * Module to generate random number
-! * This code is part of forutils/RandUtils.f90
+! Module to generate random number
+! # This file is derived from software by Antony Lewis,
+! # licensed under the MIT License.
+! #
+! # Copyright (c) 2015 Antony Lewis
+! #
 !////////////////////////////////////////////////////!
 
 module random

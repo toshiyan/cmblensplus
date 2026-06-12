@@ -19,9 +19,6 @@ interface()
 if [ ${1} = "basic" -o ${1} = "all" ]; then
   interface basic "wigner_funcs.f90 bispec.f90 flat.f90 delens.f90 galaxy.f90 cosmofuncs.f90"
 fi
-if [ ${1} = "curvedsky" -o ${1} = "all" ]; then
-  interface curvedsky "utils.f90 cninv.f90 norm_quad.f90 norm_imag.f90 rec_lens.f90 rec_ilens.f90 rec_rot.f90 rec_tau.f90 rec_src.f90 rec_iamp.f90 delens.f90 bispec.f90"
-fi
 if [ ${1} = "flatsky" -o ${1} = "all" ]; then
   interface flatsky "utils.f90 bispec.f90 rec_lens.f90 norm_lens.f90 rec_rot.f90 norm_rot.f90 rec_tau.f90 norm_tau.f90 rec_src.f90 norm_src.f90 norm_kxt.f90 norm_kxs.f90"
 fi

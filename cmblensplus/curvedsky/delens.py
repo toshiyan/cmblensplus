@@ -1,5 +1,4 @@
-from cmblensplus import libcurvedsky
-import numpy
+from ._core import lib_delens
 
 def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t=0,gtype='p'):
   """
@@ -22,7 +21,7 @@ def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t=0,gtype='p'):
     :lBlm [l,m] (dcmplx): Lensing B-mode alm, with bounds (0:lmax,0:lmax)
 
   """
-  return libcurvedsky.delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t,gtype)
+  return lib_delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t,gtype)
 
 def shiftvec(nside,lmax,plm,nremap):
   """
@@ -45,7 +44,7 @@ def shiftvec(nside,lmax,plm,nremap):
 
   """
   npix = 12*nside**2
-  return libcurvedsky.delens.shiftvec(npix,lmax,plm,nremap)
+  return lib_delens.shiftvec(npix,lmax,plm,nremap)
 
 def phi2grad(nside,lmax,plm):
   """
@@ -61,5 +60,5 @@ def phi2grad(nside,lmax,plm):
 
   """
   npix = 12*nside**2
-  return libcurvedsky.delens.phi2grad(npix,lmax,plm)
+  return lib_delens.phi2grad(npix,lmax,plm)
 

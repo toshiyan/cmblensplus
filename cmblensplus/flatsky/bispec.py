@@ -1,4 +1,4 @@
-from cmblensplus import libflatsky
+from . import libflatsky
 import numpy
 
 def bispec_norm(nx,ny,D,bp,dbin_max=-1,bn=1):

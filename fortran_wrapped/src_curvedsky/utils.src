@@ -3,32 +3,19 @@
 !////////////////////////////////////////////////////!
 
 module utils
-  !from Healpix
-  use alm_tools, only: alm2map, alm2map_spin, map2alm, map2alm_spin, alm2map_der
-  use fitstools, only: input_map, output_map
-  use pix_tools, only: pix2ang_ring, ang2pix_ring, convert_ring2nest, convert_nest2ring
-  use mask_tools, only: fill_holes_nest, dist2holes_nest
   !from F90/src_utils
   use random,    only: InitRandom, poisson, gaussian1
   use constants, only: pi, iu
-  use general,   only: str, matrix_diag_tri
+  use general,   only: str, matrix_diag_tri, check_error
   use pstool,    only: binned_ells, power_binning
   use utilsgal,  only: nz_SF_scal, pz_SF_scal, gbias
-  !from F90/src_hp
-  !use hp_spht,   only: spht_map2alm
   implicit none
 
-  private alm2map, alm2map_spin, map2alm, map2alm_spin, alm2map_der
-  private input_map, output_map
-  private pix2ang_ring, ang2pix_ring
   private initrandom, gaussian1, poisson
   private pi, iu
-  private str, matrix_diag_tri
+  private str, matrix_diag_tri, check_error
   private binned_ells, power_binning
-  private fill_holes_nest, dist2holes_nest
-  private convert_ring2nest, convert_nest2ring
   private nz_SF_scal, pz_SF_scal, gbias
-  !private spht_map2alm
 
 contains
 
@@ -250,151 +237,6 @@ subroutine gaussalm(n,lmax,cl,alm,ilm)
 end subroutine gaussalm
 
 
-subroutine subpatch_mask(npix_full,nside_sub,ipix_sub,mask,ascale)
-!*  Calculate a mask for a patched map.
-!*
-!*  Args:
-!*    :nside_full (int): Nside of full map
-!*    :nside_sub (int) : Nside of a patch map
-!*    :ipix_sub (int)  : Healpix pixel index of a patch map
-!*    :ascale (dble)   : apodization scale (nothing, 1) to (full, 0)
-!*
-!*  Returns:
-!*    :mask [pix] (double) : mask map with bounds (0:npix-1,2)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix_full, nside_sub, ipix_sub
-  double precision, intent(in)  :: ascale
-  double precision, intent(out), dimension(0:npix_full-1) :: mask
-  !internal
-  integer :: i, j, nside_full
-  double precision :: theta, phi, theta_cent, phi_cent, dtheta, win_out
-  !chargs :: npix_full -> nside_full
-  !add2py :: npix_full = 12*nside_full**2
-
-  nside_full   = int(sqrt(npix_full/12d0))
-
-  mask = 0d0
-
-  do i = 0, npix_full-1
-
-    !identify patch
-    call pix2ang_ring(nside_full, i, theta, phi)
-    call ang2pix_ring(nside_sub, theta, phi, j)
-
-    if (j==ipix_sub) then
-
-      mask(i) = 1d0
-      !center coordinate of the patch
-      call pix2ang_ring(nside_sub, ipix_sub, theta_cent, phi_cent)
-
-      !compute distance from edge of the patch
-      dtheta = dacos(dcos(theta)*dcos(theta_cent) &
-        + dsin(theta)*dcos(phi)*dsin(theta_cent)*dcos(phi_cent)  &
-        + dsin(theta)*dsin(phi)*dsin(theta_cent)*dsin(phi_cent) )
-
-      !compute value of apodized window at this pixel
-      call get_apod_window( dtheta, ascale, win_out)
-      mask(i) = win_out
-
-    end if
-
-  end do
-
-
-end subroutine subpatch_mask
-
-
-subroutine get_baseline(npix,nside_subpatch,QU,blmap)
-!*  Calculate baseline of each subpatch. The subpatches have the same size.
-!*  Written by Ryo Nagata.
-!*
-!*  Args:
-!*    :npix (int)            : pixel number of the full map
-!*    :nside_subpatch (int)  : Nside of sub patch
-!*    :QU [pix,2] (double)   : Q/U maps, with bounds (0:npix-1,2)
-!*
-!*  Returns:
-!*    :blmap [pix,2] (double): baseline maps, with bounds (0:npix-1,2)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, nside_subpatch
-  double precision, intent(in), dimension(0:npix-1,2) :: QU
-  double precision, intent(out), dimension(0:npix-1,2) :: blmap
-  !internal
-  integer :: i, j, nside, npix_subpatch, npix_inpatch
-  integer, allocatable, dimension(:) :: patch_map
-  double precision, allocatable, dimension(:,:) :: patch_pmean
-  double precision :: theta, phi
-
-  nside = int(sqrt(npix/12d0))
-  npix_subpatch = 12*nside_subpatch**2
-  npix_inpatch  = npix/npix_subpatch
-
-  allocate(patch_map(0:npix-1))
-  allocate(patch_pmean(0:npix_subpatch-1,2))
-
-  patch_pmean = 0d0
-
-  ! compute baseline
-  do i = 0, npix-1
-    !identify subpatch
-    call pix2ang_ring(nside, i, theta, phi)
-    call ang2pix_ring(nside_subpatch, theta, phi, j)
-    patch_map(i) = j
-    !patch mean
-    patch_pmean(j,:) = patch_pmean(j,:) + QU(i,:)/dble(npix_inpatch)
-  end do
-
-  ! obtain baseline at full pixel
-  do i = 0, npix-1
-    blmap(i,:) = patch_pmean(patch_map(i),:)
-  end do
-
-  ! baseline subtraction
-  !Pmap = Pmap - blmap
-
-  deallocate(patch_map,patch_pmean)
-
-end subroutine get_baseline
-
-
-subroutine get_winmap(nside_large,nside_small,ipix_pix,apod,win_out)
-!*  Return apodization window for subpatch.
-!*  Written by Ryo Nagata.
-!*
-!*  Args:
-!*    :nside_large (int) : Nside of sub patch
-!*    :nside_small (int) : full Nside
-!*    :ipix_pix (int)    : pixel index of full map
-!*    :apod (double)     : apodization length
-!*
-!*  Returns:
-!*    :wind_out (double) : aporization window at ipix_pix 
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: nside_large, nside_small,ipix_pix
-  double precision, intent(in)  :: apod
-  double precision, intent(out) :: win_out
-  !internal
-  integer :: ipix_sub
-  double precision :: dtheta, theta_pix, phi_pix, theta_sub, phi_sub
-
-  call pix2ang_ring(nside_small, ipix_pix, theta_pix, phi_pix)
-  call ang2pix_ring(nside_large, theta_pix, phi_pix, ipix_sub)
-  call pix2ang_ring(nside_large, ipix_sub, theta_sub, phi_sub)
-
-  dtheta = dacos(dcos(theta_pix)*dcos(theta_sub) &
-      + dsin(theta_pix)*dcos(phi_pix)*dsin(theta_sub)*dcos(phi_sub)  &
-      + dsin(theta_pix)*dsin(phi_pix)*dsin(theta_sub)*dsin(phi_sub) )
-  call get_apod_window( dtheta, apod, win_out)
-
-end subroutine get_winmap
-
-
 subroutine get_apod_window(s,a,w)
 !*  A sine apodization window
 !*
@@ -423,100 +265,6 @@ subroutine get_apod_window(s,a,w)
   end if
 
 end subroutine get_apod_window
-
-
-subroutine eb_separate(npix,lmax,W,Q,U,Elm,Blm)
-!*  E/B mode seperation based on the chi-field estimator. See e.g. Sec.III.2 of arXiv:1305.7441 for numerical implimentation.
-!*
-!*  Args:
-!*    :lmax (int)        : Maximum multipole used for the harmonic transform internally
-!*    :W[pix] (double)   : Window function satisfying zero 1st and 2nd derivatives at the boundary, with bounds (0:npix-1)
-!*    :Q/U[pix] (double) : Input Q/U map already multiplied by W, with bounds (0:npix-1)
-!*
-!*  Returns:
-!*    :Elm/Blm[l,m]  (dcmplx) : Seperated E/B modes, with bounds (0:lmax,0:lmax)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax
-  double precision, intent(in), dimension(0:npix-1) :: W, Q, U
-  double complex, intent(out), dimension(0:lmax,0:lmax) :: Elm, Blm
-  !internal
-  integer :: i, n, l, nside
-  double precision :: al, n1(lmax), n2(lmax)
-  double precision, allocatable, dimension(:,:) :: W1, W2, P2, P1, P0
-  double complex, allocatable, dimension(:,:,:) :: alm0, alm1, alm2, wlm, tlm
-  !rmargs :: npix
-  !add2py :: npix = len(W)
-
-  nside = int(sqrt(npix/12d0))
-
-  !N1 and N2 defined as Ns = sqrt((l+s)!/(l-s)!)
-  do l = 1, lmax
-    al = dble(l)
-    n1(l) = dsqrt((al+1d0)*al)
-    n2(l) = dsqrt((al+2d0)*(al**2-1d0)*al)
-  end do
-
-  !//// derivatives of window functions in harmonic space ////!
-  allocate(wlm(1,0:lmax,0:lmax))
-  call map2alm(nside,lmax,lmax,W,wlm)
-
-  allocate(W1(0:npix-1,2),W2(0:npix-1,2),tlm(2,0:lmax,0:lmax))
-  !compute del^1 W
-  tlm = 0d0
-  do l = 1, lmax
-    tlm(1,l,0:l) = wlm(1,l,0:l)*n1(l)
-  end do
-  call alm2map_spin(nside,lmax,lmax,1,tlm,W1)
-
-  !compute del^2 W
-  tlm = 0d0
-  do l = 2, lmax
-    tlm(1,l,0:l) = wlm(1,l,0:l)*n2(l)
-  end do
-  call alm2map_spin(nside,lmax,lmax,2,tlm,W2)
-  deallocate(tlm,wlm)
-
-  !inverse mask
-  do n = 0, npix-1
-    if (W(n)==0d0) then
-      W1(n,:) = 0d0
-      W2(n,:) = 0d0
-    else
-      W1(n,:) = W1(n,:)/W(n)
-      W2(n,:) = W2(n,:)/W(n)
-    end if
-  end do
-
-  !//// compute P1=conjg(W1)*(Q+iU), P0=conjg(W2)*(Q+iU) ////!
-  allocate(P2(0:npix-1,2),P1(0:npix-1,2),P0(0:npix-1,2))
-  P2(:,1) = Q
-  P2(:,2) = U
-  P1(:,1) = W1(:,1)*Q + W1(:,2)*U
-  P1(:,2) = W1(:,1)*U - W1(:,2)*Q
-  P0(:,1) = W2(:,1)*Q + W2(:,2)*U
-  P0(:,2) = W2(:,1)*U - W2(:,2)*Q
-  deallocate(W1,W2)
-
-  ! P1^+ +/- iP^- = \sum_lm Y_lm^s alm^E +/- i alm^B
-  allocate(alm0(2,0:lmax,0:lmax),alm1(2,0:lmax,0:lmax),alm2(2,0:lmax,0:lmax))
-  call map2alm_spin(nside,lmax,lmax,2,P2,alm2)
-  call map2alm_spin(nside,lmax,lmax,1,P1,alm1)
-  call map2alm_spin(nside,lmax,lmax,0,P0,alm0)
-  deallocate(P2,P1,P0)
-
-  !compute purified E/B modes
-  Elm = 0d0
-  Blm = 0d0
-  do l = 2, lmax
-    Elm(l,:) = alm2(1,l,:) + (2*n1(l)/n2(l))*alm1(1,l,:) + (1d0/n2(l))*alm0(1,l,:)
-    Blm(l,:) = alm2(2,l,:) + (2*n1(l)/n2(l))*alm1(2,l,:) + (1d0/n2(l))*alm0(2,l,:)
-  end do
-  deallocate(alm0,alm1,alm2)
-
-
-end subroutine eb_separate
 
 
 subroutine alm2cl(lmax,cl,alm1,alm2)
@@ -659,342 +407,15 @@ subroutine alm2cov(n,lmax,cov,alm)
 end subroutine alm2cov
 
 
-subroutine apodize(npix,rmask,ascale,order,holeminsize,amask)
-!*  Compute apodized window function. Partially use Healpix's process_mask code.
-!*
-!*  Args:
-!*    :rmask[pix] (double): Input window function, with bounds (0:pix-1). Pixels at rmask=0 is considered as masked pixels. 
-!*    :ascale (double)    : Apodization length [deg] from the closest masked pixel
-!*
-!*  Args(optional):
-!*    :order (int)         : Pixel order, 1 for RING (default), otherwize NESTED
-!*    :holeminsize (double): Minimum hole size [arcmin] (i.e., holes within this size is filled), default to 0
-!*
-!*  Returns:
-!*    :amask[pix] (double): Apodization window, with bounds (0:npix-1), using the same ordering as input
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix
-  double precision, intent(in) :: ascale
-  double precision, intent(in), dimension(0:npix-1) :: rmask
-  double precision, intent(out), dimension(0:npix-1) :: amask
-  integer, intent(in) :: order
-  double precision, intent(in) :: holeminsize
-  !internal
-  integer :: n, nside, hsize
-  integer, allocatable :: mask(:)
-  double precision :: x, y
-  double precision, allocatable :: map(:,:), rmap(:)
-  !rmargs :: npix
-  !opt4py :: order = 1
-  !opt4py :: holeminsize = 0
-  !add2py :: npix = len(rmask)
+subroutine lmpy2lmax(lmpy,lmax)
+    !obtain lmax from a length of a healpy array
+    implicit none 
+    integer, intent(in) :: lmpy
+    integer, intent(out) :: lmax
 
-  nside = int(sqrt(npix/12d0))
+    lmax = int((-3d0+dsqrt(1d0+8*lmpy))/2d0)
 
-  allocate(map(0:npix-1,1),rmap(0:npix-1)); map=0d0; rmap=0d0
-  map(:,1) = rmask
-
-  if (order == 1) then
-     write(*,*) 'converting RING -> NESTED'
-     call convert_ring2nest(nside, map)
-  end if
-
-  allocate(mask(0:npix-1)); mask=0
-  do n = 0, npix-1
-    if (map(n,1)/=0d0)  mask(n) = int(map(n,1)/map(n,1))
-  end do
-
-  !remove small holes
-  hsize = nint( holeminsize / (4*pi/npix * (60d0*180d0/pi)**2) )
-  if (hsize>0d0)  call fill_holes_nest(nside, hsize, mask, mask)
-
-  !compute distance from valid to the closest invalid pixel
-  write(*,*) 'compute distance'
-  call dist2holes_nest(nside, mask, rmap)
-  map(:,1) = rmap
-  deallocate(mask)
-
-  if (order == 1) then
-     write(*,*) 'converting NESTED - > RING'
-     call convert_nest2ring(nside, map)
-  end if
-
-  !compute apodization
-  write(*,*) 'compute apodized window'
-  amask = 0d0
-  do n = 0, npix-1
-    x = (1d0-dcos(map(n,1)))/(1d0-dcos(ascale*pi/180d0))
-    y = min(1d0, dsqrt(x) )
-    amask(n) = (y - dsin(2*pi*y)/(2*pi)) * rmask(n)
-  end do
-
-  deallocate(map)
-
-end subroutine apodize
-
-
-subroutine hp_alm2map(npix,lmax,mmax,alm,map)
-!*  Ylm transform of the map to alm with the healpix (l,m) order
-!*
-!*  Args:
-!*    :nside (int)        : Nside of the input map
-!*    :alm [l,m] (dcmplx) : Harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
-!*
-!*  Returns:
-!*    :map [pix] (double) : Transformed map, with bounds (0:npix-1)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax, mmax
-  double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
-  double precision, intent(out), dimension(0:npix-1) :: map
-  !internal
-  integer :: nside
-  double complex, allocatable :: tlm(:,:,:)
-  double precision, allocatable :: tmap(:)
-  !chargs :: npix -> nside
-  !rmargs :: lmax, mmax
-  !add2py :: lmax = len(alm[:,0]) - 1
-  !add2py :: mmax = len(alm[0,:]) - 1
-  !add2py :: npix = 12*nside**2
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(tlm(1,0:lmax,0:lmax))
-  tlm(1,:,:) = alm
-  call alm2map(nside,lmax,mmax,tlm,map)
-  deallocate(tlm)
-
-end subroutine hp_alm2map
-
-
-subroutine hp_alm2map_spin(npix,lmax,mmax,spin,elm,blm,map0,map1)
-!*  Ylm transform of the map to alm with the healpix (l,m) order
-!*
-!*  Args:
-!*    :nside (int)         : Nside of the input map
-!*    :spin (int)         : Spin of the transform
-!*    :elm [l,m] (dcmplx) : Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
-!*    :blm [l,m] (dcmplx) : Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
-!*
-!*  Returns:
-!*    :map0 [pix] (double): Real part of the transformed map (Q-like map), with bounds (0:npix-1)
-!*    :map1 [pix] (double): Imaginary part of the transformed map (U-like map), with bounds (0:npix-1)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax, mmax, spin
-  double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
-  double precision, intent(out), dimension(0:npix-1) :: map0, map1
-  !internal
-  integer :: nside
-  double precision, allocatable :: map(:,:)
-  double complex, allocatable :: alm(:,:,:)
-  !chargs :: npix -> nside
-  !rmargs :: lmax, mmax
-  !add2py :: lmax = len(elm[:,0]) - 1
-  !add2py :: mmax = len(elm[0,:]) - 1
-  !add2py :: npix = 12*nside**2
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(alm(2,0:lmax,0:mmax),map(0:npix-1,2))
-  alm(1,:,:) = elm
-  alm(2,:,:) = blm
-  call alm2map_spin(nside,lmax,mmax,spin,alm,map)
-  map0 = map(:,1)
-  map1 = map(:,2)
-  deallocate(alm,map)
-
-end subroutine hp_alm2map_spin
-
-
-subroutine hp_map2alm(npix,lmax,mmax,map,alm)
-!*  Ylm transform of the map to alm with the healpix (l,m) order
-!*
-!*  Args:
-!*    :lmax (int)          : Maximum multipole of the input alm
-!*    :mmax (int)          : Maximum m of the input alm
-!*    :map [pix] (double)  : Input map, with bounds (0:npix-1)
-!*
-!*  Returns:
-!*    :alm [l,m] (dcmplx): Harmonic coefficient obtained from the input map, with bounds (0:lmax,0:mmax)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax, mmax
-  double precision, intent(in), dimension(0:npix-1) :: map
-  double complex, intent(out), dimension(0:lmax,0:mmax) :: alm
-  !internal
-  integer :: nside
-  double complex, allocatable :: tlm(:,:,:)
-  !rmargs :: npix
-  !add2py :: npix = len(map)
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(tlm(1,0:lmax,0:mmax)); tlm = 0d0
-  call map2alm(nside,lmax,mmax,map,tlm)
-  alm = tlm(1,:,:)
-  deallocate(tlm)
-
-end subroutine hp_map2alm
-
-
-subroutine hp_map2alm_spin(npix,lmax,mmax,spin,map0,map1,alm)
-!*  Spin Ylm transform of the map ( = map0 + i map1 ) to alm with the healpix (l,m) order. For example, if map0=Q, map1=U and spin=2, 
-!*  the alm contains E-mode and B-mode. 
-!*
-!*  Args:
-!*    :lmax (int)          : Maximum multipole of the input alm
-!*    :mmax (int)          : Maximum m of the input alm
-!*    :spin (int)          : Spin of the transform
-!*    :map0 [pix] (double) : Real part of the input map, with bounds (0:npix-1)
-!*    :map1 [pix] (double) : Imaginary part of the input map, with bounds (0:npix-1)
-!*
-!*  Returns:
-!*    :alm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the input map, with bounds (2,0:lmax,0:mmax)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax, mmax, spin
-  double precision, intent(in), dimension(0:npix-1) :: map0, map1
-  double complex, intent(out), dimension(2,0:lmax,0:mmax) :: alm
-  !internal
-  integer :: nside
-  double precision, allocatable :: S(:,:)
-  !rmargs :: npix
-  !add2py :: npix = len(map0)
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(S(0:npix-1,2))
-  S(:,1) = map0
-  S(:,2) = map1
-  call map2alm_spin(nside,lmax,mmax,spin,S,alm)
-  deallocate(S)
-
-end subroutine hp_map2alm_spin
-
-
-subroutine map_mul_lfunc(npix,imap,lmax,lfunc,omap)
-!*  Convert map to alm, multiply a function to alm and convert back again to map
-!*
-!*  Args:
-!*    :imap [pix] (double)  : Input map, with bounds (0:12*nside**2-1)
-!*    :lfunc [l] (double)   : 1D spectrum to be multiplied to alm, with bounds (0:lmax)
-!*
-!*  Returns:
-!*    :omap [pix] (double)  : Output map, with bounds (0:12*nside**2-1)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: lmax, npix
-  double precision, intent(in), dimension(0:npix-1) :: imap
-  double precision, intent(in), dimension(0:lmax) :: lfunc
-  double precision, intent(out), dimension(0:npix-1) :: omap
-  !internal
-  integer :: l, nside
-  double complex, allocatable :: alm(:,:,:)
-  !rmargs :: lmax, npix
-  !add2py :: lmax = len(lfunc) - 1
-  !add2py :: npix = len(imap)
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(alm(1,0:lmax,0:lmax))
-  call map2alm(nside,lmax,lmax,imap,alm)
-  do l = 0, lmax
-    alm(1,l,:) = alm(1,l,:) * lfunc(l)
-  end do
-  call alm2map(nside,lmax,lmax,alm,omap)
-  deallocate(alm)
-
-end subroutine map_mul_lfunc
-
-
-subroutine mulwin(npix,lmax,mmax,alm,win,wlm)
-!*  Multiply window to a map obtained from alm
-!*
-!*  Args:
-!*    :alm [l,m] (dcmplx) : Harmonic coefficient to be multiplied at window, with bounds (0:lmax,0:mmax)
-!*    :win [pix] (double) : Transformed map, with bounds (0:npix-1)
-!*
-!*  Returns:
-!*    :wlm [l,m] (dcmplx) : Harmonic coefficient of the window-multiplied map, with bounds (0:lmax,0:mmax)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax, mmax
-  double complex, intent(in), dimension(0:lmax,0:mmax) :: alm
-  double precision, intent(in), dimension(0:npix-1) :: win
-  double complex, intent(out), dimension(0:lmax,0:mmax) :: wlm
-  !internal
-  integer :: nside
-  double precision, allocatable :: map(:)
-  double complex, allocatable :: tlm(:,:,:)
-  !rmargs :: npix, lmax, mmax
-  !add2py :: npix = len(win)
-  !add2py :: lmax = len(alm[:,0]) - 1
-  !add2py :: mmax = len(alm[0,:]) - 1
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(map(0:npix-1),tlm(1,0:lmax,0:mmax))
-  tlm(1,:,:) = alm
-  call alm2map(nside,lmax,mmax,tlm,map)
-  map = win*map
-  call map2alm(nside,lmax,mmax,map,tlm)
-  wlm = tlm(1,:,:)
-  deallocate(map,tlm)
-
-end subroutine mulwin
-
-
-subroutine mulwin_spin(npix,lmax,mmax,spin,elm,blm,win,wlm)
-!*  Multiply window to a map obtained from alm
-!*
-!*  Args:
-!*    :elm [l,m] (dcmplx) : Spin-s E-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
-!*    :blm [l,m] (dcmplx) : Spin-s B-like harmonic coefficient to be transformed to a map, with bounds (0:lmax,0:mmax)
-!*    :win [pix] (double) : Transformed map, with bounds (0:npix-1)
-!*
-!*  Args (Optional):
-!*    :spin (int)         : Spin of the transform, default to 2
-!*
-!*  Returns:
-!*    :wlm [2,l,m] (dcmplx): Parity-eve/odd harmonic coefficients obtained from the window-multiplied map, with bounds (2,0:lmax,0:mmax)
-!*
-  implicit none
-  !I/O
-  integer, intent(in) :: npix, lmax, mmax, spin
-  double complex, intent(in), dimension(0:lmax,0:mmax) :: elm, blm
-  double precision, intent(in), dimension(0:npix-1) :: win
-  double complex, intent(out), dimension(2,0:lmax,0:mmax) :: wlm
-  !internal
-  integer :: nside
-  double precision, allocatable :: map(:,:)
-  double complex, allocatable :: alm(:,:,:)
-  !rmargs :: npix, lmax, mmax
-  !opt4py :: spin = 2
-  !add2py :: npix = len(win)
-  !add2py :: lmax = len(elm[:,0]) - 1
-  !add2py :: mmax = len(elm[0,:]) - 1
-
-  nside = int(dsqrt(npix/12d0))
-
-  allocate(map(0:npix-1,2),alm(2,0:lmax,0:mmax))
-  alm(1,:,:) = elm
-  alm(2,:,:) = blm
-  call alm2map_spin(nside,lmax,mmax,spin,alm,map)
-  map(:,1) = win*map(:,1)
-  map(:,2) = win*map(:,2)
-  call map2alm_spin(nside,lmax,mmax,spin,map,wlm)
-  deallocate(map,alm)
-
-end subroutine mulwin_spin
+end subroutine lmpy2lmax
 
 
 subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
@@ -1029,36 +450,31 @@ subroutine lm_healpy2healpix(lmpy,almpy,lmax,almpix)
 end subroutine lm_healpy2healpix
 
 
-subroutine cosin_healpix(npix,cosin)
-!*  Return cos(theta) as a function of the Healpix pixel index
+subroutine lm_healpix2healpy(lmax,almpix,lmpy,almpy)
+!*  Transform healpix alm to healpy alm
 !*
 !*  Args:
-!*    :nside (int) : Nside of the desired map
+!*    :lmax (int)            : Maximum multipole of the input/output alm satisfying 2 x lmpy = (lmax+1) x (lmax+2)
+!*    :almpix[l,m] (dcmplx)  : Healpix alm, with bounds (0:lmax,0:lmax)
 !*
 !*  Returns:
-!*    :cosin[pix] (double) : cosin(theta), with bounds (0:npix-1)
+!*    :almpy [index] (dcmplx): Healpy alm, with bounds (0:lmpy-1)
 !*
-  !I/O
   implicit none
-  integer, intent(in) :: npix
-  double precision, intent(out), dimension(0:npix-1) :: cosin
-  !internal
-  integer :: nside, lmax
-  double complex, allocatable :: alm(:,:,:)
-  !chargs :: npix -> nside
-  !add2py :: npix = 12*nside**2
+  integer, intent(in) :: lmpy, lmax
+  double complex, intent(in), dimension(0:lmax,0:lmax) :: almpix
+  double complex, intent(out), dimension(0:lmpy-1) :: almpy
+  integer :: l, m, i
 
-  nside = int(sqrt(npix/12d0))
-  lmax = 2*nside
+  almpy = 0d0
+  do m = 0, lmax
+    do l = m, lmax
+      i = m*lmax - int(m*(m-1d0)/2d0) + l
+      almpy(i) = almpix(l,m)
+    end do
+  end do
 
-  allocate(alm(1,0:lmax,0:lmax));  alm=0d0
-  alm(1,1,0) = 1d0
-  cosin = 0d0
-  call alm2map(nside,lmax,lmax,alm,cosin)
-  cosin = cosin*dsqrt(pi/0.75d0)
-  deallocate(alm)
-
-end subroutine cosin_healpix
+end subroutine lm_healpix2healpy
 
 
 subroutine load_defangle_takahashi(fname,npix,theta,phi,verbose)
@@ -1100,195 +516,6 @@ subroutine load_defangle_takahashi(fname,npix,theta,phi,verbose)
   close(12)
 
 end subroutine load_defangle_takahashi
-
-
-subroutine polcoord2angle(npix,theta,phi,angle,verbose)
-!*  Converting theta and phi coordinates at source plane to deflection angle.
-!*  The algorithm is provided by Takashi Hamana and Ryuichi Takahashi.
-!*
-!*  Args:
-!*    :npix (int) : Number of pixels of theta and phi data
-!*    :theta[pix] (double) : theta, with bounds (0:npix-1)
-!*    :phi[pix] (double)   : phi, with bounds (0:npix-1)
-!*
-!*  Args (optional):
-!*    :verbose (bool) : output messages, default to False
-!*
-!*  Returns:
-!*    :angle[pix,2] (double) : deflection angle vector containing two components, with bounds (0:npix-1,1:2)
-!*
-  implicit none
-  integer, intent(in) :: npix
-  logical, intent(in) :: verbose
-  double precision, intent(in), dimension(0:npix-1) :: theta, phi
-  double precision, intent(out), dimension(0:npix-1,2) :: angle
-  !internal
-  integer :: nside, n
-  double precision :: theta0, phi0, deltaphi, cosalp, sinalp, alpha, cosdelta, sindelta
-  double precision, allocatable :: theta_i(:), phi_i(:)
-  !opt4py :: verbose = False
-
-  if (verbose) write(*,*) 'nside', nside
-  if (verbose) write(*,*) 'size:', size(theta), size(phi)
-  nside = int(dsqrt(npix/12d0))
-
-  !healpix location
-  allocate(theta_i(0:npix-1),phi_i(0:npix-1))
-  if (verbose) write(*,*) 'obtain image plane theta/phi'
-  do n = 0, npix-1
-      call pix2ang_ring(nside,n,theta0,phi0)
-      theta_i(n) = theta0
-      phi_i(n)   = phi0
-  end do
-
-  if (verbose) write(*,*) 'theta/phi to angle'
-  do n = 0, npix-1
-      deltaphi = phi(n) - phi_i(n)
-      cosalp   = dcos(theta_i(n))*dcos(theta(n)) + dsin(theta_i(n))*dsin(theta(n))*dcos(deltaphi)
-      if (cosalp.gt.1d0) then
-          alpha = 0d0
-      else
-          alpha = dacos(cosalp)
-      end if
-      sinalp = dsin(alpha)
-      if (sinalp.eq.0d0) then
-          angle(n,1) = 0d0
-          angle(n,2) = 0d0
-      else
-          cosdelta = (dcos(theta(n))-dcos(theta_i(n))*cosalp)/(dsin(theta_i(n))*sinalp)
-          sindelta = dsin(deltaphi)*dsin(theta(n))/sinalp
-          angle(n,1) = -alpha*cosdelta
-          angle(n,2) = alpha*sindelta
-      end if
-  end do
-  
-  deallocate(theta_i,phi_i)
-
-end subroutine polcoord2angle
-
-
-subroutine polcoord2angle_alm(nside,lmax,theta,phi,glm,clm,verbose)
-!*  Converting theta and phi coordinates at source plane to deflection angle.
-!*
-!*  Args:
-!*    :npix (int) : Number of pixels of theta and phi data
-!*    :lmax (int) : Maximum multipole of alms for gradient and curl modes
-!*    :theta[pix] (double) : theta, with bounds (0:npix-1)
-!*    :phi[pix] (double)   : phi, with bounds (0:npix-1)
-!*
-!*  Args (optional):
-!*    :verbose (bool) : output messages, default to False
-!*
-!*  Returns:
-!*    :glm[l,m] (dcmplx) : gradient mode, with bounds (0:lmax,0:lmax)
-!*    :clm[l,m] (dcmplx) : curl mode, with bounds (0:lmax,0:lmax)
-!*
-  implicit none
-  logical, intent(in) :: verbose
-  integer, intent(in) :: nside, lmax
-  double precision, intent(in), dimension(:) :: theta, phi
-  double complex, intent(out), dimension(0:lmax,0:lmax) :: glm, clm
-  !internal
-  integer :: npix, l
-  double precision, allocatable :: angle(:,:)
-  double complex, allocatable :: dlm(:,:,:)
-  !opt4py :: verbose = False
-
-  npix = 12*nside**2
-
-  if (verbose) then
-    if (size(theta)/=npix) stop 'size of theta is not npix'
-    if (size(phi)/=npix)   stop 'size of phi is not npix'
-  end if
-
-  if (verbose) write(*,*) 'convert to angle'
-  allocate(angle(0:npix-1,2))
-  call polcoord2angle(npix,theta,phi,angle,verbose)
-
-  if (verbose) write(*,*) 'deflection angle to its alms'
-  allocate(dlm(2,0:lmax,0:lmax))
-  call map2alm_spin(nside,lmax,lmax,1,angle,dlm)
-  deallocate(angle)
-
-  if (verbose) write(*,*) 'convert to glm and clm'
-  glm = 0d0
-  clm = 0d0
-  do l = 1, lmax
-      glm(l,0:l) = dlm(1,l,0:l)/dsqrt(dble(l**2+l))
-      clm(l,0:l) = dlm(2,l,0:l)/dsqrt(dble(l**2+l))
-  end do
-  deallocate(dlm)
-
-end subroutine polcoord2angle_alm
-
-
-subroutine calc_mfs(bn,nu,lmax,walm,V,nside)
-!*  Compute 2D Minkowski functionals from a given alm
-!*
-!*  Args:
-!*    :bn (int)            : Number of nu bins
-!*    :nu [bin] (double)   : Nu bins, with bounds (bn)
-!*    :lmax (int)          : Maximum multipole of the input walm
-!*    :walm [l,m] (dcmplx) : Alm with filtering, possibly divided by the map variance, with bounds (0:lmax,0:lmax)
-!*
-!*  Args(optional): 
-!*    :nside (int): Nside of the intermediate map, default to the closest power of 2 to 3xlmax
-!*
-!*  Returns:
-!*    :V [bin,type] (double): The three Minkowski functionals, V0, V1 and V2, at each nu bin, with bounds (bn,0:2)
-!*
-  implicit none 
-  !I/O
-  integer, intent(in) :: lmax, bn
-  double precision, intent(in), dimension(bn) :: nu
-  double complex, intent(in), dimension(0:lmax,0:lmax) :: walm
-  double precision, intent(out), dimension(bn,0:2) :: V
-  integer, intent(in) :: nside
-  !internal
-  integer :: n, i, l, npix, nside_t
-  double precision :: dnu, dtt, dtp, dpp, atant, mcV(0:2)
-  double precision, allocatable :: cost(:), der0(:), der1(:,:), der2(:,:)
-  double complex, allocatable :: alm(:,:,:)
-  !opt4py :: nside = 0
-
-  nside_t = nside
-  if (nside==0)  nside_t = 2**(int(dlog(dble(3*lmax))/dlog(2d0)))
-  npix = 12*nside_t**2
-  dnu  = nu(2)-nu(1)
-
-  ! compute derivatives 
-  allocate(alm(1,0:lmax,0:lmax),der0(0:npix-1),der1(0:npix-1,2),der2(0:npix-1,3))
-  alm(1,:,:) = walm
-  call alm2map_der(nside,lmax,lmax,alm,der0,der1,der2)
-  deallocate(alm)
-
-  ! cosine
-  allocate(cost(0:npix-1))
-  call cosin_healpix(npix,cost) 
-
-  !loop for nu
-  do i = 1, bn
-    mcV = 0d0
-    do n = 0, npix-1
-      !V0
-      if (der0(n)>=nu(i))  mcV(0) = mcV(0) + 1d0
-      if (abs(der0(n)-nu(i))<=dnu/2) then 
-        !V1
-        mcV(1) = mcV(1) + (0.25/dnu)*dsqrt(der1(n,1)**2+der1(n,2)**2)
-        !V2
-        atant  = cost(n)/dsqrt(1d0-cost(n)**2)
-        dtt    = der2(n,1)
-        dtp    = der2(n,2) - atant*der1(n,2)
-        dpp    = der2(n,3) + atant*der1(n,1)
-        mcV(2) = mcV(2) + (0.5/pi)*(1d0/dnu) * (2d0*der1(n,1)*der1(n,2)*dtt - der1(n,1)**2*dpp-der1(n,2)**2*dtt)/(der1(n,1)**2+der1(n,2)**2)
-      end if
-    end do
-    V(i,0:2) = mcV(0:2)/dble(npix)
-  end do
-
-  deallocate(cost,der0,der1,der2)
-
-end subroutine calc_mfs
 
 
 subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
@@ -1383,6 +610,170 @@ subroutine mock_galaxy_takahashi(fname,zn,ngz,zi,b0,btype,a,b,zm,sz,zbias,gmap)
   end do
 
 end subroutine mock_galaxy_takahashi
+
+
+
+!##################################################!
+! For internal use of python code
+!##################################################!
+
+
+!//////////////////////////////////////////////////!
+! Internal function used for conjugate-gradient decent
+!//////////////////////////////////////////////////!
+
+
+subroutine clhalf(n,mn,lmax,cl,bl,clh)
+  !Compute C^{1/2} for diagonal C
+  implicit none
+  integer, intent(in) :: n, mn, lmax
+  double precision, intent(in) :: cl(n,0:lmax), bl(mn,0:lmax)
+  double precision, intent(out) :: clh(n,n,mn,0:lmax)
+  integer :: ni, l, mi
+
+  clh = 0d0
+  do ni = 1, n
+        do l = 1, lmax
+            do mi = 1, mn
+                if (cl(ni,l)<=0d0) cycle
+                clh(ni,ni,mi,l) = dsqrt(cl(ni,l))*bl(mi,l)
+            end do
+        end do
+  end do
+
+end subroutine clhalf
+
+
+subroutine correct_filtering(n,lmax,cl,filter,xlm)
+  !Final correction to the output of conjugate-gradient decent solver
+  implicit none
+  character(*), intent(in) :: filter
+  integer, intent(in) :: n, lmax
+  double precision, intent(in) :: cl(n,0:lmax)
+  double complex, intent(inout) :: xlm(n,0:lmax,0:lmax)
+  integer :: l, ni
+  
+  do l = 1, lmax
+        do ni = 1, n
+            if (cl(ni,l)<=0d0)  then
+                xlm(ni,l,0:l) = 0d0
+                cycle
+            end if
+            if (filter=='')   xlm(ni,l,0:l) = xlm(ni,l,0:l)/dsqrt(cl(ni,l))
+            if (filter=='W')  xlm(ni,l,0:l) = xlm(ni,l,0:l)*dsqrt(cl(ni,l))
+        end do
+  end do
+
+end subroutine correct_filtering
+
+
+subroutine densemat_multi(n,lmax,arrn,r,imat,x)
+  ! multiply a matrix exactly
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in) :: r(1:n,0:lmax,0:lmax)
+  double complex, intent(in) :: imat(1:arrn,1:arrn)
+  double complex, intent(out) :: x(1:n,0:lmax,0:lmax)
+  integer :: i, j, l, m, p, q, ni, nj
+
+  x = 0d0
+  i = 0
+  do ni = 1, n
+        do l = 0, lmax
+            do m = 0, l
+                i = i + 1
+                if (i>arrn) stop 'error'
+                j = 0
+                x(ni,l,m) = 0d0
+                do nj = 1, n
+                    do p = 0, lmax
+                        do q = 0, p
+                            j = j + 1
+                            if (j>arrn) stop 'error'
+                            x(ni,l,m) = x(ni,l,m) + imat(i,j)*r(nj,p,q)
+                        end do
+                    end do
+                end do
+            end do
+        end do
+  end do
+
+end subroutine densemat_multi
+
+
+subroutine trans_alm2array_1d(n,lmax,arrn,alm,arr)
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in) :: alm(1:n,0:lmax,0:lmax)
+  double complex, intent(out) :: arr(1:arrn)
+  integer :: i, l, m, ni
+
+  arr = 0d0
+  i = 0
+  do ni = 1, n
+    do l = 0, lmax
+      do m = 0, l
+        i = i + 1
+        call check_error(i>arrn,'wrong size')
+        arr(i) = alm(ni,l,m)
+      end do
+    end do
+  end do
+
+end subroutine trans_alm2array_1d
+
+
+subroutine trans_array2alm_1d(n,arrn,lmax,arr,alm)
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in)  :: arr(1:arrn)
+  double complex, intent(out) :: alm(1:n,0:lmax,0:lmax)
+  integer :: i, l, m, ni
+
+  alm = 0d0
+  i = 0
+  do ni = 1, n
+    do l = 0, lmax
+      do m = 0, l
+        i = i + 1
+        call check_error(i>arrn,'wrong size (F90/src_hp/hp_utils.f90.trans_array2alm_1d)','i='//str(i)//',arrn='//str(arrn))
+        alm(ni,l,m) = arr(i)
+      end do
+    end do
+  end do
+
+end subroutine trans_array2alm_1d
+
+
+subroutine trans_array2alm_2d(n,lmax,arrn,arr,alm)
+  implicit none
+  integer, intent(in) :: n, lmax, arrn
+  double complex, intent(in)  :: arr(1:arrn,1:arrn)
+  double complex, intent(out) :: alm(1:n,0:lmax,0:lmax,1:n,0:lmax,0:lmax)
+  integer :: i, j, l, m, p, q, ni, nj
+
+  alm = 0d0
+  i = 0
+  do ni = 1, n
+    do l = 0, lmax
+      do m = 0, l
+        i = i + 1
+        call check_error(i>arrn,'wrong size (F90/src_hp/hp_utils.f90.trans_array2alm_2d)')
+        j = 0
+        do nj = 1, n
+          do p = 0, lmax
+            do q = 0, p
+              j = j + 1
+              call check_error(j>arrn,'wrong size (F90/src_hp/hp_utils.f90.trans_array2alm_2d)')
+              alm(ni,l,m,nj,p,q) = arr(i,j)
+            end do
+          end do
+        end do
+      end do
+    end do
+  end do
+
+end subroutine trans_array2alm_2d
 
 
 end module utils

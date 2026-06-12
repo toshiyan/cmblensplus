@@ -1,4 +1,4 @@
-from cmblensplus import libflatsky
+from . import libflatsky
 import numpy
 
 def qeb(nx,ny,D,rL,IE,IB,EE,eL,BB=0):

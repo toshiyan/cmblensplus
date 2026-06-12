@@ -6,8 +6,6 @@
 cwd=$(pwd)
 
 fftw=${cwd}/FFTW
-cfitsio=${cwd}/cfitsio
-healpix=${cwd}/Healpix
 lapack=${cwd}/LAPACK95
 
 
@@ -46,28 +44,6 @@ for args in "$@"; do
         ./configure --prefix=${fftw}/ --enable-openmp --enable-shared --enable-static
         make && make install
         cd ${cwd}
-        ;;
-    # cfitsio
-    cfitsio | all)
-        echo '---- Installing CFITSIO ----'
-        reset_dir "${cfitsio}"
-        download_and_extract "https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-4.5.0.tar.gz" "${cfitsio}/build"
-        cd "${cfitsio}/build/cfitsio-4.5.0"
-        ./configure --prefix="${cfitsio}"
-        make && make install
-        cd "${cwd}"
-        ;;
-    # Healpix
-    healpix | all)
-        echo '---- Installing Healpix ----'
-        reset_dir "${healpix}"
-        download_and_extract "https://sourceforge.net/projects/healpix/files/Healpix_3.80/Healpix_3.80_2021Jun22.tar.gz" "${healpix}" 1
-        export LD_LIBRARY_PATH="${healpix}/lib:${cfitsio}/lib:$LD_LIBRARY_PATH"
-        export LD_LIBRARY_PATH=$(echo "$LD_LIBRARY_PATH" | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed 's/:$//')
-        cd "${healpix}"
-        FC=ifort CC=gcc FITSDIR="${cfitsio}/lib" ./configure --auto=f90
-        make && make test
-        cd "${cwd}"
         ;;
     lapack | all)
         echo '---- Installing LAPACK and LAPACK95 ----'

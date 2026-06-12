@@ -1,4 +1,4 @@
-from cmblensplus import libbasic
+from . import libbasic
 import numpy
 
 def alxy(qest,qtype,lmax,rlmin,rlmax,fC,W1,W2,gln=100,gle=1e-14,lxcut=0):
