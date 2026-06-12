@@ -12,7 +12,29 @@ def nside_from_npix(npix: int) -> int:
     return nside
 
 
-def subpatch_mask(nside_full: int, nside_sub: int, ipix_sub: int, ascale: float):
+def default_apod_window(s, a):
+    s = np.asarray(s, dtype=np.float64)
+
+    s_out = 1.0
+    s_in = s_out * a
+
+    w = np.zeros_like(s, dtype=np.float64)
+
+    inside = s < s_in
+    trans = (s >= s_in) & (s <= s_out)
+
+    w[inside] = 1.0
+
+    if np.any(trans):
+        x = (s_out - s[trans]) / (s_out - s_in)
+        w[trans] = x - np.sin(2.0 * np.pi * x) / (2.0 * np.pi)
+
+    if w.ndim == 0:
+        return float(w)
+    return w
+
+    
+def subpatch_mask(nside_full: int, nside_sub: int, ipix_sub: int, ascale: float, apod_window=default_apod_window):
     """
     Based on the fortran code written by Ryo Nagata.
     """
@@ -84,7 +106,7 @@ def get_baseline(npix: int, nside_subpatch: int, QU):
 
     return blmap
 
-def get_winmap(nside_large: int, nside_small: int, ipix_pix: int, apod: float, apod_window=apod_window) -> float:
+def get_winmap(nside_large: int, nside_small: int, ipix_pix: int, apod: float, apod_window=default_apod_window) -> float:
     """
     Based on the fortran code written by Ryo Nagata.
     """
@@ -105,26 +127,7 @@ def get_winmap(nside_large: int, nside_small: int, ipix_pix: int, apod: float, a
     return float(apod_window(np.array([dtheta]), apod)[0])
 
 
-def apod_window(s, a):
-    s = np.asarray(s, dtype=np.float64)
 
-    s_out = 1.0
-    s_in = s_out * a
-
-    w = np.zeros_like(s, dtype=np.float64)
-
-    inside = s < s_in
-    trans = (s >= s_in) & (s <= s_out)
-
-    w[inside] = 1.0
-
-    if np.any(trans):
-        x = (s_out - s[trans]) / (s_out - s_in)
-        w[trans] = x - np.sin(2.0 * np.pi * x) / (2.0 * np.pi)
-
-    if w.ndim == 0:
-        return float(w)
-    return w
 
 
 def eb_separate(lmax, W, Q, U):
