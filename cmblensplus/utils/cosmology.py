@@ -12,10 +12,7 @@ import camb
 import cmblensplus.basic as basic
 
 # cmblensplus/utils/
-import constant
-import cmb
-import analysis as ana
-
+from . import constant, cmb, analysis as ana
 
 #////////// Constants //////////#
 

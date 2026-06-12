@@ -11,7 +11,7 @@ import multiprocessing
 import cmblensplus.curvedsky as curvedsky
 
 # local
-import misctools
+from . import misctools
 
 
 def set_mtype(qlist):  

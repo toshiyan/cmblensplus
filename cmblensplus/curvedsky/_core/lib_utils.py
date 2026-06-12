@@ -12,7 +12,29 @@ def nside_from_npix(npix: int) -> int:
     return nside
 
 
-def subpatch_mask(nside_full: int, nside_sub: int, ipix_sub: int, ascale: float):
+def default_apod_window(s, a):
+    s = np.asarray(s, dtype=np.float64)
+
+    s_out = 1.0
+    s_in = s_out * a
+
+    w = np.zeros_like(s, dtype=np.float64)
+
+    inside = s < s_in
+    trans = (s >= s_in) & (s <= s_out)
+
+    w[inside] = 1.0
+
+    if np.any(trans):
+        x = (s_out - s[trans]) / (s_out - s_in)
+        w[trans] = x - np.sin(2.0 * np.pi * x) / (2.0 * np.pi)
+
+    if w.ndim == 0:
+        return float(w)
+    return w
+
+    
+def subpatch_mask(nside_full: int, nside_sub: int, ipix_sub: int, ascale: float, apod_window=default_apod_window):
     """
     Based on the fortran code written by Ryo Nagata.
     """
@@ -105,26 +127,7 @@ def get_winmap(nside_large: int, nside_small: int, ipix_pix: int, apod: float, a
     return float(apod_window(np.array([dtheta]), apod)[0])
 
 
-def apod_window(s, a):
-    s = np.asarray(s, dtype=np.float64)
 
-    s_out = 1.0
-    s_in = s_out * a
-
-    w = np.zeros_like(s, dtype=np.float64)
-
-    inside = s < s_in
-    trans = (s >= s_in) & (s <= s_out)
-
-    w[inside] = 1.0
-
-    if np.any(trans):
-        x = (s_out - s[trans]) / (s_out - s_in)
-        w[trans] = x - np.sin(2.0 * np.pi * x) / (2.0 * np.pi)
-
-    if w.ndim == 0:
-        return float(w)
-    return w
 
 
 def eb_separate(lmax, W, Q, U):
@@ -602,14 +605,14 @@ def calc_mfs_from_derivatives(nu, der0, der1, der2):
     
 #//// utilities for quadratic estimators ////#
 
-def _validate_alm(name: str, alm: Array, rlmax: int) -> Array:
+def _validate_alm(name,alm,rlmax):
     arr = np.asarray(alm, dtype=np.complex128)
     if arr.shape[0] < rlmax + 1 or arr.shape[1] < rlmax + 1:
         raise ValueError(f"{name} must have shape at least ({rlmax + 1}, {rlmax + 1}); got {arr.shape}")
     return arr
 
 
-def _validate_cl(name: str, cl: Array, rlmax: int) -> Array:
+def _validate_cl(name,cl,rlmax):
     arr = np.asarray(cl, dtype=np.float64)
     if arr.shape[0] < rlmax + 1:
         raise ValueError(f"{name} must have length at least {rlmax + 1}; got {arr.shape[0]}")
@@ -623,7 +626,7 @@ def _default_nside(lmax: int, nside_t: int) -> int:
     return 2 ** int(np.log(float(lmax)) / np.log(2.0))
 
 
-def _ilk(lmax: int, gtype: str) -> Array:
+def _ilk(lmax: int, gtype: str):
     out = np.ones(lmax + 1, dtype=np.float64)
     if gtype == "k":
         ell = np.arange(1, lmax + 1, dtype=np.float64)
@@ -631,19 +634,19 @@ def _ilk(lmax: int, gtype: str) -> Array:
     return out
 
 
-def _zeros_spin(lmax: int, mmax: Optional[int] = None) -> Array:
+def _zeros_spin(lmax: int, mmax = None):
     if mmax is None:
         mmax = lmax
     return np.zeros((2, lmax + 1, mmax + 1), dtype=np.complex128)
 
 
-def _zeros_scal(lmax: int, mmax: Optional[int] = None) -> Array:
+def _zeros_scal(lmax: int, mmax = None):
     if mmax is None:
         mmax = lmax
     return np.zeros((1, lmax + 1, mmax + 1), dtype=np.complex128)
 
 
-def _fill_component(alm_type, component: int, source: Array, rlmin: int, rlmax: int, weights: Optional[Array] = None) -> None:
+def _fill_component(alm_type, component, source, rlmin, rlmax, weights=None):
     """
     component = 0 if source is Talm or Ealm
     component = 1 if source is Balm
@@ -662,7 +665,7 @@ def _fill_component(alm_type, component: int, source: Array, rlmin: int, rlmax: 
     return alm
 
 
-def _finish_gradient_curl(lmax: int, spin_alm: Array, ilk: Array, prefactor: float = 1.0) -> Tuple[Array, Array]:
+def _finish_gradient_curl(lmax, spin_alm, ilk, prefactor=1.0):
     glm = np.zeros((lmax + 1, lmax + 1), dtype=np.complex128)
     clm = np.zeros((lmax + 1, lmax + 1), dtype=np.complex128)
     for ell in range(1, lmax + 1):
@@ -672,7 +675,7 @@ def _finish_gradient_curl(lmax: int, spin_alm: Array, ilk: Array, prefactor: flo
     return glm, clm
 
 
-def _common_spin_product(A: Array, A1: Array, A3: Array) -> Array:
+def _common_spin_product(A, A1, A3):
     """
     map(:,1) = A(:,1)*(A1(:,1)-A3(:,1)) + A(:,2)*(A1(:,2)-A3(:,2))
     map(:,2) = -A(:,1)*(A1(:,2)+A3(:,2)) + A(:,2)*(A1(:,1)+A3(:,1))
@@ -682,6 +685,4 @@ def _common_spin_product(A: Array, A1: Array, A3: Array) -> Array:
     maps[0] =  A[0] * (A1[0] - A3[0]) + A[1] * (A1[1] - A3[1])
     maps[1] = -A[0] * (A1[1] + A3[1]) + A[1] * (A1[0] + A3[0])
     return maps
-
-
 

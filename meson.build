@@ -58,26 +58,23 @@ inc_fortran_internal = include_directories(
 # External dependencies
 # ---------------------------------------------------------------------------
 
-# FFTW is required by fortran_internal/src_dft and flatsky wrappers.
-#
-# In conda/HPC/system environments, this is usually found via pkg-config.
-# If pkg-config metadata is unavailable, fall back to direct library lookup.
-fftw_dep = dependency('fftw3', required: false)
+build_flatsky = get_option('flatsky')
 
-if not fftw_dep.found()
-  fftw_dep = fc.find_library('fftw3', required: true)
+if build_flatsky
+  # FFTW is required by fortran_internal/src_dft and flatsky wrappers.
+  fftw_dep = dependency('fftw3', required: false)
+  if not fftw_dep.found()
+    fftw_dep = fc.find_library('fftw3', required: true)
+  endif
+  # FFTW compile flags for the legacy src_dft Makefile.
+  fftw_pkg_cflags = run_command(
+    'pkg-config', '--cflags', 'fftw3',
+    check: false,
+  ).stdout().strip()
+else
+  fftw_pkg_cflags = ''
 endif
 
-# FFTW compile flags for the legacy src_dft Makefile.
-#
-# dependency('fftw3') passes include flags to Meson targets, but not to external
-# Makefile invocations. Therefore we explicitly query pkg-config when available.
-fftw_pkg_cflags = run_command(
-  'pkg-config',
-  '--cflags',
-  'fftw3',
-  check: false,
-).stdout().strip()
 
 # ---------------------------------------------------------------------------
 # Legacy internal Fortran libraries
@@ -113,31 +110,32 @@ utils_lib_path = meson.current_build_dir() / 'libutils.a'
 # src_dft/fftw.f90 uses modules from src_utils.
 # Therefore dft_lib_target must depend on utils_lib_target.
 
-fortran_internal_src_dft_dir = project_root / 'fortran_internal' / 'src_dft'
-fortran_internal_dft_lib = fortran_internal_lib_dir / 'libdft.a'
+if build_flatsky
+  fortran_internal_src_dft_dir = project_root / 'fortran_internal' / 'src_dft'
+  fortran_internal_dft_lib = fortran_internal_lib_dir / 'libdft.a'
 
-dft_fflags = '-O3 -cpp -fPIC -I../mod ' + fftw_pkg_cflags
+  dft_fflags = '-O3 -cpp -fPIC -I../mod ' + fftw_pkg_cflags
 
-dft_lib_target = custom_target(
-  'fortran_internal_libdft',
-  output: 'libdft.a',
-  command: [
-    'sh', '-c',
-    'srcdir="$1"; libsrc="$2"; libout="$3"; fc="$4"; fflags="$5"; make -C "$srcdir" FC="$fc" FFLAGS="$fflags" && make -C "$srcdir" install FC="$fc" FFLAGS="$fflags" && cp "$libsrc" "$libout"',
-    'sh',
-    fortran_internal_src_dft_dir,
-    fortran_internal_dft_lib,
-    '@OUTPUT@',
-    fc_cmd,
-    dft_fflags,
-  ],
-  depends: [
-    utils_lib_target,
-  ],
-  install: false,
-)
+  dft_lib_target = custom_target(
+    'fortran_internal_libdft',
+    output: 'libdft.a',
+    command: [
+      'sh', '-c',
+      'srcdir="$1"; libsrc="$2"; libout="$3"; fc="$4"; fflags="$5"; make -C "$srcdir" FC="$fc" FFLAGS="$fflags" && make -C "$srcdir" install FC="$fc" FFLAGS="$fflags" && cp "$libsrc" "$libout"',
+      'sh',
+      fortran_internal_src_dft_dir,
+      fortran_internal_dft_lib,
+      '@OUTPUT@',
+      fc_cmd,
+      dft_fflags,
+    ],
+    depends: [ utils_lib_target ],
+    install: false,
+  )
 
-dft_lib_path = meson.current_build_dir() / 'libdft.a'
+  dft_lib_path = meson.current_build_dir() / 'libdft.a'
+endif
+
 
 # ---------------------------------------------------------------------------
 # Python package installation
@@ -151,14 +149,16 @@ py.install_sources(
 subdir('cmblensplus/basic')
 subdir('cmblensplus/curvedsky')
 subdir('cmblensplus/flatsky')
-
+subdir('cmblensplus/utils')
 
 # ---------------------------------------------------------------------------
 # f2py extension modules
 # ---------------------------------------------------------------------------
 
 subdir('fortran_wrapped/src_basic')
-subdir('fortran_wrapped/src_flatsky')
+if build_flatsky
+  subdir('fortran_wrapped/src_flatsky')
+endif
 subdir('fortran_wrapped/src_curvedsky')
 
 

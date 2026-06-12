@@ -5,7 +5,7 @@ import numpy as np, tqdm
 import cmblensplus.basic as basic
 
 # from cmblensplus/utils
-import constant as c
+from . import constant as c
 
 # to avoid scipy constants use
 from scipy.integrate import quad

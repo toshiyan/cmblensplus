@@ -1,0 +1,7 @@
+option(
+  'flatsky',
+  type: 'boolean',
+  value: false,
+  description: 'Build flatsky modules that require FFTW'
+)
+
