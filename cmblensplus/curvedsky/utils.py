@@ -148,7 +148,7 @@ def get_apod_window(s,a):
         :w (double): Aporization window
 
     """
-      return lib_utils.default_apod_window(s,a)
+    return lib_utils.default_apod_window(s,a)
 
 def eb_separate(lmax,W,Q,U):
     """
