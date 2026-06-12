@@ -1,86 +1,156 @@
-# Analysis tools for 2D map to compute some higher-order statistics
+# Analysis Tools for 2D Maps and Higher-Order Statistics
 
-This package contains a wrapper for Python, to reconstruct lensing potential, cosmic bi-refrimgence, and patchy reionization from cosmic microwave background anisotropies (CMB) in full and flat sky. This package also includes modules for delensing, some bi-spectrum calculation, and so on. Installing this library at NERSC is straightforward. 
+`cmblensplus` is a Python package for reconstructing the lensing potential, cosmic birefringence, and patchy reionization from cosmic microwave background anisotropies (CMB), in both full-sky and flat-sky geometries. The package also includes tools for delensing, lensing bispectrum calculations, and related analyses.
 
+Installation on NERSC systems is straightforward.
 
 # Installation
 
-  Please load FFTW module in your environment first. 
-  The easiest way to install the entire package is to run
-    
-    python -m pip install "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@dev_ducc0"
+The default installation builds the `basic` module and installs the pure-Python `curvedsky` and `utils` modules. This default installation does not require external Fortran libraries.
 
-  You will find modules inside "cmblensplus/". 
+```bash
+python -m pip install "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@dev_ducc0"
+```
 
-  For a developer, 
+For an editable install from a local checkout, run the following command from the top-level source directory:
 
-    python -m pip install --no-build-isolation --no-cache-dir -e ".[dev]"
-  
-  Dependencies:
-    numpy scipy matplotlib astropy healpy ducc0 meson ninja meson-python pkg-config compilers ipykernel pip tqdm
+```bash
+python -m pip install --no-build-isolation --no-cache-dir -e ".[dev]"
+```
 
-  Note that the installation process is as follows:  
+## Installing the optional `flatsky` module
 
-  [2] Compile local Fortran codes to create libraries (fortran_internal/src_***)
+The `flatsky` module depends on FFTW. To install this module, first load the FFTW module in your environment. At NERSC, you can use:
 
-  [4] Compile Fortran codes inside fortran_wrapped/src_XXX/ with f2py
+```bash
+module load cray-fftw
+```
 
-  [5] Compile python module files inside cmblensplus/XXX/
+On NERSC systems, it is also recommended to use the Cray compiler wrappers when building the Fortran extensions:
 
+```bash
+export FC=ftn
+export F90=ftn
+export F77=ftn
+export CC=cc
+```
 
-# Documents and Reference
+Then install the package with the optional `flatsky` module enabled:
 
-Please go to the following link for details of how to use each module:
-https://toshiyan.github.io/clpdoc/html/. 
-The reference paper for each module is as follows:
+```bash
+python -m pip install \
+  -Csetup-args=-Dflatsky=true \
+  "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@dev_ducc0"
+```
 
-**Curved sky modules**:
+For an editable install with the optional `flatsky` module enabled, use:
 
-  - **Lensing Reconstruction, Delensing** \
-   Developed by Namikawa & Nagata JCAP 09 (2014) 009, https://arxiv.org/abs/1405.6568
-  - **Cosmic Birefringence** \
-   Developed by Namikawa et al. PRD 101 (2020) 083527, https://arxiv.org/abs/2001.10465
-  - **Patchy Reionization** \
-   Developed by Namikawa PRD, 97 (2018) 063505, https://arxiv.org/abs/1711.00058
-  - **Lensing Bi-Spectrum** \
-   Developed by Namikawa et al. PRD 99 (2019) 063511, https://arxiv.org/abs/1812.10635
+```bash
+python -m pip install --no-build-isolation --no-cache-dir -e ".[dev]" \
+  -Csetup-args=-Dflatsky=true
+```
 
-**Flat sky modules**:
+Without `-Dflatsky=true`, the package is installed without the FFTW-dependent `flatsky` extension.
 
-  - **Lensing Reconstruction, Delensing** \
-   Developed by Namikawa PRD 95 (2017) 103514, https://arxiv.org/abs/1703.00169
-  - **Cosmic Birefringence** \
-   Developed by Namikawa PRD 95 (2017) 043523, https://arxiv.org/abs/1612.07855
+The package modules are located under `cmblensplus/`.
 
+## Dependencies
 
-# This Package
+The main dependencies are:
 
-This package contains three main python modules based on Fourtran 90 sources: 
-  
-  - basic     --- basic routines such as analytic calculation of delensed B-mode spectrum and lensing bispectrum.
+```text
+numpy
+scipy
+matplotlib
+astropy
+healpy
+ducc0
+meson
+ninja
+meson-python
+pkg-config
+compilers
+ipykernel
+pip
+tqdm
+```
 
-  - curvedsky --- analysis package to measure lensing, birefringence, patchy tau, bias-hardening, bispectrum, delensing and analytic reconstruction normalization.
-  
-  - flatsky   --- the same as curvedsky code but for flatsky analysis.
+Some example Jupyter notebooks use `pytempura` to compute the quadratic estimator normalization:
 
-The additional simple python sctipts are stored inside
+https://github.com/simonsobs/tempura
 
-  - example   --- several example scripts for demonstration
-  
-  - utils     --- python scripts to compute noise biase, RDN0, diagonal RDN0, etc. 
+## Build Process
+
+The installation process consists of the following steps:
+
+1. Compile local Fortran codes to create internal libraries under `fortran_internal/src_*/`.
+2. Compile Fortran wrappers under `fortran_wrapped/src_*/` using `f2py`.
+3. Build the Python extension modules under `cmblensplus/*/`.
+
+# Documentation and References
+
+Documentation is available at:
+
+https://toshiyan.github.io/clpdoc/html/
+
+The reference papers for each module are listed below.
+
+## Curved-Sky Modules
+
+* **Lensing Reconstruction and Delensing**
+  Developed by Namikawa & Nagata, JCAP 09 (2014) 009
+  https://arxiv.org/abs/1405.6568
+
+* **Cosmic Birefringence**
+  Developed by Namikawa et al., PRD 101 (2020) 083527
+  https://arxiv.org/abs/2001.10465
+
+* **Patchy Reionization**
+  Developed by Namikawa, PRD 97 (2018) 063505
+  https://arxiv.org/abs/1711.00058
+
+* **Lensing Bispectrum**
+  Developed by Namikawa et al., PRD 99 (2019) 063511
+  https://arxiv.org/abs/1812.10635
+
+## Flat-Sky Modules
+
+* **Lensing Reconstruction and Delensing**
+  Developed by Namikawa, PRD 95 (2017) 103514
+  https://arxiv.org/abs/1703.00169
+
+* **Cosmic Birefringence**
+  Developed by Namikawa, PRD 95 (2017) 043523
+  https://arxiv.org/abs/1612.07855
+
+# Package Structure
+
+This package contains four main Python modules based on Fortran 90 source codes and pure-python codes:
+
+* `cmblensplus.basic`
+  Basic routines, such as analytic calculations of delensed B-mode spectra and lensing bispectra.
+
+* `cmblensplus.curvedsky`
+  Tools for full-sky analyses, including lensing reconstruction, cosmic birefringence, patchy reionization optical depth, bias hardening, bispectrum calculations, delensing, and analytic reconstruction normalization. The normalization routines are no longer actively developed within this software and are now developed in `pytempura`.
+
+* `cmblensplus.flatsky`
+  Tools for flat-sky analyses corresponding to the curved-sky modules. This module requires FFTW.
+
+Additional Python scripts are provided in:
+
+* `cmblensplus.utils`
+  Utility scripts to compute noise bias, RDN0, diagonal RDN0, and related quantities.
 
 
 # Examples
 
-You can find example codes inside "example" directory. 
+Example scripts are available in the `example/` directory.
 
+# Acknowledgements
 
-# Acknowledgement
-
-The library software uses the following public Fortran codes: FFTW. 
+This package uses the external FFTW library for the `flatsky` module.
 
 # Contact
 
-  toshiya.namikawa at ipmu.jp
-  
-
+Toshiya Namikawa
+toshiya.namikawa at ipmu.jp
