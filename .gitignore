@@ -2,6 +2,7 @@
 **/.ipynb_checkpoints
 **/*.pkl
 **/*.txt
+!meson_options.txt
 **/*.so
 **/*.o
 **/*.a
