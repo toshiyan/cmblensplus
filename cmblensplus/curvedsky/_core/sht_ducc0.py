@@ -3,7 +3,7 @@ import ducc0
 from .. import libcurvedsky # wrapped fortran sources
 
 
-def alm2map(nside: int, alm: Array, nthreads=0) -> Array:
+def alm2map(nside, alm, nthreads=0):
 
     # extract maximum multipole
     lmax = len(alm[:,0]) - 1
@@ -27,7 +27,7 @@ def alm2map(nside: int, alm: Array, nthreads=0) -> Array:
     return np.asarray(mp[0], dtype=np.float64)
 
 
-def alm2map_spin(nside: int, spin: int, alm: Array, nthreads=0) -> Array:
+def alm2map_spin(nside, spin, alm, nthreads=0):
     # expected input:
     # alm[0,l,m] = first spin component, e.g. E
     # alm[1,l,m] = second spin component, e.g. B
@@ -55,7 +55,7 @@ def alm2map_spin(nside: int, spin: int, alm: Array, nthreads=0) -> Array:
     return np.asarray(mp, dtype=np.float64)
 
     
-def map2alm(lmax: int, mmax: int, map_in: Array, nthreads=0, maxiter=0) -> Array:
+def map2alm(lmax, mmax, map_in, nthreads=0, maxiter=0):
 
     nside = int(np.sqrt(len(map_in) / 12))
 
@@ -73,7 +73,7 @@ def map2alm(lmax: int, mmax: int, map_in: Array, nthreads=0, maxiter=0) -> Array
     return alm * 4*np.pi/(12*nside**2)
 
 
-def map2alm_spin(lmax: int, mmax: int, spin: int, map_in: Array, nthreads=0, maxiter=0) -> Array:
+def map2alm_spin(lmax, mmax, spin, map_in, nthreads=0, maxiter=0):
     # expected input:
     # map_in[0,pix] = first spin component, e.g. Q
     # map_in[1,pix] = second spin component, e.g. U
