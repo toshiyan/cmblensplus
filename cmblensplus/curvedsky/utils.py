@@ -473,7 +473,7 @@ def load_defangle_takahashi(fname,npix,verbose=False):
         :phi[pix] (double): phi, with bounds (0:npix-1)
 
     """
-      return libcurvedsky.utils.load_defangle_takahashi(fname,npix,verbose)
+    return libcurvedsky.utils.load_defangle_takahashi(fname,npix,verbose)
 
 
 def polcoord2angle(theta,phi,verbose=False):
@@ -492,7 +492,7 @@ def polcoord2angle(theta,phi,verbose=False):
         :angle[2,pix] (double): deflection angle vector containing two components, with bounds (1:2,0:npix-1)
 
     """
-    return lib_utils.polcoord2angle(theta,phi,verbose~verbose)
+    return lib_utils.polcoord2angle(theta,phi,verbose=verbose)
 
 
 def polcoord2angle_alm(lmax,theta,phi,verbose=False):

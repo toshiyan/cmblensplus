@@ -151,7 +151,7 @@ py.install_sources(
 subdir('cmblensplus/basic')
 subdir('cmblensplus/curvedsky')
 subdir('cmblensplus/flatsky')
-
+subdir('cmblensplus/utils')
 
 # ---------------------------------------------------------------------------
 # f2py extension modules
