@@ -84,7 +84,7 @@ def get_baseline(npix: int, nside_subpatch: int, QU):
 
     return blmap
 
-def get_winmap(nside_large: int, nside_small: int, ipix_pix: int, apod: float, apod_window=default_apod_window) -> float:
+def get_winmap(nside_large: int, nside_small: int, ipix_pix: int, apod: float, apod_window=apod_window) -> float:
     """
     Based on the fortran code written by Ryo Nagata.
     """
