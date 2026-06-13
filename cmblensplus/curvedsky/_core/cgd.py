@@ -62,6 +62,7 @@ def cg_algorithm(
     b: np.ndarray, 
     mgc: MgChain, 
     chain: int = 0, 
+    stat = "",
     ratio: np.ndarray | None = None
 ) -> np.ndarray:
     """
@@ -101,8 +102,11 @@ def cg_algorithm(
     p = z.copy()
     d0 = np.vdot(r, z)
     d = d0
+    
+    f = open(stat, "w") if stat else None
 
     for i in range(int(mgc.itn[chain])):
+        
         ap = matmul_lhs(mgc.ytype, n, int(mgc.mnmax[chain]), lmax, mgc.cv[chain][: int(mgc.mnmax[chain])], p)
         denom = np.vdot(p, ap)
         alpha = d / denom
@@ -111,16 +115,17 @@ def cg_algorithm(
         absr = np.sqrt(np.sum(np.abs(r) ** 2))
         if chain == 0 and ratio is not None:
             ratio[i] = absr / absb
-        if chain == 0 and mgc.verbose and (i + 1) % mgc.ro == 0:
-            print(i + 1, absr / absb, d / d0)
+        if chain == 0 and f is not None and (i + 1) % mgc.ro == 0:
+            print(i + 1, absr / absb, d / d0, file=f, flush=True)
         z = precondition(n, lmax, r, mgc, chain)
         td = np.vdot(r, z)
         p = z + (td / d) * p
         d = td
         if absr < mgc.eps[chain] * absb:
-            if chain == 0 and mgc.verbose:
-                print(i + 1, absr / absb)
+            if chain == 0 and f is not None:
+                print(i + 1, absr / absb, file=f, flush=True)
             break
+    
     return x
 
 

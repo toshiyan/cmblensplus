@@ -30,7 +30,11 @@ def cnfilter_freq(cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6
         :xlm[n,l,m] (dcmplx): C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 
     """
-    if inl is None: inl = 0*iNcov[:,:,:lmax+1]
+    
+    if inl is None: 
+        lmax = len(cl[0]) - 1
+        inl = 0*iNcov[:,:,:lmax+1]
+        
     return lib_cninv.cnfilter_freq(
         cl,bl,iNcov,maps,
         chn=chn,lmaxs=lmaxs,nsides=nsides,itns=itns,eps=eps,filter=filter,inl=inl,verbose=verbose,ro=ro,stat=stat
@@ -61,7 +65,10 @@ def cnfilter_kappa(cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6]
         :xlm[n,l,m] (dcmplx): Wiener filtered multipoles, with bounds (n,0:lmax,0:lmax)
 
     """
-    if inl  is None: inl  = 0*iNcov[:,:lmax+1]
+    
+    if inl is None: 
+        lmax = len(cov[0,0]) - 1
+        inl  = 0*iNcov[:,:lmax+1]
         
     return lib_cninv.cnfilter_kappa(
             cov,iNcov,maps,
@@ -99,7 +106,10 @@ def cnfilter_freq_nside(cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,
     Returns:
         :xlm[n,l,m] (dcmplx): C-inverse or Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
     """
-    if inl is None: inl = 0*iNcov0[:,:,:lmax+1]
+    
+    if inl is None:
+        lmax = len(cl[0]) - 1
+        inl = 0*iNcov0[:,:,:lmax+1]
     
     return lib_cninv.cnfilter_freq_nside(
         cl, bl0, bl1, iNcov0, iNcov1, maps0, maps1,

@@ -128,7 +128,7 @@ def cnfilter_freq(cl: np.ndarray, bl: np.ndarray, iNcov: np.ndarray, maps: np.nd
         coarse_invmatrix(mgc, n, int(mgc.lmax[-1]))
 
     t1 = time.time()
-    xlm = cg_algorithm(n, lmax, b, mgc, 0)
+    xlm = cg_algorithm(n, lmax, b, mgc, 0, stat=stat)
     if stat or verbose:
         print("real time:", time.time() - t1)
     return libcurvedsky.utils.correct_filtering(cl, filter, xlm)
@@ -192,7 +192,7 @@ def cnfilter_kappa(cov: np.ndarray, iNcov: np.ndarray, maps: np.ndarray,
         coarse_invmatrix(mgc, n, int(mgc.lmax[-1]))
 
     t1 = time.time()
-    xlm = cg_algorithm(n, lmax, b, mgc, 0)
+    xlm = cg_algorithm(n, lmax, b, mgc, 0, stat=stat)
     if stat or verbose:
         print("real time:", time.time() - t1)
     return xlm
@@ -321,7 +321,7 @@ def cnfilter_freq_nside(cl: np.ndarray, bl0: np.ndarray, bl1: np.ndarray, iNcov0
         coarse_invmatrix(mgc, n, int(mgc.lmax[-1]))
 
     t1 = time.time()
-    xlm = cg_algorithm(n, lmax, b, mgc, 0)
+    xlm = cg_algorithm(n, lmax, b, mgc, 0, stat=stat)
     if stat or verbose:
         print("real time:", time.time() - t1)
     return libcurvedsky.utils.correct_filtering(cl, filter, xlm)
