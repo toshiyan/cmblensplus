@@ -644,23 +644,24 @@ subroutine clhalf(n,mn,lmax,cl,bl,clh)
 end subroutine clhalf
 
 
-subroutine correct_filtering(n,lmax,cl,filter,xlm)
+subroutine correct_filtering(n,lmax,cl,filter,xlm,flm)
   !Final correction to the output of conjugate-gradient decent solver
   implicit none
   character(*), intent(in) :: filter
   integer, intent(in) :: n, lmax
   double precision, intent(in) :: cl(n,0:lmax)
-  double complex, intent(inout) :: xlm(n,0:lmax,0:lmax)
+  double complex, intent(in) :: xlm(n,0:lmax,0:lmax)
+  double complex, intent(out) :: flm(n,0:lmax,0:lmax)
   integer :: l, ni
   
   do l = 1, lmax
         do ni = 1, n
             if (cl(ni,l)<=0d0)  then
-                xlm(ni,l,0:l) = 0d0
+                flm(ni,l,0:l) = 0d0
                 cycle
             end if
-            if (filter=='')   xlm(ni,l,0:l) = xlm(ni,l,0:l)/dsqrt(cl(ni,l))
-            if (filter=='W')  xlm(ni,l,0:l) = xlm(ni,l,0:l)*dsqrt(cl(ni,l))
+            if (filter=='')   flm(ni,l,0:l) = xlm(ni,l,0:l)/dsqrt(cl(ni,l))
+            if (filter=='W')  flm(ni,l,0:l) = xlm(ni,l,0:l)*dsqrt(cl(ni,l))
         end do
   end do
 
