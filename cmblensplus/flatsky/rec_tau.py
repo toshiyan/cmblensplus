@@ -1,94 +1,163 @@
 from . import libflatsky
-import numpy
 
-def qtt(nx,ny,D,rL,fC,T1,T2):
-  """
-  Reconstructing patchy tau from the temperature quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): Temperature power spectrum on 2D grid, with bounds (nx,ny)
-    :T1[lx,ly] (dcmplx): 2D Fourier modes of 1st inverse-variance filtered temperature, with bounds (nx,ny)
-    :T2[lx,ly] (dcmplx): 2D Fourier modes of 2nd inverse-variance filtered temperature, with bounds (nx,ny)
+def qtt(nx, ny, D, rL, fC, T1, T2):
+    """
+    Reconstruct patchy tau from the temperature quadratic estimator.
 
-  Returns:
-    :tlm[lx,ly] (dcmplx): 2D Fourier modes of patchy tau, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of Fourier grid points along the x direction.
+    ny : int
+        Number of Fourier grid points along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    fC : ndarray of float, shape (nx, ny)
+        Temperature power spectrum on the 2D Fourier grid.
+    T1 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the first inverse-variance filtered
+        temperature field.
+    T2 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the second inverse-variance filtered
+        temperature field.
 
-  """
-  return libflatsky.rec_tau.qtt(nx,ny,D,rL,fC,T1,T2)
+    Returns
+    -------
+    tlm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of patchy tau.
+    """
+    return libflatsky.rec_tau.qtt(nx, ny, D, rL, fC, T1, T2)
 
-def qte(nx,ny,D,rL,fC,T,E):
-  """
-  Reconstructing patchy tau from the suboptimal TE quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): TE cross power spectrum on 2D grid, with bounds (nx,ny)
-    :T[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
-    :E[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
+def qte(nx, ny, D, rL, fC, T, E):
+    """
+    Reconstruct patchy tau from the suboptimal TE quadratic estimator.
 
-  Returns:
-    :tlm[lx,ly] (dcmplx): 2D Fourier modes of patchy tau, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of Fourier grid points along the x direction.
+    ny : int
+        Number of Fourier grid points along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    fC : ndarray of float, shape (nx, ny)
+        TE cross-power spectrum on the 2D Fourier grid.
+    T : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        temperature field.
+    E : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        E-mode field.
 
-  """
-  return libflatsky.rec_tau.qte(nx,ny,D,rL,fC,T,E)
+    Returns
+    -------
+    tlm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of patchy tau.
+    """
+    return libflatsky.rec_tau.qte(nx, ny, D, rL, fC, T, E)
 
-def qtb(nx,ny,D,rL,fC,T,B):
-  """
-  Reconstructing patchy tau from the TB quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): TE cross power spectrum on 2D grid, with bounds (nx,ny)
-    :T[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
-    :B[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+def qtb(nx, ny, D, rL, fC, T, B):
+    """
+    Reconstruct patchy tau from the TB quadratic estimator.
 
-  Returns:
-    :tlm[lx,ly] (dcmplx): 2D Fourier modes of patchy tau, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of Fourier grid points along the x direction.
+    ny : int
+        Number of Fourier grid points along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    fC : ndarray of float, shape (nx, ny)
+        TE cross-power spectrum on the 2D Fourier grid.
+    T : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        temperature field.
+    B : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        B-mode field.
 
-  """
-  return libflatsky.rec_tau.qtb(nx,ny,D,rL,fC,T,B)
+    Returns
+    -------
+    tlm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of patchy tau.
+    """
+    return libflatsky.rec_tau.qtb(nx, ny, D, rL, fC, T, B)
 
-def qee(nx,ny,D,rL,fC,E1,E2):
-  """
-  Reconstructing patchy tau from the EE quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): EE power spectrum on 2D grid, with bounds (nx,ny)
-    :E1[lx,ly] (dcmplx): 2D Fourier modes of 1st inverse-variance filtered E-mode, with bounds (nx,ny)
-    :E2[lx,ly] (dcmplx): 2D Fourier modes of 2nd inverse-variance filtered E-mode, with bounds (nx,ny)
+def qee(nx, ny, D, rL, fC, E1, E2):
+    """
+    Reconstruct patchy tau from the EE quadratic estimator.
 
-  Returns:
-    :tlm[lx,ly] (dcmplx): 2D Fourier modes of patchy tau, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of Fourier grid points along the x direction.
+    ny : int
+        Number of Fourier grid points along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    fC : ndarray of float, shape (nx, ny)
+        EE power spectrum on the 2D Fourier grid.
+    E1 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the first inverse-variance filtered
+        E-mode field.
+    E2 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the second inverse-variance filtered
+        E-mode field.
 
-  """
-  return libflatsky.rec_tau.qee(nx,ny,D,rL,fC,E1,E2)
+    Returns
+    -------
+    tlm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of patchy tau.
+    """
+    return libflatsky.rec_tau.qee(nx, ny, D, rL, fC, E1, E2)
 
-def qeb(nx,ny,D,rL,fE,fB,E,B):
-  """
-  Reconstructing patchy tau from the EB quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fE[lx,ly] (double): EE power spectrum on 2D grid, with bounds (nx,ny)
-    :fB[lx,ly] (double): BB power spectrum on 2D grid, with bounds (nx,ny)
-    :E[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
-    :B[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+def qeb(nx, ny, D, rL, fE, fB, E, B):
+    """
+    Reconstruct patchy tau from the EB quadratic estimator.
 
-  Returns:
-    :tlm[lx,ly] (dcmplx): 2D Fourier modes of patchy tau, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of Fourier grid points along the x direction.
+    ny : int
+        Number of Fourier grid points along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    fE : ndarray of float, shape (nx, ny)
+        EE power spectrum on the 2D Fourier grid.
+    fB : ndarray of float, shape (nx, ny)
+        BB power spectrum on the 2D Fourier grid.
+    E : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        E-mode field.
+    B : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        B-mode field.
 
-  """
-  return libflatsky.rec_tau.qeb(nx,ny,D,rL,fE,fB,E,B)
-
+    Returns
+    -------
+    tlm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of patchy tau.
+    """
+    return libflatsky.rec_tau.qeb(nx, ny, D, rL, fE, fB, E, B)

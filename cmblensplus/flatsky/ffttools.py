@@ -1,153 +1,271 @@
 from . import libflatsky
+import numpy as np
 
-def dft1d(map0,nx,ny,npix,D,trans,map1):
-  """
-  DFT for 1D array. 
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :npix (*int*): Total number of grids (npix=nx*ny)
-    :trans (*int*): 1 (map to Fourier) or -1 (Fourier to map)
-    :D[*2*] (*double*): Side length (x and y) of map
-    :map0[*pix*] (*dcmplx*): Data on 2D grid to be transformed, with bounds (npix)
+def dft1d(map0, nx, ny, npix, D, trans, map1):
+    """
+    Perform a discrete Fourier transform for a one-dimensional array storing
+    data on a two-dimensional grid.
 
-  Returns:
-    :map1[*pix*] (*dcmplx*): Transformed data on 2D grid, with bounds (npix)
+    Parameters
+    ----------
+    map0 : ndarray of complex, shape (npix,)
+        Input data on a two-dimensional grid, with bounds ``0:npix-1``.
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    npix : int
+        Total number of grid points, ``npix = nx * ny``.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    trans : int
+        Transform direction. Use 1 for map to Fourier transform and -1 for
+        Fourier to map transform.
+    map1 : ndarray of complex, shape (npix,)
+        Output array for the transformed data, with bounds ``0:npix-1``.
 
-  Usage:
-    :map1(npix) = flatsky.ffttools.dft1d(map0,nx,ny,npix,D,trans,map1):
-  """
-  return libflatsky.ffttools.dft1d(map0,nx,ny,npix,D,trans,map1)
+    Returns
+    -------
+    map1 : ndarray of complex, shape (npix,)
+        Transformed data on the two-dimensional grid, with bounds
+        ``0:npix-1``.
 
-def dft2d(map0,nx,ny,D,trans):
-  """
-  DFT for 2D array. 
+    Examples
+    --------
+    >>> map1 = flatsky.ffttools.dft1d(map0, nx, ny, npix, D, trans, map1)
+    """
+    return libflatsky.ffttools.dft1d(map0, nx, ny, npix, D, trans, map1)
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :trans (*int*): 1 (map to Fourier) or -1 (Fourier to map)
-    :D[*2*] (*double*): Side length (x and y) of map
-    :map0[*x,y*] (*dcmplx*): Data on 2D grid to be transformed, with bounds (nx,ny)
 
-  Returns:
-    :map1[*x,y*] (*dcmplx*): Transformed data on 2D grid, with bounds (nx,ny)
+def dft2d(map0, nx, ny, D, trans):
+    """
+    Perform a discrete Fourier transform for a two-dimensional complex array.
 
-  Usage:
-    :map1 = flatsky.ffttools.dft2d(map0,nx,ny,D,trans):
-  """
-  return libflatsky.ffttools.dft2d(map0,nx,ny,D,trans)
+    Parameters
+    ----------
+    map0 : ndarray of complex, shape (nx, ny)
+        Input data on a two-dimensional grid, with bounds ``(0:nx-1, 0:ny-1)``.
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    trans : int
+        Transform direction. Use 1 for map to Fourier transform and -1 for
+        Fourier to map transform.
 
-def dft2dr(map0,nx,ny,D,trans):
-  """
-  DFT for 2D array. 
+    Returns
+    -------
+    map1 : ndarray of complex, shape (nx, ny)
+        Transformed data on the two-dimensional grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :trans (*int*): 1 (map to Fourier) or -1 (Fourier to map)
-    :D[*2*] (*double*): Side length (x and y) of map
-    :map0[*x,y*] (*double*): Data on 2D grid to be transformed, with bounds (nx,ny)
+    Examples
+    --------
+    >>> map1 = flatsky.ffttools.dft2d(map0, nx, ny, D, trans)
+    """
+    return libflatsky.ffttools.dft2d(map0, nx, ny, D, trans)
 
-  Returns:
-    :map1[*x,y*] (*double*): Transformed data on 2D grid, with bounds (nx,ny)
 
-  Usage:
-    :map1 = flatsky.ffttools.dft2dr(map0,nx,ny,D,trans):
-  """
-  return libflatsky.ffttools.dft2dr(map0,nx,ny,D,trans)
+def dft2dr(map0, nx, ny, D, trans):
+    """
+    Perform a discrete Fourier transform for a two-dimensional real array.
 
-def dft2drc(map0,nx,ny,D,trans):
-  """
-  DFT for 2D array. 
+    Parameters
+    ----------
+    map0 : ndarray of float, shape (nx, ny)
+        Input data on a two-dimensional grid, with bounds ``(0:nx-1, 0:ny-1)``.
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    trans : int
+        Transform direction. Use 1 for map to Fourier transform and -1 for
+        Fourier to map transform.
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :trans (*int*): 1 (map to Fourier) or -1 (Fourier to map)
-    :D[*2*] (*double*): Side length (x and y) of map
-    :map0[*x,y*] (*double*): Data on 2D grid to be transformed, with bounds (nx,ny)
+    Returns
+    -------
+    map1 : ndarray of float, shape (nx, ny)
+        Transformed data on the two-dimensional grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
 
-  Returns:
-    :map1[*x,y*] (*dcmplx*): Transformed data on 2D grid, with bounds (nx,ny)
+    Examples
+    --------
+    >>> map1 = flatsky.ffttools.dft2dr(map0, nx, ny, D, trans)
+    """
+    return libflatsky.ffttools.dft2dr(map0, nx, ny, D, trans)
 
-  Usage:
-    :map1 = flatsky.ffttools.dft2drc(map0,nx,ny,D,trans):
-  """
-  return libflatsky.ffttools.dft2drc(map0,nx,ny,D,trans)
 
-def dft2dcr(map0,nx,ny,D,trans):
-  """
-  DFT for 2D array. 
+def dft2drc(map0, nx, ny, D, trans):
+    """
+    Perform a real-to-complex discrete Fourier transform for a two-dimensional
+    array.
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :trans (*int*): 1 (map to Fourier) or -1 (Fourier to map)
-    :D[*2*] (*double*): Side length (x and y) of map
-    :map0[*x,y*] (*dcmplx*): Data on 2D grid to be transformed, with bounds (nx,ny)
+    Parameters
+    ----------
+    map0 : ndarray of float, shape (nx, ny)
+        Input real data on a two-dimensional grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    trans : int
+        Transform direction. Use 1 for map to Fourier transform and -1 for
+        Fourier to map transform.
 
-  Returns:
-    :map1[*x,y*] (*double*): Transformed data on 2D grid, with bounds (nx,ny)
+    Returns
+    -------
+    map1 : ndarray of complex, shape (nx, ny)
+        Transformed data on the two-dimensional grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
 
-  Usage:
-    :map1 = flatsky.ffttools.dft2dcr(map0,nx,ny,D,trans):
-  """
-  return libflatsky.ffttools.dft2dcr(map0,nx,ny,D,trans)
+    Examples
+    --------
+    >>> map1 = flatsky.ffttools.dft2drc(map0, nx, ny, D, trans)
+    """
+    return libflatsky.ffttools.dft2drc(map0, nx, ny, D, trans)
 
-def dft2dpol(nx,ny,D,Q,U):
-  """
-  Spin-2 DFT for 2D array. 
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :D[*2*] (*double*): Side length (x and y) of map
-    :Q[*x,y*] (doub;e): Q on 2D grid to be transformed, with bounds (nx,ny)
-    :U[*x,y*] (doub;e): U on 2D grid to be transformed, with bounds (nx,ny)
+def dft2dcr(map0, nx, ny, D, trans):
+    """
+    Perform a complex-to-real discrete Fourier transform for a two-dimensional
+    array.
 
-  Returns:
-    :E[*x,y*] (*dcmplx*): E on 2D Fourier grid, with bounds (nx,ny)
-    :B[*x,y*] (*dcmplx*): B on 2D Fourier grid, with bounds (nx,ny)
+    Parameters
+    ----------
+    map0 : ndarray of complex, shape (nx, ny)
+        Input complex data on a two-dimensional grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    trans : int
+        Transform direction. Use 1 for map to Fourier transform and -1 for
+        Fourier to map transform.
 
-  Usage:
-    :E,B = flatsky.ffttools.dft2dpol(nx,ny,D,Q,U):
-  """
-  return libflatsky.ffttools.dft2dpol(nx,ny,D,Q,U)
+    Returns
+    -------
+    map1 : ndarray of float, shape (nx, ny)
+        Transformed data on the two-dimensional grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
 
-def idft2dpol(nx,ny,D,E,B):
-  """
-  Spin-2 Inverse DFT for 2D array. 
+    Examples
+    --------
+    >>> map1 = flatsky.ffttools.dft2dcr(map0, nx, ny, D, trans)
+    """
+    return libflatsky.ffttools.dft2dcr(map0, nx, ny, D, trans)
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :D[*2*] (*double*): Side length (x and y) of map
-    :E[*x,y*] (*dcmplx*): E on 2D Fourier grid, with bounds (nx,ny)
-    :B[*x,y*] (*dcmplx*): B on 2D Fourier grid, with bounds (nx,ny)
 
-  Returns:
-    :Q[*x,y*] (doub;e): Q on 2D grid, with bounds (nx,ny)
-    :U[*x,y*] (doub;e): U on 2D grid, with bounds (nx,ny)
+def dft2dpol(nx, ny, D, Q, U):
+    """
+    Perform a spin-2 discrete Fourier transform for polarization maps on a
+    two-dimensional grid.
 
-  Usage:
-    :Q,U = flatsky.ffttools.idft2dpol(nx,ny,D,E,B):
-  """
-  return libflatsky.ffttools.idft2dpol(nx,ny,D,E,B)
+    Parameters
+    ----------
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    Q : ndarray of float, shape (nx, ny)
+        Q map on the two-dimensional grid, with bounds ``(0:nx-1, 0:ny-1)``.
+    U : ndarray of float, shape (nx, ny)
+        U map on the two-dimensional grid, with bounds ``(0:nx-1, 0:ny-1)``.
 
-def eb_separate(nx,ny,D,QU,W,Wd=None):
-  """
-  Compute Smith's pure EB estimator in flatsky
+    Returns
+    -------
+    E : ndarray of complex, shape (nx, ny)
+        E-mode map on the two-dimensional Fourier grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    B : ndarray of complex, shape (nx, ny)
+        B-mode map on the two-dimensional Fourier grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
 
-  Args:
-    :nx, ny (*int*): Number of x/Lx and y/Ly grids
-    :D[*2*] (*double*): Side length (x and y) of map
-    :W[*x,y*] (*double*): Window function, with bounds (nx,ny)
-    :QU[*x,y,2*] (*double*): unmasked Q and U maps, with bounds (nx,ny,2)
+    Examples
+    --------
+    >>> E, B = flatsky.ffttools.dft2dpol(nx, ny, D, Q, U)
+    """
+    return libflatsky.ffttools.dft2dpol(nx, ny, D, Q, U)
 
-  Args(optional):
-    :Wd[*5,x,y*] (*double*): Precomputed window function derivaives, dW/dx, dW/dw, d^2W/dx^2, d^2W/dxdy, d^2W/dy^2, with bounds (5,nx,ny)
 
-  Returns:
-    :EB[*2,x,y*] (*dcmplx*): E and B modes in 2D Fourier grid, with bounds (2,nx,ny)
+def idft2dpol(nx, ny, D, E, B):
+    """
+    Perform a spin-2 inverse discrete Fourier transform for polarization maps
+    on a two-dimensional grid.
 
-  Usage:
-    :EB = flatsky.ffttools.eb_separate(nx,ny,D,QU,W,Wd):
-  """
-  if Wd is None: Wd= np.zeros((5,nx,ny))
-  return libflatsky.ffttools.eb_separate(nx,ny,D,QU,W,Wd)
+    Parameters
+    ----------
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    E : ndarray of complex, shape (nx, ny)
+        E-mode map on the two-dimensional Fourier grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    B : ndarray of complex, shape (nx, ny)
+        B-mode map on the two-dimensional Fourier grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
 
+    Returns
+    -------
+    Q : ndarray of float, shape (nx, ny)
+        Q map on the two-dimensional grid, with bounds ``(0:nx-1, 0:ny-1)``.
+    U : ndarray of float, shape (nx, ny)
+        U map on the two-dimensional grid, with bounds ``(0:nx-1, 0:ny-1)``.
+
+    Examples
+    --------
+    >>> Q, U = flatsky.ffttools.idft2dpol(nx, ny, D, E, B)
+    """
+    return libflatsky.ffttools.idft2dpol(nx, ny, D, E, B)
+
+
+def eb_separate(nx, ny, D, QU, W, Wd=None):
+    """
+    Compute Smith's pure E/B estimator in the flat-sky approximation.
+
+    Parameters
+    ----------
+    nx : int
+        Number of grid points in the x direction.
+    ny : int
+        Number of grid points in the y direction.
+    D : array_like of float, shape (2,)
+        Side lengths of the map in the x and y directions.
+    QU : ndarray of float, shape (nx, ny, 2)
+        Unmasked Q and U maps, with bounds ``(0:nx-1, 0:ny-1, 0:1)``.
+    W : ndarray of float, shape (nx, ny)
+        Window function, with bounds ``(0:nx-1, 0:ny-1)``.
+    Wd : ndarray of float, shape (5, nx, ny), optional
+        Precomputed derivatives of the window function:
+        ``dW/dx``, ``dW/dy``, ``d^2W/dx^2``, ``d^2W/dxdy``, and
+        ``d^2W/dy^2``. If not given, a zero array is used.
+
+    Returns
+    -------
+    EB : ndarray of complex, shape (2, nx, ny)
+        E and B modes on the two-dimensional Fourier grid, with bounds
+        ``(0:1, 0:nx-1, 0:ny-1)``.
+
+    Examples
+    --------
+    >>> EB = flatsky.ffttools.eb_separate(nx, ny, D, QU, W, Wd)
+    """
+    if Wd is None:
+        Wd = np.zeros((5, nx, ny))
+    return libflatsky.ffttools.eb_separate(nx, ny, D, QU, W, Wd)
+    

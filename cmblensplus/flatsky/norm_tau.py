@@ -1,40 +1,73 @@
 from . import libflatsky
 import numpy
 
-def qtt(nx,ny,D,rL,OT,TT,eL):
-  """
-  Normalization of the temperature quadratic estimator for patchy tau
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :OT[lx,ly] (double): Inverse of Observed temperature power spectrum on 2D grid, with bounds (nx,ny)
-    :TT[lx,ly] (double): Theory temperature power spectrum on 2D grid, with bounds (nx,ny)
-    :eL[2] (int): Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+def qtt(nx, ny, D, rL, OT, TT, eL):
+    """
+    Return the normalization of the temperature quadratic estimator for
+    patchy optical depth.
 
-  Returns:
-    :At[lx,ly] (dcmplx): Normalization of patchy tau on 2D grid, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of grids along the x direction.
+    ny : int
+        Number of grids along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``, with bounds ``0:1``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    OT : ndarray of float, shape (nx, ny)
+        Inverse of the observed temperature power spectrum on the 2D grid,
+        with bounds ``(0:nx-1, 0:ny-1)``.
+    TT : ndarray of float, shape (nx, ny)
+        Theoretical temperature power spectrum on the 2D grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    eL : array_like of int, shape (2,)
+        Minimum and maximum multipoles of the output normalization spectrum.
 
-  """
-  return libflatsky.norm_tau.qtt(nx,ny,D,rL,OT,TT,eL)
+    Returns
+    -------
+    At : ndarray of complex, shape (nx, ny)
+        Normalization of patchy optical depth on the 2D grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    """
+    return libflatsky.norm_tau.qtt(nx, ny, D, rL, OT, TT, eL)
 
-def qeb(nx,ny,D,rL,IE,IB,EE,eL):
-  """
-  Normalization of the EB quadratic estimator for patchy tau
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :IE[lx,ly] (double): Inverse of observed E-mode power spectrum on 2D grid, with bounds (nx,ny)
-    :IB[lx,ly] (double): Inverse of observed B-mode power spectrum on 2D grid, with bounds (nx,ny)
-    :EE[lx,ly] (double): Theory E-mode spectrum on 2D grid, with bounds (nx,ny)
-    :eL[2] (int): Minimum and maximum multipole of output normalization spectrum, with bounds (2)
+def qeb(nx, ny, D, rL, IE, IB, EE, eL):
+    """
+    Return the normalization of the EB quadratic estimator for patchy optical
+    depth.
 
-  Returns:
-    :At[lx,ly] (dcmplx): Normalization of patchy tau on 2D grid, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of grids along the x direction.
+    ny : int
+        Number of grids along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``, with bounds ``0:1``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    IE : ndarray of float, shape (nx, ny)
+        Inverse of the observed E-mode power spectrum on the 2D grid, with
+        bounds ``(0:nx-1, 0:ny-1)``.
+    IB : ndarray of float, shape (nx, ny)
+        Inverse of the observed B-mode power spectrum on the 2D grid, with
+        bounds ``(0:nx-1, 0:ny-1)``.
+    EE : ndarray of float, shape (nx, ny)
+        Theoretical E-mode power spectrum on the 2D grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    eL : array_like of int, shape (2,)
+        Minimum and maximum multipoles of the output normalization spectrum.
 
-  """
-  return libflatsky.norm_tau.qeb(nx,ny,D,rL,IE,IB,EE,eL)
-
+    Returns
+    -------
+    At : ndarray of complex, shape (nx, ny)
+        Normalization of patchy optical depth on the 2D grid, with bounds
+        ``(0:nx-1, 0:ny-1)``.
+    """
+    return libflatsky.norm_tau.qeb(nx, ny, D, rL, IE, IB, EE, eL)

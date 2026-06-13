@@ -1,93 +1,151 @@
 from . import libflatsky
-import numpy
 
-def qtt(nx,ny,D,rL,T1,T2):
-  """
-  Reconstructing point source fields from the temperature quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): Temperature power spectrum on 2D grid, with bounds (nx,ny)
-    :T1[lx,ly] (dcmplx): 2D Fourier modes of 1st inverse-variance filtered temperature, with bounds (nx,ny)
-    :T2[lx,ly] (dcmplx): 2D Fourier modes of 2nd inverse-variance filtered temperature, with bounds (nx,ny)
+def qtt(nx, ny, D, rL, T1, T2):
+    """
+    Reconstruct point-source fields from the temperature quadratic estimator.
 
-  Returns:
-    :slm[lx,ly] (dcmplx): 2D Fourier modes of point source fields, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of grids along the x direction.
+    ny : int
+        Number of grids along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``, with bounds ``0:1``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    T1 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the first inverse-variance filtered
+        temperature map.
+    T2 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the second inverse-variance filtered
+        temperature map.
 
-  """
-  return libflatsky.rec_src.qtt(nx,ny,D,rL,T1,T2)
+    Returns
+    -------
+    slm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the point-source field.
+    """
+    return libflatsky.rec_src.qtt(nx, ny, D, rL, T1, T2)
 
-def qte(nx,ny,D,rL,T,E):
-  """
-  Reconstructing point source fields from the suboptimal TE quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): TE cross power spectrum on 2D grid, with bounds (nx,ny)
-    :T[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
-    :E[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
+def qte(nx, ny, D, rL, T, E):
+    """
+    Reconstruct point-source fields from the suboptimal TE quadratic estimator.
 
-  Returns:
-    :slm[lx,ly] (dcmplx): 2D Fourier modes of point source fields, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of grids along the x direction.
+    ny : int
+        Number of grids along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``, with bounds ``0:1``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    T : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        temperature map.
+    E : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        E-mode map.
 
-  """
-  return libflatsky.rec_src.qte(nx,ny,D,rL,T,E)
+    Returns
+    -------
+    slm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the point-source field.
+    """
+    return libflatsky.rec_src.qte(nx, ny, D, rL, T, E)
 
-def qtb(nx,ny,D,rL,T,B):
-  """
-  Reconstructing point source fields from the TB quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): TE cross power spectrum on 2D grid, with bounds (nx,ny)
-    :T[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered temperature, with bounds (nx,ny)
-    :B[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+def qtb(nx, ny, D, rL, T, B):
+    """
+    Reconstruct point-source fields from the TB quadratic estimator.
 
-  Returns:
-    :slm[lx,ly] (dcmplx): 2D Fourier modes of point source fields, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of grids along the x direction.
+    ny : int
+        Number of grids along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``, with bounds ``0:1``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    T : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        temperature map.
+    B : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        B-mode map.
 
-  """
-  return libflatsky.rec_src.qtb(nx,ny,D,rL,T,B)
+    Returns
+    -------
+    slm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the point-source field.
+    """
+    return libflatsky.rec_src.qtb(nx, ny, D, rL, T, B)
 
-def qee(nx,ny,D,rL,E1,E2):
-  """
-  Reconstructing point source fields from the EE quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): EE power spectrum on 2D grid, with bounds (nx,ny)
-    :E1[lx,ly] (dcmplx): 2D Fourier modes of 1st inverse-variance filtered E-mode, with bounds (nx,ny)
-    :E2[lx,ly] (dcmplx): 2D Fourier modes of 2nd inverse-variance filtered E-mode, with bounds (nx,ny)
+def qee(nx, ny, D, rL, E1, E2):
+    """
+    Reconstruct point-source fields from the EE quadratic estimator.
 
-  Returns:
-    :slm[lx,ly] (dcmplx): 2D Fourier modes of point source fields, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of grids along the x direction.
+    ny : int
+        Number of grids along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``, with bounds ``0:1``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    E1 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the first inverse-variance filtered
+        E-mode map.
+    E2 : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the second inverse-variance filtered
+        E-mode map.
 
-  """
-  return libflatsky.rec_src.qee(nx,ny,D,rL,E1,E2)
+    Returns
+    -------
+    slm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the point-source field.
+    """
+    return libflatsky.rec_src.qee(nx, ny, D, rL, E1, E2)
 
-def qeb(nx,ny,D,rL,E,B):
-  """
-  Reconstructing point source fields from the EB quadratic estimator
 
-  Args:
-    :nx, ny (int): Number of Lx and Ly grids
-    :D[xy] (double): Map side length, or equivalent to dLx/2pi, dLy/2pi, with bounds (2)
-    :rL[2] (int): Minimum and maximum multipole of CMB for reconstruction
-    :fC[lx,ly] (double): EE power spectrum on 2D grid, with bounds (nx,ny)
-    :E[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered E-mode, with bounds (nx,ny)
-    :B[lx,ly] (dcmplx): 2D Fourier modes of inverse-variance filtered B-mode, with bounds (nx,ny)
+def qeb(nx, ny, D, rL, E, B):
+    """
+    Reconstruct point-source fields from the EB quadratic estimator.
 
-  Returns:
-    :slm[lx,ly] (dcmplx): 2D Fourier modes of point source fields, with bounds (nx,ny)
+    Parameters
+    ----------
+    nx : int
+        Number of grids along the x direction.
+    ny : int
+        Number of grids along the y direction.
+    D : array_like of float, shape (2,)
+        Map side lengths, equivalent to ``dLx / (2*pi)`` and
+        ``dLy / (2*pi)``, with bounds ``0:1``.
+    rL : array_like of int, shape (2,)
+        Minimum and maximum CMB multipoles used for reconstruction.
+    E : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        E-mode map.
+    B : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the inverse-variance filtered
+        B-mode map.
 
-  """
-  return libflatsky.rec_src.qeb(nx,ny,D,rL,E,B)
-
+    Returns
+    -------
+    slm : ndarray of complex, shape (nx, ny)
+        Two-dimensional Fourier modes of the point-source field.
+    """
+    return libflatsky.rec_src.qeb(nx, ny, D, rL, E, B)
