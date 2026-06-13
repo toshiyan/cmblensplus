@@ -6,7 +6,7 @@ Installation on NERSC systems is straightforward.
 
 # Installation
 
-The default installation builds the `basic` module and installs the pure-Python `curvedsky` and `utils` modules. This default installation does not require external Fortran libraries.
+The default installation builds the `basic` and `curvedsky` modules and installs the pure-Python `utils` module. This default installation does not require external Fortran libraries.
 
 ```bash
 python -m pip install "cmblensplus @ git+https://github.com/toshiyan/cmblensplus.git@main"
