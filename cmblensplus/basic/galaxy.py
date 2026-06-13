@@ -1,81 +1,125 @@
 from . import libbasic
-import numpy
 
-def dndz_sf(z,a,b,zm=0,z0=0):
-  """
- A model of galaxy z distribution
 
-  Args:
-    :z[zn] (double): redshifts at which dNdz is returned
-    :a, b (double): shape parameters of Schechter-like galaxy distribution
+def dndz_sf(z, a, b, zm=0, z0=0):
+    """
+    Return a model galaxy redshift distribution.
 
-  Args(optional):
-    :zm (double): mean redshift, default to 0
-    :z0 (double): a parameter relevant to zm, default to 0. Either zm or z0 has to be specified.
+    Parameters
+    ----------
+    z : array_like of float, shape (zn,)
+        Redshifts at which ``dndz`` is returned.
+    a : float
+        Shape parameter of the Schechter-like galaxy distribution.
+    b : float
+        Shape parameter of the Schechter-like galaxy distribution.
+    zm : float, optional
+        Mean redshift. Default is 0.
+    z0 : float, optional
+        Parameter related to ``zm``. Default is 0. Either ``zm`` or ``z0``
+        has to be specified.
 
-  Returns:
-    :dndz[zn] (double): galaxy z distribution
+    Returns
+    -------
+    dndz : ndarray of float, shape (zn,)
+        Galaxy redshift distribution.
+    """
+    zn = len(z)
+    if zm <= 0 and z0 <= 0:
+        raise SystemExit('ERROR in "dndz_sf": both zm and z0 <=0')
+    return libbasic.galaxy.dndz_sf(zn, z, a, b, zm, z0)
 
-  """
-  zn = len(z)
-  if zm<=0 and z0<=0: raise SystemExit('ERROR in "dndz_sf": both zm and z0 <=0')
-  return libbasic.galaxy.dndz_sf(zn,z,a,b,zm,z0)
 
-def photoz_error(z,zi,zn=None,sigma=0.03,zbias=0.):
-  """
- Photo-z error on z distribution which is multiplied to original galaxy z distribution. 
- See Eq.(13) of arXiv:1103.1118 for details.
+def photoz_error(z, zi, zn=None, sigma=0.03, zbias=0.):
+    """
+    Return the photo-z error function for a redshift distribution.
 
-  Args:
-    :z[zn] (double): redshifts at which photoz error function is returned
-    :zi[2] (double): z-bin edges
-    :sigma (double): a parameter of photo-z error which is given by, sigma x (1+z)
-    :zbias (double): photo-z mean bias
+    The returned function is multiplied by the original galaxy redshift
+    distribution. See Eq. (13) of arXiv:1103.1118 for details.
 
-  Returns:
-    :pz[zn] (double): photoz error function
+    Parameters
+    ----------
+    z : array_like of float, shape (zn,)
+        Redshifts at which the photo-z error function is returned.
+    zi : array_like of float, shape (2,)
+        Redshift-bin edges.
+    zn : int, optional
+        Number of redshift samples. If not given, ``len(z)`` is used.
+    sigma : float, optional
+        Photo-z error parameter, used as ``sigma * (1 + z)``.
+        Default is 0.03.
+    zbias : float, optional
+        Photo-z mean bias. Default is 0.
 
-  """
-  if zn is None: zn=len(z)
-  return libbasic.galaxy.photoz_error(zn,z,zi,sigma,zbias)
+    Returns
+    -------
+    pz : ndarray of float, shape (zn,)
+        Photo-z error function.
+    """
+    if zn is None:
+        zn = len(z)
+    return libbasic.galaxy.photoz_error(zn, z, zi, sigma, zbias)
 
-def zbin(zn,a,b,zm=0,z0=0,verbose=False):
-  """
- Computing z-interval of z-bin so that number of galaxies at each z-bin is equal
 
-  Args:
-    :zn (int): number of z-bins
-    :a, b (double): shape parameters of Schechter-like galaxy distribution
+def zbin(zn, a, b, zm=0, z0=0, verbose=False):
+    """
+    Compute redshift-bin intervals with equal galaxy counts.
 
-  Args(optional):
-    :zm (double): mean redshift, default to 0
-    :z0 (double): a parameter relevant to zm, default to 0. Either zm or z0 has to be specified.
-    :verbose (bool): output messages (default to True)
+    Parameters
+    ----------
+    zn : int
+        Number of redshift bins.
+    a : float
+        Shape parameter of the Schechter-like galaxy distribution.
+    b : float
+        Shape parameter of the Schechter-like galaxy distribution.
+    zm : float, optional
+        Mean redshift. Default is 0.
+    z0 : float, optional
+        Parameter related to ``zm``. Default is 0. Either ``zm`` or ``z0``
+        has to be specified.
+    verbose : bool, optional
+        Whether to output messages. Default is False.
 
-  Returns:
-    :zb[zn+1] (double): z-intervals
+    Returns
+    -------
+    zb : ndarray of float, shape (zn + 1,)
+        Redshift-bin intervals.
+    """
+    return libbasic.galaxy.zbin(zn, a, b, zm, z0, verbose)
 
-  """
-  return libbasic.galaxy.zbin(zn,a,b,zm,z0,verbose)
 
-def frac(zn,zb,a,b,zm,zbias=0.0,sigma=0.0,verbose=False):
-  """
- Computing z-interval of z-bin so that number of galaxies at each z-bin is equal
+def frac(zn, zb, a, b, zm, zbias=0.0, sigma=0.0, verbose=False):
+    r"""
+    Compute the fraction of galaxies in each redshift bin.
 
-  Args:
-    :zn (int): number of z-bins
-    :a, b (double): shape parameters of Schechter-like galaxy distribution
-    :zm (double): mean redshift
-    :zb[zn+1] (double): z-intervals
+    Parameters
+    ----------
+    zn : int
+        Number of redshift bins.
+    zb : array_like of float, shape (zn + 1,)
+        Redshift-bin intervals.
+    a : float
+        Shape parameter of the Schechter-like galaxy distribution.
+    b : float
+        Shape parameter of the Schechter-like galaxy distribution.
+    zm : float
+        Mean redshift.
+    zbias : float, optional
+        Constant bias to the true photo-z. Default is 0.
+    sigma : float, optional
+        Photo-z uncertainty. Default is 0.
+    verbose : bool, optional
+        Whether to output messages. Default is False.
 
-  Args(optional):
-    :verbose (bool): output messages (default to True)
-    :zbias (double): constant bias to true photo-z
-    :sigma (double): uncertaines of photo-z
+    Returns
+    -------
+    nfrac : ndarray of float, shape (zn,)
+        Fraction of galaxies in each bin, defined by
 
-  Returns:
-    :nfrac[zn] (double): fraction of galaxy number at each bin, defined by int_zi^zi+1 dz N(z)/int dz N(z)
+        .. math::
 
-  """
-  return libbasic.galaxy.frac(zn,zb,a,b,zm,zbias,sigma,verbose)
-
+            \frac{\int_{z_i}^{z_{i+1}} dz\,N(z)}
+                 {\int dz\,N(z)}.
+    """
+    return libbasic.galaxy.frac(zn, zb, a, b, zm, zbias, sigma, verbose)
