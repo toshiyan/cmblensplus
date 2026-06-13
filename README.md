@@ -76,41 +76,11 @@ The installation process consists of the following steps:
 2. Compile Fortran wrappers under `fortran_wrapped/src_*/` using `f2py`.
 3. Build the Python extension modules under `cmblensplus/*/`.
 
-# Documentation and References
+# Documentation
 
 Documentation is available at:
 
 https://toshiyan.github.io/clpdoc/html/
-
-The reference papers for each module are listed below.
-
-## Curved-Sky Modules
-
-* **Lensing Reconstruction and Delensing**
-  Developed by Namikawa & Nagata, JCAP 09 (2014) 009
-  https://arxiv.org/abs/1405.6568
-
-* **Cosmic Birefringence**
-  Developed by Namikawa et al., PRD 101 (2020) 083527
-  https://arxiv.org/abs/2001.10465
-
-* **Patchy Reionization**
-  Developed by Namikawa, PRD 97 (2018) 063505
-  https://arxiv.org/abs/1711.00058
-
-* **Lensing Bispectrum**
-  Developed by Namikawa et al., PRD 99 (2019) 063511
-  https://arxiv.org/abs/1812.10635
-
-## Flat-Sky Modules
-
-* **Lensing Reconstruction and Delensing**
-  Developed by Namikawa, PRD 95 (2017) 103514
-  https://arxiv.org/abs/1703.00169
-
-* **Cosmic Birefringence**
-  Developed by Namikawa, PRD 95 (2017) 043523
-  https://arxiv.org/abs/1612.07855
 
 # Package Structure
 
