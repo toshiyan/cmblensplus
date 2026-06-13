@@ -1,24 +1,39 @@
 from ._core import lib_rec_rot
-import numpy
 
-def qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t=0,verbose=False,nthreads=0):
-  """
-  Reconstructing pol rotation angle from the EB quadratic estimator
 
-  Args:
-    :lmax (int): Maximum multipole of output lensing potential alms
-    :rlmin/rlmax (int): Minimum/Maximum multipole of CMB for reconstruction
-    :fCE [l] (double): EE spectrum, with bounds (0:rlmax)
-    :Elm [l,m] (dcmplx): Inverse-variance filtered E-mode alm, with bounds (0:rlmax,0:rlmax)
-    :Blm [l,m] (dcmplx): Inverse-variance filtered B-mode alm, with bounds (0:rlmax,0:rlmax)
+def qeb(lmax, rlmin, rlmax, fCE, Elm, Blm, nside_t=0, verbose=False, nthreads=0):
+    """
+    Reconstruct the polarization rotation angle from the EB quadratic estimator.
 
-  Args(optional):
-    :nside_t (int): Nside for the convolution calculation
-    :verbose (bool): Output messages, default to False
+    Parameters
+    ----------
+    lmax : int
+        Maximum multipole of the output rotation-angle alm.
+    rlmin : int
+        Minimum CMB multipole used for reconstruction.
+    rlmax : int
+        Maximum CMB multipole used for reconstruction.
+    fCE : array_like of float, shape (rlmax + 1,)
+        EE spectrum, with bounds ``0:rlmax``.
+    Elm : ndarray of complex, shape (rlmax + 1, rlmax + 1)
+        Inverse-variance filtered E-mode alm, with bounds
+        ``(0:rlmax, 0:rlmax)``.
+    Blm : ndarray of complex, shape (rlmax + 1, rlmax + 1)
+        Inverse-variance filtered B-mode alm, with bounds
+        ``(0:rlmax, 0:rlmax)``.
+    nside_t : int, optional
+        Nside for the convolution calculation. Default is 0.
+    verbose : bool, optional
+        Whether to output messages. Default is False.
+    nthreads : int, optional
+        Number of threads. Default is 0.
 
-  Returns:
-    :alm [l,m] (dcmplx): Rotation angle alm, with bounds (0:lmax,0:lmax)
-
-  """
-  return lib_rec_rot.qeb(lmax,rlmin,rlmax,fCE,Elm,Blm,nside_t,verbose,nthreads=nthreads)
-
+    Returns
+    -------
+    alm : ndarray of complex, shape (lmax + 1, lmax + 1)
+        Rotation-angle alm, with bounds ``(0:lmax, 0:lmax)``.
+    """
+    return lib_rec_rot.qeb(
+        lmax, rlmin, rlmax, fCE, Elm, Blm,
+        nside_t, verbose, nthreads=nthreads
+    )

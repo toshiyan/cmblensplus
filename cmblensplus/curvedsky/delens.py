@@ -1,64 +1,90 @@
 from ._core import lib_delens
 
-def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t=0,gtype='p'):
-  """
-  Computing lensing B mode as a convolution of wiener-filtered E-mode and lensing potential
 
-  Args:
-    :lmax (int): Maximum multipole of output lensing B-mode alm
-    :elmin (int): Minimum multipole of wiener-filtered E-mode alm
-    :elmax (int): Maximum multipole of wiener-filtered E-mode alm
-    :plmin (int): Minimum multipole of wiener-filtered lensing potential alm
-    :plmax (int): Maximum multipole of wiener-filtered lensing potential alm
-    :wElm [l,m] (dcmplx): Wiener-filtered E-mode alm, with bounds (0:elmax,0:elmax)
-    :wplm [l,m] (dcmplx): Wiener-filtered lensing potential (or kappa) alm, with bounds (0:plmax,0:plmax)
+def lensingb(lmax, elmin, elmax, plmin, plmax, wElm, wplm, nside_t=0, gtype='p'):
+    """
+    Compute the lensing B-mode alm as a convolution of the Wiener-filtered
+    E-mode alm and the lensing-potential alm.
 
-  Args(optional):
-    :nside_t (int): Nside for the convolution calculation
-    :gtype (str): Type of input wplm ('p'=phi or 'k'=kappa), default to 'p' (phi).
+    Parameters
+    ----------
+    lmax : int
+        Maximum multipole of the output lensing B-mode alm.
+    elmin : int
+        Minimum multipole of the Wiener-filtered E-mode alm.
+    elmax : int
+        Maximum multipole of the Wiener-filtered E-mode alm.
+    plmin : int
+        Minimum multipole of the Wiener-filtered lensing-potential alm.
+    plmax : int
+        Maximum multipole of the Wiener-filtered lensing-potential alm.
+    wElm : ndarray of complex, shape (elmax + 1, elmax + 1)
+        Wiener-filtered E-mode alm, with bounds ``(0:elmax, 0:elmax)``.
+    wplm : ndarray of complex, shape (plmax + 1, plmax + 1)
+        Wiener-filtered lensing-potential or convergence alm, with bounds
+        ``(0:plmax, 0:plmax)``.
+    nside_t : int, optional
+        Nside for the convolution calculation. Default is 0.
+    gtype : {'p', 'k'}, optional
+        Type of input ``wplm``. Use ``'p'`` for lensing potential
+        :math:`\phi`, or ``'k'`` for convergence :math:`\kappa`.
+        Default is ``'p'``.
 
-  Returns:
-    :lBlm [l,m] (dcmplx): Lensing B-mode alm, with bounds (0:lmax,0:lmax)
+    Returns
+    -------
+    lBlm : ndarray of complex, shape (lmax + 1, lmax + 1)
+        Lensing B-mode alm, with bounds ``(0:lmax, 0:lmax)``.
+    """
+    return lib_delens.lensingb(
+        lmax, elmin, elmax, plmin, plmax, wElm, wplm, nside_t, gtype
+    )
 
-  """
-  return lib_delens.lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t,gtype)
 
-def shiftvec(nside,lmax,plm,nremap):
-  """
-  Return the anti deflection vector, beta, at the Healpix pixel for the delensing where 
+def shiftvec(nside, plm, nremap):
+    r"""
+    Return the anti-deflection vector :math:`\beta` at each Healpix pixel.
 
-    beta(n) + alphaiw(n+beta(n)) = 0
+    The anti-deflection vector is used for delensing and satisfies
 
-  and alphaw is the filtered lensing deflection vector (see arXiv:1701.01712).
+    .. math::
 
-  Args:
-    :nside (int): Nside of output shift vector
-    :lmax (int): Maximum multipole of the input plm
-    :plm [l,m] (dcmplx): Wiener-filtered lensing potential alm, with bounds (0:lmax,0:lmax)
+        \beta(\hat{n}) + \alpha^{\rm iw}(\hat{n} + \beta(\hat{n})) = 0,
 
-  Args(optional):
-    :nremap (int): Number of iteration for computing the shift vector
+    where :math:`\alpha^{\rm iw}` is the filtered lensing deflection vector.
+    See arXiv:1701.01712.
 
-  Returns:
-    :beta [pix,2] (double): 2D shift vector, with bounds (0:npix-1,1:2)
+    Parameters
+    ----------
+    nside : int
+        Nside of the output shift-vector map.
+    plm : ndarray of complex, shape (lmax + 1, lmax + 1)
+        Wiener-filtered lensing-potential alm, with bounds
+        ``(0:lmax, 0:lmax)``.
+    nremap : int
+        Number of iterations used to compute the shift vector.
 
-  """
-  npix = 12*nside**2
-  return lib_delens.shiftvec(npix,lmax,plm,nremap)
+    Returns
+    -------
+    beta : ndarray of float, shape (12 * nside**2, 2)
+        Two-dimensional shift vector, with bounds ``(0:npix-1, 1:2)``.
+    """
+    return lib_delens.shiftvec(nside, plm, nremap)
 
-def phi2grad(nside,lmax,plm):
-  """
-  Return the deflection vector, grad, at the Healpix pixel
 
-  Args:
-    :nside (int): Nside of output deflection vector
-    :lmax (int): Maximum multipole of the input plm/clm
-    :plm [l,m] (dcmplx): Lensing potential alm, with bounds (0:lmax,0:lmax)
+def phi2grad(nside, plm):
+    """
+    Return the deflection vector at each Healpix pixel.
 
-  Returns:
-    :grad [pix,2] (double): 2D deflection vector, with bounds (0:npix-1,1:2)
+    Parameters
+    ----------
+    nside : int
+        Nside of the output deflection-vector map.
+    plm : ndarray of complex, shape (lmax + 1, lmax + 1)
+        Lensing-potential alm, with bounds ``(0:lmax, 0:lmax)``.
 
-  """
-  npix = 12*nside**2
-  return lib_delens.phi2grad(npix,lmax,plm)
-
+    Returns
+    -------
+    grad : ndarray of float, shape (12 * nside**2, 2)
+        Two-dimensional deflection vector, with bounds ``(0:npix-1, 1:2)``.
+    """
+    return lib_delens.phi2grad(nside, plm)

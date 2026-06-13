@@ -66,7 +66,7 @@ def phi2grad(nside, plm):
     return alm2map_der1(nside, plm, nthreads=0)
 
 
-def shiftvec(nside, lmax, plm, nremap=3):
+def shiftvec(nside, plm, nremap):
 
     alpha  = alm2map_der1(nside, plm, nthreads=0)
     dalpha = alm2map_der2(nside, plm)

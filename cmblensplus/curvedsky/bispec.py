@@ -1,76 +1,132 @@
 import numpy
 from ._core import lib_bispec
 
-def make_quad_gauss(alm,bst=1):
-  """
-  Return a non-Gaussian alm. The corresponding non-Gaussian field is defined as
 
-    delta^NL(n) = delta^L(n) + delta^L(n)**2
+def make_quad_gauss(alm, bst=1):
+    r"""
+    Return a non-Gaussian alm.
 
-  where delta^L(n) is a gaussian field obtained from the input alm.
+    The corresponding non-Gaussian field is defined as
 
-  Args:
-    :alm [l,m] (dcmplx): Input harmonic coefficients, with bounds (0:lmax,0:lmax).
+    .. math::
 
-  Returns:
-    :qlm [l,m] (dcmplx): Output harmonic coefficients of the non-Gaussian fields, with bounds (0:lmax,0:lmax).
+        \delta^{\rm NL}(\hat{n})
+        =
+        \delta^{\rm L}(\hat{n})
+        +
+        \left[\delta^{\rm L}(\hat{n})\right]^2,
 
-  """
-  return lib_bispec.make_quad_gauss(alm,bst=bst)
+    where :math:`\delta^{\rm L}(\hat{n})` is a Gaussian field obtained from
+    the input alm.
 
-def bispec_norm(bp,bstype='equi',bst=2,sL=None,nthreads=0):
-  """
-  Return normalization of the binned reduced bispectrum for a given multipole bin
+    Parameters
+    ----------
+    alm : ndarray of complex, shape (lmax + 1, lmax + 1)
+        Input harmonic coefficients, with bounds ``(0:lmax, 0:lmax)``.
+    bst : int, optional
+        Accuracy-control parameter passed to the backend routine. Default is 1.
 
-  Args:
-    :bp [edge] (double): Bin edges, with bounds (bn+1)
+    Returns
+    -------
+    qlm : ndarray of complex, shape (lmax + 1, lmax + 1)
+        Output harmonic coefficients of the non-Gaussian field, with bounds
+        ``(0:lmax, 0:lmax)``.
+    """
+    return lib_bispec.make_quad_gauss(alm, bst=bst)
 
-  Args(optional):
-    :bstype (str): Configuration of the bispectrum, default to equilateral
-    :bst (int): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-    :sL[2] (int): The fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
 
-  Returns:
-    :norm [bin] (double): Normalization of the binned reduced bispectrum at each bin, with bounds (bn)
+def bispec_norm(bp, bstype='equi', bst=2, sL=None, nthreads=0):
+    """
+    Return the normalization of the binned reduced bispectrum for given
+    multipole bins.
 
-  """
-  return lib_bispec.bispec_norm(bp,bstype=bstype,bst=bst,sL=sL,nthreads=nthreads)
+    Parameters
+    ----------
+    bp : array_like of float, shape (bn + 1,)
+        Bin edges, with bounds ``0:bn``.
+    bstype : str, optional
+        Bispectrum configuration. Default is ``'equi'`` for equilateral.
+    bst : int, optional
+        Accuracy-control parameter, defined as ``bst = nside / lmax``.
+        Larger values give more accurate results. Default is 2.
+    sL : array_like of int, shape (2,), optional
+        Fixed bins for the squeezed configuration, ``b[sL, eL, eL]``.
+        If not given, the lowest multipole bin is used.
+    nthreads : int, optional
+        Number of threads. Default is 0.
 
-def bispec_bin(bp,alm,bstype='equi',bst=2,sL=None,nthreads=0):
-  """
-  Return the unnormalized binned reduced bispectrum for a given multipole bin
+    Returns
+    -------
+    norm : ndarray of float, shape (bn,)
+        Normalization of the binned reduced bispectrum at each bin, with
+        bounds ``0:bn-1``.
+    """
+    return lib_bispec.bispec_norm(
+        bp, bstype=bstype, bst=bst, sL=sL, nthreads=nthreads
+    )
 
-  Args:
-    :bp [edge] (double): Bin edges, with bounds (bn+1)
-    :alm [l,m] (dcmplx): Input harmonic coefficients, with bounds (0:lmax,0:lmax)
 
-  Args(optional):
-    :bstype (str): Configuration of the bispectrum, default to equilateral
-    :bst (int): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-    :sL[2] (int): The fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
+def bispec_bin(bp, alm, bstype='equi', bst=2, sL=None, nthreads=0):
+    """
+    Return the unnormalized binned reduced bispectrum for given multipole bins.
 
-  Returns:
-    :bis [bin] (double): The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
+    Parameters
+    ----------
+    bp : array_like of float, shape (bn + 1,)
+        Bin edges, with bounds ``0:bn``.
+    alm : ndarray of complex, shape (lmax + 1, lmax + 1)
+        Input harmonic coefficients, with bounds ``(0:lmax, 0:lmax)``.
+    bstype : str, optional
+        Bispectrum configuration. Default is ``'equi'`` for equilateral.
+    bst : int, optional
+        Accuracy-control parameter, defined as ``bst = nside / lmax``.
+        Larger values give more accurate results. Default is 2.
+    sL : array_like of int, shape (2,), optional
+        Fixed bins for the squeezed configuration, ``b[sL, eL, eL]``.
+        If not given, the lowest multipole bin is used.
+    nthreads : int, optional
+        Number of threads. Default is 0.
 
-  """
-  return lib_bispec.bispec_bin(bp,alm,bstype,bst,sL,nthreads=nthreads)
+    Returns
+    -------
+    bis : ndarray of float, shape (bn,)
+        Unnormalized binned reduced bispectrum at each bin, with bounds
+        ``0:bn-1``.
+    """
+    return lib_bispec.bispec_bin(
+        bp, alm, bstype, bst, sL, nthreads=nthreads
+    )
 
-def xbispec_bin(bp,alm,bstype='equi',bst=2,sL=None,nthreads=0):
-  """
-  Return the unnormalized binned reduced cross-bispectrum for a given multipole bin
 
-  Args:
-    :bp [edge] (double): Bin edges, with bounds (bn+1)
-    :alm [n,l,m] (dcmplx): Input harmonic coefficients, with bounds (0:n-1,0:lmax,0:lmax)
+def xbispec_bin(bp, alm, bstype='equi', bst=2, sL=None, nthreads=0):
+    """
+    Return the unnormalized binned reduced cross-bispectrum for given
+    multipole bins.
 
-  Args(optional):
-    :bstype (str): Configuration of the bispectrum, default to equilateral
-    :bst (int): A parameter, bst=nside/lmax, which controls the accuracy of the calculation, default to 2. More accurate for a larger value.
-    :sL[2] (int): The fixed bin for the squeezed configuration, b[sL,eL,eL], default to the lowest multipole bin
+    Parameters
+    ----------
+    bp : array_like of float, shape (bn + 1,)
+        Bin edges, with bounds ``0:bn``.
+    alm : ndarray of complex, shape (n, lmax + 1, lmax + 1)
+        Input harmonic coefficients, with bounds
+        ``(0:n-1, 0:lmax, 0:lmax)``.
+    bstype : str, optional
+        Bispectrum configuration. Default is ``'equi'`` for equilateral.
+    bst : int, optional
+        Accuracy-control parameter, defined as ``bst = nside / lmax``.
+        Larger values give more accurate results. Default is 2.
+    sL : array_like of int, shape (2,), optional
+        Fixed bins for the squeezed configuration, ``b[sL, eL, eL]``.
+        If not given, the lowest multipole bin is used.
+    nthreads : int, optional
+        Number of threads. Default is 0.
 
-  Returns:
-    :bis [bin] (double): The unnormalized binned reduced bispectrum at each bin, with bounds (bn)
-
-  """
-  return lib_bispec.xbispec_bin(bp,alm,bstype,bst,sL,nthreads=nthreads)
-
+    Returns
+    -------
+    bis : ndarray of float, shape (bn,)
+        Unnormalized binned reduced cross-bispectrum at each bin, with bounds
+        ``0:bn-1``.
+    """
+    return lib_bispec.xbispec_bin(
+        bp, alm, bstype, bst, sL, nthreads=nthreads
+    )

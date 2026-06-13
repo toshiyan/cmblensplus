@@ -1,116 +1,229 @@
 from ._core import lib_cninv
 
-def cnfilter_freq(cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],filter='W',inl=None,verbose=False,ro=50,stat=''):
+
+def cnfilter_freq(
+    cl, bl, iNcov, maps, chn=1, lmaxs=[0], nsides=[0], itns=[1],
+    eps=[1e-6], filter='W', inl=None, verbose=False, ro=50, stat=''
+):
     """
-    Combining multiple frequency CMB maps optimally. 
-    The filtering would work if the noise variance is not significantly varied with scale (multipole). 
-    Please make sure that your input maps are beam-convolved. 
-    This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
-    Note that n is for temperature only (n=1), polarization only (n=2) or both (n=3), mn is the number of frequency maps.
+    Optimally combine multiple-frequency CMB maps.
 
-    Args:
-        :cl[n,l] (double): Theory signal power spectrum, with bounds (0:n-1,0:lmax)
-        :bl[mn,l] (double): Beam spectrum, with bounds (0:mn-1,0:lmax)
-        :iNcov[n,mn,pix] (double): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:mn-1,0:npix-1)
-        :maps[n,mn,pix] (double): Beam-convolved T, Q, U maps, with bouds (0:n-1,0:mn-1,0:npix-1)
+    The input maps must be beam-convolved. This routine deconvolves the beam
+    during filtering, and returns filtered alms after beam deconvolution.
 
-    Args(optional):
-        :chn (int): Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
-        :lmaxs[chain] (int): Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
-        :nsides[chain] (int): Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside.
-        :eps[chain] (double): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
-        :itns[chain] (int): Number of interations.
-        :filter (str): C-inverse ('') or Wiener filter (W), default to the Wiener filter.
-        :inl[n,mn,l] (double): Inverse noise spectrum (0 for white noise case, default).
-        :verbose (bool): Output messages, default to False
-        :ro (int): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed.
-        :stat (str): Realtime status filename which contains the residual fraction, default to no output file
+    The number of fields is denoted by ``n``: temperature only has ``n = 1``,
+    polarization only has ``n = 2``, and temperature plus polarization has
+    ``n = 3``. The number of frequency maps is denoted by ``mn``.
 
-    Returns:
-        :xlm[n,l,m] (dcmplx): C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
+    Parameters
+    ----------
+    cl : array_like of float, shape (n, lmax + 1)
+        Theory signal power spectra, with bounds ``(0:n-1, 0:lmax)``.
+    bl : array_like of float, shape (mn, lmax + 1)
+        Beam spectra, with bounds ``(0:mn-1, 0:lmax)``.
+    iNcov : ndarray of float, shape (n, mn, npix)
+        Inverse noise variance at each pixel, with bounds
+        ``(0:n-1, 0:mn-1, 0:npix-1)``.
+    maps : ndarray of float, shape (n, mn, npix)
+        Beam-convolved T, Q, and U maps, with bounds
+        ``(0:n-1, 0:mn-1, 0:npix-1)``.
+    chn : int, optional
+        Number of grids for the preconditioner. Use ``chn = 1`` for the
+        diagonal preconditioner. Default is 1.
+    lmaxs : array_like of int, optional
+        Maximum multipoles at each preconditioning chain. ``lmaxs[0]`` is the
+        input maximum multipole of ``cl``. Default is ``[0]``.
+    nsides : array_like of int, optional
+        Nsides of the preconditioner. ``nsides[0]`` should be consistent with
+        the input map Nside. Default is ``[0]``.
+    itns : array_like of int, optional
+        Numbers of iterations for the preconditioning chains. Default is
+        ``[1]``.
+    eps : array_like of float, optional
+        Convergence thresholds for the iterations. The iteration terminates
+        when the residual fraction becomes smaller than ``eps``. Default is
+        ``[1e-6]``.
+    filter : {'', 'W'}, optional
+        Filtering type. Use ``''`` for C-inverse filtering or ``'W'`` for
+        Wiener filtering. Default is ``'W'``.
+    inl : array_like of float, shape (n, mn, lmax + 1), optional
+        Inverse noise spectra. If not given, the white-noise case is assumed.
+    verbose : bool, optional
+        Whether to output messages. Default is False.
+    ro : int, optional
+        Interval for printing the residual fraction. For example, ``ro = 2``
+        outputs once every two iterations. Default is 50.
+    stat : str, optional
+        Realtime status filename containing the residual fraction. If empty,
+        no status file is written. Default is ``''``.
 
+    Returns
+    -------
+    xlm : ndarray of complex, shape (n, lmax + 1, lmax + 1)
+        C-inverse or Wiener-filtered multipoles, with bounds
+        ``(0:n-1, 0:lmax, 0:lmax)``.
     """
-    
-    if inl is None: 
+    if inl is None:
         lmax = len(cl[0]) - 1
-        inl = 0*iNcov[:,:,:lmax+1]
-        
+        inl = 0 * iNcov[:, :, :lmax + 1]
+
     return lib_cninv.cnfilter_freq(
-        cl,bl,iNcov,maps,
-        chn=chn,lmaxs=lmaxs,nsides=nsides,itns=itns,eps=eps,filter=filter,inl=inl,verbose=verbose,ro=ro,stat=stat
+        cl, bl, iNcov, maps,
+        chn=chn, lmaxs=lmaxs, nsides=nsides, itns=itns, eps=eps,
+        filter=filter, inl=inl, verbose=verbose, ro=ro, stat=stat
     )
 
 
-def cnfilter_kappa(cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],inl=None,verbose=False,ro=50,stat=''):
+def cnfilter_kappa(
+    cov, iNcov, maps, chn=1, lmaxs=[0], nsides=[0], itns=[1],
+    eps=[1e-6], inl=None, verbose=False, ro=50, stat=''
+):
+    r"""
+    Compute inverse-variance weighted multipoles for multiple kappa tracers.
+
+    This routine computes :math:`(C + N)^{-1} x` for multiple mass-tracer
+    kappa maps.
+
+    Parameters
+    ----------
+    cov : array_like of float, shape (n, n, lmax + 1)
+        Signal covariance matrix for each multipole, with bounds
+        ``(0:n-1, 0:n-1, 0:lmax)``.
+    iNcov : ndarray of float, shape (n, npix)
+        Inverse noise variance at each pixel, with bounds
+        ``(0:n-1, 0:npix-1)``.
+    maps : ndarray of float, shape (n, npix)
+        Input kappa maps, with bounds ``(0:n-1, 0:npix-1)``.
+    chn : int, optional
+        Number of grids for the preconditioner. Use ``chn = 1`` for the
+        diagonal preconditioner. Default is 1.
+    lmaxs : array_like of int, optional
+        Maximum multipoles at each preconditioning chain. ``lmaxs[0]`` is the
+        input maximum multipole of ``cov``. Default is ``[0]``.
+    nsides : array_like of int, optional
+        Nsides of the preconditioner. ``nsides[0]`` should be consistent with
+        the input map Nside. Default is ``[0]``.
+    itns : array_like of int, optional
+        Numbers of iterations for the preconditioning chains. Default is
+        ``[1]``.
+    eps : array_like of float, optional
+        Convergence thresholds for the iterations. The iteration terminates
+        when the residual fraction becomes smaller than ``eps``. Default is
+        ``[1e-6]``.
+    inl : array_like of float, shape (n, lmax + 1), optional
+        Inverse noise spectra for each mass map. If not given, the white-noise
+        case is assumed.
+    verbose : bool, optional
+        Whether to output messages. Default is False.
+    ro : int, optional
+        Interval for printing the residual fraction. For example, ``ro = 2``
+        outputs once every two iterations. Default is 50.
+    stat : str, optional
+        Realtime status filename containing the residual fraction. If empty,
+        no status file is written. Default is ``''``.
+
+    Returns
+    -------
+    xlm : ndarray of complex, shape (n, lmax + 1, lmax + 1)
+        Wiener-filtered multipoles, with bounds ``(0:n-1, 0:lmax, 0:lmax)``.
     """
-    Computing the inverse-variance weighted multipole, (C+N)^-1 x kappa, for multiple mass-tracers of kappa maps. 
+    if inl is None:
+        lmax = len(cov[0, 0]) - 1
+        inl = 0 * iNcov[:, :lmax + 1]
 
-    Args:
-        :cov[n,n,l] (double): Signal covariance matrix for each multipole, with bounds (0:n-1,0:n-1,0:lmax)
-        :iNcov[n,pix] (double): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
-        :maps[n,pix] (double): Input kappa maps, with bouds (0:n-1,0:npix-1)
-
-    Args(optional):
-        :chn (int): Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
-        :lmaxs[chain] (int): Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
-        :nsides[chain] (int): Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside.
-        :eps[chain] (double): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
-        :itns[chain] (int): Number of interations.
-        :inl[n,l] (double): Inverse noise spectrum for each mass map (0 for white noise case, default).
-        :verbose (bool): Output messages, default to False
-        :ro (int): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed.
-        :stat (str): Realtime status filename which contains the residual fraction, default to no output file
-
-    Returns:
-        :xlm[n,l,m] (dcmplx): Wiener filtered multipoles, with bounds (n,0:lmax,0:lmax)
-
-    """
-    
-    if inl is None: 
-        lmax = len(cov[0,0]) - 1
-        inl  = 0*iNcov[:,:lmax+1]
-        
     return lib_cninv.cnfilter_kappa(
-            cov,iNcov,maps,
-            chn=chn,lmaxs=lmaxs,nsides=nsides,itns=itns,eps=eps,inl=inl,verbose=verbose,ro=ro,stat=stat
-        )
+        cov, iNcov, maps,
+        chn=chn, lmaxs=lmaxs, nsides=nsides, itns=itns, eps=eps,
+        inl=inl, verbose=verbose, ro=ro, stat=stat
+    )
 
 
-def cnfilter_freq_nside(cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,
-                        chn=1,lmaxs=[0],nsides0=[0],nsides1=[0],itns=[1],eps=[1e-6],filter='W',inl=None,verbose=False,reducmn=0,ro=50,stat=''
-                       ):
+def cnfilter_freq_nside(
+    cl, bl0, bl1, iNcov0, iNcov1, maps0, maps1,
+    chn=1, lmaxs=[0], nsides0=[0], nsides1=[0], itns=[1],
+    eps=[1e-6], filter='W', inl=None, verbose=False, reducmn=0,
+    ro=50, stat=''
+):
     """
-    Same as cnfilter_freq but for the maps with two different Nsides. 
-    Please make sure that your input maps are beam-convolved. 
-    This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
+    Optimally combine multiple-frequency maps with two different Nsides.
 
-    Args:
-        :cl[n,l] (double): Theory signal power spectrum, with bounds (0:n-1,0:lmax)
-        :bl0/1[mn,l] (double): Beam function, with bounds (0:n-1,0:lmax)
-        :iNcov0/1[n,mn,pix] (double): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
-        :maps0/1[n,mn,pix] (double): Beam-convolved T, Q, U maps, with bouds (0:n-1,0:npix-1)
+    This routine is similar to :func:`cnfilter_freq`, but supports input maps
+    with two different Nsides. The input maps must be beam-convolved. This
+    routine deconvolves the beam during filtering, and returns filtered alms
+    after beam deconvolution.
 
-    Args(optional):
-        :chn (int): Number of grids for preconsitioner (chn=1 for diagonal preconditioner, default)
-        :lmaxs[chain] (int): Maximum multipole(s) at each preconditioning and lmaxs[0] is the input maximum multipole of cl
-        :nsides0/1[chain] (int): Nside(s) of preconditoner and nsides[0] should be consistent with the input map's nside.
-        :eps[chain] (double): Parameter to finish the iteration (i.e. terminate if the residul fraction becomes smaller than eps). Default to 1e-6.
-        :itns[chain] (int): Number of interations.
-        :filter (str): C-inverse ('') or Wiener filter (W), default to the Wiener filter.
-        :inl[n,mn,l] (double): Inverse noise spectrum, 0 for white noise case.
-        :verbose (bool): Output messages, default to False
-        :ro (int): the residual fraction is output for every ro iteration (e.g. ro=2 means 1 output per 2 iterations). Default to 50. Useful for convergence speed.
-        :stat (str): Realtime status filename which contains the residual fraction, default to no output file
-        :reducmn (int): Reducing number of maps per chain (1,2) or not (0, default). If 1, the maps are combined for the same nside inside the multigrid chain. If 2, in addition to the procedure of 1, the each nside maprs are further combined into a single map inside the second chain (chain>=3).
+    Parameters
+    ----------
+    cl : array_like of float, shape (n, lmax + 1)
+        Theory signal power spectra, with bounds ``(0:n-1, 0:lmax)``.
+    bl0 : array_like of float, shape (mn, lmax + 1)
+        Beam spectra for the first Nside set, with bounds
+        ``(0:mn-1, 0:lmax)``.
+    bl1 : array_like of float, shape (mn, lmax + 1)
+        Beam spectra for the second Nside set, with bounds
+        ``(0:mn-1, 0:lmax)``.
+    iNcov0 : ndarray of float, shape (n, mn, npix0)
+        Inverse noise variance for the first Nside set, with bounds
+        ``(0:n-1, 0:mn-1, 0:npix0-1)``.
+    iNcov1 : ndarray of float, shape (n, mn, npix1)
+        Inverse noise variance for the second Nside set, with bounds
+        ``(0:n-1, 0:mn-1, 0:npix1-1)``.
+    maps0 : ndarray of float, shape (n, mn, npix0)
+        Beam-convolved T, Q, and U maps for the first Nside set, with bounds
+        ``(0:n-1, 0:mn-1, 0:npix0-1)``.
+    maps1 : ndarray of float, shape (n, mn, npix1)
+        Beam-convolved T, Q, and U maps for the second Nside set, with bounds
+        ``(0:n-1, 0:mn-1, 0:npix1-1)``.
+    chn : int, optional
+        Number of grids for the preconditioner. Use ``chn = 1`` for the
+        diagonal preconditioner. Default is 1.
+    lmaxs : array_like of int, optional
+        Maximum multipoles at each preconditioning chain. ``lmaxs[0]`` is the
+        input maximum multipole of ``cl``. Default is ``[0]``.
+    nsides0 : array_like of int, optional
+        Nsides of the preconditioner for the first map set. ``nsides0[0]``
+        should be consistent with the first input map Nside. Default is
+        ``[0]``.
+    nsides1 : array_like of int, optional
+        Nsides of the preconditioner for the second map set. ``nsides1[0]``
+        should be consistent with the second input map Nside. Default is
+        ``[0]``.
+    itns : array_like of int, optional
+        Numbers of iterations for the preconditioning chains. Default is
+        ``[1]``.
+    eps : array_like of float, optional
+        Convergence thresholds for the iterations. The iteration terminates
+        when the residual fraction becomes smaller than ``eps``. Default is
+        ``[1e-6]``.
+    filter : {'', 'W'}, optional
+        Filtering type. Use ``''`` for C-inverse filtering or ``'W'`` for
+        Wiener filtering. Default is ``'W'``.
+    inl : array_like of float, shape (n, mn, lmax + 1), optional
+        Inverse noise spectra. If not given, the white-noise case is assumed.
+    verbose : bool, optional
+        Whether to output messages. Default is False.
+    reducmn : int, optional
+        Whether to reduce the number of maps per chain. Use 0 for no reduction,
+        1 to combine maps with the same Nside inside the multigrid chain, or 2
+        to additionally combine the two Nside map sets into a single map inside
+        the second chain for ``chain >= 3``. Default is 0.
+    ro : int, optional
+        Interval for printing the residual fraction. For example, ``ro = 2``
+        outputs once every two iterations. Default is 50.
+    stat : str, optional
+        Realtime status filename containing the residual fraction. If empty,
+        no status file is written. Default is ``''``.
 
-    Returns:
-        :xlm[n,l,m] (dcmplx): C-inverse or Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
+    Returns
+    -------
+    xlm : ndarray of complex, shape (n, lmax + 1, lmax + 1)
+        C-inverse or Wiener-filtered multipoles, with bounds
+        ``(0:n-1, 0:lmax, 0:lmax)``.
     """
-    
     if inl is None:
         lmax = len(cl[0]) - 1
-        inl = 0*iNcov0[:,:,:lmax+1]
-    
+        inl = 0 * iNcov0[:, :, :lmax + 1]
+
     return lib_cninv.cnfilter_freq_nside(
         cl, bl0, bl1, iNcov0, iNcov1, maps0, maps1,
         chn=chn,
@@ -126,4 +239,3 @@ def cnfilter_freq_nside(cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,
         ro=ro,
         stat=stat,
     )
-
