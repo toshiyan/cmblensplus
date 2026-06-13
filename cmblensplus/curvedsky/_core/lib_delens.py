@@ -14,8 +14,10 @@ def lensingb(lmax,elmin,elmax,plmin,plmax,wElm,wplm,nside_t=0,gtype="p",nthreads
     """
     Compute lensing B-mode alm from filtered E-mode and lensing potential.
     """
-    if nside == 0:
+    if nside_t == 0:
         nside = _default_nside(max(elmax, plmax))
+    else:
+        nside = nside_t
 
     if gtype not in {"p", "k"}:
         raise ValueError("gtype must be 'p' for phi or 'k' for kappa")

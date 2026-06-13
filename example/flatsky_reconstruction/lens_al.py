@@ -1,8 +1,7 @@
 # Flatsky lensing reconstruction normalization
 # - This code compute normalization of estiamtors
 import numpy as np
-import cmb
-import binning as bins
+from cmblensplus.utils import cmb, binning as bins
 from cmblensplus import flatsky, basic
 
 Tcmb = 2.726e6    # CMB temperature

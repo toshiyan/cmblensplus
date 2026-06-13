@@ -1,5 +1,6 @@
 # This module provides the normalization of the quadratic estimators
 
+import numpy as np
 from . import libcurvedsky as lib_norm 
 # to be replaced with pytempura
 

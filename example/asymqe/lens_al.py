@@ -1,7 +1,7 @@
 # Flatsky lensing normalization from an asymmetric quadratic estimator
 import numpy as np
 from cmblensplus import basic
-import cmb
+from cmblensplus.utils import cmb
 
 Tcmb  = 2.726e6    # CMB temperature
 lmax  = 3000       # maximum multipole of output normalization

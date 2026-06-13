@@ -30,12 +30,15 @@ def cnfilter_freq(cl,bl,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6
         :xlm[n,l,m] (dcmplx): C-inverse / Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
 
     """
-    n = len(cl[:,0])
-    mn = len(bl[:,0])
-    npix = len(maps[0,0,:])
-    lmax = len(cl[0,:]) - 1
-    if inl is None: inl = 0*iNcov[:,:,:lmax+1]
-    return lib_cninv.cnfilter_freq(n,mn,npix,lmax,cl,bl,iNcov,maps,chn,lmaxs,nsides,itns,eps,filter,inl,verbose,ro,stat)
+    
+    if inl is None: 
+        lmax = len(cl[0]) - 1
+        inl = 0*iNcov[:,:,:lmax+1]
+        
+    return lib_cninv.cnfilter_freq(
+        cl,bl,iNcov,maps,
+        chn=chn,lmaxs=lmaxs,nsides=nsides,itns=itns,eps=eps,filter=filter,inl=inl,verbose=verbose,ro=ro,stat=stat
+    )
 
 
 def cnfilter_kappa(cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6],inl=None,verbose=False,ro=50,stat=''):
@@ -62,14 +65,18 @@ def cnfilter_kappa(cov,iNcov,maps,chn=1,lmaxs=[0],nsides=[0],itns=[1],eps=[1e-6]
         :xlm[n,l,m] (dcmplx): Wiener filtered multipoles, with bounds (n,0:lmax,0:lmax)
 
     """
-    n = len(cov[:,0,0])
-    lmax = len(cov[0,0,:]) - 1
-    npix = len(maps[0,:])
-    if inl  is None: inl  = 0*iNcov[:,:lmax+1]
-    return lib_cninv.cnfilter_kappa(n,npix,lmax,cov,iNcov,maps,chn,lmaxs,nsides,itns,eps,inl,verbose,ro,stat)
+    
+    if inl is None: 
+        lmax = len(cov[0,0]) - 1
+        inl  = 0*iNcov[:,:lmax+1]
+        
+    return lib_cninv.cnfilter_kappa(
+            cov,iNcov,maps,
+            chn=chn,lmaxs=lmaxs,nsides=nsides,itns=itns,eps=eps,inl=inl,verbose=verbose,ro=ro,stat=stat
+        )
 
 
-def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,
+def cnfilter_freq_nside(cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,
                         chn=1,lmaxs=[0],nsides0=[0],nsides1=[0],itns=[1],eps=[1e-6],filter='W',inl=None,verbose=False,reducmn=0,ro=50,stat=''
                        ):
     """
@@ -78,10 +85,6 @@ def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,ma
     This code deconvolves the beam during filtering and the output are the filtered alms after the beam-deconvolution.
 
     Args:
-        :n (int): Number of maps, i.e., temperature only (n=1), polarization only (n=2) or both (n=3)
-        :mn0/1 (int): Number of frequencies
-        :nside0/1 (int): Nsides of input maps
-        :lmax (int): Maximum multipole of the input cl
         :cl[n,l] (double): Theory signal power spectrum, with bounds (0:n-1,0:lmax)
         :bl0/1[mn,l] (double): Beam function, with bounds (0:n-1,0:lmax)
         :iNcov0/1[n,mn,pix] (double): Inverse of the noise variance at each pixel, with bounds (0:n-1,0:npix-1)
@@ -103,8 +106,24 @@ def cnfilter_freq_nside(n,mn0,mn1,nside0,nside1,lmax,cl,bl0,bl1,iNcov0,iNcov1,ma
     Returns:
         :xlm[n,l,m] (dcmplx): C-inverse or Wiener filtered multipoles, with bounds (0:n-1,0:lmax,0:lmax)
     """
-    npix0 = 12*nside0**2
-    npix1 = 12*nside1**2
-    if inl is None: inl = 0*iNcov0[:,:,:lmax+1]
-    return lib_cninv.cnfilter_freq_nside(n,mn0,mn1,npix0,npix1,lmax,cl,bl0,bl1,iNcov0,iNcov1,maps0,maps1,chn,lmaxs,nsides0,nsides1,itns,eps,filter,inl,verbose,reducmn,ro,stat)
+    
+    if inl is None:
+        lmax = len(cl[0]) - 1
+        inl = 0*iNcov0[:,:,:lmax+1]
+    
+    return lib_cninv.cnfilter_freq_nside(
+        cl, bl0, bl1, iNcov0, iNcov1, maps0, maps1,
+        chn=chn,
+        lmaxs=lmaxs,
+        nsides0=nsides0,
+        nsides1=nsides1,
+        itns=itns,
+        eps=eps,
+        filter=filter,
+        inl=inl,
+        verbose=verbose,
+        reducmn=reducmn,
+        ro=ro,
+        stat=stat,
+    )
 
