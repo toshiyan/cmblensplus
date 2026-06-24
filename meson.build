@@ -142,14 +142,14 @@ endif
 # ---------------------------------------------------------------------------
 
 py.install_sources(
-  'cmblensplus/__init__.py',
+  'src/cmblensplus/__init__.py',
   subdir: 'cmblensplus',
 )
 
-subdir('cmblensplus/basic')
-subdir('cmblensplus/curvedsky')
-subdir('cmblensplus/flatsky')
-subdir('cmblensplus/utils')
+subdir('src/cmblensplus/basic')
+subdir('src/cmblensplus/curvedsky')
+subdir('src/cmblensplus/flatsky')
+subdir('src/cmblensplus/utils')
 
 # ---------------------------------------------------------------------------
 # f2py extension modules

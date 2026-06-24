@@ -64,6 +64,17 @@ basic_f2py_wrappers = custom_target(
 # ---------------------------------------------------------------------------
 # Step 3: build Python extension module
 # ---------------------------------------------------------------------------
+utils_link_args = []
+
+if host_machine.system() == 'darwin'
+  utils_link_args = [
+    '-Wl,-force_load,' + utils_lib_path,
+  ]
+else
+  utils_link_args = [
+    utils_lib_path,
+  ]
+endif
 
 py.extension_module(
   basic_module_name,
@@ -84,9 +95,10 @@ py.extension_module(
   ],
 
   # Link directly to the libutils.a that Meson copied into the build dir.
-  link_args: [
-    utils_lib_path,
-  ],
+  link_args: utils_link_args,
+  #link_args: [
+  #  utils_lib_path,
+  #],
 
   # Ensure libutils.a is built before linking libbasic.
   link_depends: [
