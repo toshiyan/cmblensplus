@@ -32,6 +32,17 @@ jobs:
           python -m pip install -U pip setuptools wheel
           python -m pip install -v .
 
+      - name: Test installed package
+        run: |
+          cd /tmp
+          python - <<'PY'
+          import cmblensplus
+          print(cmblensplus.__file__)
+
+          import cmblensplus.basic.libbasic
+          print("libbasic import OK")
+          PY
+    
       - name: Check import location and libbasic
         run: |
           python -c "import cmblensplus, pathlib; print(cmblensplus.__file__); root = pathlib.Path(cmblensplus.__file__).parent; [print(p) for p in root.rglob('libbasic*')]"
