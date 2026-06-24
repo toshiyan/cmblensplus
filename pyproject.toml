@@ -24,6 +24,8 @@ classifiers = [
 dependencies = [
   "numpy",
   "scipy",
+  "matplotlib",
+  "tqdm",
   "ducc0",
   "healpy",
 ]

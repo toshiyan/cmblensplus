@@ -1,5 +1,4 @@
 import numpy as np
-from astropy import units as u
 from scipy import constants as const
 
 
@@ -59,8 +58,10 @@ rad2deg = 1./deg2rad
 
 # J/sr -> uk depending on frequency in GHz
 def Jysr2uK(nu):
-    return ( ( 1.*u.Jy/u.sr ).to( u.uK,equivalencies=u.thermodynamic_temperature(nu*u.GHz,Tcmb*1e-6*u.K)) ).value
+    from astropy import units
+    return ( ( 1.*units.Jy/units.sr ).to( units.uK,equivalencies=u.thermodynamic_temperature(nu*units.GHz,Tcmb*1e-6*units.K)) ).value
 
 def MJysr2uK(nu):
-    return ( ( 1e6*u.Jy/u.sr ).to( u.uK,equivalencies=u.thermodynamic_temperature(nu*u.GHz,Tcmb*1e-6*u.K)) ).value
+    from astropy import units
+    return ( ( 1e6*units.Jy/units.sr ).to( units.uK,equivalencies=u.thermodynamic_temperature(nu*units.GHz,Tcmb*1e-6*units.K)) ).value
 

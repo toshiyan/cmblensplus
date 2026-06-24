@@ -27,9 +27,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --no-cache-dir -v .
 
-      - name: Import test
+        name: Import basic extension directly
+        run: |
+          python - <<'PY'
+          import cmblensplus.basic.libbasic
+          print("libbasic import OK")
+          PY
+
+      - name: Import utils
         run: |
           python - <<'PY'
           from cmblensplus.utils import cmb
           print("OK")
           PY
+
+          

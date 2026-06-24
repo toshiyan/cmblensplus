@@ -2,19 +2,12 @@
 
 import numpy as np
 import healpy as hp
-import sys
-import tqdm
 
 # from cmblensplus/wrap
 import cmblensplus.basic as basic
-#import cmblensplus.curvedsky as curvedsky
 
 # from cmblensplus/utils
 from . import constant as c, misctools
-
-# for pickle (to be removed)
-#import cPickle as pickle
-import pickle
 
 
 #////////// Constants //////////#
@@ -154,6 +147,8 @@ def aps(rlz,lmax,falm,odd=True,w2=1.,mtype=['T','E','B'],fname=None,skip_rlz=[],
     Compute CMB aps (TT,EE,BB,TE,TB,EB)
     '''
 
+    import pickle
+
     if odd:
         cn = 6
     else:
@@ -161,7 +156,7 @@ def aps(rlz,lmax,falm,odd=True,w2=1.,mtype=['T','E','B'],fname=None,skip_rlz=[],
 
     cls = np.zeros((len(rlz),cn,lmax+1))
 
-    for ii, i in enumerate(tqdm.tqdm(rlz,ncols=100,desc='aps:')):
+    for ii, i in enumerate(rlz):
 
         if i in skip_rlz: continue
 
@@ -211,9 +206,11 @@ def apsx(rlz,lmax,falm,galm,verbose=True,overwrite=False,mtype=['T','E','B']):
     Compute CMB aps (T0T1,E0E1,B0B1)
     '''
 
+    import pickle
+
     cls = np.zeros((len(rlz),3,lmax+1))
 
-    for ii, i in enumerate(tqdm.tqdm(rlz,ncols=100,desc='apsx:')):
+    for ii, i in enumerate(rlz):
 
         if 'T' in mtype:  
             Talm = pickle.load(open(falm['T'][i],"rb"))[:lmax+1,:lmax+1]

@@ -4,9 +4,6 @@ import numpy as np
 from scipy import integrate
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 from scipy.interpolate import interp2d
-from astropy import units as u
-import hankel
-import camb
 
 # cmblensplus/wrap/
 import cmblensplus.basic as basic
@@ -54,7 +51,8 @@ def window_gal(Hz,chi,fNz):
 # //// CAMB Cl //// #
 
 def calc_cmb_aps(lmax,cltype=[],H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,tau=0.06,As=2e-9,ns=0.965,r=0,lens_ac=2):
-    
+    import camb
+
     #Set up a new set of parameters for CAMB
     pars = camb.CAMBparams()
     pars.set_cosmology(H0=H0, ombh2=ombh2, omch2=omch2, mnu=mnu, omk=omk, tau=tau)
@@ -77,6 +75,7 @@ def calc_cmb_aps(lmax,cltype=[],H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,t
         
 
 def calc_phi_aps(Lmax,H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,As=2e-9,ns=0.965,ac=1,lsamp=1,lens_ac=5):
+    import camb
 
     pars = camb.CAMBparams()
     pars.set_cosmology(H0=H0, ombh2=ombh2, omch2=omch2, mnu=mnu, omk=omk)
@@ -92,6 +91,7 @@ def calc_phi_aps(Lmax,H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,As=2e-9,ns=
 
 
 def calc_lss_aps(Lmax,zi,w,bz=1.,H0=67.5,ombh2=0.022,omch2=0.122,mnu=0.06,omk=0,As=2e-9,ns=0.965,ac=1,lsamp=1,lens_ac=5):
+    import camb
 
     pars = camb.CAMBparams()
     pars.set_cosmology(H0=H0, ombh2=ombh2, omch2=omch2, mnu=mnu, omk=omk)
@@ -159,6 +159,8 @@ def cl_limber(L,z,dz,W0,W1,k,pk0,ln=200,**cps):
 # Matter P(k)
 
 def camb_pk(H0=70.,Om=.3,Ob=0.0455,ns=.96,As=2e-9,z=[0.],kmin=1e-4,kmax=1e1,npoints=500,output_with_h=False,nonlinear=False):
+    import camb
+
     # compute linear matter P(k) with CAMB
     h0 = H0*.01
     pars = camb.CAMBparams()
@@ -191,6 +193,7 @@ def Tk_BBKS(k,Om=.27,H0=70.):
 # Correlation function
 
 def pk2corrfunc(k,pk,r,h=0.001):
+    import hankel
     # compute correlation function for a given matter power spectrum
     #r = np.arange(rmin,rmax,dr)
     # power spectrum
@@ -203,6 +206,7 @@ def pk2corrfunc(k,pk,r,h=0.001):
 
 
 def IntegPJ0(k,pk0,h=.001,verbose=False):
+    import hankel
     # construct a function: F(r) = int[kP(k)*J_0(kr)/2pi]
     r = basic.cosmofuncs.dist_comoving( np.linspace(1e-4,5.,2000) ) * .05
     if verbose: print('compute using r between',min(r),max(r),r[1]-r[0])
@@ -218,6 +222,7 @@ def IntegPJ0(k,pk0,h=.001,verbose=False):
 
 
 def IntegPJ(k,zs,pk,h=.001):
+    import hankel
     # construct a function: F(r) = int[kP(k)*J_0(kr)/2pi]
     r = basic.cosmofuncs.dist_comoving( np.linspace(1e-4,5.,2000) ) * .05
     # setup hankel transform

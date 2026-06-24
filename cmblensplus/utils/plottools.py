@@ -2,8 +2,6 @@ import numpy as np
 import healpy as hp
 import matplotlib.pyplot as plt
 
-import ipywidgets as widgets
-
 
 def plot_corr(dat,bp,zmin=-1,zmax=1,spc='',fname='',xlab='',ylab='',clab='corr. coeff.',output=False):
     """
@@ -156,6 +154,8 @@ def hist_errorbars( data, ymin=None, ymax=None, divbymax=True, xerrs=False, *arg
 def view_maps(maps,vrange=None):
     # need "import ipywidgets as widgets"
     # plot multiple mollview with tab switch
+    
+    import ipywidgets as widgets
 
     mlist = list(maps.keys())
     print('map key list:',mlist)

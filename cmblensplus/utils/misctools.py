@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import sys
-import configparser
 
 #from IPython.display import clear_output
 
@@ -45,7 +44,9 @@ def progress(i,index,text='Current progress',addtext=''):
 
 
 def load_config(section):
-        
+
+    import configparser
+
     #//// load config file ////#
     config = configparser.ConfigParser()
     

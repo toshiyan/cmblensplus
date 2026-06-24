@@ -1,16 +1,17 @@
-
-import configparser
+# python standard packages
 import sys
 import os
-import numpy as np
-import pickle
-import tqdm
 import multiprocessing
+import pickle
+
+# python external packages
+import numpy as np
+import tqdm
 
 # cmblensplus
 import cmblensplus.curvedsky as curvedsky
 
-# local
+# from cmblensplus.utils
 from . import misctools
 
 

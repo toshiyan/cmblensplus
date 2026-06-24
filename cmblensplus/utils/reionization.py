@@ -1,15 +1,16 @@
 
-import numpy as np, tqdm
+# python external packages
+import numpy as np
+import tqdm
+#-- to avoid scipy constants use
+from scipy.integrate import quad
+from scipy.interpolate import InterpolatedUnivariateSpline as spline
 
 # from cmblensplus
 import cmblensplus.basic as basic
 
 # from cmblensplus/utils
 from . import constant as c
-
-# to avoid scipy constants use
-from scipy.integrate import quad
-from scipy.interpolate import InterpolatedUnivariateSpline as spline
 
 
 def xHlogxH(xe):
