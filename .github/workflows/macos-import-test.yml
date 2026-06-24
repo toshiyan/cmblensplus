@@ -27,6 +27,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --no-cache-dir -v .
 
+      - name: Debug libbasic artifact
+        run: |
+          find . -name 'libbasic*' -print
+          python - <<'PY'
+          import cmblensplus.basic.libbasic
+          print("libbasic import OK")
+          PY
+    
       - name: Import basic extension directly
         run: |
           python - <<'PY'
