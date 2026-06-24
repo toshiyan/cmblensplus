@@ -27,20 +27,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --no-cache-dir -v .
 
-      - name: Check built extensions
+      - name: Build and install package
         run: |
-          echo "=== libbasic files ==="
-          find . -name 'libbasic*' -print
+          python -m pip install -U pip setuptools wheel
+          python -m pip install -v .
 
-          echo "=== installed cmblensplus files ==="
-          python - <<'PY'
-          import cmblensplus, pathlib
-          root = pathlib.Path(cmblensplus.__file__).parent
-          print(root)
-          for p in root.rglob("libbasic*"):
-              print(p)
-          PY    
-            
+      - name: Check import location and libbasic
+        run: |
+          python -c "import cmblensplus, pathlib; print(cmblensplus.__file__); root = pathlib.Path(cmblensplus.__file__).parent; [print(p) for p in root.rglob('libbasic*')]"
+
       - name: Import basic extension directly
         run: |
           python - <<'PY'
