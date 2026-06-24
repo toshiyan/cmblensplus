@@ -24,13 +24,8 @@ jobs:
 
       - name: Install package
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --no-cache-dir -v .
-
-      - name: Build and install package
-        run: |
           python -m pip install -U pip setuptools wheel
-          python -m pip install -v .
+          python -m pip install --no-cache-dir -v .
 
       - name: Test installed package
         run: |
@@ -41,24 +36,7 @@ jobs:
 
           import cmblensplus.basic.libbasic
           print("libbasic import OK")
-          PY
-    
-      - name: Check import location and libbasic
-        run: |
-          python -c "import cmblensplus, pathlib; print(cmblensplus.__file__); root = pathlib.Path(cmblensplus.__file__).parent; [print(p) for p in root.rglob('libbasic*')]"
 
-      - name: Import basic extension directly
-        run: |
-          python - <<'PY'
-          import cmblensplus.basic.libbasic
-          print("libbasic import OK")
-          PY
-
-      - name: Import utils
-        run: |
-          python - <<'PY'
           from cmblensplus.utils import cmb
-          print("OK")
+          print("utils import OK")
           PY
-
-          
