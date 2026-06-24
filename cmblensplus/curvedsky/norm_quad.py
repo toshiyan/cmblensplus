@@ -522,9 +522,9 @@ def qall_iter(lmax, rlmin, rlmax, ucl, lcl, ocl, eb='qe'):
         Lensed CMB angular power spectra.
     ocl : array_like of float
         Observed CMB angular power spectra.
-    eb : {'qe', 'iter'}, optional
+    eb : 'qe' or integer, optional
         EB reconstruction method. Use ``'qe'`` for the quadratic estimator,
-        or any other value for the iterative EB reconstruction. Default is
+        or an integer for the number of iteration for the iterative EB reconstruction. Default is
         ``'qe'``.
 
     Returns
@@ -555,10 +555,10 @@ def qall_iter(lmax, rlmin, rlmax, ucl, lcl, ocl, eb='qe'):
         Ag[4, :], Ac[4, :] = qeb_iter(
             lmax, rlmax, rlmin, rlmax, rlmin, rlmax,
             ucl[1, :], ocl[1, :], ocl[2, :], ucl[3, :],
-            iter=10, conv=1e-3
+            iter=eb, conv=1e-3
         )
 
-    # TT+TE+EE+EB
+    # TT+TE+EE + EB (no TB)
     Ag[6, 2:] = Ag[5, 2:] * Ag[4, 2:] / (Ag[5, 2:] + Ag[4, 2:])
     Ac[6, 2:] = Ac[5, 2:] * Ac[4, 2:] / (Ac[5, 2:] + Ac[4, 2:])
 
