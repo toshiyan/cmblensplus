@@ -1,3 +1,18 @@
+import importlib as _importlib
+
+_SUBMODULES = ('rec_lens','rec_ilens','rec_rot','rec_tau','rec_src','rec_iamp','norm_quad','norm_imag','utils','cninv','bispec','delens')
+__all__ = list(_SUBMODULES)
+
+def __getattr__(name):
+    if name in _SUBMODULES:
+        mod = _importlib.import_module(f"{__name__}.{name}")
+        globals()[name] = mod
+        return mod
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+def __dir__():
+    return sorted(set(globals()) | set(_SUBMODULES))
+
 #from . import rec_lens
 #from . import rec_ilens
 #from . import rec_rot

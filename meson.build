@@ -17,8 +17,12 @@ py_mod = import('python')
 py = py_mod.find_installation(pure: false)
 
 project_root = meson.project_source_root()
+
 fc = meson.get_compiler('fortran')
 fc_cmd = fc.cmd_array()[0]
+
+# gfortran rejects free-form lines longer than 132 characters by default.
+fortran_line_args = fc.get_supported_arguments('-ffree-line-length-none')
 
 # Script used to convert .src files into .f90 files with f2py directives.
 f2pysig = files('scripts/f2pysig.py')[0]
@@ -148,7 +152,9 @@ py.install_sources(
 
 subdir('src/cmblensplus/basic')
 subdir('src/cmblensplus/curvedsky')
-subdir('src/cmblensplus/flatsky')
+if build_flatsky
+  subdir('src/cmblensplus/flatsky')
+endif
 subdir('src/cmblensplus/utils')
 
 # ---------------------------------------------------------------------------

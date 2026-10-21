@@ -24,7 +24,12 @@ else
   FPPFLAG = -cpp
 endif
 
-FLAG = -O3 $(FPPFLAG) -fPIC
+IS_GNU := $(shell $(FC) --version 2>/dev/null | head -n 1 | grep -c "GNU Fortran")
+ifeq ($(IS_GNU),1)
+  LINEFLAG = -ffree-line-length-none
+endif
+FLAG = -O3 $(FPPFLAG) -fPIC $(LINEFLAG)
+
 #DBAG = -check all -std -gen_interfaces -fpe0 -ftrapuv -traceback
 FLAGS = $(FLAG) $(DBAG)
 
