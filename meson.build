@@ -149,7 +149,9 @@ py.install_sources(
 
 subdir('src/cmblensplus/basic')
 subdir('src/cmblensplus/curvedsky')
-subdir('src/cmblensplus/flatsky')
+if build_flatsky
+  subdir('src/cmblensplus/flatsky')
+endif
 subdir('src/cmblensplus/utils')
 
 # ---------------------------------------------------------------------------
