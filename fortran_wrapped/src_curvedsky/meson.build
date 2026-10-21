@@ -92,9 +92,7 @@ py.extension_module(
   ],
 
   # Optimization flags for Fortran compilation.
-  fortran_args: [
-    '-O3',
-  ],
+  fortran_args: ['-O3'] + fortran_line_args
 
   # Install the extension into site-packages.
   install: true,

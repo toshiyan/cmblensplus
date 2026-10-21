@@ -114,6 +114,7 @@ if build_flatsky
   fortran_internal_src_dft_dir = project_root / 'fortran_internal' / 'src_dft'
   fortran_internal_dft_lib = fortran_internal_lib_dir / 'libdft.a'
 
+  fortran_line_args = fc.get_supported_arguments('-ffree-line-length-none')
   dft_fflags = '-O3 -cpp -fPIC -I../mod ' + fftw_pkg_cflags
 
   dft_lib_target = custom_target(
