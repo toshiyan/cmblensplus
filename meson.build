@@ -17,8 +17,12 @@ py_mod = import('python')
 py = py_mod.find_installation(pure: false)
 
 project_root = meson.project_source_root()
+
 fc = meson.get_compiler('fortran')
 fc_cmd = fc.cmd_array()[0]
+
+# gfortran rejects free-form lines longer than 132 characters by default.
+fortran_line_args = fc.get_supported_arguments('-ffree-line-length-none')
 
 # Script used to convert .src files into .f90 files with f2py directives.
 f2pysig = files('scripts/f2pysig.py')[0]
@@ -114,7 +118,6 @@ if build_flatsky
   fortran_internal_src_dft_dir = project_root / 'fortran_internal' / 'src_dft'
   fortran_internal_dft_lib = fortran_internal_lib_dir / 'libdft.a'
 
-  fortran_line_args = fc.get_supported_arguments('-ffree-line-length-none')
   dft_fflags = '-O3 -cpp -fPIC -I../mod ' + fftw_pkg_cflags
 
   dft_lib_target = custom_target(
