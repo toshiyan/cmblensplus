@@ -590,7 +590,7 @@ def lm_healpix2healpy(almpix):
     """
     lmpy = int((lmax+1)*(lmax+2)/2.)
     lmax = len(alm[:,0]) - 1
-    return libcurvedsky.utils.lm_healpy2healpix(lmax,almpix,lmpy)
+    return libcurvedsky.utils.lm_healpix2healpy(lmax,almpix,lmpy)
     
 
 def cosin_healpix(nside):
