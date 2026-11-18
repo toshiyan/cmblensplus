@@ -105,6 +105,10 @@ Additional Python scripts are provided in:
 
 Example scripts are available in the `example/` directory.
 
+# Bug Fixes
+
+See [Changelog](CHANGELOG.md).
+
 # Acknowledgements
 
 This package uses the external FFTW library for the `flatsky` module.
